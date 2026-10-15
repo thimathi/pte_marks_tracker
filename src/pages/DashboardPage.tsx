@@ -1,0 +1,409 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import {
+  Target,
+  Flame,
+  CheckCircle2,
+  Clock,
+  Shuffle,
+  GraduationCap,
+  ArrowRight,
+  TrendingUp,
+  AlertTriangle,
+  Award,
+  ChevronRight,
+  Sparkles,
+  BarChart3
+} from 'lucide-react';
+import { usePteData } from '../context/PteDataContext';
+import { calculateDayBreakdown, calculateStreak, getWeaknessAnalysis } from '../utils/scoring';
+import { formatDateFriendly, isDatePast } from '../utils/dateUtils';
+import { DAY_TARGET_SCORES, DEFAULT_ADDITIONAL_EXERCISES } from '../config/constants';
+import { CompletionGate } from '../components/gate/CompletionGate';
+
+export const DashboardPage: React.FC = () => {
+  const { studyPlan, currentDay, currentDayData, days, selectDay } = usePteData();
+
+  // Metrics for current active day
+  const breakdown = calculateDayBreakdown(currentDayData, studyPlan.questionTargets);
+  const streak = calculateStreak(days);
+
+  // Overall journey calculation
+  let totalCompletedAcrossJourney = 0;
+  let completedDaysCount = 0;
+  let overdueDaysCount = 0;
+
+  for (let d = 1; d <= 21; d++) {
+    const day = days[d];
+    if (day) {
+      if (day.status === 'completed') {
+        completedDaysCount++;
+      } else if (isDatePast(day.date) && day.gateStatus?.isUnlocked) {
+        overdueDaysCount++;
+      }
+      const b = calculateDayBreakdown(day, studyPlan.questionTargets);
+      totalCompletedAcrossJourney += b.totalCompleted;
+    }
+  }
+
+  const journeyPercent = Math.round((completedDaysCount / 21) * 100);
+  const remainingQuestionsToday = Math.max(0, breakdown.totalDailyTarget - breakdown.totalCompleted);
+  const targetForToday = DAY_TARGET_SCORES[currentDay - 1] || studyPlan.targetScores.overall;
+
+  const weakness = getWeaknessAnalysis(
+    {
+      speaking: breakdown.speakingAverage,
+      writing: breakdown.writingAverage,
+      reading: breakdown.readingAverage,
+      listening: breakdown.listeningAverage
+    },
+    studyPlan.targetScores
+  );
+
+  const mock1 = currentDayData?.mockExams?.mock01;
+  const mock2 = currentDayData?.mockExams?.mock02;
+  const mock1Rev = currentDayData?.mockReviews?.review01;
+  const mock2Rev = currentDayData?.mockReviews?.review02;
+
+  // Determine next unfinished task
+  let nextTask = {
+    title: 'Start Mixed Practice Session',
+    desc: `${remainingQuestionsToday} questions remaining in today's 200 mixed queue`,
+    link: '/practice',
+    btnText: 'Open Workspace'
+  };
+
+  if (breakdown.totalCompleted >= breakdown.totalDailyTarget) {
+    if (!mock1?.isCompleted) {
+      nextTask = {
+        title: 'Complete Mock Exam 1 (60 Qs)',
+        desc: 'Single high-intensity practice simulation for today',
+        link: '/mock-exams',
+        btnText: 'Go to Mock Exams'
+      };
+    } else if (!mock1Rev?.isCompleted) {
+      nextTask = {
+        title: 'Mock Exam 1 Error Analysis',
+        desc: 'Review mistakes, vocabulary, and corrective actions',
+        link: '/mock-exams',
+        btnText: 'Open Review'
+      };
+    } else if (!mock2?.isCompleted) {
+      nextTask = {
+        title: 'Complete Mock Exam 2 (60 Qs)',
+        desc: 'Second daily simulation session',
+        link: '/mock-exams',
+        btnText: 'Go to Mock 2'
+      };
+    } else if (!mock2Rev?.isCompleted) {
+      nextTask = {
+        title: 'Mock Exam 2 Error Analysis',
+        desc: 'Review weak question types from Mock 2',
+        link: '/mock-exams',
+        btnText: 'Open Review'
+      };
+    } else if (!currentDayData?.gateStatus?.dailyPracticeReviewCompleted) {
+      nextTask = {
+        title: 'Confirm Daily Practice Review',
+        desc: 'Check low-scoring questions in the Review Center',
+        link: '/review',
+        btnText: 'Review Center'
+      };
+    } else {
+      nextTask = {
+        title: `Pass Day ${currentDay} Completion Gate`,
+        desc: `Unlock Day ${currentDay + 1} and roll forward`,
+        link: '#gate',
+        btnText: 'View Gate'
+      };
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Hero Welcome Header */}
+      <div className="rounded-3xl bg-gradient-to-r from-[#192746] via-[#151d32] to-[#11192d] border border-[#2b3856] p-6 lg:p-8 relative overflow-hidden shadow-xl">
+        <div className="relative z-10 max-w-3xl space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+              Day {currentDay} of 21 · {formatDateFriendly(currentDayData?.date || studyPlan.startDate)}
+            </span>
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
+              <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+              {streak} Days Active Streak
+            </span>
+            {overdueDaysCount > 0 && (
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-300 border border-red-500/30 flex items-center gap-1">
+                <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
+                {overdueDaysCount} Overdue Tasks Rolled Over
+              </span>
+            )}
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#edf2ff]">
+            PTE Academic 21-Day High-Score Tracker
+          </h1>
+          <p className="text-sm text-[#a9b5d0] leading-relaxed">
+            Target Goal: <b className="text-[#edf2ff]">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Target: <b className="text-blue-400">{targetForToday}+</b>). Mixed interleaving across Speaking, Writing, Reading & Listening with 2 daily mock exams and error analysis.
+          </p>
+
+          <div className="flex flex-wrap gap-3 pt-2">
+            <Link
+              to="/practice"
+              className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-lg shadow-blue-600/30 flex items-center gap-2 transition-all hover:scale-105"
+            >
+              <Shuffle className="w-4 h-4" />
+              <span>Resume Mixed Practice (200 Qs)</span>
+            </Link>
+            <Link
+              to="/mock-exams"
+              className="px-5 py-2.5 rounded-xl bg-[#243553] hover:bg-[#30476c] text-xs font-semibold text-[#edf2ff] border border-[#405477] flex items-center gap-2 transition-all"
+            >
+              <GraduationCap className="w-4 h-4 text-blue-400" />
+              <span>Mock Exam Center</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Subtle decorative target emblem */}
+        <div className="hidden lg:block absolute right-8 top-1/2 -translate-y-1/2 opacity-15 pointer-events-none">
+          <Target className="w-64 h-64 text-blue-400" />
+        </div>
+      </div>
+
+      {/* Primary KPI Metrics Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Journey Completion */}
+        <div className="p-5 rounded-2xl bg-[#141c31] border border-[#2b3856] space-y-2">
+          <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
+            <span>21-Day Journey</span>
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-extrabold text-[#edf2ff]">{completedDaysCount} / 21</span>
+            <span className="text-xs text-[#a9b5d0]">Days ({journeyPercent}%)</span>
+          </div>
+          <div className="w-full h-2 rounded-full bg-[#0e1729] overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-blue-500 to-emerald-400 rounded-full transition-all duration-500"
+              style={{ width: `${journeyPercent}%` }}
+            />
+          </div>
+          <p className="text-[11px] text-[#a9b5d0]">{21 - completedDaysCount} days remaining in study plan</p>
+        </div>
+
+        {/* Card 2: Today's Practice Target */}
+        <div className="p-5 rounded-2xl bg-[#141c31] border border-[#2b3856] space-y-2">
+          <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
+            <span>Daily Practice Target</span>
+            <Shuffle className="w-4 h-4 text-blue-400" />
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-extrabold text-[#edf2ff]">
+              {breakdown.totalCompleted} / {breakdown.totalDailyTarget}
+            </span>
+            <span className="text-xs text-[#a9b5d0]">({breakdown.completionPercentage}%)</span>
+          </div>
+          <div className="w-full h-2 rounded-full bg-[#0e1729] overflow-hidden">
+            <div
+              className="h-full bg-blue-500 rounded-full transition-all duration-500"
+              style={{ width: `${breakdown.completionPercentage}%` }}
+            />
+          </div>
+          <p className="text-[11px] text-[#a9b5d0]">
+            {remainingQuestionsToday > 0 ? `${remainingQuestionsToday} questions left to score today` : 'Daily 200 questions target met!'}
+          </p>
+        </div>
+
+        {/* Card 3: Daily Practice Average */}
+        <div className="p-5 rounded-2xl bg-[#141c31] border border-[#2b3856] space-y-2">
+          <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
+            <span>Daily Practice Avg</span>
+            <TrendingUp className="w-4 h-4 text-emerald-400" />
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-extrabold text-[#edf2ff]">
+              {breakdown.dailyAverage !== null ? breakdown.dailyAverage.toFixed(1) : '—'}
+            </span>
+            <span className="text-xs text-[#a9b5d0]">/ 90</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-blue-300">
+            <Target className="w-3.5 h-3.5" />
+            <span>Target: {targetForToday}+</span>
+          </div>
+          <p className="text-[11px] text-[#a9b5d0]">{breakdown.dailyCount} scored practice attempts</p>
+        </div>
+
+        {/* Card 4: Daily Mock Exams */}
+        <div className="p-5 rounded-2xl bg-[#141c31] border border-[#2b3856] space-y-2">
+          <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
+            <span>Daily Mock Exams</span>
+            <GraduationCap className="w-4 h-4 text-purple-400" />
+          </div>
+          <div className="space-y-1">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-[#a9b5d0]">Mock 1:</span>
+              <span className={`font-semibold ${mock1?.isCompleted ? 'text-emerald-400' : 'text-amber-400'}`}>
+                {mock1?.overallScore !== null ? `${mock1?.overallScore}/90` : 'Pending'} {mock1Rev?.isCompleted ? '· Rev ✓' : ''}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-[#a9b5d0]">Mock 2:</span>
+              <span className={`font-semibold ${mock2?.isCompleted ? 'text-emerald-400' : 'text-amber-400'}`}>
+                {mock2?.overallScore !== null ? `${mock2?.overallScore}/90` : 'Pending'} {mock2Rev?.isCompleted ? '· Rev ✓' : ''}
+              </span>
+            </div>
+          </div>
+          <p className="text-[11px] text-[#a9b5d0]">2 separate simulations required daily</p>
+        </div>
+      </div>
+
+      {/* Next Task Card & Skills Breakdown */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Next Task Action Box */}
+        <div className="lg:col-span-1 rounded-2xl bg-gradient-to-br from-[#19243d] to-[#141c31] border border-blue-500/30 p-6 flex flex-col justify-between space-y-4 shadow-lg">
+          <div>
+            <div className="flex items-center justify-between text-xs text-blue-400 font-semibold mb-2">
+              <span className="uppercase tracking-wider">Next Recommended Task</span>
+              <Clock className="w-4 h-4" />
+            </div>
+            <h3 className="text-lg font-bold text-[#edf2ff]">{nextTask.title}</h3>
+            <p className="text-xs text-[#a9b5d0] mt-1 leading-relaxed">{nextTask.desc}</p>
+          </div>
+
+          <div className="pt-2">
+            {nextTask.link.startsWith('#') ? (
+              <a
+                href={nextTask.link}
+                className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors"
+              >
+                <span>{nextTask.btnText}</span>
+                <ChevronRight className="w-4 h-4" />
+              </a>
+            ) : (
+              <Link
+                to={nextTask.link}
+                className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors"
+              >
+                <span>{nextTask.btnText}</span>
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+            )}
+          </div>
+        </div>
+
+        {/* 4 Skills Live Averages */}
+        <div className="lg:col-span-2 rounded-2xl bg-[#141c31] border border-[#2b3856] p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-[#2b3856] pb-3">
+            <h3 className="text-base font-bold text-[#edf2ff] flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-blue-400" />
+              Four-Skill Performance & Weakness Diagnostics
+            </h3>
+            <span className="text-xs text-[#a9b5d0]">Target: {studyPlan.targetScores.overall}+</span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {/* Speaking */}
+            <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 space-y-1">
+              <span className="text-xs font-semibold text-blue-300">Speaking</span>
+              <div className="text-xl font-bold text-[#edf2ff]">
+                {breakdown.speakingAverage !== null ? breakdown.speakingAverage.toFixed(1) : '—'}
+              </div>
+              <p className="text-[10px] text-[#a9b5d0]">{breakdown.speakingCount} scored items</p>
+            </div>
+
+            {/* Writing */}
+            <div className="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/20 space-y-1">
+              <span className="text-xs font-semibold text-purple-300">Writing</span>
+              <div className="text-xl font-bold text-[#edf2ff]">
+                {breakdown.writingAverage !== null ? breakdown.writingAverage.toFixed(1) : '—'}
+              </div>
+              <p className="text-[10px] text-[#a9b5d0]">{breakdown.writingCount} scored items</p>
+            </div>
+
+            {/* Reading */}
+            <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-1">
+              <span className="text-xs font-semibold text-emerald-300">Reading</span>
+              <div className="text-xl font-bold text-[#edf2ff]">
+                {breakdown.readingAverage !== null ? breakdown.readingAverage.toFixed(1) : '—'}
+              </div>
+              <p className="text-[10px] text-[#a9b5d0]">{breakdown.readingCount} scored items</p>
+            </div>
+
+            {/* Listening */}
+            <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-1">
+              <span className="text-xs font-semibold text-amber-300">Listening</span>
+              <div className="text-xl font-bold text-[#edf2ff]">
+                {breakdown.listeningAverage !== null ? breakdown.listeningAverage.toFixed(1) : '—'}
+              </div>
+              <p className="text-[10px] text-[#a9b5d0]">{breakdown.listeningCount} scored items</p>
+            </div>
+          </div>
+
+          {/* Weakness Diagnostic Banner */}
+          {weakness.weakestSkill && (
+            <div className="p-3.5 rounded-xl bg-[#10192c] border border-amber-500/30 flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+              <div className="text-xs space-y-1">
+                <p className="font-semibold text-amber-300">
+                  Identified Weak Skill: <span className="capitalize">{weakness.weakestSkill}</span> (Gap: -{weakness.gap} points from target)
+                </p>
+                <p className="text-[#a9b5d0]">
+                  Recommended focus areas based on recorded scores: {weakness.recommendations.join(' · ')}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 21-Day Mini Roadmap Bar */}
+      <div className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-5 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Award className="w-4 h-4 text-blue-400" />
+            <h3 className="text-sm font-bold text-[#edf2ff]">21-Day Target Score Progression</h3>
+          </div>
+          <Link to="/roadmap" className="text-xs text-blue-400 hover:underline flex items-center gap-1">
+            View Full Roadmap <ChevronRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-7 sm:grid-cols-11 lg:grid-cols-21 gap-1.5">
+          {Array.from({ length: 21 }, (_, i) => i + 1).map((d) => {
+            const isCurrent = d === currentDay;
+            const dayStatus = days[d]?.status;
+            const isUnlocked = days[d]?.gateStatus?.isUnlocked ?? (d === 1);
+            const targetScore = DAY_TARGET_SCORES[d - 1];
+
+            return (
+              <button
+                key={d}
+                onClick={() => selectDay(d)}
+                className={`p-2 rounded-xl text-center border transition-all cursor-pointer ${
+                  isCurrent
+                    ? 'bg-blue-600 border-blue-400 text-white shadow-md shadow-blue-600/30 font-bold scale-105'
+                    : dayStatus === 'completed'
+                    ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                    : isUnlocked
+                    ? 'bg-[#19243d] border-[#2b3856] text-[#edf2ff] hover:border-blue-400'
+                    : 'bg-[#10192c]/50 border-[#2b3856]/40 text-[#a9b5d0]/50'
+                }`}
+                title={`Day ${d}: Target ${targetScore}+ · Status: ${dayStatus || (isUnlocked ? 'active' : 'locked')}`}
+              >
+                <div className="text-[11px] font-bold">D{d}</div>
+                <div className="text-[10px] opacity-80">{targetScore}+</div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Section Anchor: Completion Gate */}
+      <div id="gate">
+        <CompletionGate dayNumber={currentDay} />
+      </div>
+    </div>
+  );
+};

@@ -1,0 +1,163 @@
+export type SkillType = 'speaking' | 'writing' | 'reading' | 'listening';
+
+export interface QuestionTypeMeta {
+  id: string;
+  name: string;
+  shortName: string;
+  skill: SkillType;
+  secondarySkill?: SkillType;
+  defaultTarget: number;
+  estMinutes: string;
+  isPrediction: boolean;
+  maxScore: number;
+  description: string;
+}
+
+export interface QuestionAttempt {
+  qIndex: number; // 0 to (target - 1)
+  score: number | null; // 0 to 90 or null if blank
+  notes?: string;
+  isFlaggedForReview?: boolean;
+  reviewed?: boolean;
+  reviewNotes?: string;
+  updatedAt?: string;
+}
+
+export interface QuestionTypeProgress {
+  attempts: Record<number, QuestionAttempt>;
+}
+
+export interface MockExamRecord {
+  id: 'mock01' | 'mock02';
+  studyDay: number;
+  examNumber: number; // 1 to 42
+  date: string;
+  targetQuestions: number; // default 60
+  questionsAttempted: number;
+  overallScore: number | null; // 0-90
+  speakingScore: number | null;
+  writingScore: number | null;
+  readingScore: number | null;
+  listeningScore: number | null;
+  mainMistakes?: string;
+  weakQuestionTypes?: string[];
+  notes?: string;
+  isCompleted: boolean;
+  completedAt?: string;
+}
+
+export interface MockReviewRecord {
+  id: 'review01' | 'review02';
+  mockId: 'mock01' | 'mock02';
+  studyDay: number;
+  examNumber: number; // 1 to 42
+  durationMinutes: number;
+  incorrectQuestionsSummary?: string;
+  repeatedMistakes?: string;
+  vocabularyIssues?: string;
+  grammarIssues?: string;
+  pronunciationFluencyIssues?: string;
+  timeManagementIssues?: string;
+  correctiveActions?: string;
+  questionsToRepeat?: string;
+  reviewNotes?: string;
+  isCompleted: boolean;
+  completedAt?: string;
+}
+
+export interface AdditionalExerciseRecord {
+  id: string;
+  name: string;
+  requirement: string;
+  requiredCount: number;
+  completedCount: number;
+  notes?: string;
+}
+
+export interface DailyGateStatus {
+  practiceCompleted: boolean; // all 200 questions scored
+  dailyPracticeReviewCompleted: boolean;
+  mock1Completed: boolean;
+  mock1ReviewCompleted: boolean;
+  mock2Completed: boolean;
+  mock2ReviewCompleted: boolean;
+  additionalExercisesCompleted: boolean;
+  isUnlocked: boolean;
+  completedAt?: string;
+  unlockedAt?: string;
+}
+
+export interface DayData {
+  dayNumber: number;
+  date: string; // YYYY-MM-DD
+  status: 'locked' | 'active' | 'completed' | 'overdue';
+  questionProgress: Record<string, QuestionTypeProgress>;
+  mockExams: {
+    mock01: MockExamRecord;
+    mock02: MockExamRecord;
+  };
+  mockReviews: {
+    review01: MockReviewRecord;
+    review02: MockReviewRecord;
+  };
+  additionalExercises: Record<string, AdditionalExerciseRecord>;
+  gateStatus: DailyGateStatus;
+  notes?: string;
+  lastQueueIndex?: number;
+  updatedAt?: string;
+}
+
+export interface TargetScores {
+  overall: number;
+  speaking: number;
+  writing: number;
+  reading: number;
+  listening: number;
+  mockExam: number;
+}
+
+export interface StudyPlan {
+  startDate: string; // YYYY-MM-DD, e.g. 2026-10-11
+  durationDays: number; // 21
+  currentDay: number; // 1 to 21
+  targetScores: TargetScores;
+  questionTargets: Record<string, number>;
+  additionalExerciseTargets: Record<string, number>;
+  shuffleSeed?: number;
+  schemaVersion: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserProfile {
+  uid: string;
+  email: string;
+  displayName?: string;
+  createdAt: string;
+}
+
+export interface QueueItem {
+  id: string; // unique item id in queue, e.g. "q_42"
+  questionTypeId: string;
+  questionTypeName: string;
+  skill: SkillType;
+  instanceIndex: number; // e.g. 3rd Read Aloud today
+  isPrediction: boolean;
+  overallQueueIndex: number; // 0 to 199
+}
+
+export interface DayPerformanceSummary {
+  dayNumber: number;
+  date: string;
+  targetScore: number;
+  status: 'locked' | 'active' | 'completed' | 'overdue';
+  completedPracticeQuestions: number;
+  practiceAverage: number | null;
+  speakingAverage: number | null;
+  writingAverage: number | null;
+  readingAverage: number | null;
+  listeningAverage: number | null;
+  mock1Score: number | null;
+  mock2Score: number | null;
+  gateDone: boolean;
+}
