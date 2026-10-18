@@ -15,11 +15,12 @@ import {
 import { usePteData } from '../context/PteDataContext';
 import { useAuth } from '../context/AuthContext';
 import { scanForLegacyData, convertLegacyDayToModern, LegacyScanResult } from '../utils/legacyMigration';
-import { QUESTION_TYPES, DEFAULT_ADDITIONAL_EXERCISES } from '../config/constants';
+import { QUESTION_TYPES, DEFAULT_ADDITIONAL_EXERCISES, TOTAL_STUDY_DAYS } from '../config/constants';
 
 export const SettingsPage: React.FC = () => {
   const { studyPlan, updatePlan, importLegacyData } = usePteData();
   const { user, logout } = useAuth();
+  const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
 
   // Local state for study plan settings
   const [startDate, setStartDate] = useState(studyPlan.startDate);
@@ -91,7 +92,7 @@ export const SettingsPage: React.FC = () => {
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            Configure 21-day timeline, target benchmarks, and import previous localStorage tracker data.
+            Configure {totalDays}-day timeline, target benchmarks, and import previous localStorage tracker data.
           </p>
         </div>
 
@@ -108,7 +109,7 @@ export const SettingsPage: React.FC = () => {
         <div className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-6 space-y-4">
           <div className="flex items-center gap-2 border-b border-[#2b3856] pb-3">
             <Calendar className="w-5 h-5 text-blue-400" />
-            <h3 className="text-base font-bold text-[#edf2ff]">21-Day Study Start Date</h3>
+            <h3 className="text-base font-bold text-[#edf2ff]">{totalDays}-Day Study Start Date</h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -124,14 +125,14 @@ export const SettingsPage: React.FC = () => {
                 required
               />
               <p className="text-[11px] text-[#a9b5d0] mt-1">
-                Default: 11 October 2026. Dates for Day 1 through Day 21 update automatically.
+                Default: 18 October 2026. Dates for Day 1 through Day {totalDays} update automatically.
               </p>
             </div>
 
             <div className="p-3.5 rounded-xl bg-[#0e1729] border border-[#2b3856] text-xs space-y-1">
               <span className="font-semibold text-blue-300">Automatic Timeline Recalculation</span>
               <p className="text-[#a9b5d0]">
-                Changing the start date recalculates the calendar timeline for all 21 study days while preserving all existing scores and mock exam attempts.
+                Changing the start date recalculates the calendar timeline for all {totalDays} study days while preserving all existing scores and mock exam attempts.
               </p>
             </div>
           </div>

@@ -20,6 +20,7 @@ import { DAY_TARGET_SCORES } from '../config/constants';
 
 export const RoadmapPage: React.FC = () => {
   const { studyPlan, days, currentDay, selectDay } = usePteData();
+  const totalDays = studyPlan.durationDays || 25;
   const navigate = useNavigate();
 
   const handleSelectDay = (dayNum: number, isUnlocked: boolean) => {
@@ -37,16 +38,16 @@ export const RoadmapPage: React.FC = () => {
       <div className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-6 space-y-2">
         <div className="flex items-center gap-2">
           <Map className="w-6 h-6 text-blue-400" />
-          <h1 className="text-2xl font-bold text-[#edf2ff]">21-Day PTE Journey Roadmap</h1>
+          <h1 className="text-2xl font-bold text-[#edf2ff]">{totalDays}-Day PTE Mountain Staircase Roadmap</h1>
         </div>
         <p className="text-xs text-[#a9b5d0] leading-relaxed max-w-3xl">
-          Visual progression from Day 1 to Day 21 (Target 62+ ➔ 85+). Strict sequential unlocking enforces mastery: Day N+1 remains locked until Day N is 100% completed. Unfinished tasks carry forward as rolled-over items.
+          Visual progression from Day 1 to Day {totalDays} (Target 62+ ➔ 86+). Strict sequential unlocking enforces mastery: Day N+1 remains locked until Day N is 100% completed. Unfinished tasks carry forward as rolled-over items.
         </p>
       </div>
 
-      {/* 21 Day Cards Grid */}
+      {/* Day Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 21 }, (_, i) => i + 1).map((dayNum) => {
+        {Array.from({ length: totalDays }, (_, i) => i + 1).map((dayNum) => {
           const dayData = days[dayNum];
           const isUnlocked = dayData?.gateStatus?.isUnlocked ?? (dayNum === 1);
           const isCompleted = dayData?.status === 'completed';

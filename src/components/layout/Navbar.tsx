@@ -39,9 +39,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="font-bold text-base tracking-tight text-[#edf2ff]">PTE Academic</span>
-                <span className="text-xs px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 font-semibold border border-blue-500/30">21-Day</span>
+                <span className="text-xs px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 font-semibold border border-blue-500/30">{studyPlan.durationDays || 25}-Day</span>
               </div>
-              <p className="text-[11px] text-[#a9b5d0] leading-none">Target 79+ Progress Engine</p>
+              <p className="text-[11px] text-[#a9b5d0] leading-none">Target 79+ Mountain Climb Engine</p>
             </div>
           </Link>
         </div>
@@ -56,7 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
               onChange={(e) => selectDay(Number(e.target.value))}
               className="bg-[#0e1729] text-xs font-semibold text-[#80a7ff] rounded-lg px-2 py-1 border border-[#3a4b70] focus:outline-none focus:border-blue-400 cursor-pointer"
             >
-              {Array.from({ length: 21 }, (_, i) => i + 1).map((d) => {
+              {Array.from({ length: studyPlan.durationDays || 25 }, (_, i) => i + 1).map((d) => {
                 const dayStatus = days[d]?.status;
                 const isUnlocked = days[d]?.gateStatus?.isUnlocked ?? (d === 1);
                 return (

@@ -1,5 +1,5 @@
 import { DayData, QuestionAttempt, SkillType, TargetScores } from '../types/pte';
-import { QUESTION_TYPE_MAP, QUESTION_TYPES } from '../config/constants';
+import { QUESTION_TYPE_MAP, QUESTION_TYPES, TOTAL_STUDY_DAYS } from '../config/constants';
 
 export interface ScoreSummary {
   average: number | null;
@@ -176,9 +176,9 @@ export function getWeaknessAnalysis(
 /**
  * Calculates current streak of fully completed consecutive study days
  */
-export function calculateStreak(days: Record<number, DayData>): number {
+export function calculateStreak(days: Record<number, DayData>, maxDays: number = TOTAL_STUDY_DAYS): number {
   let streak = 0;
-  for (let d = 1; d <= 21; d++) {
+  for (let d = 1; d <= maxDays; d++) {
     const day = days[d];
     if (day && day.status === 'completed') {
       streak++;

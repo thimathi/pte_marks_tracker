@@ -171,10 +171,11 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
   if (!snap.exists()) {
     // New user initial setup
     const plan = createDefaultStudyPlan(DEFAULT_START_DATE);
-    const dates = calculate21StudyDates(plan.startDate);
+    const totalDays = plan.durationDays || TOTAL_STUDY_DAYS;
+    const dates = calculate21StudyDates(plan.startDate, totalDays);
     const initialDays: Record<string, DayData> = {};
 
-    for (let d = 1; d <= 21; d++) {
+    for (let d = 1; d <= totalDays; d++) {
       const key = formatDayKey(d);
       initialDays[key] = createDefaultDayData(d, dates[d - 1], d === 1);
     }
@@ -195,12 +196,13 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
       await set(ref(db, `users/${uid}/studyPlan`), plan);
     }
 
-    // Ensure all 21 days exist in DB
-    const dates = calculate21StudyDates(plan.startDate);
+    // Ensure all days exist in DB
+    const totalDays = plan.durationDays || TOTAL_STUDY_DAYS;
+    const dates = calculate21StudyDates(plan.startDate, totalDays);
     const existingDays = data.days || {};
     const updates: Record<string, any> = {};
 
-    for (let d = 1; d <= 21; d++) {
+    for (let d = 1; d <= totalDays; d++) {
       const key = formatDayKey(d);
       if (!existingDays[key]) {
         updates[`users/${uid}/days/${key}`] = createDefaultDayData(d, dates[d - 1], d === 1);
@@ -227,9 +229,10 @@ export async function saveStudyPlan(uid: string, plan: StudyPlan): Promise<void>
   await set(planRef, updatedPlan);
 
   // Recalculate planned dates for all days if startDate changed
-  const dates = calculate21StudyDates(plan.startDate);
+  const totalDays = plan.durationDays || TOTAL_STUDY_DAYS;
+  const dates = calculate21StudyDates(plan.startDate, totalDays);
   const updates: Record<string, any> = {};
-  for (let d = 1; d <= 21; d++) {
+  for (let d = 1; d <= totalDays; d++) {
     const key = formatDayKey(d);
     updates[`users/${uid}/days/${key}/date`] = dates[d - 1];
     updates[`users/${uid}/days/${key}/mockExams/mock01/date`] = dates[d - 1];
@@ -327,7 +330,7 @@ export async function completeDayAndUnlockNext(
   uid: string,
   dayNumber: number
 ): Promise<{ success: boolean; message: string }> {
-  if (dayNumber < 1 || dayNumber > 21) {
+  if (dayNumber < 1 || dayNumber > TOTAL_STUDY_DAYS) {
     return { success: false, message: 'Invalid day number' };
   }
 
@@ -370,7 +373,7 @@ export async function completeDayAndUnlockNext(
   updates[`users/${uid}/days/${currentDayKey}/updatedAt`] = nowIso;
 
   // If next day exists, unlock it!
-  if (dayNumber < 21) {
+  if (dayNumber < TOTAL_STUDY_DAYS) {
     const nextDayNumber = dayNumber + 1;
     const nextDayKey = formatDayKey(nextDayNumber);
     updates[`users/${uid}/days/${nextDayKey}/status`] = 'active';
@@ -383,9 +386,9 @@ export async function completeDayAndUnlockNext(
 
   return {
     success: true,
-    message: dayNumber < 21
+    message: dayNumber < TOTAL_STUDY_DAYS
       ? `🎉 Congratulations! Day ${dayNumber} completed and Day ${dayNumber + 1} is now unlocked!`
-      : `🏆 INCREDIBLE! You have completed all 21 study days of your PTE journey!`
+      : `🏆 INCREDIBLE! You have completed all ${TOTAL_STUDY_DAYS} study days of your PTE journey!`
   };
 }
 
@@ -413,7 +416,7 @@ export async function emergencyUnlockDay(uid: string, targetDayNumber: number, r
 }
 
 /**
- * Subscribes to full user study data (plan and 21 days)
+ * Subscribes to full user study data (plan and days)
  */
 export function subscribeToUserData(
   uid: string,
@@ -427,13 +430,14 @@ export function subscribeToUserData(
       const plan: StudyPlan = data.studyPlan || createDefaultStudyPlan();
       const rawDays = data.days || {};
       const days: Record<number, DayData> = {};
+      const totalDays = plan.durationDays || TOTAL_STUDY_DAYS;
+      const dates = calculate21StudyDates(plan.startDate, totalDays);
 
-      for (let d = 1; d <= 21; d++) {
+      for (let d = 1; d <= totalDays; d++) {
         const key = formatDayKey(d);
         if (rawDays[key]) {
           days[d] = rawDays[key];
         } else {
-          const dates = calculate21StudyDates(plan.startDate);
           days[d] = createDefaultDayData(d, dates[d - 1], d === 1);
         }
       }

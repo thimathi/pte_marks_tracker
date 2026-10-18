@@ -23,14 +23,16 @@ import {
 import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown, calculateStreak } from '../utils/scoring';
 import { exportPracticeScoresCsv, exportMockExamsCsv } from '../utils/csvExport';
-import { DAY_TARGET_SCORES } from '../config/constants';
+import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS } from '../config/constants';
 
 export const ReportsPage: React.FC = () => {
   const { studyPlan, days } = usePteData();
   const streak = calculateStreak(days);
+  const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
+  const totalMocks = totalDays * 2;
 
-  // Prepare chart data for 21 study days
-  const practiceTrendData = Array.from({ length: 21 }, (_, i) => {
+  // Prepare chart data for study days
+  const practiceTrendData = Array.from({ length: totalDays }, (_, i) => {
     const dayNum = i + 1;
     const day = days[dayNum];
     const b = calculateDayBreakdown(day, studyPlan.questionTargets);
@@ -48,9 +50,9 @@ export const ReportsPage: React.FC = () => {
     };
   });
 
-  // Prepare chart data for 42 mock exams
+  // Prepare chart data for mock exams
   const mockProgressionData: { mock: string; score: number | null; target: number }[] = [];
-  for (let d = 1; d <= 21; d++) {
+  for (let d = 1; d <= totalDays; d++) {
     const day = days[d];
     const target = DAY_TARGET_SCORES[d - 1];
 
@@ -82,7 +84,7 @@ export const ReportsPage: React.FC = () => {
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            21-Day practice trajectory, 42-mock simulation score progression, and CSV export.
+            {totalDays}-Day practice trajectory, {totalMocks}-mock simulation score progression, and CSV export.
           </p>
         </div>
 
@@ -101,7 +103,7 @@ export const ReportsPage: React.FC = () => {
             className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white shadow-md shadow-purple-600/30 flex items-center gap-2 cursor-pointer transition-colors"
           >
             <Download className="w-4 h-4" />
-            <span>Export 42 Mocks CSV</span>
+            <span>Export {totalMocks} Mocks CSV</span>
           </button>
         </div>
       </div>
@@ -112,7 +114,7 @@ export const ReportsPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-blue-400" />
             <h3 className="text-base font-bold text-[#edf2ff]">
-              Daily Practice Average vs. Target Score Curve (Day 1 – 21)
+              Daily Practice Average vs. Target Score Curve (Day 1 – {totalDays})
             </h3>
           </div>
           <span className="text-xs text-[#a9b5d0]">Scores out of 90</span>
@@ -141,7 +143,7 @@ export const ReportsPage: React.FC = () => {
               <Line
                 type="monotone"
                 dataKey="target"
-                name="Target Curve (62+ ➔ 85+)"
+                name="Target Curve (62+ ➔ 86+)"
                 stroke="#80a7ff"
                 strokeWidth={2}
                 strokeDasharray="5 5"
@@ -152,13 +154,13 @@ export const ReportsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Chart 2: 42 Mock Exams Progression */}
+      {/* Chart 2: Mock Exams Progression */}
       <div className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-6 space-y-4">
         <div className="flex items-center justify-between border-b border-[#2b3856] pb-3">
           <div className="flex items-center gap-2">
             <Award className="w-5 h-5 text-purple-400" />
             <h3 className="text-base font-bold text-[#edf2ff]">
-              All 42 Mock Simulations Progression (Mock 1 to 42)
+              All {totalMocks} Mock Simulations Progression (Mock 1 to {totalMocks})
             </h3>
           </div>
           <span className="text-xs text-[#a9b5d0]">Target: 80+ / 90</span>

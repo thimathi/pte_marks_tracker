@@ -1,5 +1,5 @@
 import { DayData, StudyPlan } from '../types/pte';
-import { QUESTION_TYPE_MAP, QUESTION_TYPES } from '../config/constants';
+import { QUESTION_TYPE_MAP, QUESTION_TYPES, TOTAL_STUDY_DAYS } from '../config/constants';
 import { calculateDayBreakdown } from './scoring';
 
 /**
@@ -15,7 +15,7 @@ function escapeCsv(value: string | number | null | undefined): string {
 }
 
 /**
- * Generates and downloads a complete CSV file of all practice scores across all 21 days
+ * Generates and downloads a complete CSV file of all practice scores across all study days
  */
 export function exportPracticeScoresCsv(days: Record<number, DayData>, plan: StudyPlan) {
   const headers = [
@@ -34,8 +34,9 @@ export function exportPracticeScoresCsv(days: Record<number, DayData>, plan: Stu
   ];
 
   const rows: string[][] = [];
+  const maxDays = plan.durationDays || TOTAL_STUDY_DAYS;
 
-  for (let d = 1; d <= 21; d++) {
+  for (let d = 1; d <= maxDays; d++) {
     const dayData = days[d];
     if (!dayData) continue;
 
@@ -74,14 +75,14 @@ export function exportPracticeScoresCsv(days: Record<number, DayData>, plan: Stu
 }
 
 /**
- * Generates and downloads a complete CSV of all 42 Mock Exams and Reviews
+ * Generates and downloads a complete CSV of all planned Mock Exams and Reviews
  */
-export function exportMockExamsCsv(days: Record<number, DayData>) {
+export function exportMockExamsCsv(days: Record<number, DayData>, maxDays: number = TOTAL_STUDY_DAYS) {
   const headers = [
     'Study Day',
     'Date',
     'Mock ID',
-    'Exam # (1-42)',
+    'Exam #',
     'Overall Score',
     'Speaking Score',
     'Writing Score',
@@ -98,7 +99,7 @@ export function exportMockExamsCsv(days: Record<number, DayData>) {
 
   const rows: string[][] = [];
 
-  for (let d = 1; d <= 21; d++) {
+  for (let d = 1; d <= maxDays; d++) {
     const dayData = days[d];
     if (!dayData) continue;
 

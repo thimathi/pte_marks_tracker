@@ -13,7 +13,8 @@ import {
   Award,
   ChevronRight,
   Sparkles,
-  BarChart3
+  BarChart3,
+  Mountain
 } from 'lucide-react';
 import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown, calculateStreak, getWeaknessAnalysis } from '../utils/scoring';
@@ -28,12 +29,14 @@ export const DashboardPage: React.FC = () => {
   const breakdown = calculateDayBreakdown(currentDayData, studyPlan.questionTargets);
   const streak = calculateStreak(days);
 
+  const totalDays = studyPlan.durationDays || 25;
+
   // Overall journey calculation
   let totalCompletedAcrossJourney = 0;
   let completedDaysCount = 0;
   let overdueDaysCount = 0;
 
-  for (let d = 1; d <= 21; d++) {
+  for (let d = 1; d <= totalDays; d++) {
     const day = days[d];
     if (day) {
       if (day.status === 'completed') {
@@ -46,7 +49,7 @@ export const DashboardPage: React.FC = () => {
     }
   }
 
-  const journeyPercent = Math.round((completedDaysCount / 21) * 100);
+  const journeyPercent = Math.round((completedDaysCount / totalDays) * 100);
   const remainingQuestionsToday = Math.max(0, breakdown.totalDailyTarget - breakdown.totalCompleted);
   const targetForToday = DAY_TARGET_SCORES[currentDay - 1] || studyPlan.targetScores.overall;
 
@@ -127,7 +130,7 @@ export const DashboardPage: React.FC = () => {
           <div className="flex flex-wrap items-center gap-2">
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-              Day {currentDay} of 21 · {formatDateFriendly(currentDayData?.date || studyPlan.startDate)}
+              Day {currentDay} of {totalDays} · {formatDateFriendly(currentDayData?.date || studyPlan.startDate)}
             </span>
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
               <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
@@ -141,11 +144,11 @@ export const DashboardPage: React.FC = () => {
             )}
           </div>
 
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#edf2ff]">
-            PTE Academic 21-Day High-Score Tracker
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#edf2ff] flex items-center gap-3">
+            <span>PTE Academic {totalDays}-Day Mountain Staircase</span>
           </h1>
           <p className="text-sm text-[#a9b5d0] leading-relaxed">
-            Target Goal: <b className="text-[#edf2ff]">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Target: <b className="text-blue-400">{targetForToday}+</b>). Mixed interleaving across Speaking, Writing, Reading & Listening with 2 daily mock exams and error analysis.
+            Ultimate Summit Goal: <b className="text-[#edf2ff]">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Milestone: <b className="text-blue-400">{targetForToday}+</b>). Climb step-by-step with 200 daily mixed practice questions and 2 mock simulations without breaks.
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
@@ -177,11 +180,11 @@ export const DashboardPage: React.FC = () => {
         {/* Card 1: Journey Completion */}
         <div className="p-5 rounded-2xl bg-[#141c31] border border-[#2b3856] space-y-2">
           <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
-            <span>21-Day Journey</span>
+            <span>{totalDays}-Day Mountain Climb</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-extrabold text-[#edf2ff]">{completedDaysCount} / 21</span>
+            <span className="text-2xl sm:text-3xl font-extrabold text-[#edf2ff]">{completedDaysCount} / {totalDays}</span>
             <span className="text-xs text-[#a9b5d0]">Days ({journeyPercent}%)</span>
           </div>
           <div className="w-full h-2 rounded-full bg-[#0e1729] overflow-hidden">
@@ -190,7 +193,7 @@ export const DashboardPage: React.FC = () => {
               style={{ width: `${journeyPercent}%` }}
             />
           </div>
-          <p className="text-[11px] text-[#a9b5d0]">{21 - completedDaysCount} days remaining in study plan</p>
+          <p className="text-[11px] text-[#a9b5d0]">{totalDays - completedDaysCount} days remaining until exam summit</p>
         </div>
 
         {/* Card 2: Today's Practice Target */}
@@ -358,24 +361,89 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 21-Day Mini Roadmap Bar */}
+      {/* Mountain Climb Staircase Stages */}
+      <div className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-5 space-y-4">
+        <div className="flex items-center justify-between border-b border-[#2b3856] pb-3">
+          <div className="flex items-center gap-2">
+            <Mountain className="w-5 h-5 text-emerald-400" />
+            <h3 className="text-sm font-bold text-[#edf2ff]">{totalDays}-Day Mountain Staircase to 79+</h3>
+          </div>
+          <span className="text-xs font-semibold px-2.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
+            Consecutive Climb (No Breaks)
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
+          {/* Basecamp */}
+          <div className={`p-3 rounded-xl border text-xs space-y-1 ${
+            currentDay <= 5 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
+          }`}>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">Step 1: Basecamp</span>
+            <p className="font-bold text-[#edf2ff]">Days 1 – 5</p>
+            <p className="text-[10px] text-[#a9b5d0]">Target: 62+ ➔ 66+</p>
+            <span className="text-[9px] text-emerald-400 block font-semibold">Foundations & Rhythm</span>
+          </div>
+
+          {/* Camp 1 */}
+          <div className={`p-3 rounded-xl border text-xs space-y-1 ${
+            currentDay >= 6 && currentDay <= 10 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
+          }`}>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">Step 2: Camp 1</span>
+            <p className="font-bold text-[#edf2ff]">Days 6 – 10</p>
+            <p className="text-[10px] text-[#a9b5d0]">Target: 68+ ➔ 72+</p>
+            <span className="text-[9px] text-purple-400 block font-semibold">Prediction Sprint</span>
+          </div>
+
+          {/* Camp 2 */}
+          <div className={`p-3 rounded-xl border text-xs space-y-1 ${
+            currentDay >= 11 && currentDay <= 15 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
+          }`}>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Step 3: Camp 2</span>
+            <p className="font-bold text-[#edf2ff]">Days 11 – 15</p>
+            <p className="text-[10px] text-[#a9b5d0]">Target: 73+ ➔ 77+</p>
+            <span className="text-[9px] text-amber-400 block font-semibold">The 75+ Push</span>
+          </div>
+
+          {/* Summit Ridge */}
+          <div className={`p-3 rounded-xl border text-xs space-y-1 ${
+            currentDay >= 16 && currentDay <= 20 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
+          }`}>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Step 4: Summit Ridge</span>
+            <p className="font-bold text-[#edf2ff]">Days 16 – 20</p>
+            <p className="text-[10px] text-[#a9b5d0]">Target: 78+ ➔ 82+</p>
+            <span className="text-[9px] text-emerald-400 block font-semibold">79+ Mastery Threshold</span>
+          </div>
+
+          {/* The Summit */}
+          <div className={`p-3 rounded-xl border text-xs space-y-1 ${
+            currentDay >= 21 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
+          }`}>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-yellow-400">Step 5: The Summit</span>
+            <p className="font-bold text-[#edf2ff]">Days 21 – 25</p>
+            <p className="text-[10px] text-[#a9b5d0]">Target: 83+ ➔ 86+</p>
+            <span className="text-[9px] text-yellow-300 block font-semibold">Peak Exam Readiness</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Target Progression Staircase Bar */}
       <div className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-5 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Award className="w-4 h-4 text-blue-400" />
-            <h3 className="text-sm font-bold text-[#edf2ff]">21-Day Target Score Progression</h3>
+            <h3 className="text-sm font-bold text-[#edf2ff]">{totalDays}-Day Target Score Staircase</h3>
           </div>
           <Link to="/roadmap" className="text-xs text-blue-400 hover:underline flex items-center gap-1">
             View Full Roadmap <ChevronRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-7 sm:grid-cols-11 lg:grid-cols-21 gap-1.5">
-          {Array.from({ length: 21 }, (_, i) => i + 1).map((d) => {
+        <div className="grid grid-cols-5 sm:grid-cols-9 lg:grid-cols-25 gap-1.5">
+          {Array.from({ length: totalDays }, (_, i) => i + 1).map((d) => {
             const isCurrent = d === currentDay;
             const dayStatus = days[d]?.status;
             const isUnlocked = days[d]?.gateStatus?.isUnlocked ?? (d === 1);
-            const targetScore = DAY_TARGET_SCORES[d - 1];
+            const targetScore = DAY_TARGET_SCORES[d - 1] || 79;
 
             return (
               <button

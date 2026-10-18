@@ -12,11 +12,12 @@ import {
 import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown } from '../utils/scoring';
 import { formatDateFriendly, isDatePast, getTodayIso } from '../utils/dateUtils';
-import { DAY_TARGET_SCORES } from '../config/constants';
+import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS } from '../config/constants';
 
 export const CalendarPage: React.FC = () => {
   const { studyPlan, days, currentDay, selectDay } = usePteData();
   const [selectedDayNum, setSelectedDayNum] = useState<number>(currentDay);
+  const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
 
   const selectedDayData = days[selectedDayNum];
   const selectedBreakdown = calculateDayBreakdown(selectedDayData, studyPlan.questionTargets);
@@ -31,7 +32,7 @@ export const CalendarPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <CalendarDays className="w-6 h-6 text-blue-400" />
             <h1 className="text-xl font-bold text-[#edf2ff]">
-              21-Day Study Schedule & Rollover Calendar
+              {totalDays}-Day Study Schedule & Rollover Calendar
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
@@ -52,13 +53,13 @@ export const CalendarPage: React.FC = () => {
           <div className="flex items-center justify-between border-b border-[#2b3856] pb-3">
             <h3 className="text-sm font-bold text-[#edf2ff] flex items-center gap-2">
               <CalendarIcon className="w-4 h-4 text-blue-400" />
-              Day 1 through Day 21 Schedule Matrix
+              Day 1 through Day {totalDays} Schedule Matrix
             </h3>
             <span className="text-xs text-[#a9b5d0]">Click any day to view details</span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-2.5">
-            {Array.from({ length: 21 }, (_, i) => {
+            {Array.from({ length: totalDays }, (_, i) => {
               const dNum = i + 1;
               const day = days[dNum];
               const isSelected = dNum === selectedDayNum;

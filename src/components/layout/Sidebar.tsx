@@ -22,19 +22,20 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const { currentDay, days } = usePteData();
+  const { currentDay, days, studyPlan } = usePteData();
+  const totalDays = studyPlan.durationDays || 25;
   const currentDayLocked = !days[currentDay]?.gateStatus?.isUnlocked && currentDay > 1;
 
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/roadmap', label: '21-Day Roadmap', icon: Map, badge: '21 Days' },
+    { to: '/roadmap', label: `${totalDays}-Day Roadmap`, icon: Map, badge: `${totalDays} Days` },
     { to: '/practice', label: 'Mixed Practice', icon: Shuffle, badge: '200 Qs', highlight: true },
     { to: '/analytics/questions', label: 'Question Analytics', icon: BarChart3 },
-    { to: '/mock-exams', label: 'Mock Exams (42)', icon: GraduationCap, badge: '2 / Day' },
+    { to: '/mock-exams', label: `Mock Exams (${totalDays * 2})`, icon: GraduationCap, badge: '2 / Day' },
     { to: '/review', label: 'Review Center', icon: CheckSquare },
     { to: '/analytics', label: 'Trends & Stats', icon: LineChart },
     { to: '/calendar', label: 'Study Calendar', icon: CalendarDays },
-    { to: '/report/final', label: 'Final 21-Day Report', icon: FileText },
+    { to: '/report/final', label: `Final ${totalDays}-Day Report`, icon: FileText },
     { to: '/settings', label: 'Settings & Import', icon: Settings },
   ];
 
@@ -74,7 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 {currentDayLocked ? <Lock className="w-4 h-4 text-red-400" /> : `D${currentDay}`}
               </div>
               <div>
-                <p className="text-sm font-semibold text-[#edf2ff]">Study Day {currentDay} of 21</p>
+                <p className="text-sm font-semibold text-[#edf2ff]">Study Day {currentDay} of {totalDays}</p>
                 <p className="text-xs text-[#a9b5d0]">Target: 200 Practice Qs + 2 Mocks</p>
               </div>
             </div>
@@ -121,7 +122,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <Sparkles className="w-4 h-4 text-blue-400 flex-shrink-0" />
             <div>
               <p className="font-medium text-[#edf2ff]">Target: 79+ / 90</p>
-              <p className="text-[10px] text-[#a9b5d0]">4,200 Qs · 42 Mocks</p>
+              <p className="text-[10px] text-[#a9b5d0]">{totalDays * 200} Qs · {totalDays * 2} Mocks</p>
             </div>
           </div>
         </div>

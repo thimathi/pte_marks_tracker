@@ -1,16 +1,18 @@
+import { TOTAL_STUDY_DAYS } from '../config/constants';
+
 /**
- * Utilities for calculating and formatting 21 study dates
+ * Utilities for calculating and formatting study dates
  */
 
 /**
- * Calculates ISO date strings (YYYY-MM-DD) for Day 1 through Day 21 based on startDate.
+ * Calculates ISO date strings (YYYY-MM-DD) for Day 1 through Day N based on startDate.
  */
-export function calculate21StudyDates(startDateStr: string): string[] {
+export function calculate21StudyDates(startDateStr: string, totalDays: number = TOTAL_STUDY_DAYS): string[] {
   const dates: string[] = [];
   const parts = startDateStr.split('-').map(Number);
   const start = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
 
-  for (let i = 0; i < 21; i++) {
+  for (let i = 0; i < totalDays; i++) {
     const cur = new Date(start);
     cur.setUTCDate(start.getUTCDate() + i);
     dates.push(cur.toISOString().split('T')[0]);
@@ -19,10 +21,10 @@ export function calculate21StudyDates(startDateStr: string): string[] {
 }
 
 /**
- * Returns the planned date for a specific day number (1 to 21)
+ * Returns the planned date for a specific day number
  */
-export function getDateForDay(startDateStr: string, dayNumber: number): string {
-  const dates = calculate21StudyDates(startDateStr);
+export function getDateForDay(startDateStr: string, dayNumber: number, totalDays: number = TOTAL_STUDY_DAYS): string {
+  const dates = calculate21StudyDates(startDateStr, totalDays);
   return dates[dayNumber - 1] || startDateStr;
 }
 

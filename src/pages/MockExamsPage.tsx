@@ -16,7 +16,9 @@ import { MockExamRecord, MockReviewRecord } from '../types/pte';
 import { formatDateFriendly } from '../utils/dateUtils';
 
 export const MockExamsPage: React.FC = () => {
-  const { currentDay, currentDayData, days, updateMockExam, updateMockReview, selectDay } = usePteData();
+  const { currentDay, currentDayData, days, studyPlan, updateMockExam, updateMockReview, selectDay } = usePteData();
+  const totalDays = studyPlan?.durationDays || 25;
+  const totalMocks = totalDays * 2;
   const [activeReviewModal, setActiveReviewModal] = useState<{
     mock: MockExamRecord;
     review: MockReviewRecord | undefined;
@@ -53,7 +55,7 @@ export const MockExamsPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <GraduationCap className="w-6 h-6 text-purple-400" />
             <h1 className="text-xl font-bold text-[#edf2ff]">
-              Mock Exam Center · 42 Full Simulation Tests
+              Mock Exam Center · {totalMocks} Full Simulation Tests
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
@@ -339,10 +341,10 @@ export const MockExamsPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <Award className="w-5 h-5 text-purple-400" />
             <h3 className="text-base font-bold text-[#edf2ff]">
-              All 42 Planned Mock Exams Schedule & Score Register
+              All {totalMocks} Planned Mock Exams Schedule & Score Register
             </h3>
           </div>
-          <span className="text-xs text-[#a9b5d0]">2 Exams / Day × 21 Days</span>
+          <span className="text-xs text-[#a9b5d0]">2 Exams / Day × {totalDays} Days</span>
         </div>
 
         <div className="overflow-x-auto">
@@ -364,7 +366,7 @@ export const MockExamsPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#2b3856]/40">
-              {Array.from({ length: 42 }, (_, i) => {
+              {Array.from({ length: totalMocks }, (_, i) => {
                 const examNum = i + 1;
                 const dayNum = Math.floor(i / 2) + 1;
                 const isMock1 = examNum % 2 !== 0;

@@ -14,10 +14,14 @@ import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown, calculateAverage } from '../utils/scoring';
 import { exportPracticeScoresCsv, exportMockExamsCsv } from '../utils/csvExport';
 import { formatDateFriendly } from '../utils/dateUtils';
-import { QUESTION_TYPES } from '../config/constants';
+import { QUESTION_TYPES, TOTAL_STUDY_DAYS } from '../config/constants';
 
 export const FinalReportPage: React.FC = () => {
   const { studyPlan, days } = usePteData();
+  const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
+  const totalMocks = totalDays * 2;
+  const totalPracticeTarget = totalDays * 200;
+
   const [personalNotes, setPersonalNotes] = useState(
     () => localStorage.getItem('pte_21day_lessons_learned') || ''
   );
@@ -48,7 +52,7 @@ export const FinalReportPage: React.FC = () => {
 
   const mockScores: { examNum: number; score: number }[] = [];
 
-  for (let d = 1; d <= 21; d++) {
+  for (let d = 1; d <= totalDays; d++) {
     const day = days[d];
     if (day) {
       if (day.status === 'completed') completedDaysCount++;
@@ -124,11 +128,11 @@ export const FinalReportPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <Award className="w-6 h-6 text-blue-400" />
             <h1 className="text-xl font-bold text-[#edf2ff]">
-              Final 21-Day PTE Performance Report
+              Final {totalDays}-Day PTE Performance Report
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            Complete executive performance audit across 4,200 practice questions and 42 mock exams. Print-friendly layout.
+            Complete executive performance audit across {totalPracticeTarget.toLocaleString()} practice questions and {totalMocks} mock exams. Print-friendly layout.
           </p>
         </div>
 
@@ -165,7 +169,7 @@ export const FinalReportPage: React.FC = () => {
               </span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#edf2ff] mt-2">
-              PTE Academic 21-Day Journey Report
+              PTE Academic {totalDays}-Day Journey Report
             </h2>
             <p className="text-xs text-[#a9b5d0]">
               Start Date: {formatDateFriendly(studyPlan.startDate)} · Target Score Benchmark: {studyPlan.targetScores.overall}+ Overall
@@ -184,15 +188,15 @@ export const FinalReportPage: React.FC = () => {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="p-4 rounded-xl bg-[#0e1729] border border-[#2b3856]">
             <span className="text-[11px] text-[#a9b5d0] block">Days Completed</span>
-            <div className="text-2xl font-bold text-[#edf2ff]">{completedDaysCount} / 21</div>
+            <div className="text-2xl font-bold text-[#edf2ff]">{completedDaysCount} / {totalDays}</div>
             <span className="text-[10px] text-emerald-400 font-semibold">
-              {Math.round((completedDaysCount / 21) * 100)}% Journey Progress
+              {Math.round((completedDaysCount / totalDays) * 100)}% Journey Progress
             </span>
           </div>
 
           <div className="p-4 rounded-xl bg-[#0e1729] border border-[#2b3856]">
             <span className="text-[11px] text-[#a9b5d0] block">Practice Questions</span>
-            <div className="text-2xl font-bold text-[#edf2ff]">{totalPracticeQuestionsScored} / 4,200</div>
+            <div className="text-2xl font-bold text-[#edf2ff]">{totalPracticeQuestionsScored} / {totalPracticeTarget.toLocaleString()}</div>
             <span className="text-[10px] text-blue-400 font-semibold">
               Target: 200 Qs / Day
             </span>
@@ -200,7 +204,7 @@ export const FinalReportPage: React.FC = () => {
 
           <div className="p-4 rounded-xl bg-[#0e1729] border border-[#2b3856]">
             <span className="text-[11px] text-[#a9b5d0] block">Mock Simulations</span>
-            <div className="text-2xl font-bold text-[#edf2ff]">{totalMocksDone} / 42</div>
+            <div className="text-2xl font-bold text-[#edf2ff]">{totalMocksDone} / {totalMocks}</div>
             <span className="text-[10px] text-purple-400 font-semibold">
               2 Mocks / Day
             </span>
@@ -208,7 +212,7 @@ export const FinalReportPage: React.FC = () => {
 
           <div className="p-4 rounded-xl bg-[#0e1729] border border-[#2b3856]">
             <span className="text-[11px] text-[#a9b5d0] block">Mock Reviews</span>
-            <div className="text-2xl font-bold text-[#edf2ff]">{totalMockReviewsDone} / 42</div>
+            <div className="text-2xl font-bold text-[#edf2ff]">{totalMockReviewsDone} / {totalMocks}</div>
             <span className="text-[10px] text-amber-400 font-semibold">
               Deep Error Analysis
             </span>
@@ -351,7 +355,7 @@ export const FinalReportPage: React.FC = () => {
 
         {/* Footer verification note */}
         <div className="pt-4 border-t border-[#2b3856] text-[11px] text-[#a9b5d0] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <span>PTE Academic 21-Day Preparation Progress Tracking Application</span>
+          <span>PTE Academic {totalDays}-Day Preparation Progress Tracking Application</span>
           <span>Verified Firebase Realtime Database Records · Asian Southeast (Singapore)</span>
         </div>
       </div>

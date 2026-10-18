@@ -1,11 +1,11 @@
 import { QuestionTypeMeta, TargetScores } from '../types/pte';
 
-export const DEFAULT_START_DATE = '2026-10-11';
-export const TOTAL_STUDY_DAYS = 21;
+export const DEFAULT_START_DATE = '2026-10-18';
+export const TOTAL_STUDY_DAYS = 25;
 export const DAILY_PRACTICE_TARGET = 200;
-export const TOTAL_PRACTICE_TARGET = 4200; // 21 * 200
+export const TOTAL_PRACTICE_TARGET = 5000; // 25 * 200
 export const DAILY_MOCK_TARGET = 2;
-export const TOTAL_MOCK_TARGET = 42; // 21 * 2
+export const TOTAL_MOCK_TARGET = 50; // 25 * 2
 export const MOCK_EXAM_QUESTIONS = 60;
 
 export const DEFAULT_TARGET_SCORES: TargetScores = {
@@ -17,9 +17,13 @@ export const DEFAULT_TARGET_SCORES: TargetScores = {
   mockExam: 80,
 };
 
-// Target progression curve across 21 study days (from 62 to 85)
+// Target progression curve across 25 study days (Mountain Climb Staircase from 62 to 86)
 export const DAY_TARGET_SCORES: number[] = [
-  62, 63, 64, 66, 68, 70, 71, 72, 74, 75, 76, 77, 78, 79, 80, 81, 82, 82, 83, 84, 85
+  62, 63, 64, 65, 66, // Basecamp (Days 1–5): Foundation & Rhythm
+  68, 69, 70, 71, 72, // Step 1 (Days 6–10): Prediction Sprint
+  73, 74, 75, 76, 77, // Step 2 (Days 11–15): The 75+ Push
+  78, 79, 80, 81, 82, // Step 3 (Days 16–20): 79+ Mountain Ridge Mastery
+  83, 84, 85, 85, 86  // The Summit (Days 21–25): Peak Performance & Final Exam Simulation
 ];
 
 export const QUESTION_TYPES: QuestionTypeMeta[] = [
