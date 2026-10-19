@@ -233,25 +233,25 @@ export const DEFAULT_QUESTION_TARGETS: Record<string, number> = Object.fromEntri
 
 export const DEFAULT_ADDITIONAL_EXERCISES = [
   {
-    id: 'essay_template',
-    name: 'Write Essay Template Practice',
-    requirement: '5 Times daily',
-    requiredCount: 5,
-    notes: 'Memorize and speed-type the standard PTE template structure without hesitation.'
-  },
-  {
     id: 'tongue_twister',
     name: 'Tongue Twisters Enunciation Drill',
     requirement: '2 Times daily',
     requiredCount: 2,
-    notes: 'Speed and clarity drills to improve acoustic oral fluency and native syllable timing.'
+    notes: 'Speed, clarity, and continuous oral fluency enunciation drills.'
   },
   {
     id: 'academic_collocations',
-    name: 'Academic Collocations List Drill',
+    name: 'Academic Collocations Words Drill',
     requirement: '2 Times daily',
     requiredCount: 2,
-    notes: 'High-frequency collocation pairs for perfect Reading & Writing FIB accuracy.'
+    notes: 'High-frequency academic collocation pairs for perfect Reading & Writing FIB accuracy.'
+  },
+  {
+    id: 'essay_template',
+    name: 'Write Essay Template Practice',
+    requirement: '3 Times daily',
+    requiredCount: 3,
+    notes: 'Speed-type and memorize the standard 4-paragraph PTE 79+ essay template without hesitation.'
   }
 ];
 

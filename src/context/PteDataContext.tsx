@@ -25,7 +25,7 @@ import {
 import { ref, update } from 'firebase/database';
 import { db } from '../config/firebase';
 import { calculate21StudyDates } from '../utils/dateUtils';
-import { QUESTION_TYPES } from '../config/constants';
+import { QUESTION_TYPES, DEFAULT_ADDITIONAL_EXERCISES } from '../config/constants';
 
 interface PteDataContextType {
   studyPlan: StudyPlan;
@@ -237,18 +237,40 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (!user) return;
       setSyncStatus('syncing');
 
+      let isAllAdditionalDone = false;
+
       setDays((prev) => {
         const curDay = prev[dayNumber];
         if (!curDay) return prev;
-        const curEx = curDay.additionalExercises[exerciseId];
-        if (!curEx) return prev;
+        const curExercises = curDay.additionalExercises || {};
+        const curEx = curExercises[exerciseId] || {
+          id: exerciseId,
+          name: exerciseId,
+          requirement: '',
+          requiredCount: 2,
+          completedCount: 0,
+          notes: ''
+        };
+
+        const updatedExercises = {
+          ...curExercises,
+          [exerciseId]: { ...curEx, completedCount: count, notes: notes ?? curEx.notes }
+        };
+
+        isAllAdditionalDone = DEFAULT_ADDITIONAL_EXERCISES.every((ex) => {
+          const rec = updatedExercises[ex.id];
+          const targetCount = studyPlan.additionalExerciseTargets?.[ex.id] ?? ex.requiredCount;
+          return rec && rec.completedCount >= targetCount;
+        });
+
         return {
           ...prev,
           [dayNumber]: {
             ...curDay,
-            additionalExercises: {
-              ...curDay.additionalExercises,
-              [exerciseId]: { ...curEx, completedCount: count, notes: notes ?? curEx.notes }
+            additionalExercises: updatedExercises,
+            gateStatus: {
+              ...curDay.gateStatus,
+              additionalExercisesCompleted: isAllAdditionalDone
             }
           }
         };
@@ -256,6 +278,13 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       try {
         await saveAdditionalExercise(user.uid, dayNumber, exerciseId, count, notes);
+
+        const dayKey = formatDayKey(dayNumber);
+        await update(ref(db, `users/${user.uid}/days/${dayKey}/gateStatus`), {
+          additionalExercisesCompleted: isAllAdditionalDone,
+          updatedAt: new Date().toISOString()
+        });
+
         setSyncStatus('saved');
         setLastSavedAt(new Date().toLocaleTimeString());
       } catch (err) {
@@ -263,7 +292,7 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setSyncStatus('error');
       }
     },
-    [user]
+    [user, studyPlan]
   );
 
   // Toggle or Update Gate checklist item

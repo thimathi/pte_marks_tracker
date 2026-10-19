@@ -44,7 +44,8 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
   // Check additional exercises
   const additionalDone = DEFAULT_ADDITIONAL_EXERCISES.every((ex) => {
     const record = targetDayData?.additionalExercises?.[ex.id];
-    return record && record.completedCount >= ex.requiredCount;
+    const targetCount = studyPlan.additionalExerciseTargets?.[ex.id] ?? ex.requiredCount;
+    return record && record.completedCount >= targetCount;
   });
 
   const mock1Done = !!targetDayData?.mockExams?.mock01?.isCompleted;
@@ -99,10 +100,10 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     },
     {
       id: 'additional',
-      label: 'All Mandatory Daily Drills Completed (Essay Template 5x, Twisters 2x, Collocations 2x)',
+      label: 'All Mandatory Daily Drills Completed (Twisters 2x, Collocations 2x, Essay Template 3x)',
       done: additionalDone,
       canAutoDetect: true,
-      hint: 'Log required repetition counts for all additional exercises.'
+      hint: 'Log required repetition counts for all 3 daily repeat tasks.'
     }
   ];
 

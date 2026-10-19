@@ -20,6 +20,7 @@ import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown, calculateStreak, getWeaknessAnalysis } from '../utils/scoring';
 import { formatDateFriendly, isDatePast } from '../utils/dateUtils';
 import { DAY_TARGET_SCORES, DEFAULT_ADDITIONAL_EXERCISES } from '../config/constants';
+import { DailyDrillsCard } from '../components/drills/DailyDrillsCard';
 import { CompletionGate } from '../components/gate/CompletionGate';
 
 export const DashboardPage: React.FC = () => {
@@ -113,12 +114,27 @@ export const DashboardPage: React.FC = () => {
         btnText: 'Review Center'
       };
     } else {
-      nextTask = {
-        title: `Pass Day ${currentDay} Completion Gate`,
-        desc: `Unlock Day ${currentDay + 1} and roll forward`,
-        link: '#gate',
-        btnText: 'View Gate'
-      };
+      const isAdditionalDone = DEFAULT_ADDITIONAL_EXERCISES.every((ex) => {
+        const record = currentDayData?.additionalExercises?.[ex.id];
+        const targetCount = studyPlan.additionalExerciseTargets?.[ex.id] ?? ex.requiredCount;
+        return record && record.completedCount >= targetCount;
+      });
+
+      if (!isAdditionalDone) {
+        nextTask = {
+          title: 'Complete 3 Mandatory Daily Drills',
+          desc: 'Twisters 2x, Collocations 2x, Essay Template 3x',
+          link: '#daily-drills',
+          btnText: 'Open Daily Drills'
+        };
+      } else {
+        nextTask = {
+          title: `Pass Day ${currentDay} Completion Gate`,
+          desc: `Unlock Day ${currentDay + 1} and roll forward`,
+          link: '#gate',
+          btnText: 'View Gate'
+        };
+      }
     }
   }
 
@@ -466,6 +482,11 @@ export const DashboardPage: React.FC = () => {
             );
           })}
         </div>
+      </div>
+
+      {/* Section Anchor: Mandatory Daily Repeat Tasks */}
+      <div id="daily-drills">
+        <DailyDrillsCard dayNumber={currentDay} />
       </div>
 
       {/* Section Anchor: Completion Gate */}
