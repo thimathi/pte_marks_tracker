@@ -8,18 +8,18 @@ import {
   Clock,
   Flag,
   FileText,
-  RotateCcw,
-  Sparkles,
-  Search,
   Filter,
   Check,
-  Award
+  Layers,
+  Sparkles,
+  ArrowRight
 } from 'lucide-react';
 import { usePteData } from '../context/PteDataContext';
 import { generateInterleavedQueue } from '../utils/interleaving';
 import { calculatePhaseAverage, calculateDayBreakdown } from '../utils/scoring';
-import { QUESTION_TYPE_MAP, SKILL_COLORS } from '../config/constants';
-import { QueueItem } from '../types/pte';
+import { QUESTION_TYPE_MAP, SKILL_COLORS, STUDY_GROUPS, PRIORITY_STYLES } from '../config/constants';
+import { QueueItem, QuestionPriority } from '../types/pte';
+import { formatDateFriendly } from '../utils/dateUtils';
 
 export const PracticePage: React.FC = () => {
   const {
@@ -29,8 +29,8 @@ export const PracticePage: React.FC = () => {
     updateScore
   } = usePteData();
 
-  // Generate deterministic 200 interleaved questions
-  const queue: QueueItem[] = useMemo(() => {
+  // Generate 278 questions structured into 4 prioritized groups
+  const fullQueue: QueueItem[] = useMemo(() => {
     return generateInterleavedQueue(
       studyPlan.questionTargets,
       currentDay,
@@ -38,24 +38,41 @@ export const PracticePage: React.FC = () => {
     );
   }, [studyPlan.questionTargets, currentDay, studyPlan.shuffleSeed]);
 
-  // Remember active question queue index in localStorage
+  // Selected Group Filter ('all' or 'group_1', 'group_2', 'group_3', 'group_4')
+  const [selectedGroupId, setSelectedGroupId] = useState<'all' | 'group_1' | 'group_2' | 'group_3' | 'group_4'>('group_1');
+
+  // Filtered queue based on selected group
+  const activeQueue = useMemo(() => {
+    if (selectedGroupId === 'all') return fullQueue;
+    return fullQueue.filter((q) => q.groupId === selectedGroupId);
+  }, [fullQueue, selectedGroupId]);
+
+  // Overall queue index tracked in localStorage
   const queueStorageKey = `pte_queue_pos_day_${currentDay}`;
-  const [currentIndex, setCurrentIndex] = useState<number>(() => {
+  const [currentOverallIndex, setCurrentOverallIndex] = useState<number>(() => {
     const saved = localStorage.getItem(queueStorageKey);
     const parsed = saved ? Number(saved) : 0;
-    return parsed >= 0 && parsed < queue.length ? parsed : 0;
+    return parsed >= 0 && parsed < fullQueue.length ? parsed : 0;
   });
 
-  const [filterMode, setFilterMode] = useState<'all' | 'unscored' | 'prediction' | 'flagged'>('all');
+  const [matrixFilter, setMatrixFilter] = useState<'all' | 'unscored' | 'prediction' | 'hard' | 'flagged'>('all');
   const [autoAdvance, setAutoAdvance] = useState<boolean>(true);
   const [saveSuccessNotice, setSaveSuccessNotice] = useState<boolean>(false);
 
   useEffect(() => {
-    localStorage.setItem(queueStorageKey, String(currentIndex));
-  }, [currentIndex, queueStorageKey]);
+    localStorage.setItem(queueStorageKey, String(currentOverallIndex));
+  }, [currentOverallIndex, queueStorageKey]);
 
-  const currentItem: QueueItem | undefined = queue[currentIndex] || queue[0];
+  // Current active question item from the full queue
+  const currentItem: QueueItem | undefined = fullQueue[currentOverallIndex] || fullQueue[0];
   const currentMeta = currentItem ? QUESTION_TYPE_MAP.get(currentItem.questionTypeId) : undefined;
+
+  // Sync selected group tab with current question item if user clicks across groups in matrix
+  useEffect(() => {
+    if (currentItem && selectedGroupId !== 'all' && currentItem.groupId !== selectedGroupId) {
+      setSelectedGroupId(currentItem.groupId);
+    }
+  }, [currentItem?.groupId]);
 
   // Retrieve current attempt data from currentDayData
   const currentAttempts = currentDayData?.questionProgress?.[currentItem?.questionTypeId || '']?.attempts || {};
@@ -80,7 +97,7 @@ export const PracticePage: React.FC = () => {
       setIsFlagged(false);
     }
     setSaveSuccessNotice(false);
-  }, [currentIndex, currentDayData]);
+  }, [currentOverallIndex, currentDayData]);
 
   // Save score and attempt
   const handleSaveAttempt = async (scoreToSave?: number | null) => {
@@ -105,60 +122,101 @@ export const PracticePage: React.FC = () => {
     setSaveSuccessNotice(true);
     setTimeout(() => setSaveSuccessNotice(false), 1500);
 
-    if (autoAdvance && currentIndex < queue.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
+    if (autoAdvance && currentOverallIndex < fullQueue.length - 1) {
+      setCurrentOverallIndex((prev) => prev + 1);
     }
   };
 
-  // Find next unscored question
-  const handleJumpNextUnscored = () => {
-    for (let i = 0; i < queue.length; i++) {
-      const idx = (currentIndex + 1 + i) % queue.length;
-      const q = queue[idx];
+  // Find next unscored question in current group or full queue
+  const handleJumpNextUnscored = (withinCurrentGroupOnly: boolean = false) => {
+    const searchPool = withinCurrentGroupOnly ? activeQueue : fullQueue;
+    if (searchPool.length === 0) return;
+
+    // Find current position in searchPool
+    const poolCurrentIdx = searchPool.findIndex((q) => q.overallQueueIndex === currentOverallIndex);
+    const startIdx = poolCurrentIdx >= 0 ? poolCurrentIdx : 0;
+
+    for (let i = 0; i < searchPool.length; i++) {
+      const idx = (startIdx + 1 + i) % searchPool.length;
+      const q = searchPool[idx];
       const att = currentDayData?.questionProgress?.[q.questionTypeId]?.attempts?.[q.instanceIndex];
       if (!att || att.score === null || att.score === undefined) {
-        setCurrentIndex(idx);
+        setCurrentOverallIndex(q.overallQueueIndex);
+        if (selectedGroupId !== 'all' && q.groupId !== selectedGroupId) {
+          setSelectedGroupId(q.groupId);
+        }
         return;
       }
     }
-    alert('🎉 All 200 questions in today\'s queue have been scored!');
+    alert(`🎉 All questions in ${withinCurrentGroupOnly ? 'this group' : 'today\'s 278-question plan'} have been scored!`);
   };
 
-  // Metrics for header
+  // Group completion calculations
+  const groupStats = useMemo(() => {
+    const stats: Record<string, { completed: number; total: number; average: number | null }> = {};
+    for (const group of STUDY_GROUPS) {
+      const groupQuestions = fullQueue.filter((q) => q.groupId === group.id);
+      let comp = 0;
+      let totalScores = 0;
+      let sumScores = 0;
+
+      for (const q of groupQuestions) {
+        const att = currentDayData?.questionProgress?.[q.questionTypeId]?.attempts?.[q.instanceIndex];
+        if (att && typeof att.score === 'number' && !isNaN(att.score)) {
+          comp++;
+          sumScores += att.score;
+          totalScores++;
+        }
+      }
+
+      stats[group.id] = {
+        completed: comp,
+        total: group.totalQuestions,
+        average: totalScores > 0 ? Math.round((sumScores / totalScores) * 10) / 10 : null
+      };
+    }
+    return stats;
+  }, [fullQueue, currentDayData]);
+
+  // Overall metrics
   const breakdown = calculateDayBreakdown(currentDayData, studyPlan.questionTargets);
   const skillColor = currentItem ? SKILL_COLORS[currentItem.skill] : SKILL_COLORS.speaking;
+  const priorityStyle = currentItem ? PRIORITY_STYLES[currentItem.priority] : PRIORITY_STYLES.prediction;
 
   // Phase calculation for current item
   const phaseIndex = currentItem ? Math.floor(currentItem.instanceIndex / 5) + 1 : 1;
   const itemInPhase = currentItem ? (currentItem.instanceIndex % 5) + 1 : 1;
+  const currentTotalForType = studyPlan.questionTargets[currentItem?.questionTypeId || ''] || 20;
   const phaseStats = currentItem
     ? calculatePhaseAverage(
         currentAttempts,
         Math.floor(currentItem.instanceIndex / 5) * 5,
-        Math.min((Math.floor(currentItem.instanceIndex / 5) + 1) * 5, studyPlan.questionTargets[currentItem.questionTypeId] || 20)
+        Math.min((Math.floor(currentItem.instanceIndex / 5) + 1) * 5, currentTotalForType)
       )
     : null;
 
+  const currentGroupDef = STUDY_GROUPS.find((g) => g.id === currentItem?.groupId) || STUDY_GROUPS[0];
+
   return (
     <div className="space-y-6">
-      {/* Top Header & Queue Summary */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#141c31] border border-[#2b3856] rounded-2xl p-5">
+      {/* Top Header & Daily Practice Summary */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#141c31] border border-[#2b3856] rounded-2xl p-5 shadow-lg">
         <div>
           <div className="flex items-center gap-2">
             <Shuffle className="w-5 h-5 text-blue-400" />
             <h1 className="text-xl font-bold text-[#edf2ff]">
-              Day {currentDay} Mixed Practice Workspace
+              PTE - Daily Study Plan – Superior English
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            200 Balanced Interleaved Questions · Cross-Skill Practice Engine
+            Day {currentDay} Practice Workspace · 4 Groups · 278 Questions Total · Started: {formatDateFriendly(studyPlan.startDate)}
           </p>
         </div>
 
-        {/* Counter Pills */}
+        {/* Global Counter Pills */}
         <div className="flex items-center gap-3">
           <div className="bg-[#10192c] border border-[#2b3856] rounded-xl px-3.5 py-1.5 text-center">
-            <span className="text-[10px] text-[#a9b5d0] block">Completed</span>
+            <span className="text-[10px] text-[#a9b5d0] block">Daily Total</span>
             <span className="text-sm font-bold text-emerald-400">
               {breakdown.totalCompleted} / {breakdown.totalDailyTarget}
             </span>
@@ -172,8 +230,8 @@ export const PracticePage: React.FC = () => {
           </div>
 
           <button
-            onClick={handleJumpNextUnscored}
-            className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer"
+            onClick={() => handleJumpNextUnscored(false)}
+            className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-md shadow-blue-600/30 flex items-center gap-1.5 cursor-pointer transition-colors"
             title="Jump to next unscored question"
           >
             <span>Next Unscored</span>
@@ -182,28 +240,95 @@ export const PracticePage: React.FC = () => {
         </div>
       </div>
 
+      {/* 4 Study Groups Tabs (Mock-Style Navigation) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {STUDY_GROUPS.map((group) => {
+          const stats = groupStats[group.id] || { completed: 0, total: group.totalQuestions, average: null };
+          const isSelected = selectedGroupId === group.id;
+          const isDone = stats.completed >= stats.total;
+          const pct = Math.round((stats.completed / stats.total) * 100);
+
+          return (
+            <button
+              key={group.id}
+              onClick={() => {
+                setSelectedGroupId(group.id);
+                // Switch current question to first item of that group if current question isn't in it
+                if (currentItem?.groupId !== group.id) {
+                  const firstOfGroup = fullQueue.find((q) => q.groupId === group.id);
+                  if (firstOfGroup) setCurrentOverallIndex(firstOfGroup.overallQueueIndex);
+                }
+              }}
+              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden ${
+                isSelected
+                  ? 'bg-blue-600/15 border-blue-500 shadow-lg shadow-blue-500/10 ring-1 ring-blue-500'
+                  : 'bg-[#141c31] border-[#2b3856] hover:border-[#3d4f7a] hover:bg-[#18233c]'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-[#edf2ff] flex items-center gap-1.5">
+                  <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-blue-400' : 'bg-slate-500'}`} />
+                  {group.title}
+                </span>
+                {isDone ? (
+                  <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                    <CheckCircle2 className="w-3 h-3" /> Done
+                  </span>
+                ) : (
+                  <span className="text-[11px] font-bold text-[#80a7ff]">
+                    {stats.completed}/{stats.total}
+                  </span>
+                )}
+              </div>
+
+              <p className="text-[11px] text-[#a9b5d0] mb-2.5 truncate">{group.subtitle}</p>
+
+              {/* Progress Bar */}
+              <div className="w-full bg-[#10192c] rounded-full h-1.5 overflow-hidden">
+                <div
+                  className={`h-full transition-all duration-300 ${isDone ? 'bg-emerald-400' : 'bg-blue-500'}`}
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+
+              <div className="flex items-center justify-between mt-2 text-[10px] text-[#a9b5d0]">
+                <span>{pct}% complete</span>
+                {stats.average !== null && <span>Avg: {stats.average}/90</span>}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
       {/* Main Practice Workspace Card */}
       {currentItem && (
         <div className="bg-[#141c31] border border-[#2b3856] rounded-3xl p-6 lg:p-8 space-y-6 shadow-2xl relative">
-          {/* Top Bar of Current Question Card */}
+          {/* Top Bar of Question Card */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#2b3856] pb-4">
-            <div className="flex items-center gap-2.5">
-              <span className="text-sm font-mono font-bold px-3 py-1 rounded-xl bg-[#10192c] text-blue-300 border border-[#2b3856]">
-                Queue #{currentIndex + 1} of {queue.length}
+            <div className="flex items-center gap-2.5 flex-wrap">
+              {/* Group Pill */}
+              <span className="text-xs font-bold px-3 py-1 rounded-xl bg-blue-500/10 text-blue-300 border border-blue-500/30">
+                {currentItem.groupTitle} · Q{currentItem.groupIndex + 1} of {currentItem.groupTotal}
               </span>
 
+              {/* Priority Badge */}
+              <span className={`text-xs font-bold px-3 py-1 rounded-xl border flex items-center gap-1.5 ${priorityStyle.badge}`}>
+                <span>{priorityStyle.icon}</span>
+                <span className="uppercase tracking-wider">{currentItem.priorityLabel}</span>
+              </span>
+
+              {/* Skill Badge */}
               <span className={`text-xs font-bold px-3 py-1 rounded-xl border ${skillColor.badge} uppercase tracking-wider`}>
                 {currentItem.skill}
               </span>
 
-              {currentItem.isPrediction && (
-                <span className="text-xs font-bold px-3 py-1 rounded-xl bg-pink-500/20 text-pink-300 border border-pink-500/40 flex items-center gap-1">
-                  <Flame className="w-3.5 h-3.5 fill-pink-400" />
-                  PREDICTION PRIORITY
-                </span>
-              )}
+              {/* Overall Index */}
+              <span className="text-xs font-mono px-2.5 py-1 rounded-xl bg-[#10192c] text-[#a9b5d0] border border-[#2b3856]">
+                Overall #{currentItem.overallQueueIndex + 1} of {fullQueue.length}
+              </span>
             </div>
 
+            {/* Phase / Batch Stats */}
             <div className="text-xs text-[#a9b5d0] flex items-center gap-2">
               <span className="px-2.5 py-1 rounded-lg bg-[#10192c] border border-[#2b3856]">
                 Phase {phaseIndex} · Q{itemInPhase} of 5
@@ -216,14 +341,14 @@ export const PracticePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Question Details */}
+          {/* Question Details Header */}
           <div className="space-y-3">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-2xl font-extrabold text-[#edf2ff] flex items-center gap-2">
                   {currentItem.questionTypeName}
                   <span className="text-sm font-normal text-[#a9b5d0]">
-                    (Item #{currentItem.instanceIndex + 1} of {studyPlan.questionTargets[currentItem.questionTypeId] || 20})
+                    (Item #{currentItem.typeIndexInGroup} of {currentItem.typeTotalInGroup} in {currentItem.groupTitle})
                   </span>
                 </h2>
                 <p className="text-xs text-[#a9b5d0] mt-1 max-w-2xl leading-relaxed">
@@ -238,14 +363,14 @@ export const PracticePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Practice External Prompt Instructions */}
+          {/* Instructions Prompt */}
           <div className="p-4 rounded-2xl bg-[#10192c] border border-[#2b3856] text-xs text-[#a9b5d0] space-y-1">
             <p className="font-semibold text-[#edf2ff] flex items-center gap-1.5">
               <FileText className="w-4 h-4 text-blue-400" />
-              Practice Instructions & External Material Logging:
+              Practice Instructions:
             </p>
             <p>
-              Attempt this question on your PTE mock software, prediction bank, or test portal. Record your earned score (0–90) and notes below to update phase averages and progress.
+              Complete this item on your PTE software, portal, or prediction bank. Enter your earned score (0–90) and mistake notes below to update phase averages and analytics.
             </p>
           </div>
 
@@ -304,7 +429,7 @@ export const PracticePage: React.FC = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Missed past-tense ending, hesitation after 3rd word, question link"
+                  placeholder="e.g. Missed past-tense ending, pronunciation hesitation, grammar collocation"
                   value={notesInput}
                   onChange={(e) => setNotesInput(e.target.value)}
                   className="w-full bg-[#141c31] border border-[#2b3856] rounded-xl px-3 py-2 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400"
@@ -341,7 +466,7 @@ export const PracticePage: React.FC = () => {
               <div className="flex items-center gap-3">
                 {saveSuccessNotice && (
                   <span className="text-xs text-emerald-400 font-semibold animate-bounce flex items-center gap-1">
-                    <Check className="w-3.5 h-3.5" /> Saved to Firebase!
+                    <Check className="w-3.5 h-3.5" /> Saved!
                   </span>
                 )}
                 <button
@@ -357,99 +482,161 @@ export const PracticePage: React.FC = () => {
           </div>
 
           {/* Navigation Controls */}
-          <div className="flex items-center justify-between pt-2 border-t border-[#2b3856]">
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#2b3856]">
             <button
-              onClick={() => setCurrentIndex((prev) => Math.max(0, prev - 1))}
-              disabled={currentIndex === 0}
+              onClick={() => setCurrentOverallIndex((prev) => Math.max(0, prev - 1))}
+              disabled={currentOverallIndex === 0}
               className="px-4 py-2 rounded-xl bg-[#10192c] border border-[#2b3856] text-xs font-semibold text-[#edf2ff] hover:bg-[#19243d] flex items-center gap-1.5 disabled:opacity-30 cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
               <span>Previous Question</span>
             </button>
 
-            <span className="text-xs text-[#a9b5d0] font-mono">
-              Question {currentIndex + 1} / {queue.length}
-            </span>
+            <div className="text-center">
+              <span className="text-xs text-[#a9b5d0] font-mono block">
+                {currentItem.groupTitle}: Q{currentItem.groupIndex + 1} / {currentItem.groupTotal}
+              </span>
+              <span className="text-[10px] text-[#6b7c9f]">
+                (Overall Queue: {currentOverallIndex + 1} / {fullQueue.length})
+              </span>
+            </div>
 
-            <button
-              onClick={() => setCurrentIndex((prev) => Math.min(queue.length - 1, prev + 1))}
-              disabled={currentIndex === queue.length - 1}
-              className="px-4 py-2 rounded-xl bg-[#10192c] border border-[#2b3856] text-xs font-semibold text-[#edf2ff] hover:bg-[#19243d] flex items-center gap-1.5 disabled:opacity-30 cursor-pointer"
-            >
-              <span>Next Question</span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleJumpNextUnscored(true)}
+                className="px-3 py-2 rounded-xl bg-[#10192c] border border-[#2b3856] text-xs font-semibold text-blue-300 hover:bg-[#19243d] flex items-center gap-1 cursor-pointer"
+                title="Jump to next unscored item in this group"
+              >
+                <span>Next in Group</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                onClick={() => setCurrentOverallIndex((prev) => Math.min(fullQueue.length - 1, prev + 1))}
+                disabled={currentOverallIndex === fullQueue.length - 1}
+                className="px-4 py-2 rounded-xl bg-[#10192c] border border-[#2b3856] text-xs font-semibold text-[#edf2ff] hover:bg-[#19243d] flex items-center gap-1.5 disabled:opacity-30 cursor-pointer"
+              >
+                <span>Next Question</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Visual Queue Navigator Matrix */}
-      <div className="bg-[#141c31] border border-[#2b3856] rounded-2xl p-5 space-y-4">
+      {/* Visual Queue Matrix Grid for 4 Groups */}
+      <div className="bg-[#141c31] border border-[#2b3856] rounded-2xl p-5 space-y-4 shadow-lg">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#2b3856] pb-3">
           <div className="flex items-center gap-2">
-            <Shuffle className="w-4 h-4 text-blue-400" />
-            <h3 className="text-sm font-bold text-[#edf2ff]">200-Question Interleaved Queue Matrix</h3>
+            <Layers className="w-4 h-4 text-blue-400" />
+            <h3 className="text-sm font-bold text-[#edf2ff]">
+              {selectedGroupId === 'all'
+                ? 'All 278 Questions Matrix'
+                : `${currentGroupDef.title} Matrix (${currentGroupDef.totalQuestions} Questions)`}
+            </h3>
           </div>
 
-          <div className="flex items-center gap-2 text-xs">
-            <span className="text-[#a9b5d0]">Filter:</span>
-            {(['all', 'unscored', 'prediction', 'flagged'] as const).map((f) => (
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            {/* View scope selector */}
+            <div className="flex items-center gap-1 bg-[#10192c] p-1 rounded-xl border border-[#2b3856]">
+              {STUDY_GROUPS.map((g) => (
+                <button
+                  key={g.id}
+                  onClick={() => setSelectedGroupId(g.id)}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors ${
+                    selectedGroupId === g.id
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'text-[#a9b5d0] hover:text-[#edf2ff]'
+                  }`}
+                >
+                  {g.shortTitle}
+                </button>
+              ))}
               <button
-                key={f}
-                onClick={() => setFilterMode(f)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold capitalize transition-colors ${
-                  filterMode === f
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-[#10192c] text-[#a9b5d0] hover:text-[#edf2ff] border border-[#2b3856]'
+                onClick={() => setSelectedGroupId('all')}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors ${
+                  selectedGroupId === 'all'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-[#a9b5d0] hover:text-[#edf2ff]'
                 }`}
               >
-                {f}
+                All 278
               </button>
-            ))}
+            </div>
+
+            {/* Filter pills */}
+            <div className="flex items-center gap-1">
+              {(['all', 'unscored', 'prediction', 'hard', 'flagged'] as const).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setMatrixFilter(f)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold capitalize transition-colors ${
+                    matrixFilter === f
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-[#10192c] text-[#a9b5d0] hover:text-[#edf2ff] border border-[#2b3856]'
+                  }`}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Matrix Grid */}
-        <div className="grid grid-cols-10 sm:grid-cols-20 gap-1.5 max-h-56 overflow-y-auto p-1">
-          {queue.map((item, idx) => {
+        <div className="grid grid-cols-10 sm:grid-cols-20 gap-1.5 max-h-64 overflow-y-auto p-1">
+          {activeQueue.map((item) => {
             const att = currentDayData?.questionProgress?.[item.questionTypeId]?.attempts?.[item.instanceIndex];
             const isScored = att && att.score !== null && att.score !== undefined;
-            const isCurrent = idx === currentIndex;
+            const isCurrent = item.overallQueueIndex === currentOverallIndex;
 
             // Apply filter
-            if (filterMode === 'unscored' && isScored) return null;
-            if (filterMode === 'prediction' && !item.isPrediction) return null;
-            if (filterMode === 'flagged' && !att?.isFlaggedForReview) return null;
+            if (matrixFilter === 'unscored' && isScored) return null;
+            if (matrixFilter === 'prediction' && item.priority !== 'prediction') return null;
+            if (matrixFilter === 'hard' && item.priority !== 'hard') return null;
+            if (matrixFilter === 'flagged' && !att?.isFlaggedForReview) return null;
 
             return (
               <button
                 key={item.id}
-                onClick={() => setCurrentIndex(idx)}
+                onClick={() => {
+                  setCurrentOverallIndex(item.overallQueueIndex);
+                  if (selectedGroupId !== 'all' && item.groupId !== selectedGroupId) {
+                    setSelectedGroupId(item.groupId);
+                  }
+                }}
                 className={`h-8 rounded-lg text-[10px] font-mono font-bold flex items-center justify-center border transition-all cursor-pointer ${
                   isCurrent
                     ? 'ring-2 ring-blue-400 border-white bg-blue-600 text-white z-10 scale-105'
                     : isScored
                     ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
-                    : item.isPrediction
-                    ? 'bg-pink-500/10 text-pink-300 border-pink-500/30 hover:bg-pink-500/20'
+                    : item.priority === 'prediction'
+                    ? 'bg-rose-500/15 text-rose-300 border-rose-500/35 hover:bg-rose-500/25'
+                    : item.priority === 'hard'
+                    ? 'bg-amber-500/15 text-amber-300 border-amber-500/35 hover:bg-amber-500/25'
                     : 'bg-[#10192c] text-[#a9b5d0] border-[#2b3856] hover:border-blue-400'
                 }`}
-                title={`#${idx + 1}: ${item.questionTypeName} (${item.skill}) - ${isScored ? `Score: ${att.score}` : 'Unscored'}`}
+                title={`#${item.groupIndex + 1} (${item.groupTitle}) - ${item.questionTypeName} [${item.priorityLabel}] - ${isScored ? `Score: ${att.score}` : 'Unscored'}`}
               >
-                {idx + 1}
+                {selectedGroupId === 'all' ? item.overallQueueIndex + 1 : item.groupIndex + 1}
               </button>
             );
           })}
         </div>
 
-        <div className="flex items-center gap-4 text-xs text-[#a9b5d0] pt-2 border-t border-[#2b3856]">
+        {/* Legend */}
+        <div className="flex flex-wrap items-center gap-4 text-xs text-[#a9b5d0] pt-2 border-t border-[#2b3856]">
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded bg-emerald-500/30 border border-emerald-500/50" />
             <span>Scored</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-pink-500/20 border border-pink-500/40" />
-            <span>Prediction Priority</span>
+            <span className="w-3 h-3 rounded bg-rose-500/25 border border-rose-500/50" />
+            <span>Prediction First</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded bg-amber-500/25 border border-amber-500/50" />
+            <span>Hard Question</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded bg-[#10192c] border border-[#2b3856]" />

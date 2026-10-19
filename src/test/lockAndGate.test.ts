@@ -5,9 +5,9 @@ import { DEFAULT_QUESTION_TARGETS } from '../config/constants';
 
 describe('Mandatory Rollover, Locking, and 7-Item Gate Requirements', () => {
   it('initializes Day 1 as active and Day 2 through Day 25 as locked', () => {
-    const day1 = createDefaultDayData(1, '2026-10-18', true);
-    const day2 = createDefaultDayData(2, '2026-10-19', false);
-    const day25 = createDefaultDayData(25, '2026-11-11', false);
+    const day1 = createDefaultDayData(1, '2026-10-20', true);
+    const day2 = createDefaultDayData(2, '2026-10-21', false);
+    const day25 = createDefaultDayData(25, '2026-11-13', false);
 
     expect(day1.status).toBe('active');
     expect(day1.gateStatus.isUnlocked).toBe(true);
@@ -19,12 +19,13 @@ describe('Mandatory Rollover, Locking, and 7-Item Gate Requirements', () => {
     expect(day25.gateStatus.isUnlocked).toBe(false);
   });
 
-  it('rejects gate completion when practice questions are below daily target (200)', () => {
+  it('rejects gate completion when practice questions are below daily target (278)', () => {
     const day1 = createDefaultDayData(1, '2026-10-11', true);
     const breakdown = calculateDayBreakdown(day1, DEFAULT_QUESTION_TARGETS);
 
     expect(breakdown.totalCompleted).toBe(0);
-    expect(breakdown.totalCompleted < 200).toBe(true);
+    expect(breakdown.totalDailyTarget).toBe(278);
+    expect(breakdown.totalCompleted < 278).toBe(true);
     expect(day1.gateStatus.practiceCompleted).toBe(false);
   });
 

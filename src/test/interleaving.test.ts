@@ -1,14 +1,29 @@
 import { describe, it, expect } from 'vitest';
-import { generateInterleavedQueue, getPhaseRanges } from '../utils/interleaving';
-import { DEFAULT_QUESTION_TARGETS, QUESTION_TYPES } from '../config/constants';
+import { generateInterleavedQueue, generateGroupedStudyQueue, getPhaseRanges } from '../utils/interleaving';
+import { DEFAULT_QUESTION_TARGETS, QUESTION_TYPES, STUDY_GROUPS } from '../config/constants';
 
-describe('Mixed Question Interleaving & Queue Generation', () => {
-  it('generates exactly 200 questions in total for default targets', () => {
+describe('4-Group Study Plan & 278-Question Queue Generation', () => {
+  it('generates exactly 278 questions in total matching the PDF', () => {
     const queue = generateInterleavedQueue(DEFAULT_QUESTION_TARGETS, 1, 42);
-    expect(queue.length).toBe(200);
+    expect(queue.length).toBe(278);
   });
 
-  it('matches each question-type target count exactly', () => {
+  it('correctly divides questions into 4 groups matching the specification', () => {
+    const queue = generateGroupedStudyQueue();
+
+    const g1 = queue.filter(q => q.groupId === 'group_1');
+    const g2 = queue.filter(q => q.groupId === 'group_2');
+    const g3 = queue.filter(q => q.groupId === 'group_3');
+    const g4 = queue.filter(q => q.groupId === 'group_4');
+
+    expect(g1.length).toBe(69); // Group 1 — Speaking
+    expect(g2.length).toBe(70); // Group 2 — Speaking & Writing
+    expect(g3.length).toBe(69); // Group 3 — Writing & Reading
+    expect(g4.length).toBe(70); // Group 4 — Reading & Listening
+    expect(g1.length + g2.length + g3.length + g4.length).toBe(278);
+  });
+
+  it('matches each question-type target count exactly across all 4 groups', () => {
     const queue = generateInterleavedQueue(DEFAULT_QUESTION_TARGETS, 1, 42);
 
     const counts: Record<string, number> = {};
@@ -20,33 +35,42 @@ describe('Mixed Question Interleaving & Queue Generation', () => {
       const expectedTarget = DEFAULT_QUESTION_TARGETS[meta.id];
       expect(counts[meta.id]).toBe(expectedTarget);
     }
+
+    // Specific counts from user specification & PDF:
+    expect(counts['read_aloud']).toBe(35);
+    expect(counts['repeat_sentence']).toBe(60);
+    expect(counts['describe_image']).toBe(15);
+    expect(counts['retell_lecture']).toBe(10);
+    expect(counts['respond_to_situation']).toBe(10);
+    expect(counts['summarize_group_discussion']).toBe(12);
+    expect(counts['answer_short_question']).toBe(15);
+    expect(counts['summarize_written_text']).toBe(2);
+    expect(counts['write_essay']).toBe(1);
+    expect(counts['rw_fill_in_blanks']).toBe(30);
+    expect(counts['r_fill_in_blanks']).toBe(25);
+    expect(counts['reorder_paragraph']).toBe(8);
+    expect(counts['write_from_dictation']).toBe(35);
+    expect(counts['listening_fill_in_blanks']).toBe(10);
+    expect(counts['highlight_incorrect_words']).toBe(8);
+    expect(counts['summarize_spoken_text']).toBe(2);
   });
 
-  it('interleaves skills and avoids long uninterrupted blocks of the same question type', () => {
-    const queue = generateInterleavedQueue(DEFAULT_QUESTION_TARGETS, 1, 42);
+  it('enforces priority order: Prediction First -> Hard Second -> Medium Third -> Easy Last', () => {
+    const priorityRank = {
+      prediction: 1,
+      hard: 2,
+      medium: 3,
+      easy: 4
+    };
 
-    // Verify no single question type appears more than 3 times in a row
-    let maxConsecutive = 1;
-    let curConsecutive = 1;
-    for (let i = 1; i < queue.length; i++) {
-      if (queue[i].questionTypeId === queue[i - 1].questionTypeId) {
-        curConsecutive++;
-        if (curConsecutive > maxConsecutive) maxConsecutive = curConsecutive;
-      } else {
-        curConsecutive = 1;
+    for (const group of STUDY_GROUPS) {
+      let lastRank = 1;
+      for (const item of group.items) {
+        const currentRank = priorityRank[item.priority];
+        expect(currentRank).toBeGreaterThanOrEqual(lastRank);
+        lastRank = currentRank;
       }
     }
-
-    // In a balanced shuffle of 200 items across 16 types, consecutive count shouldn't be large
-    expect(maxConsecutive).toBeLessThanOrEqual(3);
-  });
-
-  it('is deterministic when given the same dayNumber and seed', () => {
-    const queue1 = generateInterleavedQueue(DEFAULT_QUESTION_TARGETS, 3, 100);
-    const queue2 = generateInterleavedQueue(DEFAULT_QUESTION_TARGETS, 3, 100);
-
-    expect(queue1.map(q => q.id)).toEqual(queue2.map(q => q.id));
-    expect(queue1.map(q => q.questionTypeId)).toEqual(queue2.map(q => q.questionTypeId));
   });
 
   it('generates correct phase groupings of up to 5 questions', () => {
@@ -59,5 +83,8 @@ describe('Mixed Question Interleaving & Queue Generation', () => {
     expect(phases8.length).toBe(2);
     expect(phases8[0]).toEqual({ phaseNumber: 1, startIndex: 0, endIndex: 5 });
     expect(phases8[1]).toEqual({ phaseNumber: 2, startIndex: 5, endIndex: 8 });
+
+    const phases35 = getPhaseRanges(35);
+    expect(phases35.length).toBe(7);
   });
 });

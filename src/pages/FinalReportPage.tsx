@@ -128,7 +128,7 @@ export const FinalReportPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <Award className="w-6 h-6 text-blue-400" />
             <h1 className="text-xl font-bold text-[#edf2ff]">
-              Final {totalDays}-Day PTE Performance Report
+              Final Report — PTE - Daily Study Plan – Superior English
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
@@ -162,17 +162,17 @@ export const FinalReportPage: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold px-2.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                OFFICIAL STUDY AUDIT
+                PTE BRIDGE OFFICIAL AUDIT
               </span>
               <span className="text-xs text-[#a9b5d0]">
                 {formatDateFriendly(new Date().toISOString().split('T')[0])}
               </span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#edf2ff] mt-2">
-              PTE Academic {totalDays}-Day Journey Report
+              PTE - Daily Study Plan – Superior English
             </h2>
             <p className="text-xs text-[#a9b5d0]">
-              Start Date: {formatDateFriendly(studyPlan.startDate)} · Target Score Benchmark: {studyPlan.targetScores.overall}+ Overall
+              Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · 4 Study Groups (278 Qs / Day) · Target Benchmark: {studyPlan.targetScores.overall}+ Overall
             </p>
           </div>
 
@@ -198,7 +198,7 @@ export const FinalReportPage: React.FC = () => {
             <span className="text-[11px] text-[#a9b5d0] block">Practice Questions</span>
             <div className="text-2xl font-bold text-[#edf2ff]">{totalPracticeQuestionsScored} / {totalPracticeTarget.toLocaleString()}</div>
             <span className="text-[10px] text-blue-400 font-semibold">
-              Target: 200 Qs / Day
+              Target: 278 Qs / Day (4 Groups)
             </span>
           </div>
 

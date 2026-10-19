@@ -32,11 +32,11 @@ export const CalendarPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <CalendarDays className="w-6 h-6 text-blue-400" />
             <h1 className="text-xl font-bold text-[#edf2ff]">
-              {totalDays}-Day Study Schedule & Rollover Calendar
+              PTE - Daily Study Plan – Superior English Calendar
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            Tracking planned dates from start date ({formatDateFriendly(studyPlan.startDate)}). If a day is missed, tasks do not disappear; they roll over.
+            Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · 25-Day Study Schedule across 4 groups (278 questions daily).
           </p>
         </div>
 

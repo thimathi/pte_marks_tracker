@@ -194,9 +194,32 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
     if (!plan) {
       plan = createDefaultStudyPlan(DEFAULT_START_DATE);
       await set(ref(db, `users/${uid}/studyPlan`), plan);
+    } else {
+      let needsPlanUpdate = false;
+      const planUpdates: Partial<StudyPlan> = {};
+
+      // Migrate old default start date 2026-10-18 to 2026-10-20
+      if (plan.startDate === '2026-10-18' || !plan.startDate) {
+        plan.startDate = DEFAULT_START_DATE;
+        planUpdates.startDate = DEFAULT_START_DATE;
+        needsPlanUpdate = true;
+      }
+
+      // Check if targets need updating to 278
+      const totalTargets = Object.values(plan.questionTargets || {}).reduce((a, b) => a + b, 0);
+      if (totalTargets !== 278) {
+        plan.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
+        planUpdates.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
+        needsPlanUpdate = true;
+      }
+
+      if (needsPlanUpdate) {
+        planUpdates.updatedAt = new Date().toISOString();
+        await update(ref(db, `users/${uid}/studyPlan`), planUpdates);
+      }
     }
 
-    // Ensure all days exist in DB
+    // Ensure all days exist in DB and reflect the correct date
     const totalDays = plan.durationDays || TOTAL_STUDY_DAYS;
     const dates = calculate21StudyDates(plan.startDate, totalDays);
     const existingDays = data.days || {};
@@ -204,8 +227,11 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
 
     for (let d = 1; d <= totalDays; d++) {
       const key = formatDayKey(d);
+      const expectedDate = dates[d - 1];
       if (!existingDays[key]) {
-        updates[`users/${uid}/days/${key}`] = createDefaultDayData(d, dates[d - 1], d === 1);
+        updates[`users/${uid}/days/${key}`] = createDefaultDayData(d, expectedDate, d === 1);
+      } else if (existingDays[key].date !== expectedDate) {
+        updates[`users/${uid}/days/${key}/date`] = expectedDate;
       }
     }
 

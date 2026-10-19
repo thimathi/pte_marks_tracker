@@ -136,14 +136,46 @@ export interface UserProfile {
   createdAt: string;
 }
 
+export type QuestionPriority = 'prediction' | 'hard' | 'medium' | 'easy';
+
+export interface StudyGroupItem {
+  questionTypeId: string;
+  count: number;
+  priority: QuestionPriority;
+  priorityLabel: string;
+  startInstanceIndex: number;
+}
+
+export interface StudyGroupDefinition {
+  id: 'group_1' | 'group_2' | 'group_3' | 'group_4';
+  groupNumber: number;
+  title: string;
+  shortTitle: string;
+  subtitle: string;
+  skills: SkillType[];
+  totalQuestions: number;
+  color: string;
+  items: StudyGroupItem[];
+}
+
 export interface QueueItem {
-  id: string; // unique item id in queue, e.g. "q_42"
+  id: string; // unique item id in queue, e.g. "g1_q_0"
   questionTypeId: string;
   questionTypeName: string;
   skill: SkillType;
+  secondarySkill?: SkillType;
   instanceIndex: number; // e.g. 3rd Read Aloud today
   isPrediction: boolean;
-  overallQueueIndex: number; // 0 to 199
+  overallQueueIndex: number; // 0 to 277
+  groupId: 'group_1' | 'group_2' | 'group_3' | 'group_4';
+  groupNumber: number;
+  groupTitle: string;
+  groupIndex: number; // 0 to (groupTotal - 1)
+  groupTotal: number;
+  priority: QuestionPriority;
+  priorityLabel: string;
+  typeIndexInGroup: number; // 1 to count
+  typeTotalInGroup: number;
 }
 
 export interface DayPerformanceSummary {

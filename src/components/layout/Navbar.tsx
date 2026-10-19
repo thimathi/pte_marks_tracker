@@ -38,10 +38,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-bold text-base tracking-tight text-[#edf2ff]">PTE Academic</span>
-                <span className="text-xs px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 font-semibold border border-blue-500/30">{studyPlan.durationDays || 25}-Day</span>
+                <span className="font-bold text-base tracking-tight text-[#edf2ff]">PTE - Daily Study Plan</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-semibold border border-blue-500/30">Superior English</span>
               </div>
-              <p className="text-[11px] text-[#a9b5d0] leading-none">Target 79+ Mountain Climb Engine</p>
+              <p className="text-[11px] text-[#a9b5d0] leading-none">PTE Bridge · Started Oct 20, 2026 · 278 Qs</p>
             </div>
           </Link>
         </div>

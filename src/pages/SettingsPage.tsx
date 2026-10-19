@@ -125,7 +125,7 @@ export const SettingsPage: React.FC = () => {
                 required
               />
               <p className="text-[11px] text-[#a9b5d0] mt-1">
-                Default: 18 October 2026. Dates for Day 1 through Day {totalDays} update automatically.
+                Default: 20 October 2026. Dates for Day 1 through Day {totalDays} update automatically.
               </p>
             </div>
 

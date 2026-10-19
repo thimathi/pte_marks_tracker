@@ -58,10 +58,10 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
   const checklistItems = [
     {
       id: 'practice',
-      label: `All 200 Practice Questions Completed & Scored (${breakdown.totalCompleted} / ${breakdown.totalDailyTarget})`,
+      label: `All ${breakdown.totalDailyTarget} Practice Questions Completed & Scored (${breakdown.totalCompleted} / ${breakdown.totalDailyTarget})`,
       done: practiceDone,
       canAutoDetect: true,
-      hint: 'Scoring all 200 mixed questions is required before unlocking the next day.'
+      hint: `Scoring all ${breakdown.totalDailyTarget} practice questions (across 4 groups) is required before unlocking the next day.`
     },
     {
       id: 'dailyPracticeReviewCompleted',

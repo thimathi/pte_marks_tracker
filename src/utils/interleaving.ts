@@ -1,108 +1,93 @@
-import { QuestionTypeMeta, QueueItem } from '../types/pte';
-import { QUESTION_TYPES, QUESTION_TYPE_MAP } from '../config/constants';
+import { QueueItem } from '../types/pte';
+import { QUESTION_TYPE_MAP, STUDY_GROUPS } from '../config/constants';
 
 /**
- * Seeded PRNG (Mulberry32) for deterministic balanced interleaving
- */
-function createPrng(seed: number) {
-  let s = seed >>> 0;
-  return () => {
-    s = (s + 0x6D2B79F5) | 0;
-    let t = Math.imul(s ^ (s >>> 15), 1 | s);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-/**
- * Generates an interleaved, balanced mixed queue of exactly N questions (default 200)
- * using Weighted Fair Queueing (Deficit Round Robin) with seeded jitter.
+ * Generates the structured 278-question study queue divided into 4 Groups (Sections / Mock Styles):
  * 
- * Guarantees:
- * 1. Total questions generated equals exact sum of question targets (200).
- * 2. Every question type appears exactly its target number of times.
- * 3. Every question type is distributed uniformly from question 1 to question 200.
- * 4. No question type ever bunches up at the beginning or end.
- * 5. Deterministic output based on dayNumber and seed.
+ * Group 1 — Speaking (69 questions):
+ *   1. Read Aloud (35) [Prediction First]
+ *   2. Retell Lecture (10) [Hard Question]
+ *   3. Describe Image (15) [Medium Question]
+ *   4. Respond to a Situation (9) [Easy & Beginner]
+ * 
+ * Group 2 — Speaking & Writing (70 questions):
+ *   1. Repeat Sentences (60) [Prediction First]
+ *   2. Summarize Group Discussion (9) [Hard Question]
+ *   3. Respond to a Situation (1) [Easy & Beginner]
+ * 
+ * Group 3 — Writing & Reading (69 questions):
+ *   1. R/W Fill in the Blanks (30) [Prediction First]
+ *   2. R Fill in the Blanks (18) [Hard Question]
+ *   3. Summarize Group Discussion (3) [Hard Question]
+ *   4. Summarize Written Text (2) [Medium Question]
+ *   5. Write Essay (1) [Medium Question]
+ *   6. Answer Short Questions (15) [Easy & Beginner]
+ * 
+ * Group 4 — Reading & Listening (70 questions):
+ *   1. Write From Dictation (35) [Prediction First]
+ *   2. Summarize Spoken Text (2) [Hard Question]
+ *   3. Reorder Paragraph (8) [Hard Question]
+ *   4. R Fill in the Blanks (7) [Hard Question]
+ *   5. Fill in the Blanks (Type In) (10) [Medium Question]
+ *   6. Highlight Incorrect Words (8) [Easy & Beginner]
+ * 
+ * Priority Rule Enforced: Prediction First ➔ Hard Question Second ➔ Medium Question Third ➔ Easy & Beginner Last
  */
-export function generateInterleavedQueue(
-  questionTargets: Record<string, number>,
-  dayNumber: number = 1,
-  seedModifier: number = 42
-): QueueItem[] {
-  const seed = (dayNumber * 10007) + seedModifier;
-  const rng = createPrng(seed);
-
-  // Initialize accumulators and targets
-  const typesData: {
-    id: string;
-    meta: QuestionTypeMeta;
-    target: number;
-    currentCount: number;
-    accumulator: number;
-  }[] = [];
-
-  let totalTarget = 0;
-
-  for (const meta of QUESTION_TYPES) {
-    const target = questionTargets[meta.id] ?? meta.defaultTarget;
-    if (target > 0) {
-      // Add slight initial jitter based on seed so order varies deterministically across days
-      const jitter = (rng() * 0.25) * target;
-      typesData.push({
-        id: meta.id,
-        meta,
-        target,
-        currentCount: 0,
-        accumulator: jitter
-      });
-      totalTarget += target;
-    }
-  }
-
+export function generateGroupedStudyQueue(): QueueItem[] {
   const queue: QueueItem[] = [];
-  let lastTypeId: string | null = null;
 
-  for (let step = 0; step < totalTarget; step++) {
-    // Increment accumulators by their target rate
-    for (const t of typesData) {
-      if (t.currentCount < t.target) {
-        t.accumulator += t.target;
+  for (const group of STUDY_GROUPS) {
+    let groupIndex = 0;
+    for (const item of group.items) {
+      const meta = QUESTION_TYPE_MAP.get(item.questionTypeId);
+      if (!meta) continue;
+
+      for (let i = 0; i < item.count; i++) {
+        const instanceIndex = item.startInstanceIndex + i;
+        queue.push({
+          id: `${group.id}_${item.questionTypeId}_${i}`,
+          questionTypeId: item.questionTypeId,
+          questionTypeName: meta.name,
+          skill: meta.skill,
+          secondarySkill: meta.secondarySkill,
+          instanceIndex,
+          isPrediction: item.priority === 'prediction' || meta.isPrediction,
+          overallQueueIndex: queue.length,
+          groupId: group.id,
+          groupNumber: group.groupNumber,
+          groupTitle: group.title,
+          groupIndex,
+          groupTotal: group.totalQuestions,
+          priority: item.priority,
+          priorityLabel: item.priorityLabel,
+          typeIndexInGroup: i + 1,
+          typeTotalInGroup: item.count
+        });
+        groupIndex++;
       }
     }
-
-    // Filter available candidates that still have remaining items
-    const available = typesData.filter(t => t.currentCount < t.target);
-    if (available.length === 0) break;
-
-    // Separate into non-repeats (different from last picked) and repeats
-    const nonRepeats = available.filter(t => t.id !== lastTypeId);
-    const pool = nonRepeats.length > 0 ? nonRepeats : available;
-
-    // Pick candidate with highest accumulator
-    pool.sort((a, b) => b.accumulator - a.accumulator);
-    const chosen = pool[0];
-
-    // Deduct total target from chosen accumulator to balance
-    chosen.accumulator -= totalTarget;
-
-    const instanceIndex = chosen.currentCount;
-    chosen.currentCount++;
-
-    queue.push({
-      id: `q_${queue.length}`,
-      questionTypeId: chosen.meta.id,
-      questionTypeName: chosen.meta.name,
-      skill: chosen.meta.skill,
-      instanceIndex,
-      isPrediction: chosen.meta.isPrediction,
-      overallQueueIndex: queue.length
-    });
-
-    lastTypeId = chosen.id;
   }
 
   return queue;
+}
+
+/**
+ * Standard queue generator function matching the 4-group, 278-question prioritized study plan.
+ * Retains signature for backward compatibility with studyPlan parameters.
+ */
+export function generateInterleavedQueue(
+  _questionTargets?: Record<string, number>,
+  _dayNumber: number = 1,
+  _seedModifier: number = 42
+): QueueItem[] {
+  return generateGroupedStudyQueue();
+}
+
+/**
+ * Returns questions filtered by group ID ('group_1', 'group_2', 'group_3', 'group_4')
+ */
+export function getGroupQuestions(groupId: string, queue: QueueItem[]): QueueItem[] {
+  return queue.filter(q => q.groupId === groupId);
 }
 
 /**

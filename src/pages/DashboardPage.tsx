@@ -71,8 +71,8 @@ export const DashboardPage: React.FC = () => {
 
   // Determine next unfinished task
   let nextTask = {
-    title: 'Start Mixed Practice Session',
-    desc: `${remainingQuestionsToday} questions remaining in today's 200 mixed queue`,
+    title: 'Start Practice Session (4 Groups)',
+    desc: `${remainingQuestionsToday} questions remaining in today's ${breakdown.totalDailyTarget} practice queue`,
     link: '/practice',
     btnText: 'Open Workspace'
   };
@@ -161,10 +161,10 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#edf2ff] flex items-center gap-3">
-            <span>PTE Academic {totalDays}-Day Mountain Staircase</span>
+            <span>PTE - Daily Study Plan – Superior English</span>
           </h1>
           <p className="text-sm text-[#a9b5d0] leading-relaxed">
-            Ultimate Summit Goal: <b className="text-[#edf2ff]">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Milestone: <b className="text-blue-400">{targetForToday}+</b>). Climb step-by-step with 200 daily mixed practice questions and 2 mock simulations without breaks.
+            PTE Bridge · Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · Target: <b className="text-blue-400">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Target: <b className="text-emerald-400">{targetForToday}+</b>). 278 daily questions divided into 4 mock-style groups + 2 mock simulations.
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
@@ -173,7 +173,7 @@ export const DashboardPage: React.FC = () => {
               className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-lg shadow-blue-600/30 flex items-center gap-2 transition-all hover:scale-105"
             >
               <Shuffle className="w-4 h-4" />
-              <span>Resume Mixed Practice (200 Qs)</span>
+              <span>Resume Practice ({breakdown.totalDailyTarget} Qs · 4 Groups)</span>
             </Link>
             <Link
               to="/mock-exams"
@@ -231,7 +231,7 @@ export const DashboardPage: React.FC = () => {
             />
           </div>
           <p className="text-[11px] text-[#a9b5d0]">
-            {remainingQuestionsToday > 0 ? `${remainingQuestionsToday} questions left to score today` : 'Daily 200 questions target met!'}
+            {remainingQuestionsToday > 0 ? `${remainingQuestionsToday} questions left to score today` : `Daily ${breakdown.totalDailyTarget} questions target met!`}
           </p>
         </div>
 
