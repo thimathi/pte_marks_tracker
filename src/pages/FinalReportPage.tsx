@@ -19,8 +19,8 @@ import { QUESTION_TYPES, TOTAL_STUDY_DAYS } from '../config/constants';
 export const FinalReportPage: React.FC = () => {
   const { studyPlan, days } = usePteData();
   const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
-  const totalMocks = totalDays * 2;
-  const totalPracticeTarget = totalDays * 200;
+  const totalMocks = totalDays * 1;
+  const totalPracticeTarget = totalDays * 278;
 
   const [personalNotes, setPersonalNotes] = useState(
     () => localStorage.getItem('pte_21day_lessons_learned') || ''
@@ -75,23 +75,15 @@ export const FinalReportPage: React.FC = () => {
         }
       }
 
-      // Collect mocks
+      // Collect mocks (1 mock per day)
       const m1 = day.mockExams?.mock01;
-      const m2 = day.mockExams?.mock02;
       const r1 = day.mockReviews?.review01;
-      const r2 = day.mockReviews?.review02;
 
       if (m1?.isCompleted && m1.overallScore !== null) {
         totalMocksDone++;
-        mockScores.push({ examNum: m1.examNumber, score: m1.overallScore });
+        mockScores.push({ examNum: m1.examNumber || d, score: m1.overallScore });
       }
       if (r1?.isCompleted) totalMockReviewsDone++;
-
-      if (m2?.isCompleted && m2.overallScore !== null) {
-        totalMocksDone++;
-        mockScores.push({ examNum: m2.examNumber, score: m2.overallScore });
-      }
-      if (r2?.isCompleted) totalMockReviewsDone++;
     }
   }
 
@@ -206,7 +198,7 @@ export const FinalReportPage: React.FC = () => {
             <span className="text-[11px] text-[#a9b5d0] block">Mock Simulations</span>
             <div className="text-2xl font-bold text-[#edf2ff]">{totalMocksDone} / {totalMocks}</div>
             <span className="text-[10px] text-purple-400 font-semibold">
-              2 Mocks / Day
+              1 Mock / Day
             </span>
           </div>
 

@@ -29,7 +29,7 @@ export const ReportsPage: React.FC = () => {
   const { studyPlan, days } = usePteData();
   const streak = calculateStreak(days);
   const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
-  const totalMocks = totalDays * 2;
+  const totalMocks = totalDays * 1;
 
   // Prepare chart data for study days
   const practiceTrendData = Array.from({ length: totalDays }, (_, i) => {
@@ -55,19 +55,11 @@ export const ReportsPage: React.FC = () => {
   for (let d = 1; d <= totalDays; d++) {
     const day = days[d];
     const target = DAY_TARGET_SCORES[d - 1];
-
     const m1Score = day?.mockExams?.mock01?.overallScore ?? null;
-    const m2Score = day?.mockExams?.mock02?.overallScore ?? null;
 
     mockProgressionData.push({
-      mock: `M${(d * 2) - 1}`,
+      mock: `M${d}`,
       score: m1Score,
-      target
-    });
-
-    mockProgressionData.push({
-      mock: `M${d * 2}`,
-      score: m2Score,
       target
     });
   }

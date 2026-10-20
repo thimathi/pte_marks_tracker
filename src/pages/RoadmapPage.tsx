@@ -142,9 +142,9 @@ export const RoadmapPage: React.FC = () => {
                   </div>
 
                   <div className="p-2 rounded-lg bg-[#0e1729] border border-[#2b3856]">
-                    <span className="text-[#a9b5d0] block text-[10px]">Mocks (2 planned):</span>
+                    <span className="text-[#a9b5d0] block text-[10px]">Mock Exam (1/Day):</span>
                     <span className="font-bold text-[#edf2ff]">
-                      {mock1?.overallScore !== null ? `M1:${mock1.overallScore}` : 'M1:—'} · {mock2?.overallScore !== null ? `M2:${mock2.overallScore}` : 'M2:—'}
+                      {mock1?.overallScore !== null ? `${mock1.overallScore}/90` : 'Pending'}
                     </span>
                   </div>
                 </div>
@@ -156,7 +156,7 @@ export const RoadmapPage: React.FC = () => {
                   {isCompleted
                     ? 'Day gate passed'
                     : isUnlocked
-                    ? 'All 7 criteria required'
+                    ? 'All 5 criteria required'
                     : `Locked until Day ${dayNum - 1} complete`}
                 </span>
                 <span className="text-blue-400 font-semibold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">

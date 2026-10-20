@@ -61,14 +61,12 @@ describe('Mandatory Rollover, Locking, and 7-Item Gate Requirements', () => {
     expect(day5.gateStatus.isUnlocked).toBe(false);
   });
 
-  it('validates all 7 criteria required to pass gate', () => {
+  it('validates all 5 criteria required to pass gate (1 mock per day)', () => {
     const criteria = {
       practiceCompleted: true,
       dailyPracticeReviewCompleted: true,
       mock1Completed: true,
       mock1ReviewCompleted: true,
-      mock2Completed: true,
-      mock2ReviewCompleted: true,
       additionalExercisesCompleted: true
     };
 
@@ -77,15 +75,13 @@ describe('Mandatory Rollover, Locking, and 7-Item Gate Requirements', () => {
       c.dailyPracticeReviewCompleted &&
       c.mock1Completed &&
       c.mock1ReviewCompleted &&
-      c.mock2Completed &&
-      c.mock2ReviewCompleted &&
       c.additionalExercisesCompleted;
 
     expect(isAllCriteriaSatisfied(criteria)).toBe(true);
 
-    // If even one item (e.g. mock 2 review) is missing, gate fails
-    const missingMock2Review = { ...criteria, mock2ReviewCompleted: false };
-    expect(isAllCriteriaSatisfied(missingMock2Review)).toBe(false);
+    // If even one item (e.g. mock review) is missing, gate fails
+    const missingMockReview = { ...criteria, mock1ReviewCompleted: false };
+    expect(isAllCriteriaSatisfied(missingMockReview)).toBe(false);
 
     // If daily practice review is missing, gate fails
     const missingPracticeReview = { ...criteria, dailyPracticeReviewCompleted: false };

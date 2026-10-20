@@ -54,7 +54,7 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
   const mock2RevDone = !!targetDayData?.mockReviews?.review02?.isCompleted;
   const practiceReviewDone = !!targetDayData?.gateStatus?.dailyPracticeReviewCompleted;
 
-  // 7 Checklist requirements
+  // 5 Checklist requirements (1 Mock Exam + Review daily)
   const checklistItems = [
     {
       id: 'practice',
@@ -72,31 +72,17 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     },
     {
       id: 'mock1',
-      label: `Mock Exam 1 Completed (Score: ${targetDayData?.mockExams?.mock01?.overallScore ?? '—'} / 90)`,
+      label: `Mock Exam Completed (Score: ${targetDayData?.mockExams?.mock01?.overallScore ?? '—'} / 90)`,
       done: mock1Done,
       canAutoDetect: true,
-      hint: 'Complete Mock 1 in the Mock Exam Center.'
+      hint: 'Complete the daily mock simulation in the Mock Exam Center.'
     },
     {
       id: 'mock1Review',
-      label: 'Mock Exam 1 Deep Review & Error Analysis Completed',
+      label: 'Mock Exam Deep Review & Error Analysis Completed',
       done: mock1RevDone,
       canAutoDetect: true,
       hint: 'Complete the error analysis and vocabulary check in the Mock Exam review workflow.'
-    },
-    {
-      id: 'mock2',
-      label: `Mock Exam 2 Completed (Score: ${targetDayData?.mockExams?.mock02?.overallScore ?? '—'} / 90)`,
-      done: mock2Done,
-      canAutoDetect: true,
-      hint: 'Complete Mock 2 in the Mock Exam Center.'
-    },
-    {
-      id: 'mock2Review',
-      label: 'Mock Exam 2 Deep Review & Error Analysis Completed',
-      done: mock2RevDone,
-      canAutoDetect: true,
-      hint: 'Complete the review workflow for Mock Exam 2.'
     },
     {
       id: 'additional',
@@ -107,7 +93,7 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     }
   ];
 
-  const allReady = practiceDone && practiceReviewDone && mock1Done && mock1RevDone && mock2Done && mock2RevDone && additionalDone;
+  const allReady = practiceDone && practiceReviewDone && mock1Done && mock1RevDone && additionalDone;
 
   const handleToggleCheck = async (id: string, currentVal: boolean) => {
     await updateGateItem(dayNumber, id, !currentVal);
@@ -121,8 +107,8 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     await updateGateItem(dayNumber, 'practiceCompleted', practiceDone);
     await updateGateItem(dayNumber, 'mock1Completed', mock1Done);
     await updateGateItem(dayNumber, 'mock1ReviewCompleted', mock1RevDone);
-    await updateGateItem(dayNumber, 'mock2Completed', mock2Done);
-    await updateGateItem(dayNumber, 'mock2ReviewCompleted', mock2RevDone);
+    await updateGateItem(dayNumber, 'mock2Completed', true);
+    await updateGateItem(dayNumber, 'mock2ReviewCompleted', true);
     await updateGateItem(dayNumber, 'additionalExercisesCompleted', additionalDone);
 
     const res = await completeCurrentDay(dayNumber);

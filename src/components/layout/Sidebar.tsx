@@ -31,7 +31,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { to: '/roadmap', label: `${totalDays}-Day Roadmap`, icon: Map, badge: `${totalDays} Days` },
     { to: '/practice', label: 'Practice (4 Groups)', icon: Shuffle, badge: '278 Qs', highlight: true },
     { to: '/analytics/questions', label: 'Question Analytics', icon: BarChart3 },
-    { to: '/mock-exams', label: `Mock Exams (${totalDays * 2})`, icon: GraduationCap, badge: '2 / Day' },
+    { to: '/mock-exams', label: `Mock Exams (${totalDays * 1})`, icon: GraduationCap, badge: '1 / Day' },
     { to: '/review', label: 'Review Center', icon: CheckSquare },
     { to: '/analytics', label: 'Trends & Stats', icon: LineChart },
     { to: '/calendar', label: 'Study Calendar', icon: CalendarDays },
@@ -76,7 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               </div>
               <div>
                 <p className="text-sm font-semibold text-[#edf2ff]">Study Day {currentDay} of {totalDays}</p>
-                <p className="text-xs text-[#a9b5d0]">Target: 278 Practice Qs (4 Groups) + 2 Mocks</p>
+                <p className="text-xs text-[#a9b5d0]">Target: 278 Practice Qs (4 Groups) + 1 Mock</p>
               </div>
             </div>
           </div>

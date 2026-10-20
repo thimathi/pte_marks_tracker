@@ -49,8 +49,8 @@ export function createDefaultDayData(dayNumber: number, dateStr: string, isUnloc
     };
   }
 
-  const mock1Number = (dayNumber * 2) - 1;
-  const mock2Number = dayNumber * 2;
+  const mock1Number = dayNumber;
+  const mock2Number = dayNumber;
 
   return {
     dayNumber,
@@ -370,16 +370,14 @@ export async function completeDayAndUnlockNext(
 
   const currentData: DayData = snap.val();
 
-  // Validate all 7 completion requirements:
+  // Validate completion requirements (1 Mock Exam + Review daily):
   const gate = currentData.gateStatus;
   const missingRequirements: string[] = [];
 
-  if (!gate.practiceCompleted) missingRequirements.push('All 200 practice questions must be scored');
+  if (!gate.practiceCompleted) missingRequirements.push('All 278 practice questions must be scored');
   if (!gate.dailyPracticeReviewCompleted) missingRequirements.push('Daily practice questions review must be confirmed');
-  if (!gate.mock1Completed) missingRequirements.push('Mock Exam 1 must be completed and scored');
-  if (!gate.mock1ReviewCompleted) missingRequirements.push('Mock Exam 1 review must be completed');
-  if (!gate.mock2Completed) missingRequirements.push('Mock Exam 2 must be completed and scored');
-  if (!gate.mock2ReviewCompleted) missingRequirements.push('Mock Exam 2 review must be completed');
+  if (!gate.mock1Completed) missingRequirements.push('Daily Mock Exam must be completed and scored');
+  if (!gate.mock1ReviewCompleted) missingRequirements.push('Daily Mock Exam review must be completed');
   if (!gate.additionalExercisesCompleted) missingRequirements.push('All mandatory additional exercises must be completed');
 
   if (missingRequirements.length > 0) {

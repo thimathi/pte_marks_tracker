@@ -157,16 +157,13 @@ export const CalendarPage: React.FC = () => {
                 Status: <b className="text-white capitalize">{selectedDayData?.status || 'Locked'}</b>
               </p>
               <p className="text-[#a9b5d0]">
-                Practice Done: <b className="text-white">{selectedBreakdown.totalCompleted} / 200 Questions</b>
+                Practice Done: <b className="text-white">{selectedBreakdown.totalCompleted} / {selectedBreakdown.totalDailyTarget} Questions</b>
               </p>
               <p className="text-[#a9b5d0]">
                 Practice Average: <b className="text-emerald-400">{selectedBreakdown.dailyAverage !== null ? `${selectedBreakdown.dailyAverage}/90` : '—'}</b>
               </p>
               <p className="text-[#a9b5d0]">
-                Mock Exam 1: <b className="text-white">{selectedDayData?.mockExams?.mock01?.overallScore !== null ? `${selectedDayData?.mockExams?.mock01?.overallScore}/90` : 'Pending'}</b>
-              </p>
-              <p className="text-[#a9b5d0]">
-                Mock Exam 2: <b className="text-white">{selectedDayData?.mockExams?.mock02?.overallScore !== null ? `${selectedDayData?.mockExams?.mock02?.overallScore}/90` : 'Pending'}</b>
+                Mock Exam (1/Day): <b className="text-white">{selectedDayData?.mockExams?.mock01?.overallScore !== null ? `${selectedDayData?.mockExams?.mock01?.overallScore}/90` : 'Pending'}</b>
               </p>
             </div>
           </div>

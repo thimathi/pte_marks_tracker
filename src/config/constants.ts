@@ -6,8 +6,8 @@ export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
 export const TOTAL_STUDY_DAYS = 25;
 export const DAILY_PRACTICE_TARGET = 278; // 4 Groups: 69 + 70 + 69 + 70 = 278
 export const TOTAL_PRACTICE_TARGET = 6950; // 25 * 278
-export const DAILY_MOCK_TARGET = 2;
-export const TOTAL_MOCK_TARGET = 50; // 25 * 2
+export const DAILY_MOCK_TARGET = 1;
+export const TOTAL_MOCK_TARGET = 25; // 25 * 1
 export const MOCK_EXAM_QUESTIONS = 60;
 
 export const DEFAULT_TARGET_SCORES: TargetScores = {

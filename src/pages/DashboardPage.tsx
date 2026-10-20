@@ -80,29 +80,15 @@ export const DashboardPage: React.FC = () => {
   if (breakdown.totalCompleted >= breakdown.totalDailyTarget) {
     if (!mock1?.isCompleted) {
       nextTask = {
-        title: 'Complete Mock Exam 1 (60 Qs)',
+        title: 'Complete Mock Exam (60 Qs)',
         desc: 'Single high-intensity practice simulation for today',
         link: '/mock-exams',
-        btnText: 'Go to Mock Exams'
+        btnText: 'Go to Mock Exam'
       };
     } else if (!mock1Rev?.isCompleted) {
       nextTask = {
-        title: 'Mock Exam 1 Error Analysis',
+        title: 'Mock Exam Error Analysis',
         desc: 'Review mistakes, vocabulary, and corrective actions',
-        link: '/mock-exams',
-        btnText: 'Open Review'
-      };
-    } else if (!mock2?.isCompleted) {
-      nextTask = {
-        title: 'Complete Mock Exam 2 (60 Qs)',
-        desc: 'Second daily simulation session',
-        link: '/mock-exams',
-        btnText: 'Go to Mock 2'
-      };
-    } else if (!mock2Rev?.isCompleted) {
-      nextTask = {
-        title: 'Mock Exam 2 Error Analysis',
-        desc: 'Review weak question types from Mock 2',
         link: '/mock-exams',
         btnText: 'Open Review'
       };
@@ -164,7 +150,7 @@ export const DashboardPage: React.FC = () => {
             <span>PTE - Daily Study Plan – Superior English</span>
           </h1>
           <p className="text-sm text-[#a9b5d0] leading-relaxed">
-            PTE Bridge · Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · Target: <b className="text-blue-400">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Target: <b className="text-emerald-400">{targetForToday}+</b>). 278 daily questions divided into 4 mock-style groups + 2 mock simulations.
+            PTE Bridge · Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · Target: <b className="text-blue-400">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Target: <b className="text-emerald-400">{targetForToday}+</b>). 278 daily questions divided into 4 mock-style groups + 1 mock simulation.
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
@@ -254,27 +240,25 @@ export const DashboardPage: React.FC = () => {
           <p className="text-[11px] text-[#a9b5d0]">{breakdown.dailyCount} scored practice attempts</p>
         </div>
 
-        {/* Card 4: Daily Mock Exams */}
+        {/* Card 4: Daily Mock Exam */}
         <div className="p-5 rounded-2xl bg-[#141c31] border border-[#2b3856] space-y-2">
           <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
-            <span>Daily Mock Exams</span>
+            <span>Daily Mock Exam (1/Day)</span>
             <GraduationCap className="w-4 h-4 text-purple-400" />
           </div>
-          <div className="space-y-1">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-[#a9b5d0]">Mock 1:</span>
-              <span className={`font-semibold ${mock1?.isCompleted ? 'text-emerald-400' : 'text-amber-400'}`}>
-                {mock1?.overallScore !== null ? `${mock1?.overallScore}/90` : 'Pending'} {mock1Rev?.isCompleted ? '· Rev ✓' : ''}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-[#a9b5d0]">Mock 2:</span>
-              <span className={`font-semibold ${mock2?.isCompleted ? 'text-emerald-400' : 'text-amber-400'}`}>
-                {mock2?.overallScore !== null ? `${mock2?.overallScore}/90` : 'Pending'} {mock2Rev?.isCompleted ? '· Rev ✓' : ''}
-              </span>
-            </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-extrabold text-[#edf2ff]">
+              {mock1?.overallScore !== null ? `${mock1?.overallScore}` : '—'}
+            </span>
+            <span className="text-xs text-[#a9b5d0]">/ 90</span>
           </div>
-          <p className="text-[11px] text-[#a9b5d0]">2 separate simulations required daily</p>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-[#a9b5d0]">Status:</span>
+            <span className={`font-semibold ${mock1?.isCompleted ? 'text-emerald-400' : 'text-amber-400'}`}>
+              {mock1?.isCompleted ? 'Exam Done ✓' : 'Pending'} {mock1Rev?.isCompleted ? '· Reviewed ✓' : ''}
+            </span>
+          </div>
+          <p className="text-[11px] text-[#a9b5d0]">1 full mock exam (60 Qs) + deep review daily</p>
         </div>
       </div>
 
