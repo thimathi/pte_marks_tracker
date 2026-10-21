@@ -29,7 +29,7 @@ export const PracticePage: React.FC = () => {
     updateScore
   } = usePteData();
 
-  // Generate 278 questions structured into 4 prioritized groups
+  // Generate 180 questions structured into 4 prioritized phases (45 Qs / 2–3 hrs each)
   const fullQueue: QueueItem[] = useMemo(() => {
     return generateInterleavedQueue(
       studyPlan.questionTargets,
@@ -148,7 +148,7 @@ export const PracticePage: React.FC = () => {
         return;
       }
     }
-    alert(`🎉 All questions in ${withinCurrentGroupOnly ? 'this group' : 'today\'s 278-question plan'} have been scored!`);
+    alert(`🎉 All questions in ${withinCurrentGroupOnly ? 'this phase' : 'today\'s 180-question plan'} have been scored!`);
   };
 
   // Group completion calculations
@@ -209,7 +209,7 @@ export const PracticePage: React.FC = () => {
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            Day {currentDay} Practice Workspace · 4 Groups · 278 Questions Total · Started: {formatDateFriendly(studyPlan.startDate)}
+            Day {currentDay} Practice Workspace · 4 Phases (45 Qs · 2–3 hrs each) · 180 Questions Total · Started: {formatDateFriendly(studyPlan.startDate)}
           </p>
         </div>
 
@@ -328,14 +328,14 @@ export const PracticePage: React.FC = () => {
               </span>
             </div>
 
-            {/* Phase / Batch Stats */}
+            {/* 5-Question Micro-Batch Stats */}
             <div className="text-xs text-[#a9b5d0] flex items-center gap-2">
               <span className="px-2.5 py-1 rounded-lg bg-[#10192c] border border-[#2b3856]">
-                Phase {phaseIndex} · Q{itemInPhase} of 5
+                5-Q Batch {phaseIndex} · Q{itemInPhase} of 5
               </span>
               {phaseStats?.average !== null && (
                 <span className="px-2.5 py-1 rounded-lg bg-[#10192c] border border-blue-500/30 text-blue-300">
-                  Phase Avg: <b>{phaseStats?.average?.toFixed(1)}</b>
+                  Batch Avg: <b>{phaseStats?.average?.toFixed(1)}</b>
                 </span>
               )}
             </div>
@@ -531,7 +531,7 @@ export const PracticePage: React.FC = () => {
             <Layers className="w-4 h-4 text-blue-400" />
             <h3 className="text-sm font-bold text-[#edf2ff]">
               {selectedGroupId === 'all'
-                ? 'All 278 Questions Matrix'
+                ? 'All 180 Questions Matrix (4 Phases · 45 Qs Each)'
                 : `${currentGroupDef.title} Matrix (${currentGroupDef.totalQuestions} Questions)`}
             </h3>
           </div>
@@ -560,7 +560,7 @@ export const PracticePage: React.FC = () => {
                     : 'text-[#a9b5d0] hover:text-[#edf2ff]'
                 }`}
               >
-                All 278
+                All 180
               </button>
             </div>
 

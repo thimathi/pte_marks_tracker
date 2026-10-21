@@ -36,7 +36,7 @@ export const CalendarPage: React.FC = () => {
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · 25-Day Study Schedule across 4 groups (278 questions daily).
+            Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · 25-Day Study Schedule across 4 phases (180 questions daily · 45 Qs / 2–3 hrs each).
           </p>
         </div>
 

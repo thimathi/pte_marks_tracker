@@ -2,34 +2,34 @@ import { QueueItem } from '../types/pte';
 import { QUESTION_TYPE_MAP, STUDY_GROUPS } from '../config/constants';
 
 /**
- * Generates the structured 278-question study queue divided into 4 Groups (Sections / Mock Styles):
+ * Generates the structured 180-question study queue divided into 4 Phases (Mock-Style Papers: 45 Qs / 2–3 hrs each):
  * 
- * Group 1 — Speaking (69 questions):
- *   1. Read Aloud (35) [Prediction First]
- *   2. Retell Lecture (10) [Hard Question]
- *   3. Describe Image (15) [Medium Question]
- *   4. Respond to a Situation (9) [Easy & Beginner]
+ * Phase 1 — Speaking (Mock Paper 1: 45 questions):
+ *   1. Read Aloud (23) [Prediction First]
+ *   2. Retell Lecture (7) [Hard Question]
+ *   3. Describe Image (10) [Medium Question]
+ *   4. Respond to a Situation (5) [Easy & Beginner]
  * 
- * Group 2 — Speaking & Writing (70 questions):
- *   1. Repeat Sentences (60) [Prediction First]
- *   2. Summarize Group Discussion (9) [Hard Question]
+ * Phase 2 — Speaking & Writing (Mock Paper 2: 45 questions):
+ *   1. Repeat Sentences (38) [Prediction First]
+ *   2. Summarize Group Discussion (6) [Hard Question]
  *   3. Respond to a Situation (1) [Easy & Beginner]
  * 
- * Group 3 — Writing & Reading (69 questions):
- *   1. R/W Fill in the Blanks (30) [Prediction First]
- *   2. R Fill in the Blanks (18) [Hard Question]
- *   3. Summarize Group Discussion (3) [Hard Question]
+ * Phase 3 — Writing & Reading (Mock Paper 3: 45 questions):
+ *   1. R/W Fill in the Blanks (20) [Prediction First]
+ *   2. R Fill in the Blanks (10) [Hard Question]
+ *   3. Summarize Group Discussion (2) [Hard Question]
  *   4. Summarize Written Text (2) [Medium Question]
  *   5. Write Essay (1) [Medium Question]
- *   6. Answer Short Questions (15) [Easy & Beginner]
+ *   6. Answer Short Questions (10) [Easy & Beginner]
  * 
- * Group 4 — Reading & Listening (70 questions):
- *   1. Write From Dictation (35) [Prediction First]
+ * Phase 4 — Reading & Listening (Mock Paper 4: 45 questions):
+ *   1. Write From Dictation (22) [Prediction First]
  *   2. Summarize Spoken Text (2) [Hard Question]
- *   3. Reorder Paragraph (8) [Hard Question]
- *   4. R Fill in the Blanks (7) [Hard Question]
- *   5. Fill in the Blanks (Type In) (10) [Medium Question]
- *   6. Highlight Incorrect Words (8) [Easy & Beginner]
+ *   3. Reorder Paragraph (5) [Hard Question]
+ *   4. R Fill in the Blanks (5) [Hard Question]
+ *   5. Fill in the Blanks (Type In) (6) [Medium Question]
+ *   6. Highlight Incorrect Words (5) [Easy & Beginner]
  * 
  * Priority Rule Enforced: Prediction First ➔ Hard Question Second ➔ Medium Question Third ➔ Easy & Beginner Last
  */
@@ -72,7 +72,7 @@ export function generateGroupedStudyQueue(): QueueItem[] {
 }
 
 /**
- * Standard queue generator function matching the 4-group, 278-question prioritized study plan.
+ * Standard queue generator function matching the 4-phase, 180-question prioritized study plan.
  * Retains signature for backward compatibility with studyPlan parameters.
  */
 export function generateInterleavedQueue(

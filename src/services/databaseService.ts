@@ -205,9 +205,9 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
         needsPlanUpdate = true;
       }
 
-      // Check if targets need updating to 278
+      // Check if targets need updating to 180 (4 Phases of 45 Qs)
       const totalTargets = Object.values(plan.questionTargets || {}).reduce((a, b) => a + b, 0);
-      if (totalTargets !== 278) {
+      if (totalTargets !== 180) {
         plan.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
         planUpdates.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
         needsPlanUpdate = true;
@@ -374,7 +374,7 @@ export async function completeDayAndUnlockNext(
   const gate = currentData.gateStatus;
   const missingRequirements: string[] = [];
 
-  if (!gate.practiceCompleted) missingRequirements.push('All 278 practice questions must be scored');
+  if (!gate.practiceCompleted) missingRequirements.push('All 180 practice questions must be scored');
   if (!gate.dailyPracticeReviewCompleted) missingRequirements.push('Daily practice questions review must be confirmed');
   if (!gate.mock1Completed) missingRequirements.push('Daily Mock Exam must be completed and scored');
   if (!gate.mock1ReviewCompleted) missingRequirements.push('Daily Mock Exam review must be completed');

@@ -4,8 +4,8 @@ export const DEFAULT_START_DATE = '2026-10-20';
 export const APP_TITLE = 'PTE - Daily Study Plan – Superior English';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
 export const TOTAL_STUDY_DAYS = 25;
-export const DAILY_PRACTICE_TARGET = 278; // 4 Groups: 69 + 70 + 69 + 70 = 278
-export const TOTAL_PRACTICE_TARGET = 6950; // 25 * 278
+export const DAILY_PRACTICE_TARGET = 180; // 4 Phases: 45 + 45 + 45 + 45 = 180
+export const TOTAL_PRACTICE_TARGET = 4500; // 25 * 180
 export const DAILY_MOCK_TARGET = 1;
 export const TOTAL_MOCK_TARGET = 25; // 25 * 1
 export const MOCK_EXAM_QUESTIONS = 60;
@@ -29,15 +29,15 @@ export const DAY_TARGET_SCORES: number[] = [
 ];
 
 export const QUESTION_TYPES: QuestionTypeMeta[] = [
-  // SPEAKING (Total: 147 across tasks)
+  // SPEAKING (Total: 94 across tasks)
   {
     id: 'read_aloud',
     name: 'Read Aloud',
     shortName: 'RA',
     skill: 'speaking',
     secondarySkill: 'reading',
-    defaultTarget: 35,
-    estMinutes: '30 min',
+    defaultTarget: 23,
+    estMinutes: '20 min',
     isPrediction: true,
     maxScore: 90,
     description: 'A text appears on screen. Read it aloud naturally with correct pronunciation and oral fluency.'
@@ -48,8 +48,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'RS',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 60,
-    estMinutes: '45 min',
+    defaultTarget: 38,
+    estMinutes: '30 min',
     isPrediction: true,
     maxScore: 90,
     description: 'Listen to a short recording and repeat the sentence accurately word-for-word.'
@@ -59,8 +59,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Describe Image',
     shortName: 'DI',
     skill: 'speaking',
-    defaultTarget: 15,
-    estMinutes: '20 min',
+    defaultTarget: 10,
+    estMinutes: '15 min',
     isPrediction: false,
     maxScore: 90,
     description: 'Look at the image and describe its key points, trends, and conclusion in 40 seconds.'
@@ -71,8 +71,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'RL',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 10,
-    estMinutes: '20 min',
+    defaultTarget: 7,
+    estMinutes: '15 min',
     isPrediction: false,
     maxScore: 90,
     description: 'Listen to a lecture and retell the main ideas and supporting details in your own words.'
@@ -82,8 +82,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Respond to a Situation',
     shortName: 'RTS',
     skill: 'speaking',
-    defaultTarget: 10, // Group 1: 9, Group 2: 1
-    estMinutes: '15 min',
+    defaultTarget: 6, // Phase 1: 5, Phase 2: 1
+    estMinutes: '10 min',
     isPrediction: false,
     maxScore: 90,
     description: 'Listen to a scenario description and provide a polite, context-appropriate spoken response.'
@@ -94,8 +94,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'SGD',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 12, // Group 2: 9, Group 3: 3
-    estMinutes: '25 min',
+    defaultTarget: 8, // Phase 2: 6, Phase 3: 2
+    estMinutes: '15 min',
     isPrediction: false,
     maxScore: 90,
     description: 'Listen to multiple speakers discuss a topic and summarize their differing viewpoints.'
@@ -106,8 +106,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'ASQ',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 15,
-    estMinutes: '10 min',
+    defaultTarget: 10,
+    estMinutes: '8 min',
     isPrediction: false,
     maxScore: 90,
     description: 'Answer simple factual questions with one or a few concise words.'
@@ -138,15 +138,15 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     description: 'Write a 200–300 word argumentative essay on a given prompt using proper structure.'
   },
 
-  // READING (Total: 63)
+  // READING (Total: 40)
   {
     id: 'rw_fill_in_blanks',
     name: 'Reading & Writing: Fill in the Blanks',
     shortName: 'R&W FIB',
     skill: 'reading',
     secondarySkill: 'writing',
-    defaultTarget: 30,
-    estMinutes: '40 min',
+    defaultTarget: 20,
+    estMinutes: '25 min',
     isPrediction: true,
     maxScore: 90,
     description: 'Drop-down vocabulary and grammar choices within a reading text.'
@@ -156,8 +156,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Reading: Fill in the Blanks',
     shortName: 'R FIB',
     skill: 'reading',
-    defaultTarget: 25, // Group 3: 18, Group 4: 7
-    estMinutes: '30 min',
+    defaultTarget: 15, // Phase 3: 10, Phase 4: 5
+    estMinutes: '20 min',
     isPrediction: false,
     maxScore: 90,
     description: 'Drag and drop missing words into the text boxes.'
@@ -167,22 +167,22 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Reorder Paragraph',
     shortName: 'RO',
     skill: 'reading',
-    defaultTarget: 8,
-    estMinutes: '15 min',
+    defaultTarget: 5,
+    estMinutes: '10 min',
     isPrediction: false,
     maxScore: 90,
     description: 'Arrange text boxes in the correct chronological or logical sequence.'
   },
 
-  // LISTENING (Total: 55)
+  // LISTENING (Total: 35)
   {
     id: 'write_from_dictation',
     name: 'Write From Dictation',
     shortName: 'WFD',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 35,
-    estMinutes: '25 min',
+    defaultTarget: 22,
+    estMinutes: '18 min',
     isPrediction: true,
     maxScore: 90,
     description: 'Listen to a short sentence and type it out exactly with accurate spelling and punctuation.'
@@ -193,8 +193,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'L FIB',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 10,
-    estMinutes: '15 min',
+    defaultTarget: 6,
+    estMinutes: '10 min',
     isPrediction: false,
     maxScore: 90,
     description: 'Type in missing words while following along with the audio passage.'
@@ -205,8 +205,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'HIW',
     skill: 'listening',
     secondarySkill: 'reading',
-    defaultTarget: 8,
-    estMinutes: '10 min',
+    defaultTarget: 5,
+    estMinutes: '8 min',
     isPrediction: false,
     maxScore: 90,
     description: 'Click on words in the transcript that differ from what the speaker says.'
@@ -234,44 +234,44 @@ export const DEFAULT_QUESTION_TARGETS: Record<string, number> = Object.fromEntri
 );
 
 /**
- * 4 Study Groups (Sections / Mock-Style Papers) Totaling Exactly 278 Questions
+ * 4 Study Phases (Mock-Style Papers: 45 Questions / 2–3 Hours Each) Totaling Exactly 180 Questions
  * Priority Ordered: Prediction First ➔ Hard Question ➔ Medium Question ➔ Easy & Beginner Last
  */
 export const STUDY_GROUPS: StudyGroupDefinition[] = [
   {
     id: 'group_1',
     groupNumber: 1,
-    title: 'Group 1 — Speaking',
-    shortTitle: 'Group 1',
-    subtitle: 'Speaking Mastery',
+    title: 'Phase 1 — Speaking (Mock Paper 1)',
+    shortTitle: 'Phase 1',
+    subtitle: 'Speaking Mastery (45 Qs · 2–3 hrs)',
     skills: ['speaking'],
-    totalQuestions: 69,
+    totalQuestions: 45,
     color: 'blue',
     items: [
       {
         questionTypeId: 'read_aloud',
-        count: 35,
+        count: 23,
         priority: 'prediction',
         priorityLabel: 'Prediction First',
         startInstanceIndex: 0
       },
       {
         questionTypeId: 'retell_lecture',
-        count: 10,
+        count: 7,
         priority: 'hard',
         priorityLabel: 'Hard Question',
         startInstanceIndex: 0
       },
       {
         questionTypeId: 'describe_image',
-        count: 15,
+        count: 10,
         priority: 'medium',
         priorityLabel: 'Medium Question',
         startInstanceIndex: 0
       },
       {
         questionTypeId: 'respond_to_situation',
-        count: 9,
+        count: 5,
         priority: 'easy',
         priorityLabel: 'Easy & Beginner',
         startInstanceIndex: 0
@@ -281,23 +281,23 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
   {
     id: 'group_2',
     groupNumber: 2,
-    title: 'Group 2 — Speaking & Writing',
-    shortTitle: 'Group 2',
-    subtitle: 'Recall & Group Discussion',
+    title: 'Phase 2 — Speaking & Writing (Mock Paper 2)',
+    shortTitle: 'Phase 2',
+    subtitle: 'Recall & Group Discussion (45 Qs · 2–3 hrs)',
     skills: ['speaking', 'writing'],
-    totalQuestions: 70,
+    totalQuestions: 45,
     color: 'purple',
     items: [
       {
         questionTypeId: 'repeat_sentence',
-        count: 60,
+        count: 38,
         priority: 'prediction',
         priorityLabel: 'Prediction First',
         startInstanceIndex: 0
       },
       {
         questionTypeId: 'summarize_group_discussion',
-        count: 9,
+        count: 6,
         priority: 'hard',
         priorityLabel: 'Hard Question',
         startInstanceIndex: 0
@@ -307,40 +307,40 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
         count: 1,
         priority: 'easy',
         priorityLabel: 'Easy & Beginner',
-        startInstanceIndex: 9 // following Group 1's 9 items (0-8)
+        startInstanceIndex: 5 // following Phase 1's 5 items (0-4)
       }
     ]
   },
   {
     id: 'group_3',
     groupNumber: 3,
-    title: 'Group 3 — Writing & Reading',
-    shortTitle: 'Group 3',
-    subtitle: 'Blanks, Essays & Comprehension',
+    title: 'Phase 3 — Writing & Reading (Mock Paper 3)',
+    shortTitle: 'Phase 3',
+    subtitle: 'Blanks, Essays & Comprehension (45 Qs · 2–3 hrs)',
     skills: ['writing', 'reading'],
-    totalQuestions: 69,
+    totalQuestions: 45,
     color: 'emerald',
     items: [
       {
         questionTypeId: 'rw_fill_in_blanks',
-        count: 30,
+        count: 20,
         priority: 'prediction',
         priorityLabel: 'Prediction First',
         startInstanceIndex: 0
       },
       {
         questionTypeId: 'r_fill_in_blanks',
-        count: 18,
+        count: 10,
         priority: 'hard',
         priorityLabel: 'Hard Question',
         startInstanceIndex: 0
       },
       {
         questionTypeId: 'summarize_group_discussion',
-        count: 3,
+        count: 2,
         priority: 'hard',
         priorityLabel: 'Hard Question',
-        startInstanceIndex: 9 // following Group 2's 9 items (0-8)
+        startInstanceIndex: 6 // following Phase 2's 6 items (0-5)
       },
       {
         questionTypeId: 'summarize_written_text',
@@ -358,7 +358,7 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
       },
       {
         questionTypeId: 'answer_short_question',
-        count: 15,
+        count: 10,
         priority: 'easy',
         priorityLabel: 'Easy & Beginner',
         startInstanceIndex: 0
@@ -368,16 +368,16 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
   {
     id: 'group_4',
     groupNumber: 4,
-    title: 'Group 4 — Reading & Listening',
-    shortTitle: 'Group 4',
-    subtitle: 'Dictation & Audio Analytics',
+    title: 'Phase 4 — Reading & Listening (Mock Paper 4)',
+    shortTitle: 'Phase 4',
+    subtitle: 'Dictation & Audio Analytics (45 Qs · 2–3 hrs)',
     skills: ['reading', 'listening'],
-    totalQuestions: 70,
+    totalQuestions: 45,
     color: 'amber',
     items: [
       {
         questionTypeId: 'write_from_dictation',
-        count: 35,
+        count: 22,
         priority: 'prediction',
         priorityLabel: 'Prediction First',
         startInstanceIndex: 0
@@ -391,28 +391,28 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
       },
       {
         questionTypeId: 'reorder_paragraph',
-        count: 8,
+        count: 5,
         priority: 'hard',
         priorityLabel: 'Hard Question',
         startInstanceIndex: 0
       },
       {
         questionTypeId: 'r_fill_in_blanks',
-        count: 7,
+        count: 5,
         priority: 'hard',
         priorityLabel: 'Hard Question',
-        startInstanceIndex: 18 // following Group 3's 18 items (0-17)
+        startInstanceIndex: 10 // following Phase 3's 10 items (0-9)
       },
       {
         questionTypeId: 'listening_fill_in_blanks',
-        count: 10,
+        count: 6,
         priority: 'medium',
         priorityLabel: 'Medium Question',
         startInstanceIndex: 0
       },
       {
         questionTypeId: 'highlight_incorrect_words',
-        count: 8,
+        count: 5,
         priority: 'easy',
         priorityLabel: 'Easy & Beginner',
         startInstanceIndex: 0

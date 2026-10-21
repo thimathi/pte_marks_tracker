@@ -20,7 +20,7 @@ export const FinalReportPage: React.FC = () => {
   const { studyPlan, days } = usePteData();
   const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
   const totalMocks = totalDays * 1;
-  const totalPracticeTarget = totalDays * 278;
+  const totalPracticeTarget = totalDays * 180;
 
   const [personalNotes, setPersonalNotes] = useState(
     () => localStorage.getItem('pte_21day_lessons_learned') || ''
@@ -164,7 +164,7 @@ export const FinalReportPage: React.FC = () => {
               PTE - Daily Study Plan – Superior English
             </h2>
             <p className="text-xs text-[#a9b5d0]">
-              Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · 4 Study Groups (278 Qs / Day) · Target Benchmark: {studyPlan.targetScores.overall}+ Overall
+              Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · 4 Study Phases (180 Qs / Day) · Target Benchmark: {studyPlan.targetScores.overall}+ Overall
             </p>
           </div>
 
@@ -190,7 +190,7 @@ export const FinalReportPage: React.FC = () => {
             <span className="text-[11px] text-[#a9b5d0] block">Practice Questions</span>
             <div className="text-2xl font-bold text-[#edf2ff]">{totalPracticeQuestionsScored} / {totalPracticeTarget.toLocaleString()}</div>
             <span className="text-[10px] text-blue-400 font-semibold">
-              Target: 278 Qs / Day (4 Groups)
+              Target: 180 Qs / Day (4 Phases · 45 Qs each)
             </span>
           </div>
 
