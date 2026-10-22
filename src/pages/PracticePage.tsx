@@ -29,7 +29,7 @@ export const PracticePage: React.FC = () => {
     updateScore
   } = usePteData();
 
-  // Generate 180 questions structured into 4 prioritized phases (45 Qs / 2–3 hrs each)
+  // Generate 193 questions structured into 4 sections (Speaking 102 · Writing 3 · Reading 45 · Listening 43)
   const fullQueue: QueueItem[] = useMemo(() => {
     return generateInterleavedQueue(
       studyPlan.questionTargets,
@@ -148,7 +148,7 @@ export const PracticePage: React.FC = () => {
         return;
       }
     }
-    alert(`🎉 All questions in ${withinCurrentGroupOnly ? 'this phase' : 'today\'s 180-question plan'} have been scored!`);
+    alert(`🎉 All questions in ${withinCurrentGroupOnly ? 'this section' : 'today\'s 193-question plan'} have been scored!`);
   };
 
   // Group completion calculations
@@ -209,7 +209,7 @@ export const PracticePage: React.FC = () => {
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            Day {currentDay} Practice Workspace · 4 Phases (45 Qs · 2–3 hrs each) · 180 Questions Total · Started: {formatDateFriendly(studyPlan.startDate)}
+            Day {currentDay} Practice Workspace · 4 Sections (193 Questions Total) · Started: {formatDateFriendly(studyPlan.startDate)}
           </p>
         </div>
 
@@ -539,7 +539,7 @@ export const PracticePage: React.FC = () => {
             <Layers className="w-4 h-4 text-blue-400" />
             <h3 className="text-sm font-bold text-[#edf2ff]">
               {selectedGroupId === 'all'
-                ? 'All 180 Questions Matrix (4 Phases · 45 Qs Each)'
+                ? 'All 193 Questions Matrix (Speaking 102 · Writing 3 · Reading 45 · Listening 43)'
                 : `${currentGroupDef.title} Matrix (${currentGroupDef.totalQuestions} Questions)`}
             </h3>
           </div>
@@ -568,7 +568,7 @@ export const PracticePage: React.FC = () => {
                     : 'text-[#a9b5d0] hover:text-[#edf2ff]'
                 }`}
               >
-                All 180
+                All 193
               </button>
             </div>
 

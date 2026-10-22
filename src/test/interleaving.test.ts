@@ -2,13 +2,13 @@ import { describe, it, expect } from 'vitest';
 import { generateInterleavedQueue, generateGroupedStudyQueue, getPhaseRanges } from '../utils/interleaving';
 import { DEFAULT_QUESTION_TARGETS, QUESTION_TYPES, STUDY_GROUPS } from '../config/constants';
 
-describe('4-Phase Study Plan & 180-Question Queue Generation', () => {
-  it('generates exactly 180 questions in total matching the 4 phases', () => {
+describe('4-Section Study Plan & 193-Question Queue Generation', () => {
+  it('generates exactly 193 questions in total matching the 4 sections', () => {
     const queue = generateInterleavedQueue(DEFAULT_QUESTION_TARGETS, 1, 42);
-    expect(queue.length).toBe(180);
+    expect(queue.length).toBe(193);
   });
 
-  it('correctly divides questions into 4 phases (45 questions each)', () => {
+  it('correctly divides questions into 4 sections (Speaking 102, Writing 3, Reading 45, Listening 43)', () => {
     const queue = generateGroupedStudyQueue();
 
     const g1 = queue.filter(q => q.groupId === 'group_1');
@@ -16,14 +16,14 @@ describe('4-Phase Study Plan & 180-Question Queue Generation', () => {
     const g3 = queue.filter(q => q.groupId === 'group_3');
     const g4 = queue.filter(q => q.groupId === 'group_4');
 
-    expect(g1.length).toBe(45); // Phase 1 — Speaking (Mock Paper 1)
-    expect(g2.length).toBe(45); // Phase 2 — Speaking & Writing (Mock Paper 2)
-    expect(g3.length).toBe(45); // Phase 3 — Writing & Reading (Mock Paper 3)
-    expect(g4.length).toBe(45); // Phase 4 — Reading & Listening (Mock Paper 4)
-    expect(g1.length + g2.length + g3.length + g4.length).toBe(180);
+    expect(g1.length).toBe(102); // Speaking Section
+    expect(g2.length).toBe(3);   // Writing Section
+    expect(g3.length).toBe(45);  // Reading Section
+    expect(g4.length).toBe(43);  // Listening Section
+    expect(g1.length + g2.length + g3.length + g4.length).toBe(193);
   });
 
-  it('matches each question-type target count exactly across all 4 phases', () => {
+  it('matches each question-type target count exactly across all sections', () => {
     const queue = generateInterleavedQueue(DEFAULT_QUESTION_TARGETS, 1, 42);
 
     const counts: Record<string, number> = {};
@@ -36,23 +36,26 @@ describe('4-Phase Study Plan & 180-Question Queue Generation', () => {
       expect(counts[meta.id]).toBe(expectedTarget);
     }
 
-    // Specific counts from 180-question 4-phase plan based on score weight:
-    expect(counts['describe_image']).toBe(18); // 15% Weight
-    expect(counts['summarize_group_discussion']).toBe(18); // 9% Weight (15 in P2 + 3 in P3)
-    expect(counts['repeat_sentence']).toBe(25); // 7% Weight
-    expect(counts['rw_fill_in_blanks']).toBe(18); // 7% Weight
-    expect(counts['summarize_written_text']).toBe(3); // 7% Weight
-    expect(counts['write_essay']).toBe(2); // 7% Weight
-    expect(counts['retell_lecture']).toBe(9); // 6% Weight
-    expect(counts['respond_to_situation']).toBe(13); // 6% Weight (8 in P1 + 5 in P2)
-    expect(counts['r_fill_in_blanks']).toBe(22); // 6% Weight (14 in P3 + 8 in P4)
-    expect(counts['write_from_dictation']).toBe(18); // 5% Weight
-    expect(counts['read_aloud']).toBe(10); // 4% Weight
-    expect(counts['summarize_spoken_text']).toBe(3); // 4% Weight
-    expect(counts['highlight_incorrect_words']).toBe(6); // 4% Weight
-    expect(counts['reorder_paragraph']).toBe(5); // 3% Weight
-    expect(counts['listening_fill_in_blanks']).toBe(5); // 3% Weight
-    expect(counts['answer_short_question']).toBe(5); // 2% Weight
+    // Exact user counts:
+    expect(counts['describe_image']).toBe(15);
+    expect(counts['repeat_sentence']).toBe(35);
+    expect(counts['read_aloud']).toBe(22);
+    expect(counts['summarize_group_discussion']).toBe(9);
+    expect(counts['retell_lecture']).toBe(7);
+    expect(counts['respond_to_situation']).toBe(7);
+    expect(counts['answer_short_question']).toBe(7);
+
+    expect(counts['summarize_written_text']).toBe(2);
+    expect(counts['write_essay']).toBe(1);
+
+    expect(counts['rw_fill_in_blanks']).toBe(22);
+    expect(counts['r_fill_in_blanks']).toBe(18);
+    expect(counts['reorder_paragraph']).toBe(5);
+
+    expect(counts['write_from_dictation']).toBe(28);
+    expect(counts['listening_fill_in_blanks']).toBe(7);
+    expect(counts['highlight_incorrect_words']).toBe(6);
+    expect(counts['summarize_spoken_text']).toBe(2);
   });
 
   it('enforces score weight priority order (highest % first in each phase)', () => {

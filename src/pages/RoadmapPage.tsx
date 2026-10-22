@@ -41,7 +41,7 @@ export const RoadmapPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-[#edf2ff]">PTE - Daily Study Plan – Superior English Roadmap</h1>
         </div>
         <p className="text-xs text-[#a9b5d0] leading-relaxed max-w-3xl">
-          Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · {totalDays}-Day Mountain Staircase (Target 62+ ➔ 86+). Strict sequential unlocking enforces mastery across 180 daily questions in 4 phases (45 Qs each) + 1 Mock Exam.
+          Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · {totalDays}-Day Mountain Staircase (Target 62+ ➔ 86+). Strict sequential unlocking enforces mastery across 193 daily questions in 4 sections + 1 Mock Exam.
         </p>
       </div>
 

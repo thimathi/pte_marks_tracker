@@ -29,7 +29,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/roadmap', label: `${totalDays}-Day Roadmap`, icon: Map, badge: `${totalDays} Days` },
-    { to: '/practice', label: 'Practice (4 Phases)', icon: Shuffle, badge: '180 Qs', highlight: true },
+    { to: '/practice', label: 'Practice (4 Sections)', icon: Shuffle, badge: '193 Qs', highlight: true },
     { to: '/analytics/questions', label: 'Question Analytics', icon: BarChart3 },
     { to: '/mock-exams', label: `Mock Exams (${totalDays * 1})`, icon: GraduationCap, badge: '1 / Day' },
     { to: '/review', label: 'Review Center', icon: CheckSquare },
@@ -76,7 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               </div>
               <div>
                 <p className="text-sm font-semibold text-[#edf2ff]">Study Day {currentDay} of {totalDays}</p>
-                <p className="text-xs text-[#a9b5d0]">Target: 180 Practice Qs (4 Phases) + 1 Mock</p>
+                <p className="text-xs text-[#a9b5d0]">Target: 193 Practice Qs (4 Sections) + 1 Mock</p>
               </div>
             </div>
           </div>
@@ -122,7 +122,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <Sparkles className="w-4 h-4 text-blue-400 flex-shrink-0" />
             <div>
               <p className="font-medium text-[#edf2ff]">Superior English (79+)</p>
-              <p className="text-[10px] text-[#a9b5d0]">Started: Oct 20, 2026 · 180 Qs/Day</p>
+              <p className="text-[10px] text-[#a9b5d0]">Started: Oct 20, 2026 · 193 Qs/Day</p>
             </div>
           </div>
         </div>

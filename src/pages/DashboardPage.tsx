@@ -150,7 +150,7 @@ export const DashboardPage: React.FC = () => {
             <span>PTE - Daily Study Plan – Superior English</span>
           </h1>
           <p className="text-sm text-[#a9b5d0] leading-relaxed">
-            PTE Bridge · Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · Target: <b className="text-blue-400">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Target: <b className="text-emerald-400">{targetForToday}+</b>). 180 daily questions divided into 4 mock-style phases (45 Qs each · 2–3 hrs) + 1 mock simulation.
+            PTE Bridge · Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · Target: <b className="text-blue-400">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Target: <b className="text-emerald-400">{targetForToday}+</b>). 193 daily questions divided into Speaking (102), Writing (3), Reading (45), and Listening (43) + 1 mock simulation.
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
@@ -159,7 +159,7 @@ export const DashboardPage: React.FC = () => {
               className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-lg shadow-blue-600/30 flex items-center gap-2 transition-all hover:scale-105"
             >
               <Shuffle className="w-4 h-4" />
-              <span>Resume Practice ({breakdown.totalDailyTarget} Qs · 4 Phases)</span>
+              <span>Resume Practice ({breakdown.totalDailyTarget} Qs · 4 Sections)</span>
             </Link>
             <Link
               to="/mock-exams"

@@ -4,8 +4,8 @@ export const DEFAULT_START_DATE = '2026-10-20';
 export const APP_TITLE = 'PTE - Daily Study Plan – Superior English';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
 export const TOTAL_STUDY_DAYS = 25;
-export const DAILY_PRACTICE_TARGET = 180; // 4 Phases: 45 + 45 + 45 + 45 = 180
-export const TOTAL_PRACTICE_TARGET = 4500; // 25 * 180
+export const DAILY_PRACTICE_TARGET = 193; // 4 Sections: Speaking (102) + Writing (3) + Reading (45) + Listening (43) = 193
+export const TOTAL_PRACTICE_TARGET = 4825; // 25 * 193
 export const DAILY_MOCK_TARGET = 1;
 export const TOTAL_MOCK_TARGET = 25; // 25 * 1
 export const MOCK_EXAM_QUESTIONS = 60;
@@ -29,13 +29,13 @@ export const DAY_TARGET_SCORES: number[] = [
 ];
 
 export const QUESTION_TYPES: QuestionTypeMeta[] = [
-  // SPEAKING (Total: 69 across tasks)
+  // SPEAKING (Total: 102 questions per day)
   {
     id: 'describe_image',
     name: 'Describe Image',
     shortName: 'DI',
     skill: 'speaking',
-    defaultTarget: 18,
+    defaultTarget: 15,
     estMinutes: '20 min',
     isPrediction: true,
     scoreWeight: 15,
@@ -43,25 +43,12 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     description: 'Look at the image and describe its key points, trends, and conclusion in 40 seconds. (Highest PTE score weight: 15%)'
   },
   {
-    id: 'summarize_group_discussion',
-    name: 'Summarize Group Discussion',
-    shortName: 'SGD',
-    skill: 'speaking',
-    secondarySkill: 'listening',
-    defaultTarget: 18, // Phase 2: 15, Phase 3: 3
-    estMinutes: '25 min',
-    isPrediction: true,
-    scoreWeight: 9,
-    maxScore: 90,
-    description: 'Listen to multiple speakers discuss a topic and summarize their differing viewpoints. (High PTE score weight: 9%)'
-  },
-  {
     id: 'repeat_sentence',
     name: 'Repeat Sentence',
     shortName: 'RS',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 25,
+    defaultTarget: 35,
     estMinutes: '25 min',
     isPrediction: true,
     scoreWeight: 7,
@@ -69,13 +56,39 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     description: 'Listen to a short recording and repeat the sentence accurately word-for-word. (PTE score weight: 7%)'
   },
   {
+    id: 'read_aloud',
+    name: 'Read Aloud',
+    shortName: 'RA',
+    skill: 'speaking',
+    secondarySkill: 'reading',
+    defaultTarget: 22,
+    estMinutes: '20 min',
+    isPrediction: true,
+    scoreWeight: 4,
+    maxScore: 90,
+    description: 'A text appears on screen. Read it aloud naturally with correct pronunciation and oral fluency. (PTE score weight: 4%)'
+  },
+  {
+    id: 'summarize_group_discussion',
+    name: 'Summarize Group Discussion',
+    shortName: 'SGD',
+    skill: 'speaking',
+    secondarySkill: 'listening',
+    defaultTarget: 9,
+    estMinutes: '18 min',
+    isPrediction: true,
+    scoreWeight: 9,
+    maxScore: 90,
+    description: 'Listen to multiple speakers discuss a topic and summarize their differing viewpoints. (High PTE score weight: 9%)'
+  },
+  {
     id: 'retell_lecture',
     name: 'Retell Lecture',
     shortName: 'RL',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 9,
-    estMinutes: '18 min',
+    defaultTarget: 7,
+    estMinutes: '15 min',
     isPrediction: false,
     scoreWeight: 6,
     maxScore: 90,
@@ -86,25 +99,12 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Respond to a Situation',
     shortName: 'RTS',
     skill: 'speaking',
-    defaultTarget: 13, // Phase 1: 8, Phase 2: 5
-    estMinutes: '15 min',
+    defaultTarget: 7,
+    estMinutes: '12 min',
     isPrediction: false,
     scoreWeight: 6,
     maxScore: 90,
     description: 'Listen to a scenario description and provide a polite, context-appropriate spoken response. (PTE score weight: 6%)'
-  },
-  {
-    id: 'read_aloud',
-    name: 'Read Aloud',
-    shortName: 'RA',
-    skill: 'speaking',
-    secondarySkill: 'reading',
-    defaultTarget: 10,
-    estMinutes: '12 min',
-    isPrediction: false,
-    scoreWeight: 4,
-    maxScore: 90,
-    description: 'A text appears on screen. Read it aloud naturally with correct pronunciation and oral fluency. (PTE score weight: 4%)'
   },
   {
     id: 'answer_short_question',
@@ -112,22 +112,22 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'ASQ',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 5,
-    estMinutes: '5 min',
+    defaultTarget: 7,
+    estMinutes: '7 min',
     isPrediction: false,
     scoreWeight: 2,
     maxScore: 90,
     description: 'Answer simple factual questions with one or a few concise words. (PTE score weight: 2%)'
   },
 
-  // WRITING (Total: 5)
+  // WRITING (Total: 3 questions per day)
   {
     id: 'summarize_written_text',
     name: 'Summarize Written Text',
     shortName: 'SWT',
     skill: 'writing',
     secondarySkill: 'reading',
-    defaultTarget: 3,
+    defaultTarget: 2,
     estMinutes: '20 min',
     isPrediction: false,
     scoreWeight: 7,
@@ -139,23 +139,23 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Write Essay',
     shortName: 'WE',
     skill: 'writing',
-    defaultTarget: 2,
-    estMinutes: '25 min',
+    defaultTarget: 1,
+    estMinutes: '20 min',
     isPrediction: false,
     scoreWeight: 7,
     maxScore: 90,
     description: 'Write a 200–300 word argumentative essay on a given prompt using proper structure. (PTE score weight: 7%)'
   },
 
-  // READING (Total: 45)
+  // READING (Total: 45 questions per day)
   {
     id: 'rw_fill_in_blanks',
     name: 'Reading & Writing: Fill in the Blanks',
     shortName: 'R&W FIB',
     skill: 'reading',
     secondarySkill: 'writing',
-    defaultTarget: 18,
-    estMinutes: '25 min',
+    defaultTarget: 22,
+    estMinutes: '30 min',
     isPrediction: true,
     scoreWeight: 7,
     maxScore: 90,
@@ -166,7 +166,7 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Reading: Fill in the Blanks',
     shortName: 'R FIB',
     skill: 'reading',
-    defaultTarget: 22, // Phase 3: 14, Phase 4: 8
+    defaultTarget: 18,
     estMinutes: '25 min',
     isPrediction: false,
     scoreWeight: 6,
@@ -186,19 +186,32 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     description: 'Arrange text boxes in the correct chronological or logical sequence. (PTE score weight: 3%)'
   },
 
-  // LISTENING (Total: 32)
+  // LISTENING (Total: 43 questions per day)
   {
     id: 'write_from_dictation',
     name: 'Write From Dictation',
     shortName: 'WFD',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 18,
-    estMinutes: '15 min',
+    defaultTarget: 28,
+    estMinutes: '25 min',
     isPrediction: true,
     scoreWeight: 5,
     maxScore: 90,
     description: 'Listen to a short sentence and type it out exactly with accurate spelling and punctuation. (PTE score weight: 5%)'
+  },
+  {
+    id: 'listening_fill_in_blanks',
+    name: 'Listening: Fill in the Blanks (Type In)',
+    shortName: 'L FIB',
+    skill: 'listening',
+    secondarySkill: 'writing',
+    defaultTarget: 7,
+    estMinutes: '10 min',
+    isPrediction: false,
+    scoreWeight: 3,
+    maxScore: 90,
+    description: 'Type in missing words while following along with the audio passage. (PTE score weight: 3%)'
   },
   {
     id: 'highlight_incorrect_words',
@@ -219,25 +232,12 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'SST',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 3,
-    estMinutes: '20 min',
+    defaultTarget: 2,
+    estMinutes: '15 min',
     isPrediction: false,
     scoreWeight: 4,
     maxScore: 90,
     description: 'Listen to a short lecture and write a 50–70 word summary capturing key points. (PTE score weight: 4%)'
-  },
-  {
-    id: 'listening_fill_in_blanks',
-    name: 'Listening: Fill in the Blanks (Type In)',
-    shortName: 'L FIB',
-    skill: 'listening',
-    secondarySkill: 'writing',
-    defaultTarget: 5,
-    estMinutes: '8 min',
-    isPrediction: false,
-    scoreWeight: 3,
-    maxScore: 90,
-    description: 'Type in missing words while following along with the audio passage. (PTE score weight: 3%)'
   }
 ];
 
@@ -250,67 +250,31 @@ export const DEFAULT_QUESTION_TARGETS: Record<string, number> = Object.fromEntri
 );
 
 /**
- * 4 Study Phases (Mock-Style Papers: 45 Questions / 2–3 Hours Each) Totaling Exactly 180 Questions
- * Prioritized strictly according to PTE Score Weight Percentage (Highest % First ➔ Lowest % Last)
+ * 4 Study Groups (Speaking 102 · Writing 3 · Reading 45 · Listening 43) Totaling Exactly 193 Questions
+ * Prioritized according to PTE Score Weight Percentage
  */
 export const STUDY_GROUPS: StudyGroupDefinition[] = [
   {
     id: 'group_1',
     groupNumber: 1,
-    title: 'Phase 1 — Speaking (Mock Paper 1)',
-    shortTitle: 'Phase 1',
-    subtitle: 'Speaking Mastery (45 Qs · 2–3 hrs)',
+    title: 'Speaking Section (102 Qs)',
+    shortTitle: 'Speaking',
+    subtitle: '102 Questions · Speaking Mastery',
     skills: ['speaking'],
-    totalQuestions: 45,
+    totalQuestions: 102,
     color: 'blue',
     items: [
       {
         questionTypeId: 'describe_image',
-        count: 18,
+        count: 15,
         priority: 'prediction',
         priorityLabel: 'Top Score Weight (15%)',
         scoreWeight: 15,
         startInstanceIndex: 0
       },
       {
-        questionTypeId: 'retell_lecture',
-        count: 9,
-        priority: 'hard',
-        priorityLabel: 'High Score Weight (6%)',
-        scoreWeight: 6,
-        startInstanceIndex: 0
-      },
-      {
-        questionTypeId: 'respond_to_situation',
-        count: 8,
-        priority: 'hard',
-        priorityLabel: 'High Score Weight (6%)',
-        scoreWeight: 6,
-        startInstanceIndex: 0
-      },
-      {
-        questionTypeId: 'read_aloud',
-        count: 10,
-        priority: 'medium',
-        priorityLabel: 'Score Weight (4%)',
-        scoreWeight: 4,
-        startInstanceIndex: 0
-      }
-    ]
-  },
-  {
-    id: 'group_2',
-    groupNumber: 2,
-    title: 'Phase 2 — Speaking & Writing (Mock Paper 2)',
-    shortTitle: 'Phase 2',
-    subtitle: 'Discussion & Recall (45 Qs · 2–3 hrs)',
-    skills: ['speaking', 'writing'],
-    totalQuestions: 45,
-    color: 'purple',
-    items: [
-      {
         questionTypeId: 'summarize_group_discussion',
-        count: 15,
+        count: 9,
         priority: 'prediction',
         priorityLabel: 'Top Score Weight (9%)',
         scoreWeight: 9,
@@ -318,75 +282,39 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
       },
       {
         questionTypeId: 'repeat_sentence',
-        count: 25,
+        count: 35,
         priority: 'hard',
         priorityLabel: 'High Score Weight (7%)',
         scoreWeight: 7,
+        startInstanceIndex: 0
+      },
+      {
+        questionTypeId: 'retell_lecture',
+        count: 7,
+        priority: 'hard',
+        priorityLabel: 'High Score Weight (6%)',
+        scoreWeight: 6,
         startInstanceIndex: 0
       },
       {
         questionTypeId: 'respond_to_situation',
-        count: 5,
+        count: 7,
         priority: 'hard',
         priorityLabel: 'High Score Weight (6%)',
         scoreWeight: 6,
-        startInstanceIndex: 8 // following Phase 1's 8 items (0-7)
-      }
-    ]
-  },
-  {
-    id: 'group_3',
-    groupNumber: 3,
-    title: 'Phase 3 — Writing & Reading (Mock Paper 3)',
-    shortTitle: 'Phase 3',
-    subtitle: 'Blanks, Essays & Comprehension (45 Qs · 2–3 hrs)',
-    skills: ['writing', 'reading'],
-    totalQuestions: 45,
-    color: 'emerald',
-    items: [
-      {
-        questionTypeId: 'summarize_group_discussion',
-        count: 3,
-        priority: 'prediction',
-        priorityLabel: 'Top Score Weight (9%)',
-        scoreWeight: 9,
-        startInstanceIndex: 15 // following Phase 2's 15 items (0-14)
-      },
-      {
-        questionTypeId: 'rw_fill_in_blanks',
-        count: 18,
-        priority: 'hard',
-        priorityLabel: 'High Score Weight (7%)',
-        scoreWeight: 7,
         startInstanceIndex: 0
       },
       {
-        questionTypeId: 'summarize_written_text',
-        count: 3,
-        priority: 'hard',
-        priorityLabel: 'High Score Weight (7%)',
-        scoreWeight: 7,
-        startInstanceIndex: 0
-      },
-      {
-        questionTypeId: 'write_essay',
-        count: 2,
-        priority: 'hard',
-        priorityLabel: 'High Score Weight (7%)',
-        scoreWeight: 7,
-        startInstanceIndex: 0
-      },
-      {
-        questionTypeId: 'r_fill_in_blanks',
-        count: 14,
-        priority: 'hard',
-        priorityLabel: 'High Score Weight (6%)',
-        scoreWeight: 6,
+        questionTypeId: 'read_aloud',
+        count: 22,
+        priority: 'medium',
+        priorityLabel: 'Score Weight (4%)',
+        scoreWeight: 4,
         startInstanceIndex: 0
       },
       {
         questionTypeId: 'answer_short_question',
-        count: 5,
+        count: 7,
         priority: 'easy',
         priorityLabel: 'Supporting Weight (2%)',
         scoreWeight: 2,
@@ -395,37 +323,85 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
     ]
   },
   {
-    id: 'group_4',
-    groupNumber: 4,
-    title: 'Phase 4 — Reading & Listening (Mock Paper 4)',
-    shortTitle: 'Phase 4',
-    subtitle: 'Dictation & Audio Analytics (45 Qs · 2–3 hrs)',
-    skills: ['reading', 'listening'],
-    totalQuestions: 45,
-    color: 'amber',
+    id: 'group_2',
+    groupNumber: 2,
+    title: 'Writing Section (3 Qs)',
+    shortTitle: 'Writing',
+    subtitle: '3 Questions · Intensive Composition',
+    skills: ['writing'],
+    totalQuestions: 3,
+    color: 'purple',
     items: [
       {
-        questionTypeId: 'r_fill_in_blanks',
-        count: 8,
+        questionTypeId: 'summarize_written_text',
+        count: 2,
         priority: 'hard',
-        priorityLabel: 'High Score Weight (6%)',
-        scoreWeight: 6,
-        startInstanceIndex: 14 // following Phase 3's 14 items (0-13)
-      },
-      {
-        questionTypeId: 'write_from_dictation',
-        count: 18,
-        priority: 'medium',
-        priorityLabel: 'Core Score Weight (5%)',
-        scoreWeight: 5,
+        priorityLabel: 'High Score Weight (7%)',
+        scoreWeight: 7,
         startInstanceIndex: 0
       },
       {
-        questionTypeId: 'summarize_spoken_text',
-        count: 3,
+        questionTypeId: 'write_essay',
+        count: 1,
+        priority: 'hard',
+        priorityLabel: 'High Score Weight (7%)',
+        scoreWeight: 7,
+        startInstanceIndex: 0
+      }
+    ]
+  },
+  {
+    id: 'group_3',
+    groupNumber: 3,
+    title: 'Reading Section (45 Qs)',
+    shortTitle: 'Reading',
+    subtitle: '45 Questions · Blanks & Reorder',
+    skills: ['reading'],
+    totalQuestions: 45,
+    color: 'emerald',
+    items: [
+      {
+        questionTypeId: 'rw_fill_in_blanks',
+        count: 22,
+        priority: 'hard',
+        priorityLabel: 'High Score Weight (7%)',
+        scoreWeight: 7,
+        startInstanceIndex: 0
+      },
+      {
+        questionTypeId: 'r_fill_in_blanks',
+        count: 18,
+        priority: 'hard',
+        priorityLabel: 'High Score Weight (6%)',
+        scoreWeight: 6,
+        startInstanceIndex: 0
+      },
+      {
+        questionTypeId: 'reorder_paragraph',
+        count: 5,
+        priority: 'easy',
+        priorityLabel: 'Supporting Weight (3%)',
+        scoreWeight: 3,
+        startInstanceIndex: 0
+      }
+    ]
+  },
+  {
+    id: 'group_4',
+    groupNumber: 4,
+    title: 'Listening Section (43 Qs)',
+    shortTitle: 'Listening',
+    subtitle: '43 Questions · Dictation & Audio',
+    skills: ['listening'],
+    totalQuestions: 43,
+    color: 'amber',
+    items: [
+      {
+        questionTypeId: 'write_from_dictation',
+        count: 28,
         priority: 'medium',
-        priorityLabel: 'Score Weight (4%)',
-        scoreWeight: 4,
+        priorityLabel: 'Core Score Weight (5%)',
+        scoreWeight: 5,
         startInstanceIndex: 0
       },
       {
@@ -437,18 +413,18 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
         startInstanceIndex: 0
       },
       {
-        questionTypeId: 'reorder_paragraph',
-        count: 5,
-        priority: 'easy',
-        priorityLabel: 'Score Weight (3%)',
-        scoreWeight: 3,
+        questionTypeId: 'summarize_spoken_text',
+        count: 2,
+        priority: 'medium',
+        priorityLabel: 'Score Weight (4%)',
+        scoreWeight: 4,
         startInstanceIndex: 0
       },
       {
         questionTypeId: 'listening_fill_in_blanks',
-        count: 5,
+        count: 7,
         priority: 'easy',
-        priorityLabel: 'Score Weight (3%)',
+        priorityLabel: 'Supporting Weight (3%)',
         scoreWeight: 3,
         startInstanceIndex: 0
       }

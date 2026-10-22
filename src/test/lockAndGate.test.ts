@@ -19,13 +19,13 @@ describe('Mandatory Rollover, Locking, and 7-Item Gate Requirements', () => {
     expect(day25.gateStatus.isUnlocked).toBe(false);
   });
 
-  it('rejects gate completion when practice questions are below daily target (180)', () => {
+  it('rejects gate completion when practice questions are below daily target (193)', () => {
     const day1 = createDefaultDayData(1, '2026-10-11', true);
     const breakdown = calculateDayBreakdown(day1, DEFAULT_QUESTION_TARGETS);
 
     expect(breakdown.totalCompleted).toBe(0);
-    expect(breakdown.totalDailyTarget).toBe(180);
-    expect(breakdown.totalCompleted < 180).toBe(true);
+    expect(breakdown.totalDailyTarget).toBe(193);
+    expect(breakdown.totalCompleted < 193).toBe(true);
     expect(day1.gateStatus.practiceCompleted).toBe(false);
   });
 

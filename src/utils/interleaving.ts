@@ -2,37 +2,37 @@ import { QueueItem } from '../types/pte';
 import { QUESTION_TYPE_MAP, STUDY_GROUPS } from '../config/constants';
 
 /**
- * Generates the structured 180-question study queue divided into 4 Phases (Mock-Style Papers: 45 Qs / 2–3 hrs each):
- * Prioritized according to PTE Exam Score Weight Percentages (Highest % First ➔ Lowest % Last):
+ * Generates the structured 193-question daily study queue divided into 4 Sections:
+ *   - Speaking Section: 102 questions
+ *   - Writing Section: 3 questions
+ *   - Reading Section: 45 questions
+ *   - Listening Section: 43 questions
  * 
- * Phase 1 — Speaking (Mock Paper 1: 45 questions):
- *   1. Describe Image (18) [15% Score Weight · Top Priority]
- *   2. Retell Lecture (9) [6% Score Weight · High Priority]
- *   3. Respond to a Situation (8) [6% Score Weight · High Priority]
- *   4. Read Aloud (10) [4% Score Weight · Score Weight]
+ * Speaking Section (102 questions):
+ *   1. Describe Image (15) [15% Score Weight · Top Priority]
+ *   2. Summarize Group Discussion (9) [9% Score Weight · Top Priority]
+ *   3. Repeat Sentence (35) [7% Score Weight · High Priority]
+ *   4. Retell Lecture (7) [6% Score Weight · High Priority]
+ *   5. Respond to a Situation (7) [6% Score Weight · High Priority]
+ *   6. Read Aloud (22) [4% Score Weight · Core Weight]
+ *   7. Answer Short Question (7) [2% Score Weight · Supporting Weight]
  * 
- * Phase 2 — Speaking & Writing (Mock Paper 2: 45 questions):
- *   1. Summarize Group Discussion (15) [9% Score Weight · Top Priority]
- *   2. Repeat Sentences (25) [7% Score Weight · High Priority]
- *   3. Respond to a Situation (5) [6% Score Weight · High Priority]
+ * Writing Section (3 questions):
+ *   1. Summarize Written Text (2) [7% Score Weight · High Priority]
+ *   2. Write Essay (1) [7% Score Weight · High Priority]
  * 
- * Phase 3 — Writing & Reading (Mock Paper 3: 45 questions):
- *   1. Summarize Group Discussion (3) [9% Score Weight · Top Priority]
- *   2. R/W Fill in the Blanks (18) [7% Score Weight · High Priority]
- *   3. Summarize Written Text (3) [7% Score Weight · High Priority]
- *   4. Write Essay (2) [7% Score Weight · High Priority]
- *   5. R Fill in the Blanks (14) [6% Score Weight · High Priority]
- *   6. Answer Short Questions (5) [2% Score Weight · Supporting Weight]
+ * Reading Section (45 questions):
+ *   1. Fill in the Blanks (Dropdown) (22) [7% Score Weight · High Priority]
+ *   2. Fill in the Blanks (Drag and Drop) (18) [6% Score Weight · High Priority]
+ *   3. Reorder Paragraph (5) [3% Score Weight · Supporting Weight]
  * 
- * Phase 4 — Reading & Listening (Mock Paper 4: 45 questions):
- *   1. R Fill in the Blanks (8) [6% Score Weight · High Priority]
- *   2. Write From Dictation (18) [5% Score Weight · Core Weight]
- *   3. Summarize Spoken Text (3) [4% Score Weight · Score Weight]
- *   4. Highlight Incorrect Words (6) [4% Score Weight · Score Weight]
- *   5. Reorder Paragraph (5) [3% Score Weight · Score Weight]
- *   6. Fill in the Blanks (Type In) (5) [3% Score Weight · Score Weight]
+ * Listening Section (43 questions):
+ *   1. Write From Dictation (28) [5% Score Weight · Core Weight]
+ *   2. Highlight Incorrect Words (6) [4% Score Weight · Score Weight]
+ *   3. Summarize Spoken Text (2) [4% Score Weight · Score Weight]
+ *   4. Fill in the Blanks (Type In) (7) [3% Score Weight · Supporting Weight]
  * 
- * Priority Rule Enforced: Highest Score Weight % First ➔ Lowest Score Weight % Last
+ * Total: Exactly 193 questions per day.
  */
 export function generateGroupedStudyQueue(): QueueItem[] {
   const queue: QueueItem[] = [];
@@ -74,7 +74,7 @@ export function generateGroupedStudyQueue(): QueueItem[] {
 }
 
 /**
- * Standard queue generator function matching the 4-phase, 180-question prioritized study plan.
+ * Standard queue generator function matching the 4-section, 193-question prioritized study plan.
  * Retains signature for backward compatibility with studyPlan parameters.
  */
 export function generateInterleavedQueue(

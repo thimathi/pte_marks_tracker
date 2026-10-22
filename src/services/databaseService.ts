@@ -24,6 +24,7 @@ import {
   DEFAULT_START_DATE,
   DEFAULT_TARGET_SCORES,
   QUESTION_TYPES,
+  QUESTION_TYPE_MAP,
   TOTAL_STUDY_DAYS
 } from '../config/constants';
 import { calculate21StudyDates } from '../utils/dateUtils';
@@ -205,9 +206,9 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
         needsPlanUpdate = true;
       }
 
-      // Check if targets need updating to 180 (4 Phases of 45 Qs)
+      // Check if targets need updating to 193 (Speaking 102 + Writing 3 + Reading 45 + Listening 43)
       const totalTargets = Object.values(plan.questionTargets || {}).reduce((a, b) => a + b, 0);
-      if (totalTargets !== 180) {
+      if (totalTargets !== 193) {
         plan.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
         planUpdates.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
         needsPlanUpdate = true;
@@ -232,6 +233,49 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
         updates[`users/${uid}/days/${key}`] = createDefaultDayData(d, expectedDate, d === 1);
       } else if (existingDays[key].date !== expectedDate) {
         updates[`users/${uid}/days/${key}/date`] = expectedDate;
+      }
+    }
+
+    // Rebalance any overflow attempts across days (e.g. extra questions answered count for subsequent days)
+    const targets = plan.questionTargets || DEFAULT_QUESTION_TARGETS;
+    for (let d = 1; d <= totalDays - 1; d++) {
+      const currentKey = formatDayKey(d);
+      const nextKey = formatDayKey(d + 1);
+      const currentDay = existingDays[currentKey];
+      const nextDay = existingDays[nextKey];
+      if (!currentDay || !nextDay) continue;
+
+      for (const meta of QUESTION_TYPES) {
+        const target = targets[meta.id] ?? meta.defaultTarget;
+        const atts = (currentDay.questionProgress?.[meta.id]?.attempts || {}) as Record<string, QuestionAttempt>;
+        const scoredAttempts = Object.entries(atts)
+          .map(([idx, a]) => ({ index: Number(idx), attempt: a }))
+          .filter(x => x.attempt && typeof x.attempt.score === 'number')
+          .sort((a, b) => a.index - b.index);
+
+        if (scoredAttempts.length > target) {
+          const validForCurrent = scoredAttempts.slice(0, target);
+          const overflow = scoredAttempts.slice(target);
+
+          const newCurrentAttempts: Record<number, QuestionAttempt> = {};
+          validForCurrent.forEach((item, newIdx) => {
+            newCurrentAttempts[newIdx] = { ...item.attempt, qIndex: newIdx };
+          });
+          updates[`users/${uid}/days/${currentKey}/questionProgress/${meta.id}/attempts`] = newCurrentAttempts;
+
+          const nextAtts = (nextDay.questionProgress?.[meta.id]?.attempts || {}) as Record<string, QuestionAttempt>;
+          const existingNextScored = Object.entries(nextAtts)
+            .map(([idx, a]) => ({ index: Number(idx), attempt: a }))
+            .filter(x => x.attempt && typeof x.attempt.score === 'number')
+            .sort((a, b) => a.index - b.index);
+
+          const combinedNext = [...overflow.map(x => x.attempt), ...existingNextScored.map(x => x.attempt)];
+          const newNextAttempts: Record<number, QuestionAttempt> = {};
+          combinedNext.forEach((item, newIdx) => {
+            newNextAttempts[newIdx] = { ...item, qIndex: newIdx };
+          });
+          updates[`users/${uid}/days/${nextKey}/questionProgress/${meta.id}/attempts`] = newNextAttempts;
+        }
       }
     }
 
@@ -275,16 +319,29 @@ export async function saveQuestionAttempt(
   dayNumber: number,
   questionTypeId: string,
   qIndex: number,
-  attempt: Partial<QuestionAttempt>
+  attempt: Partial<QuestionAttempt>,
+  customTarget?: number
 ): Promise<void> {
-  const dayKey = formatDayKey(dayNumber);
-  const attemptRef = ref(db, `users/${uid}/days/${dayKey}/questionProgress/${questionTypeId}/attempts/${qIndex}`);
+  const meta = QUESTION_TYPE_MAP.get(questionTypeId);
+  const target = customTarget ?? meta?.defaultTarget ?? 20;
+
+  // Rollover: If user answered more than daily target, count toward next day(s)
+  let targetDay = dayNumber;
+  let targetIndex = qIndex;
+  if (target > 0 && qIndex >= target) {
+    const dayOffset = Math.floor(qIndex / target);
+    targetDay = Math.min(dayNumber + dayOffset, TOTAL_STUDY_DAYS);
+    targetIndex = qIndex % target;
+  }
+
+  const dayKey = formatDayKey(targetDay);
+  const attemptRef = ref(db, `users/${uid}/days/${dayKey}/questionProgress/${questionTypeId}/attempts/${targetIndex}`);
   
   const existingSnap = await get(attemptRef);
   const prev = existingSnap.exists() ? existingSnap.val() : {};
 
   const merged: QuestionAttempt = {
-    qIndex,
+    qIndex: targetIndex,
     score: attempt.score !== undefined ? attempt.score : (prev.score ?? null),
     notes: attempt.notes !== undefined ? attempt.notes : (prev.notes || ''),
     isFlaggedForReview: attempt.isFlaggedForReview !== undefined ? attempt.isFlaggedForReview : !!prev.isFlaggedForReview,
@@ -374,7 +431,7 @@ export async function completeDayAndUnlockNext(
   const gate = currentData.gateStatus;
   const missingRequirements: string[] = [];
 
-  if (!gate.practiceCompleted) missingRequirements.push('All 180 practice questions must be scored');
+  if (!gate.practiceCompleted) missingRequirements.push('All 193 practice questions must be scored');
   if (!gate.dailyPracticeReviewCompleted) missingRequirements.push('Daily practice questions review must be confirmed');
   if (!gate.mock1Completed) missingRequirements.push('Daily Mock Exam must be completed and scored');
   if (!gate.mock1ReviewCompleted) missingRequirements.push('Daily Mock Exam review must be completed');
