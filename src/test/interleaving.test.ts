@@ -36,39 +36,31 @@ describe('4-Phase Study Plan & 180-Question Queue Generation', () => {
       expect(counts[meta.id]).toBe(expectedTarget);
     }
 
-    // Specific counts from 180-question 4-phase plan:
-    expect(counts['read_aloud']).toBe(23);
-    expect(counts['repeat_sentence']).toBe(38);
-    expect(counts['describe_image']).toBe(10);
-    expect(counts['retell_lecture']).toBe(7);
-    expect(counts['respond_to_situation']).toBe(6);
-    expect(counts['summarize_group_discussion']).toBe(8);
-    expect(counts['answer_short_question']).toBe(10);
-    expect(counts['summarize_written_text']).toBe(2);
-    expect(counts['write_essay']).toBe(1);
-    expect(counts['rw_fill_in_blanks']).toBe(20);
-    expect(counts['r_fill_in_blanks']).toBe(15);
-    expect(counts['reorder_paragraph']).toBe(5);
-    expect(counts['write_from_dictation']).toBe(22);
-    expect(counts['listening_fill_in_blanks']).toBe(6);
-    expect(counts['highlight_incorrect_words']).toBe(5);
-    expect(counts['summarize_spoken_text']).toBe(2);
+    // Specific counts from 180-question 4-phase plan based on score weight:
+    expect(counts['describe_image']).toBe(18); // 15% Weight
+    expect(counts['summarize_group_discussion']).toBe(18); // 9% Weight (15 in P2 + 3 in P3)
+    expect(counts['repeat_sentence']).toBe(25); // 7% Weight
+    expect(counts['rw_fill_in_blanks']).toBe(18); // 7% Weight
+    expect(counts['summarize_written_text']).toBe(3); // 7% Weight
+    expect(counts['write_essay']).toBe(2); // 7% Weight
+    expect(counts['retell_lecture']).toBe(9); // 6% Weight
+    expect(counts['respond_to_situation']).toBe(13); // 6% Weight (8 in P1 + 5 in P2)
+    expect(counts['r_fill_in_blanks']).toBe(22); // 6% Weight (14 in P3 + 8 in P4)
+    expect(counts['write_from_dictation']).toBe(18); // 5% Weight
+    expect(counts['read_aloud']).toBe(10); // 4% Weight
+    expect(counts['summarize_spoken_text']).toBe(3); // 4% Weight
+    expect(counts['highlight_incorrect_words']).toBe(6); // 4% Weight
+    expect(counts['reorder_paragraph']).toBe(5); // 3% Weight
+    expect(counts['listening_fill_in_blanks']).toBe(5); // 3% Weight
+    expect(counts['answer_short_question']).toBe(5); // 2% Weight
   });
 
-  it('enforces priority order: Prediction First -> Hard Second -> Medium Third -> Easy Last', () => {
-    const priorityRank = {
-      prediction: 1,
-      hard: 2,
-      medium: 3,
-      easy: 4
-    };
-
+  it('enforces score weight priority order (highest % first in each phase)', () => {
     for (const group of STUDY_GROUPS) {
-      let lastRank = 1;
+      let prevWeight = 100;
       for (const item of group.items) {
-        const currentRank = priorityRank[item.priority];
-        expect(currentRank).toBeGreaterThanOrEqual(lastRank);
-        lastRank = currentRank;
+        expect(item.scoreWeight).toBeLessThanOrEqual(prevWeight);
+        prevWeight = item.scoreWeight;
       }
     }
   });

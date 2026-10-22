@@ -311,6 +311,14 @@ export const PracticePage: React.FC = () => {
                 {currentItem.groupTitle} · Q{currentItem.groupIndex + 1} of {currentItem.groupTotal}
               </span>
 
+              {/* Score Weight Pill */}
+              {currentItem.scoreWeight !== undefined && (
+                <span className="text-xs font-bold px-3 py-1 rounded-xl bg-amber-500/15 text-amber-300 border border-amber-500/40 flex items-center gap-1">
+                  <span>⭐</span>
+                  <span>{currentItem.scoreWeight}% Score Weight</span>
+                </span>
+              )}
+
               {/* Priority Badge */}
               <span className={`text-xs font-bold px-3 py-1 rounded-xl border flex items-center gap-1.5 ${priorityStyle.badge}`}>
                 <span>{priorityStyle.icon}</span>
@@ -632,11 +640,11 @@ export const PracticePage: React.FC = () => {
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded bg-rose-500/25 border border-rose-500/50" />
-            <span>Prediction First</span>
+            <span>Top Weight (9–15%)</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded bg-amber-500/25 border border-amber-500/50" />
-            <span>Hard Question</span>
+            <span>High Weight (6–7%)</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded bg-[#10192c] border border-[#2b3856]" />

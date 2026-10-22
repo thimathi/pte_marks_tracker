@@ -9,6 +9,7 @@ export interface QuestionTypeMeta {
   defaultTarget: number;
   estMinutes: string;
   isPrediction: boolean;
+  scoreWeight: number; // percentage from official score weight chart (e.g. 15 for 15%)
   maxScore: number;
   description: string;
 }
@@ -143,6 +144,7 @@ export interface StudyGroupItem {
   count: number;
   priority: QuestionPriority;
   priorityLabel: string;
+  scoreWeight: number; // e.g. 15 for 15%
   startInstanceIndex: number;
 }
 
@@ -166,7 +168,8 @@ export interface QueueItem {
   secondarySkill?: SkillType;
   instanceIndex: number; // e.g. 3rd Read Aloud today
   isPrediction: boolean;
-  overallQueueIndex: number; // 0 to 277
+  scoreWeight: number; // e.g. 15 for 15%
+  overallQueueIndex: number; // 0 to 179
   groupId: 'group_1' | 'group_2' | 'group_3' | 'group_4';
   groupNumber: number;
   groupTitle: string;
