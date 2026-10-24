@@ -38,8 +38,8 @@ interface PteDataContextType {
   lastSavedAt: string | null;
   selectDay: (dayNumber: number) => void;
   updateScore: (dayNumber: number, typeId: string, qIndex: number, attempt: Partial<QuestionAttempt>) => Promise<void>;
-  updateMockExam: (dayNumber: number, mockId: 'mock01' | 'mock02', data: Partial<MockExamRecord>) => Promise<void>;
-  updateMockReview: (dayNumber: number, reviewId: 'review01' | 'review02', data: Partial<MockReviewRecord>) => Promise<void>;
+  updateMockExam: (dayNumber: number, mockId: string, data: Partial<MockExamRecord>) => Promise<void>;
+  updateMockReview: (dayNumber: number, reviewId: string, data: Partial<MockReviewRecord>) => Promise<void>;
   updateExerciseCount: (dayNumber: number, exerciseId: string, count: number, notes?: string) => Promise<void>;
   updateGateItem: (dayNumber: number, key: string, val: boolean) => Promise<void>;
   completeCurrentDay: (dayNumber: number) => Promise<{ success: boolean; message: string }>;
@@ -165,7 +165,7 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Update Mock Exam
   const updateMockExam = useCallback(
-    async (dayNumber: number, mockId: 'mock01' | 'mock02', data: Partial<MockExamRecord>) => {
+    async (dayNumber: number, mockId: string, data: Partial<MockExamRecord>) => {
       if (!user) return;
       setSyncStatus('syncing');
 
@@ -199,7 +199,7 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Update Mock Review
   const updateMockReview = useCallback(
-    async (dayNumber: number, reviewId: 'review01' | 'review02', data: Partial<MockReviewRecord>) => {
+    async (dayNumber: number, reviewId: string, data: Partial<MockReviewRecord>) => {
       if (!user) return;
       setSyncStatus('syncing');
 

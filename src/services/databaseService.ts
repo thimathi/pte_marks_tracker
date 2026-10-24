@@ -50,66 +50,55 @@ export function createDefaultDayData(dayNumber: number, dateStr: string, isUnloc
     };
   }
 
-  const mock1Number = dayNumber;
-  const mock2Number = dayNumber;
+  const mockExams: Record<string, MockExamRecord> = {};
+  const mockReviews: Record<string, MockReviewRecord> = {};
+
+  const mockIds = dayNumber === 1
+    ? ['mock01', 'mock02', 'mock03', 'mock04', 'mock05']
+    : ['mock01', 'mock02'];
+
+  mockIds.forEach((id, idx) => {
+    const examNum = dayNumber === 1
+      ? idx + 1
+      : 5 + (dayNumber - 2) * 2 + (idx + 1);
+    const reviewId = `review0${idx + 1}`;
+
+    mockExams[id] = {
+      id,
+      studyDay: dayNumber,
+      examNumber: examNum,
+      date: dateStr,
+      targetQuestions: 60,
+      questionsAttempted: 0,
+      overallScore: null,
+      speakingScore: null,
+      writingScore: null,
+      readingScore: null,
+      listeningScore: null,
+      isCompleted: false,
+    };
+
+    mockReviews[reviewId] = {
+      id: reviewId,
+      mockId: id,
+      studyDay: dayNumber,
+      examNumber: examNum,
+      durationMinutes: 0,
+      isCompleted: false,
+    };
+  });
 
   return {
     dayNumber,
     date: dateStr,
     status: isUnlocked ? 'active' : 'locked',
     questionProgress,
-    mockExams: {
-      mock01: {
-        id: 'mock01',
-        studyDay: dayNumber,
-        examNumber: mock1Number,
-        date: dateStr,
-        targetQuestions: 60,
-        questionsAttempted: 0,
-        overallScore: null,
-        speakingScore: null,
-        writingScore: null,
-        readingScore: null,
-        listeningScore: null,
-        isCompleted: false,
-      },
-      mock02: {
-        id: 'mock02',
-        studyDay: dayNumber,
-        examNumber: mock2Number,
-        date: dateStr,
-        targetQuestions: 60,
-        questionsAttempted: 0,
-        overallScore: null,
-        speakingScore: null,
-        writingScore: null,
-        readingScore: null,
-        listeningScore: null,
-        isCompleted: false,
-      }
-    },
-    mockReviews: {
-      review01: {
-        id: 'review01',
-        mockId: 'mock01',
-        studyDay: dayNumber,
-        examNumber: mock1Number,
-        durationMinutes: 0,
-        isCompleted: false,
-      },
-      review02: {
-        id: 'review02',
-        mockId: 'mock02',
-        studyDay: dayNumber,
-        examNumber: mock2Number,
-        durationMinutes: 0,
-        isCompleted: false,
-      }
-    },
+    mockExams,
+    mockReviews,
     additionalExercises,
     gateStatus: {
-      practiceCompleted: false,
-      dailyPracticeReviewCompleted: false,
+      practiceCompleted: dayNumber === 1,
+      dailyPracticeReviewCompleted: dayNumber === 1,
       mock1Completed: false,
       mock1ReviewCompleted: false,
       mock2Completed: false,
@@ -199,16 +188,22 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
       let needsPlanUpdate = false;
       const planUpdates: Partial<StudyPlan> = {};
 
-      // Migrate old default start date 2026-10-18 to 2026-10-20
-      if (plan.startDate === '2026-10-18' || !plan.startDate) {
+      // Migrate start date to 2026-10-24
+      if (plan.startDate !== DEFAULT_START_DATE || !plan.startDate) {
         plan.startDate = DEFAULT_START_DATE;
         planUpdates.startDate = DEFAULT_START_DATE;
         needsPlanUpdate = true;
       }
 
-      // Check if targets need updating to 193 (Speaking 102 + Writing 3 + Reading 45 + Listening 43)
+      if (plan.durationDays !== TOTAL_STUDY_DAYS) {
+        plan.durationDays = TOTAL_STUDY_DAYS;
+        planUpdates.durationDays = TOTAL_STUDY_DAYS;
+        needsPlanUpdate = true;
+      }
+
+      // Check if targets need updating to 240 (Speaking 125 + Writing 5 + Reading 55 + Listening 55)
       const totalTargets = Object.values(plan.questionTargets || {}).reduce((a, b) => a + b, 0);
-      if (totalTargets !== 193) {
+      if (totalTargets !== 240) {
         plan.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
         planUpdates.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
         needsPlanUpdate = true;
@@ -246,7 +241,7 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
       if (!currentDay || !nextDay) continue;
 
       for (const meta of QUESTION_TYPES) {
-        const target = targets[meta.id] ?? meta.defaultTarget;
+        const target = d === 1 ? 0 : (targets[meta.id] ?? meta.defaultTarget);
         const atts = (currentDay.questionProgress?.[meta.id]?.attempts || {}) as Record<string, QuestionAttempt>;
         const scoredAttempts = Object.entries(atts)
           .map(([idx, a]) => ({ index: Number(idx), attempt: a }))
@@ -325,10 +320,14 @@ export async function saveQuestionAttempt(
   const meta = QUESTION_TYPE_MAP.get(questionTypeId);
   const target = customTarget ?? meta?.defaultTarget ?? 20;
 
-  // Rollover: If user answered more than daily target, count toward next day(s)
+  // Rollover: If user answered on Day 1 (0 practice target), or more than daily target, count toward next day(s)
   let targetDay = dayNumber;
   let targetIndex = qIndex;
-  if (target > 0 && qIndex >= target) {
+  if (dayNumber === 1) {
+    const dayOffset = Math.floor(qIndex / target);
+    targetDay = Math.min(2 + dayOffset, TOTAL_STUDY_DAYS);
+    targetIndex = qIndex % target;
+  } else if (target > 0 && qIndex >= target) {
     const dayOffset = Math.floor(qIndex / target);
     targetDay = Math.min(dayNumber + dayOffset, TOTAL_STUDY_DAYS);
     targetIndex = qIndex % target;
@@ -359,7 +358,7 @@ export async function saveQuestionAttempt(
 export async function saveMockExamRecord(
   uid: string,
   dayNumber: number,
-  mockId: 'mock01' | 'mock02',
+  mockId: string,
   data: Partial<MockExamRecord>
 ): Promise<void> {
   const dayKey = formatDayKey(dayNumber);
@@ -376,7 +375,7 @@ export async function saveMockExamRecord(
 export async function saveMockReviewRecord(
   uid: string,
   dayNumber: number,
-  reviewId: 'review01' | 'review02',
+  reviewId: string,
   data: Partial<MockReviewRecord>
 ): Promise<void> {
   const dayKey = formatDayKey(dayNumber);
@@ -427,14 +426,35 @@ export async function completeDayAndUnlockNext(
 
   const currentData: DayData = snap.val();
 
-  // Validate completion requirements (1 Mock Exam + Review daily):
+  // Validate completion requirements:
+  // Priority #1: Mock Exams & Reviews (Day 1: 5 Mocks; Days 2-22: 2 Mocks)
+  const isDay1 = dayNumber === 1;
+  const mockKeys = isDay1
+    ? ['mock01', 'mock02', 'mock03', 'mock04', 'mock05']
+    : ['mock01', 'mock02'];
+
   const gate = currentData.gateStatus;
   const missingRequirements: string[] = [];
 
-  if (!gate.practiceCompleted) missingRequirements.push('All 193 practice questions must be scored');
-  if (!gate.dailyPracticeReviewCompleted) missingRequirements.push('Daily practice questions review must be confirmed');
-  if (!gate.mock1Completed) missingRequirements.push('Daily Mock Exam must be completed and scored');
-  if (!gate.mock1ReviewCompleted) missingRequirements.push('Daily Mock Exam review must be completed');
+  mockKeys.forEach((key, idx) => {
+    const examNum = isDay1 ? idx + 1 : 5 + (dayNumber - 2) * 2 + (idx + 1);
+    const mock = currentData.mockExams?.[key];
+    const rev = currentData.mockReviews?.[`review0${idx + 1}`];
+    if (!mock?.isCompleted) {
+      missingRequirements.push(`Mock Exam #${examNum} must be completed and scored`);
+    }
+    if (!rev?.isCompleted) {
+      missingRequirements.push(`Mock Exam #${examNum} deep review must be completed`);
+    }
+  });
+
+  // Priority #2: Practice Questions (Day 1 requires 0 questions; Days 2-22 require 240 questions)
+  if (!isDay1) {
+    if (!gate.practiceCompleted) missingRequirements.push('All 240 practice questions must be scored');
+    if (!gate.dailyPracticeReviewCompleted) missingRequirements.push('Daily practice questions review must be confirmed');
+  }
+
+  // Priority #3: Mandatory Daily Drills
   if (!gate.additionalExercisesCompleted) missingRequirements.push('All mandatory additional exercises must be completed');
 
   if (missingRequirements.length > 0) {

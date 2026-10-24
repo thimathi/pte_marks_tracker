@@ -38,8 +38,10 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
   const isCompleted = targetDayData?.status === 'completed';
 
   // Calculate live completion metrics for Day
+  const isDay1 = dayNumber === 1;
   const breakdown = calculateDayBreakdown(targetDayData, studyPlan.questionTargets);
-  const practiceDone = breakdown.totalCompleted >= breakdown.totalDailyTarget && breakdown.totalDailyTarget > 0;
+  const practiceDone = isDay1 ? true : (breakdown.totalCompleted >= breakdown.totalDailyTarget && breakdown.totalDailyTarget > 0);
+  const practiceReviewDone = isDay1 ? true : !!targetDayData?.gateStatus?.dailyPracticeReviewCompleted;
 
   // Check additional exercises
   const additionalDone = DEFAULT_ADDITIONAL_EXERCISES.every((ex) => {
@@ -48,52 +50,90 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     return record && record.completedCount >= targetCount;
   });
 
-  const mock1Done = !!targetDayData?.mockExams?.mock01?.isCompleted;
-  const mock1RevDone = !!targetDayData?.mockReviews?.review01?.isCompleted;
-  const mock2Done = !!targetDayData?.mockExams?.mock02?.isCompleted;
-  const mock2RevDone = !!targetDayData?.mockReviews?.review02?.isCompleted;
-  const practiceReviewDone = !!targetDayData?.gateStatus?.dailyPracticeReviewCompleted;
+  // Mock exams based on Day 1 (5 mocks) vs Days 2-22 (2 mocks)
+  const mockKeys = isDay1
+    ? ['mock01', 'mock02', 'mock03', 'mock04', 'mock05']
+    : ['mock01', 'mock02'];
 
-  // 5 Checklist requirements (1 Mock Exam + Review daily)
-  const checklistItems = [
-    {
+  const mockStatuses = mockKeys.map((key, idx) => {
+    const examNum = isDay1 ? idx + 1 : 5 + (dayNumber - 2) * 2 + (idx + 1);
+    const mockRec = targetDayData?.mockExams?.[key];
+    const revRec = targetDayData?.mockReviews?.[`review0${idx + 1}`];
+    return {
+      key,
+      examNum,
+      isCompleted: !!mockRec?.isCompleted,
+      score: mockRec?.overallScore,
+      reviewCompleted: !!revRec?.isCompleted
+    };
+  });
+
+  const allMocksDone = mockStatuses.every((m) => m.isCompleted);
+  const allReviewsDone = mockStatuses.every((m) => m.reviewCompleted);
+
+  // Priority #1: Mock Exams & Reviews
+  const checklistItems: {
+    id: string;
+    label: string;
+    done: boolean;
+    canAutoDetect?: boolean;
+    canToggle?: boolean;
+    hint: string;
+  }[] = [];
+
+  mockStatuses.forEach((m) => {
+    checklistItems.push({
+      id: `mock_${m.key}`,
+      label: `Mock Exam #${m.examNum} Completed (Score: ${m.score ?? '—'} / 90) [Priority #1]`,
+      done: m.isCompleted,
+      canAutoDetect: true,
+      hint: `Complete Full Simulation Mock #${m.examNum} in the Mock Exam Center.`
+    });
+    checklistItems.push({
+      id: `review_${m.key}`,
+      label: `Mock Exam #${m.examNum} Deep Error Analysis Completed`,
+      done: m.reviewCompleted,
+      canAutoDetect: true,
+      hint: `Complete mistake logging and error review for Mock #${m.examNum}.`
+    });
+  });
+
+  // Priority #2: Practice Questions (0 required on Day 1; 240 on Days 2-22)
+  if (!isDay1) {
+    checklistItems.push({
       id: 'practice',
       label: `All ${breakdown.totalDailyTarget} Practice Questions Completed & Scored (${breakdown.totalCompleted} / ${breakdown.totalDailyTarget})`,
       done: practiceDone,
       canAutoDetect: true,
-      hint: `Scoring all ${breakdown.totalDailyTarget} practice questions (across 4 groups) is required before unlocking the next day.`
-    },
-    {
+      hint: `Scoring all ${breakdown.totalDailyTarget} practice questions (across 4 groups) is required.`
+    });
+    checklistItems.push({
       id: 'dailyPracticeReviewCompleted',
       label: 'Daily Practice Questions Review Completed',
       done: practiceReviewDone,
       canToggle: true,
       hint: 'Confirm you analyzed your mistakes and low-scoring questions in the Review Center.'
-    },
-    {
-      id: 'mock1',
-      label: `Mock Exam Completed (Score: ${targetDayData?.mockExams?.mock01?.overallScore ?? '—'} / 90)`,
-      done: mock1Done,
+    });
+  } else {
+    checklistItems.push({
+      id: 'day1PracticeWaived',
+      label: 'Practice Questions: 0 Required for Day 1 (Focus strictly on 5 Full Mock Exams)',
+      done: true,
       canAutoDetect: true,
-      hint: 'Complete the daily mock simulation in the Mock Exam Center.'
-    },
-    {
-      id: 'mock1Review',
-      label: 'Mock Exam Deep Review & Error Analysis Completed',
-      done: mock1RevDone,
-      canAutoDetect: true,
-      hint: 'Complete the error analysis and vocabulary check in the Mock Exam review workflow.'
-    },
-    {
-      id: 'additional',
-      label: 'All Mandatory Daily Drills Completed (Twisters 2x, Collocations 2x, Essay Template 3x)',
-      done: additionalDone,
-      canAutoDetect: true,
-      hint: 'Log required repetition counts for all 3 daily repeat tasks.'
-    }
-  ];
+      hint: 'Day 1 is dedicated entirely to completing and reviewing 5 full simulation mock exams.'
+    });
+  }
 
-  const allReady = practiceDone && practiceReviewDone && mock1Done && mock1RevDone && additionalDone;
+  // Priority #3: Mandatory Daily Drills
+  checklistItems.push({
+    id: 'additional',
+    label: 'All Mandatory Daily Drills Completed (Twisters 2x, Collocations 2x, Essay Template 3x)',
+    done: additionalDone,
+    canAutoDetect: true,
+    hint: 'Log required repetition counts for all 3 daily repeat tasks.'
+  });
+
+  const allReady = allMocksDone && allReviewsDone && practiceDone && practiceReviewDone && additionalDone;
 
   const handleToggleCheck = async (id: string, currentVal: boolean) => {
     await updateGateItem(dayNumber, id, !currentVal);
@@ -105,10 +145,11 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
 
     // Sync computed gate states first
     await updateGateItem(dayNumber, 'practiceCompleted', practiceDone);
-    await updateGateItem(dayNumber, 'mock1Completed', mock1Done);
-    await updateGateItem(dayNumber, 'mock1ReviewCompleted', mock1RevDone);
-    await updateGateItem(dayNumber, 'mock2Completed', true);
-    await updateGateItem(dayNumber, 'mock2ReviewCompleted', true);
+    await updateGateItem(dayNumber, 'dailyPracticeReviewCompleted', practiceReviewDone);
+    await updateGateItem(dayNumber, 'mock1Completed', mockStatuses[0]?.isCompleted ?? true);
+    await updateGateItem(dayNumber, 'mock1ReviewCompleted', mockStatuses[0]?.reviewCompleted ?? true);
+    await updateGateItem(dayNumber, 'mock2Completed', mockStatuses[1]?.isCompleted ?? true);
+    await updateGateItem(dayNumber, 'mock2ReviewCompleted', mockStatuses[1]?.reviewCompleted ?? true);
     await updateGateItem(dayNumber, 'additionalExercisesCompleted', additionalDone);
 
     const res = await completeCurrentDay(dayNumber);

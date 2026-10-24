@@ -85,12 +85,15 @@ export function calculateDayBreakdown(dayData: DayData | null | undefined, targe
   let totalCompleted = 0;
   let totalDailyTarget = 0;
 
+  const isDay1 = dayData?.dayNumber === 1;
+
   for (const meta of QUESTION_TYPES) {
-    const target = targets[meta.id] ?? meta.defaultTarget;
+    const target = isDay1 ? 0 : (targets[meta.id] ?? meta.defaultTarget);
     totalDailyTarget += target;
 
     const attempts = dayData?.questionProgress?.[meta.id]?.attempts || {};
-    for (let i = 0; i < target; i++) {
+    const countToCheck = isDay1 ? Object.keys(attempts).length : target;
+    for (let i = 0; i < countToCheck; i++) {
       const a = attempts[i];
       if (a && typeof a.score === 'number' && !isNaN(a.score)) {
         allScores.push(a.score);
@@ -113,7 +116,7 @@ export function calculateDayBreakdown(dayData: DayData | null | undefined, targe
   return {
     totalCompleted,
     totalDailyTarget,
-    completionPercentage: totalDailyTarget > 0 ? Math.round((totalCompleted / totalDailyTarget) * 100) : 0,
+    completionPercentage: isDay1 ? 100 : (totalDailyTarget > 0 ? Math.round((totalCompleted / totalDailyTarget) * 100) : 0),
     dailyAverage: dailyAvg.average,
     dailyCount: dailyAvg.count,
     speakingAverage: speakingAvg.average,

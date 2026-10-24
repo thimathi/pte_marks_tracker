@@ -14,13 +14,13 @@ import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown, calculateAverage } from '../utils/scoring';
 import { exportPracticeScoresCsv, exportMockExamsCsv } from '../utils/csvExport';
 import { formatDateFriendly } from '../utils/dateUtils';
-import { QUESTION_TYPES, TOTAL_STUDY_DAYS } from '../config/constants';
+import { QUESTION_TYPES, TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS } from '../config/constants';
 
 export const FinalReportPage: React.FC = () => {
   const { studyPlan, days } = usePteData();
   const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
-  const totalMocks = totalDays * 1;
-  const totalPracticeTarget = totalDays * 193;
+  const totalMocks = TOTAL_MOCK_TARGET;
+  const totalPracticeTarget = (totalDays - 1) * 240;
 
   const [personalNotes, setPersonalNotes] = useState(
     () => localStorage.getItem('pte_21day_lessons_learned') || ''
@@ -75,15 +75,18 @@ export const FinalReportPage: React.FC = () => {
         }
       }
 
-      // Collect mocks (1 mock per day)
-      const m1 = day.mockExams?.mock01;
-      const r1 = day.mockReviews?.review01;
-
-      if (m1?.isCompleted && m1.overallScore !== null) {
-        totalMocksDone++;
-        mockScores.push({ examNum: m1.examNumber || d, score: m1.overallScore });
+      // Collect mocks for day
+      const mocks = day.mockExams || {};
+      for (const [mId, m] of Object.entries(mocks)) {
+        if (m?.isCompleted && m.overallScore !== null) {
+          totalMocksDone++;
+          mockScores.push({ examNum: m.examNumber || mockScores.length + 1, score: m.overallScore });
+        }
       }
-      if (r1?.isCompleted) totalMockReviewsDone++;
+      const revs = day.mockReviews || {};
+      for (const [rId, r] of Object.entries(revs)) {
+        if (r?.isCompleted) totalMockReviewsDone++;
+      }
     }
   }
 
@@ -164,7 +167,7 @@ export const FinalReportPage: React.FC = () => {
               PTE - Daily Study Plan – Superior English
             </h2>
             <p className="text-xs text-[#a9b5d0]">
-              Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · 4 Study Sections (193 Qs / Day) · Target Benchmark: {studyPlan.targetScores.overall}+ Overall
+              Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · 4 Study Sections (240 Qs / Day) · Target Benchmark: {studyPlan.targetScores.overall}+ Overall
             </p>
           </div>
 
@@ -190,7 +193,7 @@ export const FinalReportPage: React.FC = () => {
             <span className="text-[11px] text-[#a9b5d0] block">Practice Questions</span>
             <div className="text-2xl font-bold text-[#edf2ff]">{totalPracticeQuestionsScored} / {totalPracticeTarget.toLocaleString()}</div>
             <span className="text-[10px] text-blue-400 font-semibold">
-              Target: 193 Qs / Day (Speaking 102 · Writing 3 · Reading 45 · Listening 43)
+              Target: 240 Qs / Day (Speaking 125 · Writing 5 · Reading 55 · Listening 55)
             </span>
           </div>
 
@@ -198,7 +201,7 @@ export const FinalReportPage: React.FC = () => {
             <span className="text-[11px] text-[#a9b5d0] block">Mock Simulations</span>
             <div className="text-2xl font-bold text-[#edf2ff]">{totalMocksDone} / {totalMocks}</div>
             <span className="text-[10px] text-purple-400 font-semibold">
-              1 Mock / Day
+              Day 1 (5) + Days 2–22 (2/Day)
             </span>
           </div>
 

@@ -16,16 +16,16 @@ import {
 import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown } from '../utils/scoring';
 import { formatDateFriendly, isDatePast } from '../utils/dateUtils';
-import { DAY_TARGET_SCORES } from '../config/constants';
+import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS } from '../config/constants';
 
 export const RoadmapPage: React.FC = () => {
   const { studyPlan, days, currentDay, selectDay } = usePteData();
-  const totalDays = studyPlan.durationDays || 25;
+  const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
   const navigate = useNavigate();
 
   const handleSelectDay = (dayNum: number, isUnlocked: boolean) => {
     if (!isUnlocked) {
-      alert(`🔒 Day ${dayNum} is locked! Complete all 7 daily criteria for Day ${dayNum - 1} first.`);
+      alert(`🔒 Day ${dayNum} is locked! Complete all criteria for Day ${dayNum - 1} first.`);
       return;
     }
     selectDay(dayNum);
@@ -41,7 +41,7 @@ export const RoadmapPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-[#edf2ff]">PTE - Daily Study Plan – Superior English Roadmap</h1>
         </div>
         <p className="text-xs text-[#a9b5d0] leading-relaxed max-w-3xl">
-          Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · {totalDays}-Day Mountain Staircase (Target 62+ ➔ 86+). Strict sequential unlocking enforces mastery across 193 daily questions in 4 sections + 1 Mock Exam.
+          Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · {totalDays}-Day Mountain Staircase (Target 62+ ➔ 86+). Priority #1: 47 Mock Exams & 5,000+ Practice Questions across 22 Days. Day 1: 5 Mock Exams; Days 2–22: 2 Mock Exams + 240 Practice Questions daily.
         </p>
       </div>
 
@@ -54,10 +54,13 @@ export const RoadmapPage: React.FC = () => {
           const isCurrent = dayNum === currentDay;
           const targetScore = DAY_TARGET_SCORES[dayNum - 1];
           const isOverdue = !isCompleted && dayData && isDatePast(dayData.date) && isUnlocked;
+          const isDay1 = dayNum === 1;
 
           const breakdown = calculateDayBreakdown(dayData, studyPlan.questionTargets);
-          const mock1 = dayData?.mockExams?.mock01;
-          const mock2 = dayData?.mockExams?.mock02;
+          const mockKeys = isDay1
+            ? ['mock01', 'mock02', 'mock03', 'mock04', 'mock05']
+            : ['mock01', 'mock02'];
+          const completedMocksCount = mockKeys.filter((k) => dayData?.mockExams?.[k]?.isCompleted).length;
 
           return (
             <div
@@ -142,9 +145,9 @@ export const RoadmapPage: React.FC = () => {
                   </div>
 
                   <div className="p-2 rounded-lg bg-[#0e1729] border border-[#2b3856]">
-                    <span className="text-[#a9b5d0] block text-[10px]">Mock Exam (1/Day):</span>
+                    <span className="text-[#a9b5d0] block text-[10px]">Mocks ({mockKeys.length} Target):</span>
                     <span className="font-bold text-[#edf2ff]">
-                      {mock1?.overallScore !== null ? `${mock1.overallScore}/90` : 'Pending'}
+                      {completedMocksCount} / {mockKeys.length} Done
                     </span>
                   </div>
                 </div>

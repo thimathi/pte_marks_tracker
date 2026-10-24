@@ -19,7 +19,7 @@ import {
 import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown, calculateStreak, getWeaknessAnalysis } from '../utils/scoring';
 import { formatDateFriendly, isDatePast } from '../utils/dateUtils';
-import { DAY_TARGET_SCORES, DEFAULT_ADDITIONAL_EXERCISES } from '../config/constants';
+import { DAY_TARGET_SCORES, DEFAULT_ADDITIONAL_EXERCISES, TOTAL_MOCK_TARGET, TOTAL_PRACTICE_TARGET, TOTAL_STUDY_DAYS } from '../config/constants';
 import { DailyDrillsCard } from '../components/drills/DailyDrillsCard';
 import { CompletionGate } from '../components/gate/CompletionGate';
 
@@ -30,12 +30,14 @@ export const DashboardPage: React.FC = () => {
   const breakdown = calculateDayBreakdown(currentDayData, studyPlan.questionTargets);
   const streak = calculateStreak(days);
 
-  const totalDays = studyPlan.durationDays || 25;
+  const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
+  const isDay1 = currentDay === 1;
 
   // Overall journey calculation
   let totalCompletedAcrossJourney = 0;
   let completedDaysCount = 0;
   let overdueDaysCount = 0;
+  let totalMocksCompleted = 0;
 
   for (let d = 1; d <= totalDays; d++) {
     const day = days[d];
@@ -47,6 +49,14 @@ export const DashboardPage: React.FC = () => {
       }
       const b = calculateDayBreakdown(day, studyPlan.questionTargets);
       totalCompletedAcrossJourney += b.totalCompleted;
+
+      // Count completed mocks
+      const mocks = day.mockExams || {};
+      for (const m of Object.values(mocks)) {
+        if (m && m.isCompleted) {
+          totalMocksCompleted++;
+        }
+      }
     }
   }
 
@@ -64,65 +74,90 @@ export const DashboardPage: React.FC = () => {
     studyPlan.targetScores
   );
 
-  const mock1 = currentDayData?.mockExams?.mock01;
-  const mock2 = currentDayData?.mockExams?.mock02;
-  const mock1Rev = currentDayData?.mockReviews?.review01;
-  const mock2Rev = currentDayData?.mockReviews?.review02;
+  // Mocks for currentDay
+  const mockKeys = isDay1
+    ? ['mock01', 'mock02', 'mock03', 'mock04', 'mock05']
+    : ['mock01', 'mock02'];
 
-  // Determine next unfinished task
+  const todayMocks = mockKeys.map((key, idx) => {
+    const examNum = isDay1 ? idx + 1 : 5 + (currentDay - 2) * 2 + (idx + 1);
+    const mockRec = currentDayData?.mockExams?.[key];
+    const revRec = currentDayData?.mockReviews?.[`review0${idx + 1}`];
+    return {
+      key,
+      examNum,
+      isCompleted: !!mockRec?.isCompleted,
+      score: mockRec?.overallScore,
+      reviewCompleted: !!revRec?.isCompleted
+    };
+  });
+
+  // Determine next unfinished task - PRIORITY #1: Mock Exams & Reviews!
   let nextTask = {
-    title: 'Start Practice Session (4 Groups)',
-    desc: `${remainingQuestionsToday} questions remaining in today's ${breakdown.totalDailyTarget} practice queue`,
-    link: '/practice',
-    btnText: 'Open Workspace'
+    title: 'Start Mock Exam Simulation (Priority #1)',
+    desc: 'Full mock simulation is your highest priority task',
+    link: '/mock-exams',
+    btnText: 'Go to Mock Exam'
   };
 
-  if (breakdown.totalCompleted >= breakdown.totalDailyTarget) {
-    if (!mock1?.isCompleted) {
+  const pendingMock = todayMocks.find((m) => !m.isCompleted);
+  const pendingReview = todayMocks.find((m) => m.isCompleted && !m.reviewCompleted);
+
+  if (pendingMock) {
+    nextTask = {
+      title: `Complete Mock Exam #${pendingMock.examNum} [Priority #1]`,
+      desc: isDay1
+        ? `Day 1 Mock ${pendingMock.key.replace('mock0', '')} of 5 (Strict 5-mock calibration)`
+        : `Daily simulation ${pendingMock.key === 'mock01' ? '1' : '2'} of 2 (60 Qs timed test)`,
+      link: '/mock-exams',
+      btnText: 'Take Mock Exam'
+    };
+  } else if (pendingReview) {
+    nextTask = {
+      title: `Mock Exam #${pendingReview.examNum} Deep Error Review`,
+      desc: 'Review mistakes, incorrect collocations, and oral fluency analysis',
+      link: '/mock-exams',
+      btnText: 'Review Mock Exam'
+    };
+  } else if (!isDay1 && breakdown.totalCompleted < breakdown.totalDailyTarget) {
+    nextTask = {
+      title: 'Practice Questions (4 Sections)',
+      desc: `${remainingQuestionsToday} questions remaining in today's ${breakdown.totalDailyTarget} practice queue`,
+      link: '/practice',
+      btnText: 'Open Practice Workspace'
+    };
+  } else if (!isDay1 && !currentDayData?.gateStatus?.dailyPracticeReviewCompleted) {
+    nextTask = {
+      title: 'Confirm Daily Practice Review',
+      desc: 'Check low-scoring questions in the Review Center',
+      link: '/review',
+      btnText: 'Review Center'
+    };
+  } else {
+    const isAdditionalDone = DEFAULT_ADDITIONAL_EXERCISES.every((ex) => {
+      const record = currentDayData?.additionalExercises?.[ex.id];
+      const targetCount = studyPlan.additionalExerciseTargets?.[ex.id] ?? ex.requiredCount;
+      return record && record.completedCount >= targetCount;
+    });
+
+    if (!isAdditionalDone) {
       nextTask = {
-        title: 'Complete Mock Exam (60 Qs)',
-        desc: 'Single high-intensity practice simulation for today',
-        link: '/mock-exams',
-        btnText: 'Go to Mock Exam'
-      };
-    } else if (!mock1Rev?.isCompleted) {
-      nextTask = {
-        title: 'Mock Exam Error Analysis',
-        desc: 'Review mistakes, vocabulary, and corrective actions',
-        link: '/mock-exams',
-        btnText: 'Open Review'
-      };
-    } else if (!currentDayData?.gateStatus?.dailyPracticeReviewCompleted) {
-      nextTask = {
-        title: 'Confirm Daily Practice Review',
-        desc: 'Check low-scoring questions in the Review Center',
-        link: '/review',
-        btnText: 'Review Center'
+        title: 'Complete 3 Mandatory Daily Drills',
+        desc: 'Twisters 2x, Collocations 2x, Essay Template 3x',
+        link: '#daily-drills',
+        btnText: 'Open Daily Drills'
       };
     } else {
-      const isAdditionalDone = DEFAULT_ADDITIONAL_EXERCISES.every((ex) => {
-        const record = currentDayData?.additionalExercises?.[ex.id];
-        const targetCount = studyPlan.additionalExerciseTargets?.[ex.id] ?? ex.requiredCount;
-        return record && record.completedCount >= targetCount;
-      });
-
-      if (!isAdditionalDone) {
-        nextTask = {
-          title: 'Complete 3 Mandatory Daily Drills',
-          desc: 'Twisters 2x, Collocations 2x, Essay Template 3x',
-          link: '#daily-drills',
-          btnText: 'Open Daily Drills'
-        };
-      } else {
-        nextTask = {
-          title: `Pass Day ${currentDay} Completion Gate`,
-          desc: `Unlock Day ${currentDay + 1} and roll forward`,
-          link: '#gate',
-          btnText: 'View Gate'
-        };
-      }
+      nextTask = {
+        title: `Pass Day ${currentDay} Completion Gate`,
+        desc: `Unlock Day ${currentDay + 1} and roll forward`,
+        link: '#gate',
+        btnText: 'View Gate'
+      };
     }
   }
+
+  const mocksDoneCount = todayMocks.filter((m) => m.isCompleted).length;
 
   return (
     <div className="space-y-6">
@@ -138,6 +173,9 @@ export const DashboardPage: React.FC = () => {
               <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
               {streak} Days Active Streak
             </span>
+            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+              {totalMocksCompleted} / {TOTAL_MOCK_TARGET} Mocks Completed
+            </span>
             {overdueDaysCount > 0 && (
               <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-300 border border-red-500/30 flex items-center gap-1">
                 <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
@@ -150,28 +188,33 @@ export const DashboardPage: React.FC = () => {
             <span>PTE - Daily Study Plan – Superior English</span>
           </h1>
           <p className="text-sm text-[#a9b5d0] leading-relaxed">
-            PTE Bridge · Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · Target: <b className="text-blue-400">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Target: <b className="text-emerald-400">{targetForToday}+</b>). 193 daily questions divided into Speaking (102), Writing (3), Reading (45), and Listening (43) + 1 mock simulation.
+            PTE Bridge · Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · Target: <b className="text-blue-400">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Target: <b className="text-emerald-400">{targetForToday}+</b>).
+            {' '}{isDay1
+              ? <b className="text-purple-300">Day 1 Focus: Complete 5 Full Mock Exams (no practice questions today).</b>
+              : `Daily Focus: 2 Full Mock Exams (Priority #1) + 240 Practice Questions (Speaking 125 · Writing 5 · Reading 55 · Listening 55).`}
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
             <Link
-              to="/practice"
-              className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-lg shadow-blue-600/30 flex items-center gap-2 transition-all hover:scale-105"
-            >
-              <Shuffle className="w-4 h-4" />
-              <span>Resume Practice ({breakdown.totalDailyTarget} Qs · 4 Sections)</span>
-            </Link>
-            <Link
               to="/mock-exams"
-              className="px-5 py-2.5 rounded-xl bg-[#243553] hover:bg-[#30476c] text-xs font-semibold text-[#edf2ff] border border-[#405477] flex items-center gap-2 transition-all"
+              className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white shadow-lg shadow-purple-600/30 flex items-center gap-2 transition-all hover:scale-105"
             >
-              <GraduationCap className="w-4 h-4 text-blue-400" />
-              <span>Mock Exam Center</span>
+              <GraduationCap className="w-4 h-4 text-white" />
+              <span>Take Mock Exam (Priority #1 · {todayMocks.length} Today)</span>
             </Link>
+            {!isDay1 && (
+              <Link
+                to="/practice"
+                className="px-5 py-2.5 rounded-xl bg-[#243553] hover:bg-[#30476c] text-xs font-semibold text-[#edf2ff] border border-[#405477] flex items-center gap-2 transition-all"
+              >
+                <Shuffle className="w-4 h-4 text-blue-400" />
+                <span>Practice Workspace ({breakdown.totalDailyTarget} Qs)</span>
+              </Link>
+            )}
           </div>
         </div>
 
-        {/* Subtle decorative target emblem */}
+        {/* Decorative target emblem */}
         <div className="hidden lg:block absolute right-8 top-1/2 -translate-y-1/2 opacity-15 pointer-events-none">
           <Target className="w-64 h-64 text-blue-400" />
         </div>
@@ -195,10 +238,33 @@ export const DashboardPage: React.FC = () => {
               style={{ width: `${journeyPercent}%` }}
             />
           </div>
-          <p className="text-[11px] text-[#a9b5d0]">{totalDays - completedDaysCount} days remaining until exam summit</p>
+          <p className="text-[11px] text-[#a9b5d0]">{totalDays - completedDaysCount} days remaining until summit</p>
         </div>
 
-        {/* Card 2: Today's Practice Target */}
+        {/* Card 2: Today's Mock Exams (Priority #1) */}
+        <div className="p-5 rounded-2xl bg-[#141c31] border border-purple-500/30 space-y-2">
+          <div className="flex items-center justify-between text-xs text-purple-300">
+            <span className="font-semibold">Today's Mock Exams (Priority #1)</span>
+            <GraduationCap className="w-4 h-4 text-purple-400" />
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-extrabold text-[#edf2ff]">
+              {mocksDoneCount} / {todayMocks.length}
+            </span>
+            <span className="text-xs text-[#a9b5d0]">Done</span>
+          </div>
+          <div className="w-full h-2 rounded-full bg-[#0e1729] overflow-hidden">
+            <div
+              className="h-full bg-purple-500 rounded-full transition-all duration-500"
+              style={{ width: `${todayMocks.length > 0 ? (mocksDoneCount / todayMocks.length) * 100 : 0}%` }}
+            />
+          </div>
+          <p className="text-[11px] text-[#a9b5d0]">
+            {isDay1 ? '5 Mock Exams required today' : '2 Mock Exams + reviews required daily'}
+          </p>
+        </div>
+
+        {/* Card 3: Today's Practice Target */}
         <div className="p-5 rounded-2xl bg-[#141c31] border border-[#2b3856] space-y-2">
           <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
             <span>Daily Practice Target</span>
@@ -217,11 +283,15 @@ export const DashboardPage: React.FC = () => {
             />
           </div>
           <p className="text-[11px] text-[#a9b5d0]">
-            {remainingQuestionsToday > 0 ? `${remainingQuestionsToday} questions left to score today` : `Daily ${breakdown.totalDailyTarget} questions target met!`}
+            {isDay1
+              ? 'Day 1 practice waived (5 mocks focus)'
+              : remainingQuestionsToday > 0
+              ? `${remainingQuestionsToday} questions left to score today`
+              : `Daily ${breakdown.totalDailyTarget} questions target met!`}
           </p>
         </div>
 
-        {/* Card 3: Daily Practice Average */}
+        {/* Card 4: Daily Practice Avg */}
         <div className="p-5 rounded-2xl bg-[#141c31] border border-[#2b3856] space-y-2">
           <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
             <span>Daily Practice Avg</span>
@@ -239,36 +309,15 @@ export const DashboardPage: React.FC = () => {
           </div>
           <p className="text-[11px] text-[#a9b5d0]">{breakdown.dailyCount} scored practice attempts</p>
         </div>
-
-        {/* Card 4: Daily Mock Exam */}
-        <div className="p-5 rounded-2xl bg-[#141c31] border border-[#2b3856] space-y-2">
-          <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
-            <span>Daily Mock Exam (1/Day)</span>
-            <GraduationCap className="w-4 h-4 text-purple-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-extrabold text-[#edf2ff]">
-              {mock1?.overallScore !== null ? `${mock1?.overallScore}` : '—'}
-            </span>
-            <span className="text-xs text-[#a9b5d0]">/ 90</span>
-          </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-[#a9b5d0]">Status:</span>
-            <span className={`font-semibold ${mock1?.isCompleted ? 'text-emerald-400' : 'text-amber-400'}`}>
-              {mock1?.isCompleted ? 'Exam Done ✓' : 'Pending'} {mock1Rev?.isCompleted ? '· Reviewed ✓' : ''}
-            </span>
-          </div>
-          <p className="text-[11px] text-[#a9b5d0]">1 full mock exam (60 Qs) + deep review daily</p>
-        </div>
       </div>
 
       {/* Next Task Card & Skills Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Next Task Action Box */}
-        <div className="lg:col-span-1 rounded-2xl bg-gradient-to-br from-[#19243d] to-[#141c31] border border-blue-500/30 p-6 flex flex-col justify-between space-y-4 shadow-lg">
+        <div className="lg:col-span-1 rounded-2xl bg-gradient-to-br from-[#19243d] to-[#141c31] border border-purple-500/30 p-6 flex flex-col justify-between space-y-4 shadow-lg">
           <div>
-            <div className="flex items-center justify-between text-xs text-blue-400 font-semibold mb-2">
-              <span className="uppercase tracking-wider">Next Recommended Task</span>
+            <div className="flex items-center justify-between text-xs text-purple-400 font-semibold mb-2">
+              <span className="uppercase tracking-wider">Top Priority Task</span>
               <Clock className="w-4 h-4" />
             </div>
             <h3 className="text-lg font-bold text-[#edf2ff]">{nextTask.title}</h3>
@@ -279,7 +328,7 @@ export const DashboardPage: React.FC = () => {
             {nextTask.link.startsWith('#') ? (
               <a
                 href={nextTask.link}
-                className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors"
+                className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 <span>{nextTask.btnText}</span>
                 <ChevronRight className="w-4 h-4" />
@@ -287,7 +336,7 @@ export const DashboardPage: React.FC = () => {
             ) : (
               <Link
                 to={nextTask.link}
-                className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors"
+                className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors"
               >
                 <span>{nextTask.btnText}</span>
                 <ChevronRight className="w-4 h-4" />
@@ -366,62 +415,62 @@ export const DashboardPage: React.FC = () => {
         <div className="flex items-center justify-between border-b border-[#2b3856] pb-3">
           <div className="flex items-center gap-2">
             <Mountain className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-sm font-bold text-[#edf2ff]">{totalDays}-Day Mountain Staircase to 79+</h3>
+            <h3 className="text-sm font-bold text-[#edf2ff]">{totalDays}-Day Mountain Staircase (Target: 5,000+ Questions & 20+ Mocks)</h3>
           </div>
           <span className="text-xs font-semibold px-2.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
-            Consecutive Climb (No Breaks)
+            22-Day Intensive
           </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
-          {/* Basecamp */}
+          {/* Step 1 */}
           <div className={`p-3 rounded-xl border text-xs space-y-1 ${
             currentDay <= 5 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
           }`}>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">Step 1: Basecamp</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">Step 1: Calibration</span>
             <p className="font-bold text-[#edf2ff]">Days 1 – 5</p>
-            <p className="text-[10px] text-[#a9b5d0]">Target: 62+ ➔ 66+</p>
-            <span className="text-[9px] text-emerald-400 block font-semibold">Foundations & Rhythm</span>
+            <p className="text-[10px] text-[#a9b5d0]">Target: 62+ ➔ 67+</p>
+            <span className="text-[9px] text-purple-300 block font-semibold">Day 1: 5 Mocks</span>
           </div>
 
-          {/* Camp 1 */}
+          {/* Step 2 */}
           <div className={`p-3 rounded-xl border text-xs space-y-1 ${
             currentDay >= 6 && currentDay <= 10 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
           }`}>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">Step 2: Camp 1</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">Step 2: Momentum</span>
             <p className="font-bold text-[#edf2ff]">Days 6 – 10</p>
-            <p className="text-[10px] text-[#a9b5d0]">Target: 68+ ➔ 72+</p>
-            <span className="text-[9px] text-purple-400 block font-semibold">Prediction Sprint</span>
+            <p className="text-[10px] text-[#a9b5d0]">Target: 69+ ➔ 73+</p>
+            <span className="text-[9px] text-blue-300 block font-semibold">2 Mocks + 240 Qs/Day</span>
           </div>
 
-          {/* Camp 2 */}
+          {/* Step 3 */}
           <div className={`p-3 rounded-xl border text-xs space-y-1 ${
             currentDay >= 11 && currentDay <= 15 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
           }`}>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Step 3: Camp 2</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Step 3: The 75+ Push</span>
             <p className="font-bold text-[#edf2ff]">Days 11 – 15</p>
-            <p className="text-[10px] text-[#a9b5d0]">Target: 73+ ➔ 77+</p>
-            <span className="text-[9px] text-amber-400 block font-semibold">The 75+ Push</span>
+            <p className="text-[10px] text-[#a9b5d0]">Target: 74+ ➔ 78+</p>
+            <span className="text-[9px] text-amber-400 block font-semibold">Prediction Drills</span>
           </div>
 
-          {/* Summit Ridge */}
+          {/* Step 4 */}
           <div className={`p-3 rounded-xl border text-xs space-y-1 ${
-            currentDay >= 16 && currentDay <= 20 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
+            currentDay >= 16 && currentDay <= 19 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
           }`}>
             <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Step 4: Summit Ridge</span>
-            <p className="font-bold text-[#edf2ff]">Days 16 – 20</p>
-            <p className="text-[10px] text-[#a9b5d0]">Target: 78+ ➔ 82+</p>
-            <span className="text-[9px] text-emerald-400 block font-semibold">79+ Mastery Threshold</span>
+            <p className="font-bold text-[#edf2ff]">Days 16 – 19</p>
+            <p className="text-[10px] text-[#a9b5d0]">Target: 79+ ➔ 82+</p>
+            <span className="text-[9px] text-emerald-400 block font-semibold">Mastery Threshold</span>
           </div>
 
-          {/* The Summit */}
+          {/* Step 5 */}
           <div className={`p-3 rounded-xl border text-xs space-y-1 ${
-            currentDay >= 21 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
+            currentDay >= 20 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
           }`}>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-yellow-400">Step 5: The Summit</span>
-            <p className="font-bold text-[#edf2ff]">Days 21 – 25</p>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-yellow-400">Step 5: Final Summit</span>
+            <p className="font-bold text-[#edf2ff]">Days 20 – 22</p>
             <p className="text-[10px] text-[#a9b5d0]">Target: 83+ ➔ 86+</p>
-            <span className="text-[9px] text-yellow-300 block font-semibold">Peak Exam Readiness</span>
+            <span className="text-[9px] text-yellow-300 block font-semibold">Peak Exam Ready</span>
           </div>
         </div>
       </div>
@@ -438,7 +487,7 @@ export const DashboardPage: React.FC = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-5 sm:grid-cols-9 lg:grid-cols-25 gap-1.5">
+        <div className="grid grid-cols-5 sm:grid-cols-8 lg:grid-cols-11 gap-1.5">
           {Array.from({ length: totalDays }, (_, i) => i + 1).map((d) => {
             const isCurrent = d === currentDay;
             const dayStatus = days[d]?.status;

@@ -29,9 +29,9 @@ export interface QuestionTypeProgress {
 }
 
 export interface MockExamRecord {
-  id: 'mock01' | 'mock02';
+  id: string; // 'mock01' | 'mock02' | 'mock03' | 'mock04' | 'mock05'
   studyDay: number;
-  examNumber: number; // 1 to 42
+  examNumber: number; // 1 to 47
   date: string;
   targetQuestions: number; // default 60
   questionsAttempted: number;
@@ -48,10 +48,10 @@ export interface MockExamRecord {
 }
 
 export interface MockReviewRecord {
-  id: 'review01' | 'review02';
-  mockId: 'mock01' | 'mock02';
+  id: string; // 'review01' | 'review02' | 'review03' | 'review04' | 'review05'
+  mockId: string;
   studyDay: number;
-  examNumber: number; // 1 to 42
+  examNumber: number; // 1 to 47
   durationMinutes: number;
   incorrectQuestionsSummary?: string;
   repeatedMistakes?: string;
@@ -93,14 +93,8 @@ export interface DayData {
   date: string; // YYYY-MM-DD
   status: 'locked' | 'active' | 'completed' | 'overdue';
   questionProgress: Record<string, QuestionTypeProgress>;
-  mockExams: {
-    mock01: MockExamRecord;
-    mock02: MockExamRecord;
-  };
-  mockReviews: {
-    review01: MockReviewRecord;
-    review02: MockReviewRecord;
-  };
+  mockExams: Record<string, MockExamRecord>;
+  mockReviews: Record<string, MockReviewRecord>;
   additionalExercises: Record<string, AdditionalExerciseRecord>;
   gateStatus: DailyGateStatus;
   notes?: string;

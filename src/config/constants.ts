@@ -1,13 +1,13 @@
 import { QuestionPriority, QuestionTypeMeta, StudyGroupDefinition, TargetScores } from '../types/pte';
 
-export const DEFAULT_START_DATE = '2026-10-20';
+export const DEFAULT_START_DATE = '2026-10-24';
 export const APP_TITLE = 'PTE - Daily Study Plan – Superior English';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
-export const TOTAL_STUDY_DAYS = 25;
-export const DAILY_PRACTICE_TARGET = 193; // 4 Sections: Speaking (102) + Writing (3) + Reading (45) + Listening (43) = 193
-export const TOTAL_PRACTICE_TARGET = 4825; // 25 * 193
-export const DAILY_MOCK_TARGET = 1;
-export const TOTAL_MOCK_TARGET = 25; // 25 * 1
+export const TOTAL_STUDY_DAYS = 22; // 22 Days Plan (Day 1: 5 Mocks + 0 Qs, Days 2–22: 2 Mocks + 240 Qs)
+export const DAILY_PRACTICE_TARGET = 240; // 4 Sections: Speaking (125) + Writing (5) + Reading (55) + Listening (55) = 240
+export const TOTAL_PRACTICE_TARGET = 5040; // 21 practice days * 240 = 5040 (exceeds 5000+ target)
+export const DAILY_MOCK_TARGET = 2; // Day 1: 5 Mocks, Days 2–22: 2 Mocks
+export const TOTAL_MOCK_TARGET = 47; // 5 + (21 * 2) = 47 Mocks (exceeds 20+ target)
 export const MOCK_EXAM_QUESTIONS = 60;
 
 export const DEFAULT_TARGET_SCORES: TargetScores = {
@@ -19,23 +19,45 @@ export const DEFAULT_TARGET_SCORES: TargetScores = {
   mockExam: 80,
 };
 
-// Target progression curve across 25 study days (Mountain Climb Staircase from 62 to 86)
+// Target progression curve across 22 study days (Mountain Climb Staircase from 62 to 86)
 export const DAY_TARGET_SCORES: number[] = [
-  62, 63, 64, 65, 66, // Basecamp (Days 1–5): Foundation & Rhythm
-  68, 69, 70, 71, 72, // Step 1 (Days 6–10): Prediction Sprint
-  73, 74, 75, 76, 77, // Step 2 (Days 11–15): The 75+ Push
-  78, 79, 80, 81, 82, // Step 3 (Days 16–20): 79+ Mountain Ridge Mastery
-  83, 84, 85, 85, 86  // The Summit (Days 21–25): Peak Performance & Final Exam Simulation
+  62, 64, 66, 68, 70, // Basecamp (Days 1–5): Foundation & Rhythm
+  71, 72, 73, 74, 75, // Step 1 (Days 6–10): Prediction Sprint
+  76, 77, 78, 79, 80, // Step 2 (Days 11–15): The 75+ Push
+  81, 82, 83, 84, 85, // Step 3 (Days 16–20): 79+ Mountain Ridge Mastery
+  86, 86              // The Summit (Days 21–22): Peak Performance & Final Exam Simulation
 ];
 
+export function getDailyMockTarget(dayNumber: number): number {
+  return dayNumber === 1 ? 5 : 2;
+}
+
+export function getDailyPracticeTarget(dayNumber: number): number {
+  return dayNumber === 1 ? 0 : DAILY_PRACTICE_TARGET;
+}
+
+export function getMockExamsForDay(dayNumber: number): string[] {
+  if (dayNumber === 1) {
+    return ['mock01', 'mock02', 'mock03', 'mock04', 'mock05'];
+  }
+  return ['mock01', 'mock02'];
+}
+
+export function getExamNumberForMock(dayNumber: number, mockIndex: number): number {
+  if (dayNumber === 1) {
+    return mockIndex + 1;
+  }
+  return 5 + (dayNumber - 2) * 2 + (mockIndex + 1);
+}
+
 export const QUESTION_TYPES: QuestionTypeMeta[] = [
-  // SPEAKING (Total: 102 questions per day)
+  // SPEAKING (Total: 125 questions per day)
   {
     id: 'describe_image',
     name: 'Describe Image',
     shortName: 'DI',
     skill: 'speaking',
-    defaultTarget: 15,
+    defaultTarget: 18,
     estMinutes: '20 min',
     isPrediction: true,
     scoreWeight: 15,
@@ -48,8 +70,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'RS',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 35,
-    estMinutes: '25 min',
+    defaultTarget: 42,
+    estMinutes: '30 min',
     isPrediction: true,
     scoreWeight: 7,
     maxScore: 90,
@@ -61,8 +83,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'RA',
     skill: 'speaking',
     secondarySkill: 'reading',
-    defaultTarget: 22,
-    estMinutes: '20 min',
+    defaultTarget: 26,
+    estMinutes: '22 min',
     isPrediction: true,
     scoreWeight: 4,
     maxScore: 90,
@@ -74,8 +96,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'SGD',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 9,
-    estMinutes: '18 min',
+    defaultTarget: 12,
+    estMinutes: '20 min',
     isPrediction: true,
     scoreWeight: 9,
     maxScore: 90,
@@ -87,8 +109,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'RL',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 7,
-    estMinutes: '15 min',
+    defaultTarget: 9,
+    estMinutes: '18 min',
     isPrediction: false,
     scoreWeight: 6,
     maxScore: 90,
@@ -99,8 +121,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Respond to a Situation',
     shortName: 'RTS',
     skill: 'speaking',
-    defaultTarget: 7,
-    estMinutes: '12 min',
+    defaultTarget: 9,
+    estMinutes: '15 min',
     isPrediction: false,
     scoreWeight: 6,
     maxScore: 90,
@@ -112,23 +134,23 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'ASQ',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 7,
-    estMinutes: '7 min',
+    defaultTarget: 9,
+    estMinutes: '8 min',
     isPrediction: false,
     scoreWeight: 2,
     maxScore: 90,
     description: 'Answer simple factual questions with one or a few concise words. (PTE score weight: 2%)'
   },
 
-  // WRITING (Total: 3 questions per day)
+  // WRITING (Total: 5 questions per day)
   {
     id: 'summarize_written_text',
     name: 'Summarize Written Text',
     shortName: 'SWT',
     skill: 'writing',
     secondarySkill: 'reading',
-    defaultTarget: 2,
-    estMinutes: '20 min',
+    defaultTarget: 3,
+    estMinutes: '25 min',
     isPrediction: false,
     scoreWeight: 7,
     maxScore: 90,
@@ -139,23 +161,23 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Write Essay',
     shortName: 'WE',
     skill: 'writing',
-    defaultTarget: 1,
-    estMinutes: '20 min',
+    defaultTarget: 2,
+    estMinutes: '30 min',
     isPrediction: false,
     scoreWeight: 7,
     maxScore: 90,
     description: 'Write a 200–300 word argumentative essay on a given prompt using proper structure. (PTE score weight: 7%)'
   },
 
-  // READING (Total: 45 questions per day)
+  // READING (Total: 55 questions per day)
   {
     id: 'rw_fill_in_blanks',
     name: 'Reading & Writing: Fill in the Blanks',
     shortName: 'R&W FIB',
     skill: 'reading',
     secondarySkill: 'writing',
-    defaultTarget: 22,
-    estMinutes: '30 min',
+    defaultTarget: 26,
+    estMinutes: '35 min',
     isPrediction: true,
     scoreWeight: 7,
     maxScore: 90,
@@ -166,8 +188,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Reading: Fill in the Blanks',
     shortName: 'R FIB',
     skill: 'reading',
-    defaultTarget: 18,
-    estMinutes: '25 min',
+    defaultTarget: 22,
+    estMinutes: '28 min',
     isPrediction: false,
     scoreWeight: 6,
     maxScore: 90,
@@ -178,23 +200,23 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Reorder Paragraph',
     shortName: 'RO',
     skill: 'reading',
-    defaultTarget: 5,
-    estMinutes: '10 min',
+    defaultTarget: 7,
+    estMinutes: '12 min',
     isPrediction: false,
     scoreWeight: 3,
     maxScore: 90,
     description: 'Arrange text boxes in the correct chronological or logical sequence. (PTE score weight: 3%)'
   },
 
-  // LISTENING (Total: 43 questions per day)
+  // LISTENING (Total: 55 questions per day)
   {
     id: 'write_from_dictation',
     name: 'Write From Dictation',
     shortName: 'WFD',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 28,
-    estMinutes: '25 min',
+    defaultTarget: 34,
+    estMinutes: '30 min',
     isPrediction: true,
     scoreWeight: 5,
     maxScore: 90,
@@ -206,8 +228,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'L FIB',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 7,
-    estMinutes: '10 min',
+    defaultTarget: 9,
+    estMinutes: '12 min',
     isPrediction: false,
     scoreWeight: 3,
     maxScore: 90,
@@ -219,8 +241,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'HIW',
     skill: 'listening',
     secondarySkill: 'reading',
-    defaultTarget: 6,
-    estMinutes: '8 min',
+    defaultTarget: 9,
+    estMinutes: '12 min',
     isPrediction: false,
     scoreWeight: 4,
     maxScore: 90,
@@ -232,8 +254,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'SST',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 2,
-    estMinutes: '15 min',
+    defaultTarget: 3,
+    estMinutes: '20 min',
     isPrediction: false,
     scoreWeight: 4,
     maxScore: 90,
@@ -250,23 +272,23 @@ export const DEFAULT_QUESTION_TARGETS: Record<string, number> = Object.fromEntri
 );
 
 /**
- * 4 Study Groups (Speaking 102 · Writing 3 · Reading 45 · Listening 43) Totaling Exactly 193 Questions
+ * 4 Study Sections (Speaking 125 · Writing 5 · Reading 55 · Listening 55) Totaling Exactly 240 Questions / Day
  * Prioritized according to PTE Score Weight Percentage
  */
 export const STUDY_GROUPS: StudyGroupDefinition[] = [
   {
     id: 'group_1',
     groupNumber: 1,
-    title: 'Speaking Section (102 Qs)',
+    title: 'Speaking Section (125 Qs)',
     shortTitle: 'Speaking',
-    subtitle: '102 Questions · Speaking Mastery',
+    subtitle: '125 Questions · Speaking Mastery',
     skills: ['speaking'],
-    totalQuestions: 102,
+    totalQuestions: 125,
     color: 'blue',
     items: [
       {
         questionTypeId: 'describe_image',
-        count: 15,
+        count: 18,
         priority: 'prediction',
         priorityLabel: 'Top Score Weight (15%)',
         scoreWeight: 15,
@@ -274,7 +296,7 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
       },
       {
         questionTypeId: 'summarize_group_discussion',
-        count: 9,
+        count: 12,
         priority: 'prediction',
         priorityLabel: 'Top Score Weight (9%)',
         scoreWeight: 9,
@@ -282,7 +304,7 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
       },
       {
         questionTypeId: 'repeat_sentence',
-        count: 35,
+        count: 42,
         priority: 'hard',
         priorityLabel: 'High Score Weight (7%)',
         scoreWeight: 7,
@@ -290,7 +312,7 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
       },
       {
         questionTypeId: 'retell_lecture',
-        count: 7,
+        count: 9,
         priority: 'hard',
         priorityLabel: 'High Score Weight (6%)',
         scoreWeight: 6,
@@ -298,7 +320,7 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
       },
       {
         questionTypeId: 'respond_to_situation',
-        count: 7,
+        count: 9,
         priority: 'hard',
         priorityLabel: 'High Score Weight (6%)',
         scoreWeight: 6,
@@ -306,7 +328,7 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
       },
       {
         questionTypeId: 'read_aloud',
-        count: 22,
+        count: 26,
         priority: 'medium',
         priorityLabel: 'Score Weight (4%)',
         scoreWeight: 4,
@@ -314,7 +336,7 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
       },
       {
         questionTypeId: 'answer_short_question',
-        count: 7,
+        count: 9,
         priority: 'easy',
         priorityLabel: 'Supporting Weight (2%)',
         scoreWeight: 2,
@@ -325,16 +347,16 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
   {
     id: 'group_2',
     groupNumber: 2,
-    title: 'Writing Section (3 Qs)',
+    title: 'Writing Section (5 Qs)',
     shortTitle: 'Writing',
-    subtitle: '3 Questions · Intensive Composition',
+    subtitle: '5 Questions · Intensive Composition',
     skills: ['writing'],
-    totalQuestions: 3,
+    totalQuestions: 5,
     color: 'purple',
     items: [
       {
         questionTypeId: 'summarize_written_text',
-        count: 2,
+        count: 3,
         priority: 'hard',
         priorityLabel: 'High Score Weight (7%)',
         scoreWeight: 7,
@@ -342,7 +364,7 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
       },
       {
         questionTypeId: 'write_essay',
-        count: 1,
+        count: 2,
         priority: 'hard',
         priorityLabel: 'High Score Weight (7%)',
         scoreWeight: 7,
@@ -353,16 +375,16 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
   {
     id: 'group_3',
     groupNumber: 3,
-    title: 'Reading Section (45 Qs)',
+    title: 'Reading Section (55 Qs)',
     shortTitle: 'Reading',
-    subtitle: '45 Questions · Blanks & Reorder',
+    subtitle: '55 Questions · Blanks & Reorder',
     skills: ['reading'],
-    totalQuestions: 45,
+    totalQuestions: 55,
     color: 'emerald',
     items: [
       {
         questionTypeId: 'rw_fill_in_blanks',
-        count: 22,
+        count: 26,
         priority: 'hard',
         priorityLabel: 'High Score Weight (7%)',
         scoreWeight: 7,
@@ -370,7 +392,7 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
       },
       {
         questionTypeId: 'r_fill_in_blanks',
-        count: 18,
+        count: 22,
         priority: 'hard',
         priorityLabel: 'High Score Weight (6%)',
         scoreWeight: 6,
@@ -378,7 +400,7 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
       },
       {
         questionTypeId: 'reorder_paragraph',
-        count: 5,
+        count: 7,
         priority: 'easy',
         priorityLabel: 'Supporting Weight (3%)',
         scoreWeight: 3,
@@ -389,16 +411,16 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
   {
     id: 'group_4',
     groupNumber: 4,
-    title: 'Listening Section (43 Qs)',
+    title: 'Listening Section (55 Qs)',
     shortTitle: 'Listening',
-    subtitle: '43 Questions · Dictation & Audio',
+    subtitle: '55 Questions · Dictation & Audio',
     skills: ['listening'],
-    totalQuestions: 43,
+    totalQuestions: 55,
     color: 'amber',
     items: [
       {
         questionTypeId: 'write_from_dictation',
-        count: 28,
+        count: 34,
         priority: 'medium',
         priorityLabel: 'Core Score Weight (5%)',
         scoreWeight: 5,
@@ -406,7 +428,7 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
       },
       {
         questionTypeId: 'highlight_incorrect_words',
-        count: 6,
+        count: 9,
         priority: 'medium',
         priorityLabel: 'Score Weight (4%)',
         scoreWeight: 4,
@@ -414,7 +436,7 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
       },
       {
         questionTypeId: 'summarize_spoken_text',
-        count: 2,
+        count: 3,
         priority: 'medium',
         priorityLabel: 'Score Weight (4%)',
         scoreWeight: 4,
@@ -422,7 +444,7 @@ export const STUDY_GROUPS: StudyGroupDefinition[] = [
       },
       {
         questionTypeId: 'listening_fill_in_blanks',
-        count: 7,
+        count: 9,
         priority: 'easy',
         priorityLabel: 'Supporting Weight (3%)',
         scoreWeight: 3,

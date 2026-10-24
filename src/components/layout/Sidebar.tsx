@@ -15,6 +15,7 @@ import {
   Lock
 } from 'lucide-react';
 import { usePteData } from '../../context/PteDataContext';
+import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS } from '../../config/constants';
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -23,15 +24,16 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { currentDay, days, studyPlan } = usePteData();
-  const totalDays = studyPlan.durationDays || 25;
+  const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
+  const isDay1 = currentDay === 1;
   const currentDayLocked = !days[currentDay]?.gateStatus?.isUnlocked && currentDay > 1;
 
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/mock-exams', label: `Mock Exams (${TOTAL_MOCK_TARGET})`, icon: GraduationCap, badge: 'Priority #1', highlight: true },
+    { to: '/practice', label: 'Practice (4 Sections)', icon: Shuffle, badge: '240 Qs' },
     { to: '/roadmap', label: `${totalDays}-Day Roadmap`, icon: Map, badge: `${totalDays} Days` },
-    { to: '/practice', label: 'Practice (4 Sections)', icon: Shuffle, badge: '193 Qs', highlight: true },
     { to: '/analytics/questions', label: 'Question Analytics', icon: BarChart3 },
-    { to: '/mock-exams', label: `Mock Exams (${totalDays * 1})`, icon: GraduationCap, badge: '1 / Day' },
     { to: '/review', label: 'Review Center', icon: CheckSquare },
     { to: '/analytics', label: 'Trends & Stats', icon: LineChart },
     { to: '/calendar', label: 'Study Calendar', icon: CalendarDays },
@@ -71,12 +73,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-300 flex items-center justify-center font-bold text-sm border border-blue-500/30">
+              <div className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-sm border border-purple-500/30">
                 {currentDayLocked ? <Lock className="w-4 h-4 text-red-400" /> : `D${currentDay}`}
               </div>
               <div>
                 <p className="text-sm font-semibold text-[#edf2ff]">Study Day {currentDay} of {totalDays}</p>
-                <p className="text-xs text-[#a9b5d0]">Target: 193 Practice Qs (4 Sections) + 1 Mock</p>
+                <p className="text-xs text-[#a9b5d0]">
+                  {isDay1
+                    ? 'Target: 5 Mock Exams (Priority #1)'
+                    : 'Target: 2 Mocks + 240 Practice Qs'}
+                </p>
               </div>
             </div>
           </div>
@@ -96,9 +102,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   className={({ isActive }) =>
                     `flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                       isActive
-                        ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 font-semibold'
+                        ? item.highlight
+                          ? 'bg-purple-600 text-white shadow-md shadow-purple-500/20 font-semibold'
+                          : 'bg-blue-600 text-white shadow-md shadow-blue-500/20 font-semibold'
                         : 'text-[#a9b5d0] hover:bg-[#141c31] hover:text-[#edf2ff]'
-                    } ${item.highlight && !isActive ? 'border border-blue-500/30 bg-blue-500/5' : ''}`
+                    }`
                   }
                 >
                   <div className="flex items-center gap-3">
@@ -106,7 +114,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     <span>{item.label}</span>
                   </div>
                   {item.badge && (
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-[#253655] text-blue-300 border border-[#3a4b70]">
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${
+                      item.highlight
+                        ? 'bg-purple-500/20 text-purple-300 border-purple-500/40'
+                        : 'bg-[#253655] text-blue-300 border-[#3a4b70]'
+                    }`}>
                       {item.badge}
                     </span>
                   )}
@@ -116,14 +128,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </nav>
         </div>
 
-        {/* Footer info inside sidebar */}
+        {/* Footer info card */}
         <div className="p-4 border-t border-[#2b3856]">
-          <div className="p-2.5 rounded-xl bg-[#141c31] border border-[#2b3856] text-xs text-[#a9b5d0] flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-blue-400 flex-shrink-0" />
-            <div>
-              <p className="font-medium text-[#edf2ff]">Superior English (79+)</p>
-              <p className="text-[10px] text-[#a9b5d0]">Started: Oct 20, 2026 · 193 Qs/Day</p>
+          <div className="p-3 rounded-xl bg-[#141c31] border border-[#2b3856]/60">
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+              <span className="text-xs font-semibold text-[#edf2ff]">22-Day Intensive Plan</span>
             </div>
+            <p className="text-[10px] text-[#a9b5d0]">Started: Oct 24, 2026 · 47 Mocks · 5,000+ Qs</p>
           </div>
         </div>
       </aside>
