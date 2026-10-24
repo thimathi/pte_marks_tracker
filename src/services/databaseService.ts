@@ -188,7 +188,7 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
       let needsPlanUpdate = false;
       const planUpdates: Partial<StudyPlan> = {};
 
-      // Migrate start date to 2026-10-24
+      // Migrate start date to 2026-10-25
       if (plan.startDate !== DEFAULT_START_DATE || !plan.startDate) {
         plan.startDate = DEFAULT_START_DATE;
         planUpdates.startDate = DEFAULT_START_DATE;
@@ -201,9 +201,9 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
         needsPlanUpdate = true;
       }
 
-      // Check if targets need updating to 240 (Speaking 125 + Writing 5 + Reading 55 + Listening 55)
+      // Check if targets need updating to 193 (Speaking 102 + Writing 3 + Reading 45 + Listening 43)
       const totalTargets = Object.values(plan.questionTargets || {}).reduce((a, b) => a + b, 0);
-      if (totalTargets !== 240) {
+      if (totalTargets !== 193) {
         plan.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
         planUpdates.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
         needsPlanUpdate = true;
@@ -448,9 +448,9 @@ export async function completeDayAndUnlockNext(
     }
   });
 
-  // Priority #2: Practice Questions (Day 1 requires 0 questions; Days 2-22 require 240 questions)
+  // Priority #2: Practice Questions (Day 1 requires 0 questions; Days 2-22 require 193 questions)
   if (!isDay1) {
-    if (!gate.practiceCompleted) missingRequirements.push('All 240 practice questions must be scored');
+    if (!gate.practiceCompleted) missingRequirements.push('All 193 practice questions must be scored');
     if (!gate.dailyPracticeReviewCompleted) missingRequirements.push('Daily practice questions review must be confirmed');
   }
 

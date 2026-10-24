@@ -31,7 +31,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/mock-exams', label: `Mock Exams (${TOTAL_MOCK_TARGET})`, icon: GraduationCap, badge: 'Priority #1', highlight: true },
-    { to: '/practice', label: 'Practice (4 Sections)', icon: Shuffle, badge: '240 Qs' },
+    { to: '/practice', label: 'Practice (4 Sections)', icon: Shuffle, badge: '193 Qs' },
     { to: '/roadmap', label: `${totalDays}-Day Roadmap`, icon: Map, badge: `${totalDays} Days` },
     { to: '/analytics/questions', label: 'Question Analytics', icon: BarChart3 },
     { to: '/review', label: 'Review Center', icon: CheckSquare },
@@ -81,7 +81,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 <p className="text-xs text-[#a9b5d0]">
                   {isDay1
                     ? 'Target: 5 Mock Exams (Priority #1)'
-                    : 'Target: 2 Mocks + 240 Practice Qs'}
+                    : 'Target: 2 Mocks + 193 Practice Qs'}
                 </p>
               </div>
             </div>
@@ -135,7 +135,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <Sparkles className="w-3.5 h-3.5 text-blue-400" />
               <span className="text-xs font-semibold text-[#edf2ff]">22-Day Intensive Plan</span>
             </div>
-            <p className="text-[10px] text-[#a9b5d0]">Started: Oct 24, 2026 · 47 Mocks · 5,000+ Qs</p>
+            <p className="text-[10px] text-[#a9b5d0]">Started: Oct 25, 2026 · 47 Mocks · 4,000+ Qs</p>
           </div>
         </div>
       </aside>

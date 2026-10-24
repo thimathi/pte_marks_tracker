@@ -98,7 +98,7 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     });
   });
 
-  // Priority #2: Practice Questions (0 required on Day 1; 240 on Days 2-22)
+  // Priority #2: Practice Questions (0 required on Day 1; 193 on Days 2-22)
   if (!isDay1) {
     checklistItems.push({
       id: 'practice',

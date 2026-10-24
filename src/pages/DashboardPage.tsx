@@ -191,7 +191,7 @@ export const DashboardPage: React.FC = () => {
             PTE Bridge · Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · Target: <b className="text-blue-400">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Target: <b className="text-emerald-400">{targetForToday}+</b>).
             {' '}{isDay1
               ? <b className="text-purple-300">Day 1 Focus: Complete 5 Full Mock Exams (no practice questions today).</b>
-              : `Daily Focus: 2 Full Mock Exams (Priority #1) + 240 Practice Questions (Speaking 125 · Writing 5 · Reading 55 · Listening 55).`}
+              : `Daily Focus: 2 Full Mock Exams (Priority #1) + 193 Practice Questions (Speaking 102 · Writing 3 · Reading 45 · Listening 43).`}
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
@@ -415,7 +415,7 @@ export const DashboardPage: React.FC = () => {
         <div className="flex items-center justify-between border-b border-[#2b3856] pb-3">
           <div className="flex items-center gap-2">
             <Mountain className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-sm font-bold text-[#edf2ff]">{totalDays}-Day Mountain Staircase (Target: 5,000+ Questions & 20+ Mocks)</h3>
+            <h3 className="text-sm font-bold text-[#edf2ff]">{totalDays}-Day Mountain Staircase (Target: 4,000+ Questions & 40+ Mocks)</h3>
           </div>
           <span className="text-xs font-semibold px-2.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
             22-Day Intensive
@@ -440,7 +440,7 @@ export const DashboardPage: React.FC = () => {
             <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">Step 2: Momentum</span>
             <p className="font-bold text-[#edf2ff]">Days 6 – 10</p>
             <p className="text-[10px] text-[#a9b5d0]">Target: 69+ ➔ 73+</p>
-            <span className="text-[9px] text-blue-300 block font-semibold">2 Mocks + 240 Qs/Day</span>
+            <span className="text-[9px] text-blue-300 block font-semibold">2 Mocks + 193 Qs/Day</span>
           </div>
 
           {/* Step 3 */}

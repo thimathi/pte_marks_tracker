@@ -2,41 +2,37 @@ import { QueueItem } from '../types/pte';
 import { QUESTION_TYPE_MAP, STUDY_GROUPS } from '../config/constants';
 
 /**
- * Generates the structured 240-question daily study queue divided into 4 Sections:
- *   - Speaking Section: 125 questions
- *   - Writing Section: 5 questions
- *   - Reading Section: 55 questions
- *   - Listening Section: 55 questions
+ * Generates the structured 193-question daily study queue divided into 4 Sections:
+ *   - Speaking Section: 102 questions
+ *   - Writing Section: 3 questions
+ *   - Reading Section: 45 questions
+ *   - Listening Section: 43 questions
  * 
- * Speaking Section (125 questions):
- *   1. Describe Image (15)
- *   2. Repeat Sentence (35)
- *   3. Read Aloud (22)
- *   4. Summarize Group Discussion (9)
- *   5. Retell Lecture (7)
- *   6. Respond to a Situation (7)
- *   7. Answer Short Question (7)
- *   8. Repeat Sentence Drill (25)
- *   9. Read Aloud Drill (13)
- *   10. Retell Lecture Drill (3)
- *   11. Respond to a Situation Drill (2)
+ * Speaking Section (102 questions):
+ *   1. Describe Image (15) [15% Score Weight · Top Priority]
+ *   2. Summarize Group Discussion (9) [9% Score Weight · Top Priority]
+ *   3. Repeat Sentence (35) [7% Score Weight · High Priority]
+ *   4. Retell Lecture (7) [6% Score Weight · High Priority]
+ *   5. Respond to a Situation (7) [6% Score Weight · High Priority]
+ *   6. Read Aloud (22) [4% Score Weight · Core Weight]
+ *   7. Answer Short Question (7) [2% Score Weight · Supporting Weight]
  * 
- * Writing Section (5 questions):
- *   1. Summarize Written Text (3)
- *   2. Write Essay (2)
+ * Writing Section (3 questions):
+ *   1. Summarize Written Text (2) [7% Score Weight · High Priority]
+ *   2. Write Essay (1) [7% Score Weight · High Priority]
  * 
- * Reading Section (55 questions):
- *   1. Fill in the Blanks (Dropdown) (27)
- *   2. Fill in the Blanks (Drag and Drop) (22)
- *   3. Reorder Paragraph (6)
+ * Reading Section (45 questions):
+ *   1. Fill in the Blanks (Dropdown) (22) [7% Score Weight · High Priority]
+ *   2. Fill in the Blanks (Drag and Drop) (18) [6% Score Weight · High Priority]
+ *   3. Reorder Paragraph (5) [3% Score Weight · Supporting Weight]
  * 
- * Listening Section (55 questions):
- *   1. Write From Dictation (35)
- *   2. Fill in the Blanks (Type In) (9)
- *   3. Highlight Incorrect Words (8)
- *   4. Summarize Spoken Text (3)
+ * Listening Section (43 questions):
+ *   1. Write From Dictation (28) [5% Score Weight · Core Weight]
+ *   2. Highlight Incorrect Words (6) [4% Score Weight · Score Weight]
+ *   3. Summarize Spoken Text (2) [4% Score Weight · Score Weight]
+ *   4. Fill in the Blanks (Type In) (7) [3% Score Weight · Supporting Weight]
  * 
- * Total: Exactly 240 questions per day.
+ * Total: Exactly 193 questions per day.
  */
 export function generateGroupedStudyQueue(): QueueItem[] {
   const queue: QueueItem[] = [];
