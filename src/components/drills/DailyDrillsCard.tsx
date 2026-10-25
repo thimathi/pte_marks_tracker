@@ -33,8 +33,9 @@ interface DailyDrillsCardProps {
 }
 
 export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({ dayNumber }) => {
-  const { currentDayData, updateExerciseCount, studyPlan } = usePteData();
-  const dayExercises = currentDayData?.additionalExercises || {};
+  const { currentDayData, updateExerciseCount, studyPlan, days } = usePteData();
+  const targetDay = days[dayNumber] || currentDayData;
+  const dayExercises = targetDay?.additionalExercises || {};
 
   // Active study modal tab: null | 'tongue_twister' | 'academic_collocations' | 'essay_template'
   const [activeModal, setActiveModal] = useState<'tongue_twister' | 'academic_collocations' | 'essay_template' | null>(null);
@@ -181,7 +182,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({ dayNumber }) =
               Collocations {collocCount}/{collocTarget}
             </span>
             <span className={`px-2 py-0.5 rounded-md font-semibold ${isEssayFulfilled ? 'bg-emerald-500/20 text-emerald-400' : 'bg-[#1e2a47] text-[#a9b5d0]'}`}>
-              Essays {essayCount}/{essayTarget}
+              Essays {Math.min(essayCount, essayTarget)}/{essayTarget}
             </span>
           </div>
         </div>
@@ -350,7 +351,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({ dayNumber }) =
                 <PenTool className="w-3 h-3" /> Writing Mastery
               </span>
               <span className={`text-xs font-bold ${isEssayFulfilled ? 'text-emerald-400' : 'text-amber-400'}`}>
-                {essayCount} / {essayTarget} Written
+                {Math.min(essayCount, essayTarget)} / {essayTarget} Written
               </span>
             </div>
 

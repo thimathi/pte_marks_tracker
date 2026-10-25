@@ -20,6 +20,7 @@ import { calculatePhaseAverage, calculateDayBreakdown } from '../utils/scoring';
 import { QUESTION_TYPE_MAP, SKILL_COLORS, STUDY_GROUPS, PRIORITY_STYLES } from '../config/constants';
 import { QueueItem, QuestionPriority } from '../types/pte';
 import { formatDateFriendly } from '../utils/dateUtils';
+import { DailyDrillsCard } from '../components/drills/DailyDrillsCard';
 
 export const PracticePage: React.FC = () => {
   const {
@@ -256,6 +257,11 @@ export const PracticePage: React.FC = () => {
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
+      </div>
+
+      {/* Mandatory Daily Repeat Tasks (3 Core Drills) */}
+      <div id="daily-drills">
+        <DailyDrillsCard dayNumber={currentDay} />
       </div>
 
       {/* 4 Study Groups Tabs (Mock-Style Navigation) */}
