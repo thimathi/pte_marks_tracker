@@ -197,9 +197,9 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
         needsPlanUpdate = true;
       }
 
-      // Check if targets need updating to 254 (Speaking 144 + Writing 3 + Reading 57 + Listening 50)
+      // Check if targets need updating to 300 (Speaking 170 + Writing 10 + Reading 60 + Listening 60)
       const totalTargets = Object.values(plan.questionTargets || {}).reduce((a, b) => a + b, 0);
-      if (totalTargets !== 254) {
+      if (totalTargets !== 300) {
         plan.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
         planUpdates.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
         needsPlanUpdate = true;
@@ -441,8 +441,8 @@ export async function completeDayAndUnlockNext(
     }
   });
 
-  // Priority #2: Practice Questions (254 practice questions required every day)
-  if (!gate.practiceCompleted) missingRequirements.push('All 254 practice questions must be scored');
+  // Priority #2: Practice Questions (300 practice questions required every day across 10 phases)
+  if (!gate.practiceCompleted) missingRequirements.push('All 300 practice questions must be scored');
   if (!gate.dailyPracticeReviewCompleted) missingRequirements.push('Daily practice questions review must be confirmed');
 
   // Priority #3: Mandatory Daily Drills

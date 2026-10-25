@@ -185,7 +185,7 @@ export const DashboardPage: React.FC = () => {
           </h1>
           <p className="text-sm text-[#a9b5d0] leading-relaxed">
             PTE Bridge · Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · Target: <b className="text-blue-400">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Target: <b className="text-emerald-400">{targetForToday}+</b>).
-            {' '}Daily Focus: 2 Full Mock Exams (Priority #1) + 254 Practice Questions (Speaking 144 · Writing 3 · Reading 57 · Listening 50).
+            {' '}Daily Focus: 2 Full Mock Exams (Priority #1) + 300 Practice Questions across 10 Phases (Speaking 170 · Writing 10 · Reading 60 · Listening 60).
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
@@ -407,7 +407,7 @@ export const DashboardPage: React.FC = () => {
         <div className="flex items-center justify-between border-b border-[#2b3856] pb-3">
           <div className="flex items-center gap-2">
             <Mountain className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-sm font-bold text-[#edf2ff]">{totalDays}-Day Mountain Staircase (Target: 4,000+ Questions & 40+ Mocks)</h3>
+            <h3 className="text-sm font-bold text-[#edf2ff]">{totalDays}-Day Mountain Staircase (Target: 6,000 Questions & 40 Mocks)</h3>
           </div>
           <span className="text-xs font-semibold px-2.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
             20-Day Intensive
@@ -422,7 +422,7 @@ export const DashboardPage: React.FC = () => {
             <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">Step 1: Calibration</span>
             <p className="font-bold text-[#edf2ff]">Days 1 – 5</p>
             <p className="text-[10px] text-[#a9b5d0]">Target: 62+ ➔ 70+</p>
-            <span className="text-[9px] text-purple-300 block font-semibold">2 Mocks + 254 Qs/Day</span>
+            <span className="text-[9px] text-purple-300 block font-semibold">2 Mocks + 300 Qs/Day</span>
           </div>
 
           {/* Step 2 */}
@@ -432,7 +432,7 @@ export const DashboardPage: React.FC = () => {
             <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">Step 2: Momentum</span>
             <p className="font-bold text-[#edf2ff]">Days 6 – 10</p>
             <p className="text-[10px] text-[#a9b5d0]">Target: 71+ ➔ 75+</p>
-            <span className="text-[9px] text-blue-300 block font-semibold">2 Mocks + 254 Qs/Day</span>
+            <span className="text-[9px] text-blue-300 block font-semibold">2 Mocks + 300 Qs/Day</span>
           </div>
 
           {/* Step 3 */}
@@ -442,7 +442,7 @@ export const DashboardPage: React.FC = () => {
             <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Step 3: The 75+ Push</span>
             <p className="font-bold text-[#edf2ff]">Days 11 – 15</p>
             <p className="text-[10px] text-[#a9b5d0]">Target: 76+ ➔ 80+</p>
-            <span className="text-[9px] text-amber-400 block font-semibold">2 Mocks + 254 Qs/Day</span>
+            <span className="text-[9px] text-amber-400 block font-semibold">2 Mocks + 300 Qs/Day</span>
           </div>
 
           {/* Step 4 */}

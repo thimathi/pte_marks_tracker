@@ -143,7 +143,7 @@ export interface StudyGroupItem {
 }
 
 export interface StudyGroupDefinition {
-  id: 'group_1' | 'group_2' | 'group_3' | 'group_4';
+  id: string;
   groupNumber: number;
   title: string;
   shortTitle: string;
@@ -152,10 +152,11 @@ export interface StudyGroupDefinition {
   totalQuestions: number;
   color: string;
   items: StudyGroupItem[];
+  checkpointMock?: number; // e.g. Mock #1 checkpoint after Phase 5, Mock #2 after Phase 10
 }
 
 export interface QueueItem {
-  id: string; // unique item id in queue, e.g. "g1_q_0"
+  id: string; // unique item id in queue, e.g. "phase_1_q_0"
   questionTypeId: string;
   questionTypeName: string;
   skill: SkillType;
@@ -163,8 +164,8 @@ export interface QueueItem {
   instanceIndex: number; // e.g. 3rd Read Aloud today
   isPrediction: boolean;
   scoreWeight: number; // e.g. 15 for 15%
-  overallQueueIndex: number; // 0 to 179
-  groupId: 'group_1' | 'group_2' | 'group_3' | 'group_4';
+  overallQueueIndex: number; // 0 to 299
+  groupId: string;
   groupNumber: number;
   groupTitle: string;
   groupIndex: number; // 0 to (groupTotal - 1)

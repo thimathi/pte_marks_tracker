@@ -41,7 +41,7 @@ export const RoadmapPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-[#edf2ff]">PTE - Daily Study Plan – Superior English Roadmap</h1>
         </div>
         <p className="text-xs text-[#a9b5d0] leading-relaxed max-w-3xl">
-          Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · {totalDays}-Day Mountain Staircase (Target 62+ ➔ 86+). Priority #1: 40 Mock Exams & 5,000+ Practice Questions across 20 Days. Every Day: 2 Mock Exams + 254 Practice Questions daily.
+          Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · {totalDays}-Day Mountain Staircase (Target 62+ ➔ 86+). Priority #1: 40 Mock Exams & 6,000 Practice Questions across 20 Days. Every Day: 2 Mock Exams + 300 Practice Questions (10 Phases) daily.
         </p>
       </div>
 

@@ -95,13 +95,13 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     });
   });
 
-  // Priority #2: Practice Questions (254 required every day)
+  // Priority #2: Practice Questions (300 required every day across 10 phases)
   checklistItems.push({
     id: 'practice',
     label: `All ${breakdown.totalDailyTarget} Practice Questions Completed & Scored (${breakdown.totalCompleted} / ${breakdown.totalDailyTarget})`,
     done: practiceDone,
     canAutoDetect: true,
-    hint: `Scoring all ${breakdown.totalDailyTarget} practice questions (across 4 groups) is required.`
+    hint: `Scoring all ${breakdown.totalDailyTarget} practice questions (across 10 phases) is required.`
   });
   checklistItems.push({
     id: 'dailyPracticeReviewCompleted',

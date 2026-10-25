@@ -2,13 +2,12 @@ import { QueueItem } from '../types/pte';
 import { QUESTION_TYPE_MAP, STUDY_GROUPS } from '../config/constants';
 
 /**
- * Generates the structured 254-question daily study queue divided into 4 Sections:
- *   - Speaking Section: 144 questions (2,880 over 20 days)
- *   - Writing Section: 3 questions (60 over 20 days)
- *   - Reading Section: 57 questions (1,140 over 20 days)
- *   - Listening Section: 50 questions (1,000 over 20 days)
+ * Generates the structured 300-question daily study queue divided into 10 Phases (30 Qs each):
+ *   - Each phase contains all 4 modules (Speaking 17 · Writing 1 · Reading 6 · Listening 6 = 30 Qs)
+ *   - Midpoint Checkpoint: Mock Exam #1 placed after Phase 5 (150 Qs)
+ *   - Final Checkpoint: Mock Exam #2 placed after Phase 10 (300 Qs)
  * 
- * Total: Exactly 254 questions per day (5,080 questions over 20 days).
+ * Total: Exactly 300 questions per day (6,000 questions + 40 Mock Exams over 20 days).
  */
 export function generateGroupedStudyQueue(): QueueItem[] {
   const queue: QueueItem[] = [];

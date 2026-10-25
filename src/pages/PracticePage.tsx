@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Shuffle,
   ChevronLeft,
@@ -12,7 +13,8 @@ import {
   Check,
   Layers,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  GraduationCap
 } from 'lucide-react';
 import { usePteData } from '../context/PteDataContext';
 import { generateInterleavedQueue } from '../utils/interleaving';
@@ -30,7 +32,7 @@ export const PracticePage: React.FC = () => {
     updateScore
   } = usePteData();
 
-  // Generate 254 questions structured into 4 sections (Speaking 144 · Writing 3 · Reading 57 · Listening 50)
+  // Generate 300 questions structured into 10 phases (30 Qs per phase · all 4 modules represented)
   const fullQueue: QueueItem[] = useMemo(() => {
     return generateInterleavedQueue(
       studyPlan.questionTargets,
@@ -39,8 +41,8 @@ export const PracticePage: React.FC = () => {
     );
   }, [studyPlan.questionTargets, currentDay, studyPlan.shuffleSeed]);
 
-  // Selected Group Filter ('all' or 'group_1', 'group_2', 'group_3', 'group_4')
-  const [selectedGroupId, setSelectedGroupId] = useState<'all' | 'group_1' | 'group_2' | 'group_3' | 'group_4'>('group_1');
+  // Selected Group Filter ('all' or 'phase_1', ..., 'phase_10')
+  const [selectedGroupId, setSelectedGroupId] = useState<string>('phase_1');
 
   // Filtered queue based on selected group
   const activeQueue = useMemo(() => {
@@ -149,7 +151,7 @@ export const PracticePage: React.FC = () => {
         return;
       }
     }
-    alert(`🎉 All questions in ${withinCurrentGroupOnly ? 'this section' : 'today\'s 254-question plan'} have been scored!`);
+    alert(`🎉 All questions in ${withinCurrentGroupOnly ? 'this phase' : 'today\'s 300-question plan'} have been scored!`);
   };
 
   // Group completion calculations
@@ -210,7 +212,7 @@ export const PracticePage: React.FC = () => {
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            Day {currentDay} Practice Workspace · 4 Sections ({fullQueue.length} Questions Total) · Started: {formatDateFriendly(studyPlan.startDate)}
+            Day {currentDay} Practice Workspace · 10 Phases ({fullQueue.length} Questions Total · 30 Qs/Phase) · Started: {formatDateFriendly(studyPlan.startDate)}
           </p>
         </div>
 
@@ -246,64 +248,257 @@ export const PracticePage: React.FC = () => {
         <DailyDrillsCard dayNumber={currentDay} />
       </div>
 
-      {/* 4 Study Groups Tabs (Mock-Style Navigation) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {STUDY_GROUPS.map((group) => {
-          const stats = groupStats[group.id] || { completed: 0, total: group.totalQuestions, average: null };
-          const isSelected = selectedGroupId === group.id;
-          const isDone = stats.completed >= stats.total;
-          const pct = Math.round((stats.completed / stats.total) * 100);
+      {/* 10 Study Phases with Midpoint & End Checkpoint Mock Exams */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Layers className="w-4 h-4 text-blue-400" />
+            <h2 className="text-sm font-bold text-[#edf2ff]">
+              Today's 10 Study Phases (30 Questions Each · All 4 Modules Represented)
+            </h2>
+          </div>
+          <span className="text-xs text-[#a9b5d0]">
+            Mock #1 after Phase 5 · Mock #2 after Phase 10
+          </span>
+        </div>
+
+        {/* Part 1: Phases 1 to 5 */}
+        <div className="space-y-2">
+          <div className="text-[11px] font-semibold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
+            <span>Part 1: Morning Focus (Phases 1 – 5 · 150 Qs)</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+            {STUDY_GROUPS.slice(0, 5).map((group) => {
+              const stats = groupStats[group.id] || { completed: 0, total: group.totalQuestions, average: null };
+              const isSelected = selectedGroupId === group.id;
+              const isDone = stats.completed >= stats.total;
+              const pct = Math.round((stats.completed / stats.total) * 100);
+
+              return (
+                <button
+                  key={group.id}
+                  onClick={() => {
+                    setSelectedGroupId(group.id);
+                    if (currentItem?.groupId !== group.id) {
+                      const firstOfGroup = fullQueue.find((q) => q.groupId === group.id);
+                      if (firstOfGroup) setCurrentOverallIndex(firstOfGroup.overallQueueIndex);
+                    }
+                  }}
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between ${
+                    isSelected
+                      ? 'bg-blue-600/15 border-blue-500 shadow-lg shadow-blue-500/10 ring-1 ring-blue-500'
+                      : 'bg-[#141c31] border-[#2b3856] hover:border-[#3d4f7a] hover:bg-[#18233c]'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs font-bold text-[#edf2ff] flex items-center gap-1.5 truncate">
+                        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isSelected ? 'bg-blue-400' : 'bg-slate-500'}`} />
+                        {group.shortTitle}
+                      </span>
+                      {isDone ? (
+                        <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-0.5 bg-emerald-500/20 px-1.5 py-0.5 rounded-full border border-emerald-500/30">
+                          <CheckCircle2 className="w-3 h-3" />
+                        </span>
+                      ) : (
+                        <span className="text-[11px] font-bold text-[#80a7ff]">
+                          {stats.completed}/{stats.total}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-[#a9b5d0] mb-2 truncate">{group.subtitle}</p>
+                  </div>
+
+                  <div>
+                    <div className="w-full bg-[#10192c] rounded-full h-1 overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-300 ${isDone ? 'bg-emerald-400' : 'bg-blue-500'}`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between mt-1.5 text-[9px] text-[#a9b5d0]">
+                      <span>{pct}% done</span>
+                      {stats.average !== null && <span>Avg {stats.average}</span>}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Mid-Day Checkpoint: Mock Exam #1 */}
+        {(() => {
+          const mock1 = currentDayData?.mockExams?.['mock01'];
+          const mock1ExamNum = (currentDay - 1) * 2 + 1;
+          const isMock1Done = !!mock1?.isCompleted;
 
           return (
-            <button
-              key={group.id}
-              onClick={() => {
-                setSelectedGroupId(group.id);
-                // Switch current question to first item of that group if current question isn't in it
-                if (currentItem?.groupId !== group.id) {
-                  const firstOfGroup = fullQueue.find((q) => q.groupId === group.id);
-                  if (firstOfGroup) setCurrentOverallIndex(firstOfGroup.overallQueueIndex);
-                }
-              }}
-              className={`p-4 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden ${
-                isSelected
-                  ? 'bg-blue-600/15 border-blue-500 shadow-lg shadow-blue-500/10 ring-1 ring-blue-500'
-                  : 'bg-[#141c31] border-[#2b3856] hover:border-[#3d4f7a] hover:bg-[#18233c]'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-[#edf2ff] flex items-center gap-1.5">
-                  <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-blue-400' : 'bg-slate-500'}`} />
-                  {group.title}
-                </span>
-                {isDone ? (
-                  <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-1 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                    <CheckCircle2 className="w-3 h-3" /> Done
-                  </span>
-                ) : (
-                  <span className="text-[11px] font-bold text-[#80a7ff]">
-                    {stats.completed}/{stats.total}
-                  </span>
-                )}
+            <div className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+              isMock1Done
+                ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-200'
+                : 'bg-purple-950/25 border-purple-500/40 text-purple-200'
+            }`}>
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold flex-shrink-0 ${
+                  isMock1Done ? 'bg-emerald-500/20 text-emerald-300' : 'bg-purple-500/20 text-purple-300'
+                }`}>
+                  <GraduationCap className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                      Checkpoint 1
+                    </span>
+                    <span className="text-sm font-extrabold text-[#edf2ff]">
+                      Full Simulation Mock Exam #{mock1ExamNum} (Priority #1)
+                    </span>
+                    {isMock1Done ? (
+                      <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Scored: {mock1?.overallScore}/90
+                      </span>
+                    ) : (
+                      <span className="text-[11px] font-semibold text-purple-300">
+                        Take between Phase 5 and Phase 6
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-[#a9b5d0] mt-0.5">
+                    {isMock1Done
+                      ? 'Completed and error-analyzed! Ready to proceed to Phase 6.'
+                      : 'Mandatory 2-hour timed full exam simulation. Complete before starting afternoon phases.'}
+                  </p>
+                </div>
               </div>
-
-              <p className="text-[11px] text-[#a9b5d0] mb-2.5 truncate">{group.subtitle}</p>
-
-              {/* Progress Bar */}
-              <div className="w-full bg-[#10192c] rounded-full h-1.5 overflow-hidden">
-                <div
-                  className={`h-full transition-all duration-300 ${isDone ? 'bg-emerald-400' : 'bg-blue-500'}`}
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-
-              <div className="flex items-center justify-between mt-2 text-[10px] text-[#a9b5d0]">
-                <span>{pct}% complete</span>
-                {stats.average !== null && <span>Avg: {stats.average}/90</span>}
-              </div>
-            </button>
+              <Link
+                to="/mock-exams"
+                className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white shadow-md shadow-purple-600/30 flex items-center gap-1.5 self-start sm:self-center transition-colors whitespace-nowrap"
+              >
+                <span>{isMock1Done ? 'View Mock #1' : 'Take Mock #1'}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           );
-        })}
+        })()}
+
+        {/* Part 2: Phases 6 to 10 */}
+        <div className="space-y-2">
+          <div className="text-[11px] font-semibold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
+            <span>Part 2: Afternoon & Evening Focus (Phases 6 – 10 · 150 Qs)</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+            {STUDY_GROUPS.slice(5, 10).map((group) => {
+              const stats = groupStats[group.id] || { completed: 0, total: group.totalQuestions, average: null };
+              const isSelected = selectedGroupId === group.id;
+              const isDone = stats.completed >= stats.total;
+              const pct = Math.round((stats.completed / stats.total) * 100);
+
+              return (
+                <button
+                  key={group.id}
+                  onClick={() => {
+                    setSelectedGroupId(group.id);
+                    if (currentItem?.groupId !== group.id) {
+                      const firstOfGroup = fullQueue.find((q) => q.groupId === group.id);
+                      if (firstOfGroup) setCurrentOverallIndex(firstOfGroup.overallQueueIndex);
+                    }
+                  }}
+                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between ${
+                    isSelected
+                      ? 'bg-blue-600/15 border-blue-500 shadow-lg shadow-blue-500/10 ring-1 ring-blue-500'
+                      : 'bg-[#141c31] border-[#2b3856] hover:border-[#3d4f7a] hover:bg-[#18233c]'
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs font-bold text-[#edf2ff] flex items-center gap-1.5 truncate">
+                        <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isSelected ? 'bg-blue-400' : 'bg-slate-500'}`} />
+                        {group.shortTitle}
+                      </span>
+                      {isDone ? (
+                        <span className="text-[10px] font-bold text-emerald-400 flex items-center gap-0.5 bg-emerald-500/20 px-1.5 py-0.5 rounded-full border border-emerald-500/30">
+                          <CheckCircle2 className="w-3 h-3" />
+                        </span>
+                      ) : (
+                        <span className="text-[11px] font-bold text-[#80a7ff]">
+                          {stats.completed}/{stats.total}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-[#a9b5d0] mb-2 truncate">{group.subtitle}</p>
+                  </div>
+
+                  <div>
+                    <div className="w-full bg-[#10192c] rounded-full h-1 overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-300 ${isDone ? 'bg-emerald-400' : 'bg-blue-500'}`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between mt-1.5 text-[9px] text-[#a9b5d0]">
+                      <span>{pct}% done</span>
+                      {stats.average !== null && <span>Avg {stats.average}</span>}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* End-of-Day Checkpoint: Mock Exam #2 */}
+        {(() => {
+          const mock2 = currentDayData?.mockExams?.['mock02'];
+          const mock2ExamNum = (currentDay - 1) * 2 + 2;
+          const isMock2Done = !!mock2?.isCompleted;
+
+          return (
+            <div className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+              isMock2Done
+                ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-200'
+                : 'bg-purple-950/25 border-purple-500/40 text-purple-200'
+            }`}>
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold flex-shrink-0 ${
+                  isMock2Done ? 'bg-emerald-500/20 text-emerald-300' : 'bg-purple-500/20 text-purple-300'
+                }`}>
+                  <GraduationCap className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                      Checkpoint 2
+                    </span>
+                    <span className="text-sm font-extrabold text-[#edf2ff]">
+                      Full Simulation Mock Exam #{mock2ExamNum} (Priority #1)
+                    </span>
+                    {isMock2Done ? (
+                      <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Scored: {mock2?.overallScore}/90
+                      </span>
+                    ) : (
+                      <span className="text-[11px] font-semibold text-purple-300">
+                        Complete after Phase 10
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-[#a9b5d0] mt-0.5">
+                    {isMock2Done
+                      ? 'Completed and error-analyzed! Day complete.'
+                      : 'Mandatory final simulation after finishing all 10 practice phases.'}
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/mock-exams"
+                className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white shadow-md shadow-purple-600/30 flex items-center gap-1.5 self-start sm:self-center transition-colors whitespace-nowrap"
+              >
+                <span>{isMock2Done ? 'View Mock #2' : 'Take Mock #2'}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Main Practice Workspace Card */}
@@ -538,26 +733,36 @@ export const PracticePage: React.FC = () => {
         </div>
       )}
 
-      {/* Visual Queue Matrix Grid for 4 Groups */}
+      {/* Visual Queue Matrix Grid */}
       <div className="bg-[#141c31] border border-[#2b3856] rounded-2xl p-5 space-y-4 shadow-lg">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#2b3856] pb-3">
           <div className="flex items-center gap-2">
             <Layers className="w-4 h-4 text-blue-400" />
             <h3 className="text-sm font-bold text-[#edf2ff]">
               {selectedGroupId === 'all'
-                ? `All ${fullQueue.length} Questions Matrix (Speaking 144 · Writing 3 · Reading 57 · Listening 50)`
-                : `${currentGroupDef.title} Matrix (${currentGroupDef.totalQuestions} Questions)`}
+                ? `All ${fullQueue.length} Questions Matrix (10 Phases · Speaking 170 · Writing 10 · Reading 60 · Listening 60)`
+                : `${currentGroupDef.title} Matrix (${currentGroupDef.totalQuestions} Questions · All 4 Modules)`}
             </h3>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-xs">
             {/* View scope selector */}
-            <div className="flex items-center gap-1 bg-[#10192c] p-1 rounded-xl border border-[#2b3856]">
+            <div className="flex items-center gap-1 bg-[#10192c] p-1 rounded-xl border border-[#2b3856] overflow-x-auto max-w-full">
+              <button
+                onClick={() => setSelectedGroupId('all')}
+                className={`px-2 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors ${
+                  selectedGroupId === 'all'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-[#a9b5d0] hover:text-[#edf2ff]'
+                }`}
+              >
+                All 300
+              </button>
               {STUDY_GROUPS.map((g) => (
                 <button
                   key={g.id}
                   onClick={() => setSelectedGroupId(g.id)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors ${
+                  className={`px-2 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors ${
                     selectedGroupId === g.id
                       ? 'bg-blue-600 text-white shadow-sm'
                       : 'text-[#a9b5d0] hover:text-[#edf2ff]'
@@ -566,16 +771,6 @@ export const PracticePage: React.FC = () => {
                   {g.shortTitle}
                 </button>
               ))}
-              <button
-                onClick={() => setSelectedGroupId('all')}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors ${
-                  selectedGroupId === 'all'
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'text-[#a9b5d0] hover:text-[#edf2ff]'
-                }`}
-              >
-                All {fullQueue.length}
-              </button>
             </div>
 
             {/* Filter pills */}
