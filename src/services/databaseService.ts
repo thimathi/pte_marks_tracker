@@ -53,14 +53,10 @@ export function createDefaultDayData(dayNumber: number, dateStr: string, isUnloc
   const mockExams: Record<string, MockExamRecord> = {};
   const mockReviews: Record<string, MockReviewRecord> = {};
 
-  const mockIds = dayNumber === 1
-    ? ['mock01', 'mock02', 'mock03', 'mock04', 'mock05']
-    : ['mock01', 'mock02'];
+  const mockIds = ['mock01', 'mock02'];
 
   mockIds.forEach((id, idx) => {
-    const examNum = dayNumber === 1
-      ? idx + 1
-      : 5 + (dayNumber - 2) * 2 + (idx + 1);
+    const examNum = (dayNumber - 1) * 2 + (idx + 1);
     const reviewId = `review0${idx + 1}`;
 
     mockExams[id] = {
@@ -201,9 +197,9 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
         needsPlanUpdate = true;
       }
 
-      // Check if targets need updating to 193 (Speaking 102 + Writing 3 + Reading 45 + Listening 43)
+      // Check if targets need updating to 254 (Speaking 144 + Writing 3 + Reading 57 + Listening 50)
       const totalTargets = Object.values(plan.questionTargets || {}).reduce((a, b) => a + b, 0);
-      if (totalTargets !== 193) {
+      if (totalTargets !== 254) {
         plan.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
         planUpdates.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
         needsPlanUpdate = true;
@@ -427,17 +423,14 @@ export async function completeDayAndUnlockNext(
   const currentData: DayData = snap.val();
 
   // Validate completion requirements:
-  // Priority #1: Mock Exams & Reviews (Day 1: 5 Mocks; Days 2-22: 2 Mocks)
-  const isDay1 = dayNumber === 1;
-  const mockKeys = isDay1
-    ? ['mock01', 'mock02', 'mock03', 'mock04', 'mock05']
-    : ['mock01', 'mock02'];
+  // Priority #1: Mock Exams & Reviews (2 Mocks every day)
+  const mockKeys = ['mock01', 'mock02'];
 
   const gate = currentData.gateStatus;
   const missingRequirements: string[] = [];
 
   mockKeys.forEach((key, idx) => {
-    const examNum = isDay1 ? idx + 1 : 5 + (dayNumber - 2) * 2 + (idx + 1);
+    const examNum = (dayNumber - 1) * 2 + (idx + 1);
     const mock = currentData.mockExams?.[key];
     const rev = currentData.mockReviews?.[`review0${idx + 1}`];
     if (!mock?.isCompleted) {
@@ -448,11 +441,9 @@ export async function completeDayAndUnlockNext(
     }
   });
 
-  // Priority #2: Practice Questions (Day 1 requires 0 questions; Days 2-22 require 193 questions)
-  if (!isDay1) {
-    if (!gate.practiceCompleted) missingRequirements.push('All 193 practice questions must be scored');
-    if (!gate.dailyPracticeReviewCompleted) missingRequirements.push('Daily practice questions review must be confirmed');
-  }
+  // Priority #2: Practice Questions (254 practice questions required every day)
+  if (!gate.practiceCompleted) missingRequirements.push('All 254 practice questions must be scored');
+  if (!gate.dailyPracticeReviewCompleted) missingRequirements.push('Daily practice questions review must be confirmed');
 
   // Priority #3: Mandatory Daily Drills
   if (!gate.additionalExercisesCompleted) missingRequirements.push('All mandatory additional exercises must be completed');

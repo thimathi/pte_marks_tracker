@@ -209,7 +209,7 @@ export const ReportsPage: React.FC = () => {
             <BarChart data={practiceTrendData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#2b3856" />
               <XAxis dataKey="day" stroke="#a9b5d0" tick={{ fontSize: 11 }} />
-              <YAxis domain={[0, 220]} stroke="#a9b5d0" tick={{ fontSize: 11 }} />
+              <YAxis domain={[0, 280]} stroke="#a9b5d0" tick={{ fontSize: 11 }} />
               <Tooltip
                 contentStyle={{ backgroundColor: '#141c31', borderColor: '#2b3856', borderRadius: '12px' }}
                 itemStyle={{ color: '#edf2ff', fontSize: '12px' }}

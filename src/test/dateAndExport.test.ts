@@ -3,26 +3,26 @@ import { calculate21StudyDates, getDateForDay, formatDateFriendly } from '../uti
 import { DEFAULT_START_DATE, TOTAL_STUDY_DAYS } from '../config/constants';
 
 describe('Date Calculations & Formatting', () => {
-  it('calculates exactly 22 consecutive ISO dates from start date (October 25, 2026)', () => {
+  it('calculates exactly 20 consecutive ISO dates from start date (October 25, 2026)', () => {
     const dates = calculate21StudyDates(DEFAULT_START_DATE, TOTAL_STUDY_DAYS);
-    expect(dates.length).toBe(22);
+    expect(dates.length).toBe(20);
     expect(dates[0]).toBe('2026-10-25'); // Day 1
     expect(dates[1]).toBe('2026-10-26'); // Day 2
-    expect(dates[21]).toBe('2026-11-15'); // Day 22
+    expect(dates[19]).toBe('2026-11-13'); // Day 20
   });
 
-  it('supports custom duration when requested (e.g. 22 days)', () => {
-    const dates = calculate21StudyDates('2026-10-25', 22);
-    expect(dates.length).toBe(22);
+  it('supports custom duration when requested (e.g. 20 days)', () => {
+    const dates = calculate21StudyDates('2026-10-25', 20);
+    expect(dates.length).toBe(20);
     expect(dates[0]).toBe('2026-10-25');
-    expect(dates[21]).toBe('2026-11-15');
+    expect(dates[19]).toBe('2026-11-13');
   });
 
-  it('correctly retrieves date for any specific study day (1 to 22)', () => {
+  it('correctly retrieves date for any specific study day (1 to 20)', () => {
     const startDate = '2026-10-25';
     expect(getDateForDay(startDate, 1)).toBe('2026-10-25');
     expect(getDateForDay(startDate, 10)).toBe('2026-11-03');
-    expect(getDateForDay(startDate, 22)).toBe('2026-11-15');
+    expect(getDateForDay(startDate, 20)).toBe('2026-11-13');
   });
 
   it('formats friendly date correctly', () => {

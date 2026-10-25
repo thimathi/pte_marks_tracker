@@ -74,13 +74,11 @@ export const DashboardPage: React.FC = () => {
     studyPlan.targetScores
   );
 
-  // Mocks for currentDay
-  const mockKeys = isDay1
-    ? ['mock01', 'mock02', 'mock03', 'mock04', 'mock05']
-    : ['mock01', 'mock02'];
+  // Mocks for currentDay (2 per day for 20 days)
+  const mockKeys = ['mock01', 'mock02'];
 
   const todayMocks = mockKeys.map((key, idx) => {
-    const examNum = isDay1 ? idx + 1 : 5 + (currentDay - 2) * 2 + (idx + 1);
+    const examNum = (currentDay - 1) * 2 + (idx + 1);
     const mockRec = currentDayData?.mockExams?.[key];
     const revRec = currentDayData?.mockReviews?.[`review0${idx + 1}`];
     return {
@@ -106,9 +104,7 @@ export const DashboardPage: React.FC = () => {
   if (pendingMock) {
     nextTask = {
       title: `Complete Mock Exam #${pendingMock.examNum} [Priority #1]`,
-      desc: isDay1
-        ? `Day 1 Mock ${pendingMock.key.replace('mock0', '')} of 5 (Strict 5-mock calibration)`
-        : `Daily simulation ${pendingMock.key === 'mock01' ? '1' : '2'} of 2 (60 Qs timed test)`,
+      desc: `Daily simulation ${pendingMock.key === 'mock01' ? '1' : '2'} of 2 (60 Qs timed test)`,
       link: '/mock-exams',
       btnText: 'Take Mock Exam'
     };
@@ -119,14 +115,14 @@ export const DashboardPage: React.FC = () => {
       link: '/mock-exams',
       btnText: 'Review Mock Exam'
     };
-  } else if (!isDay1 && breakdown.totalCompleted < breakdown.totalDailyTarget) {
+  } else if (breakdown.totalCompleted < breakdown.totalDailyTarget) {
     nextTask = {
       title: 'Practice Questions (4 Sections)',
       desc: `${remainingQuestionsToday} questions remaining in today's ${breakdown.totalDailyTarget} practice queue`,
       link: '/practice',
       btnText: 'Open Practice Workspace'
     };
-  } else if (!isDay1 && !currentDayData?.gateStatus?.dailyPracticeReviewCompleted) {
+  } else if (!currentDayData?.gateStatus?.dailyPracticeReviewCompleted) {
     nextTask = {
       title: 'Confirm Daily Practice Review',
       desc: 'Check low-scoring questions in the Review Center',
@@ -189,9 +185,7 @@ export const DashboardPage: React.FC = () => {
           </h1>
           <p className="text-sm text-[#a9b5d0] leading-relaxed">
             PTE Bridge · Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · Target: <b className="text-blue-400">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Target: <b className="text-emerald-400">{targetForToday}+</b>).
-            {' '}{isDay1
-              ? <b className="text-purple-300">Day 1 Focus: Complete 5 Full Mock Exams (no practice questions today).</b>
-              : `Daily Focus: 2 Full Mock Exams (Priority #1) + 193 Practice Questions (Speaking 102 · Writing 3 · Reading 45 · Listening 43).`}
+            {' '}Daily Focus: 2 Full Mock Exams (Priority #1) + 254 Practice Questions (Speaking 144 · Writing 3 · Reading 57 · Listening 50).
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
@@ -202,15 +196,13 @@ export const DashboardPage: React.FC = () => {
               <GraduationCap className="w-4 h-4 text-white" />
               <span>Take Mock Exam (Priority #1 · {todayMocks.length} Today)</span>
             </Link>
-            {!isDay1 && (
-              <Link
-                to="/practice"
-                className="px-5 py-2.5 rounded-xl bg-[#243553] hover:bg-[#30476c] text-xs font-semibold text-[#edf2ff] border border-[#405477] flex items-center gap-2 transition-all"
-              >
-                <Shuffle className="w-4 h-4 text-blue-400" />
-                <span>Practice Workspace ({breakdown.totalDailyTarget} Qs)</span>
-              </Link>
-            )}
+            <Link
+              to="/practice"
+              className="px-5 py-2.5 rounded-xl bg-[#243553] hover:bg-[#30476c] text-xs font-semibold text-[#edf2ff] border border-[#405477] flex items-center gap-2 transition-all"
+            >
+              <Shuffle className="w-4 h-4 text-blue-400" />
+              <span>Practice Workspace ({breakdown.totalDailyTarget} Qs)</span>
+            </Link>
           </div>
         </div>
 
@@ -418,19 +410,19 @@ export const DashboardPage: React.FC = () => {
             <h3 className="text-sm font-bold text-[#edf2ff]">{totalDays}-Day Mountain Staircase (Target: 4,000+ Questions & 40+ Mocks)</h3>
           </div>
           <span className="text-xs font-semibold px-2.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
-            22-Day Intensive
+            20-Day Intensive
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
           {/* Step 1 */}
           <div className={`p-3 rounded-xl border text-xs space-y-1 ${
             currentDay <= 5 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
           }`}>
             <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">Step 1: Calibration</span>
             <p className="font-bold text-[#edf2ff]">Days 1 – 5</p>
-            <p className="text-[10px] text-[#a9b5d0]">Target: 62+ ➔ 67+</p>
-            <span className="text-[9px] text-purple-300 block font-semibold">Day 1: 5 Mocks</span>
+            <p className="text-[10px] text-[#a9b5d0]">Target: 62+ ➔ 70+</p>
+            <span className="text-[9px] text-purple-300 block font-semibold">2 Mocks + 254 Qs/Day</span>
           </div>
 
           {/* Step 2 */}
@@ -439,8 +431,8 @@ export const DashboardPage: React.FC = () => {
           }`}>
             <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">Step 2: Momentum</span>
             <p className="font-bold text-[#edf2ff]">Days 6 – 10</p>
-            <p className="text-[10px] text-[#a9b5d0]">Target: 69+ ➔ 73+</p>
-            <span className="text-[9px] text-blue-300 block font-semibold">2 Mocks + 193 Qs/Day</span>
+            <p className="text-[10px] text-[#a9b5d0]">Target: 71+ ➔ 75+</p>
+            <span className="text-[9px] text-blue-300 block font-semibold">2 Mocks + 254 Qs/Day</span>
           </div>
 
           {/* Step 3 */}
@@ -449,28 +441,18 @@ export const DashboardPage: React.FC = () => {
           }`}>
             <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Step 3: The 75+ Push</span>
             <p className="font-bold text-[#edf2ff]">Days 11 – 15</p>
-            <p className="text-[10px] text-[#a9b5d0]">Target: 74+ ➔ 78+</p>
-            <span className="text-[9px] text-amber-400 block font-semibold">Prediction Drills</span>
+            <p className="text-[10px] text-[#a9b5d0]">Target: 76+ ➔ 80+</p>
+            <span className="text-[9px] text-amber-400 block font-semibold">2 Mocks + 254 Qs/Day</span>
           </div>
 
           {/* Step 4 */}
           <div className={`p-3 rounded-xl border text-xs space-y-1 ${
-            currentDay >= 16 && currentDay <= 19 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
+            currentDay >= 16 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
           }`}>
             <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Step 4: Summit Ridge</span>
-            <p className="font-bold text-[#edf2ff]">Days 16 – 19</p>
-            <p className="text-[10px] text-[#a9b5d0]">Target: 79+ ➔ 82+</p>
-            <span className="text-[9px] text-emerald-400 block font-semibold">Mastery Threshold</span>
-          </div>
-
-          {/* Step 5 */}
-          <div className={`p-3 rounded-xl border text-xs space-y-1 ${
-            currentDay >= 20 ? 'bg-blue-600/20 border-blue-500/50' : 'bg-[#0e1729] border-[#2b3856]'
-          }`}>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-yellow-400">Step 5: Final Summit</span>
-            <p className="font-bold text-[#edf2ff]">Days 20 – 22</p>
-            <p className="text-[10px] text-[#a9b5d0]">Target: 83+ ➔ 86+</p>
-            <span className="text-[9px] text-yellow-300 block font-semibold">Peak Exam Ready</span>
+            <p className="font-bold text-[#edf2ff]">Days 16 – 20</p>
+            <p className="text-[10px] text-[#a9b5d0]">Target: 81+ ➔ 86+</p>
+            <span className="text-[9px] text-emerald-400 block font-semibold">Final Peak Simulation</span>
           </div>
         </div>
       </div>

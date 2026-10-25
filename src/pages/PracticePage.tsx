@@ -30,7 +30,7 @@ export const PracticePage: React.FC = () => {
     updateScore
   } = usePteData();
 
-  // Generate 193 questions structured into 4 sections (Speaking 102 · Writing 3 · Reading 45 · Listening 43)
+  // Generate 254 questions structured into 4 sections (Speaking 144 · Writing 3 · Reading 57 · Listening 50)
   const fullQueue: QueueItem[] = useMemo(() => {
     return generateInterleavedQueue(
       studyPlan.questionTargets,
@@ -149,7 +149,7 @@ export const PracticePage: React.FC = () => {
         return;
       }
     }
-    alert(`🎉 All questions in ${withinCurrentGroupOnly ? 'this section' : 'today\'s 193-question plan'} have been scored!`);
+    alert(`🎉 All questions in ${withinCurrentGroupOnly ? 'this section' : 'today\'s 254-question plan'} have been scored!`);
   };
 
   // Group completion calculations
@@ -213,24 +213,6 @@ export const PracticePage: React.FC = () => {
             Day {currentDay} Practice Workspace · 4 Sections ({fullQueue.length} Questions Total) · Started: {formatDateFriendly(studyPlan.startDate)}
           </p>
         </div>
-
-        {/* Day 1 Focus Notice */}
-        {currentDay === 1 && (
-          <div className="w-full bg-purple-500/15 border border-purple-500/40 rounded-2xl p-4 text-xs flex items-center justify-between gap-3 text-purple-200">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-purple-400 flex-shrink-0" />
-              <span>
-                <b>Day 1 Focus (Priority #1):</b> 5 Full Mock Exams are required today! Daily practice questions are 0 required for Day 1. Any practice questions scored will automatically count toward Day 2.
-              </span>
-            </div>
-            <a
-              href="/mock-exams"
-              className="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-[11px] flex-shrink-0"
-            >
-              Go to Mock Exams
-            </a>
-          </div>
-        )}
 
         {/* Global Counter Pills */}
         <div className="flex items-center gap-3">
@@ -563,7 +545,7 @@ export const PracticePage: React.FC = () => {
             <Layers className="w-4 h-4 text-blue-400" />
             <h3 className="text-sm font-bold text-[#edf2ff]">
               {selectedGroupId === 'all'
-                ? 'All 193 Questions Matrix (Speaking 102 · Writing 3 · Reading 45 · Listening 43)'
+                ? `All ${fullQueue.length} Questions Matrix (Speaking 144 · Writing 3 · Reading 57 · Listening 50)`
                 : `${currentGroupDef.title} Matrix (${currentGroupDef.totalQuestions} Questions)`}
             </h3>
           </div>
@@ -592,7 +574,7 @@ export const PracticePage: React.FC = () => {
                     : 'text-[#a9b5d0] hover:text-[#edf2ff]'
                 }`}
               >
-                All 193
+                All {fullQueue.length}
               </button>
             </div>
 

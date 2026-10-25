@@ -38,10 +38,9 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
   const isCompleted = targetDayData?.status === 'completed';
 
   // Calculate live completion metrics for Day
-  const isDay1 = dayNumber === 1;
   const breakdown = calculateDayBreakdown(targetDayData, studyPlan.questionTargets);
-  const practiceDone = isDay1 ? true : (breakdown.totalCompleted >= breakdown.totalDailyTarget && breakdown.totalDailyTarget > 0);
-  const practiceReviewDone = isDay1 ? true : !!targetDayData?.gateStatus?.dailyPracticeReviewCompleted;
+  const practiceDone = breakdown.totalCompleted >= breakdown.totalDailyTarget && breakdown.totalDailyTarget > 0;
+  const practiceReviewDone = !!targetDayData?.gateStatus?.dailyPracticeReviewCompleted;
 
   // Check additional exercises
   const additionalDone = DEFAULT_ADDITIONAL_EXERCISES.every((ex) => {
@@ -50,13 +49,11 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     return record && record.completedCount >= targetCount;
   });
 
-  // Mock exams based on Day 1 (5 mocks) vs Days 2-22 (2 mocks)
-  const mockKeys = isDay1
-    ? ['mock01', 'mock02', 'mock03', 'mock04', 'mock05']
-    : ['mock01', 'mock02'];
+  // Mock exams: 2 mock exams every day (Days 1–20 = 40 Mock Exams total)
+  const mockKeys = ['mock01', 'mock02'];
 
   const mockStatuses = mockKeys.map((key, idx) => {
-    const examNum = isDay1 ? idx + 1 : 5 + (dayNumber - 2) * 2 + (idx + 1);
+    const examNum = (dayNumber - 1) * 2 + (idx + 1);
     const mockRec = targetDayData?.mockExams?.[key];
     const revRec = targetDayData?.mockReviews?.[`review0${idx + 1}`];
     return {
@@ -98,31 +95,21 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     });
   });
 
-  // Priority #2: Practice Questions (0 required on Day 1; 193 on Days 2-22)
-  if (!isDay1) {
-    checklistItems.push({
-      id: 'practice',
-      label: `All ${breakdown.totalDailyTarget} Practice Questions Completed & Scored (${breakdown.totalCompleted} / ${breakdown.totalDailyTarget})`,
-      done: practiceDone,
-      canAutoDetect: true,
-      hint: `Scoring all ${breakdown.totalDailyTarget} practice questions (across 4 groups) is required.`
-    });
-    checklistItems.push({
-      id: 'dailyPracticeReviewCompleted',
-      label: 'Daily Practice Questions Review Completed',
-      done: practiceReviewDone,
-      canToggle: true,
-      hint: 'Confirm you analyzed your mistakes and low-scoring questions in the Review Center.'
-    });
-  } else {
-    checklistItems.push({
-      id: 'day1PracticeWaived',
-      label: 'Practice Questions: 0 Required for Day 1 (Focus strictly on 5 Full Mock Exams)',
-      done: true,
-      canAutoDetect: true,
-      hint: 'Day 1 is dedicated entirely to completing and reviewing 5 full simulation mock exams.'
-    });
-  }
+  // Priority #2: Practice Questions (254 required every day)
+  checklistItems.push({
+    id: 'practice',
+    label: `All ${breakdown.totalDailyTarget} Practice Questions Completed & Scored (${breakdown.totalCompleted} / ${breakdown.totalDailyTarget})`,
+    done: practiceDone,
+    canAutoDetect: true,
+    hint: `Scoring all ${breakdown.totalDailyTarget} practice questions (across 4 groups) is required.`
+  });
+  checklistItems.push({
+    id: 'dailyPracticeReviewCompleted',
+    label: 'Daily Practice Questions Review Completed',
+    done: practiceReviewDone,
+    canToggle: true,
+    hint: 'Confirm you analyzed your mistakes and low-scoring questions in the Review Center.'
+  });
 
   // Priority #3: Mandatory Daily Drills
   checklistItems.push({

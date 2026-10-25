@@ -49,7 +49,7 @@ export const MockExamsPage: React.FC = () => {
     });
   };
 
-  // Build the complete list of all 47 planned mock exams
+  // Build the complete list of all 40 planned mock exams (2 per day for 20 days)
   const allMocksSchedule: {
     examNumber: number;
     dayNumber: number;
@@ -57,21 +57,10 @@ export const MockExamsPage: React.FC = () => {
     reviewId: string;
   }[] = [];
 
-  // Day 1: Mocks 1 to 5
-  for (let i = 1; i <= 5; i++) {
-    allMocksSchedule.push({
-      examNumber: i,
-      dayNumber: 1,
-      mockId: `mock0${i}`,
-      reviewId: `review0${i}`
-    });
-  }
-
-  // Days 2 to 22: 2 Mocks each
-  for (let d = 2; d <= totalDays; d++) {
+  for (let d = 1; d <= totalDays; d++) {
     for (let m = 1; m <= 2; m++) {
       allMocksSchedule.push({
-        examNumber: 5 + (d - 2) * 2 + m,
+        examNumber: (d - 1) * 2 + m,
         dayNumber: d,
         mockId: `mock0${m}`,
         reviewId: `review0${m}`
@@ -91,15 +80,13 @@ export const MockExamsPage: React.FC = () => {
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            {isDay1
-              ? 'Day 1 Intensive Focus: Complete all 5 Full Mock Exams today! Zero practice questions required.'
-              : `Daily Requirement: 2 Full Mock Exams per day (60 Qs each) + Deep error analysis reviews.`}
+            Daily Requirement: 2 Full Mock Exams per day (60 Qs each) + Deep error analysis reviews.
           </p>
         </div>
 
         <div className="flex items-center gap-2 text-xs">
           <span className="px-3 py-1.5 rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/30 font-semibold">
-            Day {currentDay} Focus: {isDay1 ? '5 Mock Exams (#1 – #5)' : `2 Mock Exams (#${5 + (currentDay - 2) * 2 + 1} & #${5 + (currentDay - 2) * 2 + 2})`}
+            Day {currentDay} Focus: 2 Mock Exams (#{((currentDay - 1) * 2) + 1} & #{((currentDay - 1) * 2) + 2})
           </span>
         </div>
       </div>
@@ -119,7 +106,7 @@ export const MockExamsPage: React.FC = () => {
             const mock = currentDayData?.mockExams?.[key];
             const reviewId = `review0${idx + 1}`;
             const rev = currentDayData?.mockReviews?.[reviewId];
-            const examNumber = isDay1 ? idx + 1 : 5 + (currentDay - 2) * 2 + (idx + 1);
+            const examNumber = (currentDay - 1) * 2 + (idx + 1);
 
             return (
               <div
