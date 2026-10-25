@@ -127,7 +127,7 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
   // Priority #3: Mandatory Daily Drills
   checklistItems.push({
     id: 'additional',
-    label: 'All Mandatory Daily Drills Completed (Twisters 2x, Collocations 2x, Essay Template 3x)',
+    label: 'All Mandatory Daily Drills Completed (Twisters 2x, Collocations 100, Essay Templates 2x)',
     done: additionalDone,
     canAutoDetect: true,
     hint: 'Log required repetition counts for all 3 daily repeat tasks.'

@@ -143,7 +143,7 @@ export const DashboardPage: React.FC = () => {
     if (!isAdditionalDone) {
       nextTask = {
         title: 'Complete 3 Mandatory Daily Drills',
-        desc: 'Twisters 2x, Collocations 2x, Essay Template 3x',
+        desc: 'Twisters 2x, Collocations 100, Essay Templates 2x',
         link: '#daily-drills',
         btnText: 'Open Daily Drills'
       };

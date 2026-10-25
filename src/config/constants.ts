@@ -489,23 +489,23 @@ export const DEFAULT_ADDITIONAL_EXERCISES = [
   {
     id: 'tongue_twister',
     name: 'Tongue Twisters Enunciation Drill',
-    requirement: '2 Times daily',
+    requirement: '50 Twisters List x 2 Reps / Day',
     requiredCount: 2,
     notes: 'Speed, clarity, and continuous oral fluency enunciation drills.'
   },
   {
     id: 'academic_collocations',
-    name: 'Academic Collocations Words Drill',
-    requirement: '2 Times daily',
-    requiredCount: 2,
-    notes: 'High-frequency academic collocation pairs for perfect Reading & Writing FIB accuracy.'
+    name: 'Pearson Academic Collocations',
+    requirement: '100 Collocations / Day',
+    requiredCount: 100,
+    notes: 'Master 100 high-frequency Pearson academic collocations daily for Reading & Writing FIB.'
   },
   {
     id: 'essay_template',
-    name: 'Write Essay Template Practice',
-    requirement: '3 Times daily',
-    requiredCount: 3,
-    notes: 'Speed-type and memorize the standard 4-paragraph PTE 79+ essay template without hesitation.'
+    name: 'PTE Bridge Essay Templates',
+    requirement: 'Write 2x / Day (Discussion + Problems/Solutions)',
+    requiredCount: 2,
+    notes: 'Practice writing the two official PTE Bridge essay templates (Discussion & Problems/Solutions).'
   }
 ];
 
