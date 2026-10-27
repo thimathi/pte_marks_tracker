@@ -237,7 +237,7 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
       if (!currentDay || !nextDay) continue;
 
       for (const meta of QUESTION_TYPES) {
-        const target = d === 1 ? 0 : (targets[meta.id] ?? meta.defaultTarget);
+        const target = targets[meta.id] ?? meta.defaultTarget;
         const atts = (currentDay.questionProgress?.[meta.id]?.attempts || {}) as Record<string, QuestionAttempt>;
         const scoredAttempts = Object.entries(atts)
           .map(([idx, a]) => ({ index: Number(idx), attempt: a }))
@@ -316,14 +316,10 @@ export async function saveQuestionAttempt(
   const meta = QUESTION_TYPE_MAP.get(questionTypeId);
   const target = customTarget ?? meta?.defaultTarget ?? 20;
 
-  // Rollover: If user answered on Day 1 (0 practice target), or more than daily target, count toward next day(s)
+  // Rollover: If user answered more than daily target, count toward next day(s)
   let targetDay = dayNumber;
   let targetIndex = qIndex;
-  if (dayNumber === 1) {
-    const dayOffset = Math.floor(qIndex / target);
-    targetDay = Math.min(2 + dayOffset, TOTAL_STUDY_DAYS);
-    targetIndex = qIndex % target;
-  } else if (target > 0 && qIndex >= target) {
+  if (target > 0 && qIndex >= target) {
     const dayOffset = Math.floor(qIndex / target);
     targetDay = Math.min(dayNumber + dayOffset, TOTAL_STUDY_DAYS);
     targetIndex = qIndex % target;
@@ -527,10 +523,35 @@ export function subscribeToUserData(
 
       for (let d = 1; d <= totalDays; d++) {
         const key = formatDayKey(d);
-        if (rawDays[key]) {
-          days[d] = rawDays[key];
+        const raw = rawDays[key];
+        const defaultDay = createDefaultDayData(d, raw?.date || dates[d - 1], d === 1);
+        if (raw) {
+          days[d] = {
+            ...defaultDay,
+            ...raw,
+            questionProgress: {
+              ...defaultDay.questionProgress,
+              ...(raw.questionProgress || {})
+            },
+            mockExams: {
+              ...defaultDay.mockExams,
+              ...(raw.mockExams || {})
+            },
+            mockReviews: {
+              ...defaultDay.mockReviews,
+              ...(raw.mockReviews || {})
+            },
+            additionalExercises: {
+              ...defaultDay.additionalExercises,
+              ...(raw.additionalExercises || {})
+            },
+            gateStatus: {
+              ...defaultDay.gateStatus,
+              ...(raw.gateStatus || {})
+            }
+          };
         } else {
-          days[d] = createDefaultDayData(d, dates[d - 1], d === 1);
+          days[d] = defaultDay;
         }
       }
 

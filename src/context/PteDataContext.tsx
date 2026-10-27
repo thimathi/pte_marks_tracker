@@ -128,8 +128,10 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       // Optimistic local update
       setDays((prev) => {
         const curDay = prev[dayNumber] || createDefaultDayData(dayNumber, '', false);
-        const typeProgress = curDay.questionProgress[typeId] || { attempts: {} };
-        const prevAttempt = typeProgress.attempts[qIndex] || { qIndex, score: null };
+        const curQP = curDay.questionProgress || {};
+        const typeProgress = curQP[typeId] || { attempts: {} };
+        const curAttempts = typeProgress.attempts || {};
+        const prevAttempt = curAttempts[qIndex] || { qIndex, score: null };
 
         const updatedAttempt: QuestionAttempt = {
           ...prevAttempt,
@@ -137,15 +139,18 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
           updatedAt: new Date().toISOString()
         };
 
-        const newAttempts = { ...typeProgress.attempts, [qIndex]: updatedAttempt };
+        const newAttempts = { ...curAttempts, [qIndex]: updatedAttempt };
 
         return {
           ...prev,
           [dayNumber]: {
             ...curDay,
             questionProgress: {
-              ...curDay.questionProgress,
-              [typeId]: { attempts: newAttempts }
+              ...curQP,
+              [typeId]: {
+                ...typeProgress,
+                attempts: newAttempts
+              }
             }
           }
         };
@@ -170,15 +175,25 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setSyncStatus('syncing');
 
       setDays((prev) => {
-        const curDay = prev[dayNumber];
-        if (!curDay) return prev;
-        const curMock = curDay.mockExams[mockId];
+        const curDay = prev[dayNumber] || createDefaultDayData(dayNumber, '', false);
+        const curMocks = curDay.mockExams || {};
+        const curMock = curMocks[mockId] || {
+          id: mockId,
+          examNumber: 1,
+          date: curDay.date,
+          overallScore: null,
+          speakingScore: null,
+          writingScore: null,
+          readingScore: null,
+          listeningScore: null,
+          isCompleted: false
+        };
         return {
           ...prev,
           [dayNumber]: {
             ...curDay,
             mockExams: {
-              ...curDay.mockExams,
+              ...curMocks,
               [mockId]: { ...curMock, ...data }
             }
           }
@@ -204,15 +219,22 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setSyncStatus('syncing');
 
       setDays((prev) => {
-        const curDay = prev[dayNumber];
-        if (!curDay) return prev;
-        const curReview = curDay.mockReviews[reviewId];
+        const curDay = prev[dayNumber] || createDefaultDayData(dayNumber, '', false);
+        const curReviews = curDay.mockReviews || {};
+        const curReview = curReviews[reviewId] || {
+          id: reviewId,
+          mockId: reviewId.replace('review', 'mock'),
+          studyDay: dayNumber,
+          examNumber: 1,
+          durationMinutes: 30,
+          isCompleted: false
+        };
         return {
           ...prev,
           [dayNumber]: {
             ...curDay,
             mockReviews: {
-              ...curDay.mockReviews,
+              ...curReviews,
               [reviewId]: { ...curReview, ...data }
             }
           }
@@ -302,14 +324,23 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setSyncStatus('syncing');
 
       setDays((prev) => {
-        const curDay = prev[dayNumber];
-        if (!curDay) return prev;
+        const curDay = prev[dayNumber] || createDefaultDayData(dayNumber, '', false);
+        const curGate = curDay.gateStatus || {
+          practiceCompleted: false,
+          dailyPracticeReviewCompleted: false,
+          mock1Completed: false,
+          mock1ReviewCompleted: false,
+          mock2Completed: false,
+          mock2ReviewCompleted: false,
+          additionalExercisesCompleted: false,
+          isUnlocked: dayNumber === 1
+        };
         return {
           ...prev,
           [dayNumber]: {
             ...curDay,
             gateStatus: {
-              ...curDay.gateStatus,
+              ...curGate,
               [key]: val
             }
           }
