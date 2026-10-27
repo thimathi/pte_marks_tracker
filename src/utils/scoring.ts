@@ -188,3 +188,106 @@ export function calculateStreak(days: Record<number, DayData>, maxDays: number =
   }
   return streak;
 }
+
+export interface QuestionTypeCumulative {
+  meta: (typeof QUESTION_TYPES)[0];
+  dailyTarget: number;
+  totalTarget: number; // e.g. 40 * 20 = 800
+  completed: number;
+  average: number | null;
+  percent: number;
+}
+
+export interface CumulativeProgressSummary {
+  questions: QuestionTypeCumulative[];
+  totalPracticeCompleted: number;
+  totalPracticeGoal: number; // e.g. 6,000
+  practicePercent: number;
+  totalMocksCompleted: number;
+  totalMocksGoal: number; // 40
+  mocksPercent: number;
+  totalMockReviewsCompleted: number;
+  overallAverage: number | null;
+}
+
+/**
+ * Calculates global cumulative progress across all study days towards final deadline (November 16)
+ * Question-wise tracking: e.g. Read Aloud 800 total, Repeat Sentence 1000 total, etc.
+ */
+export function calculateCumulativeProgress(
+  days: Record<number, DayData>,
+  targets: Record<string, number>,
+  totalDays: number = TOTAL_STUDY_DAYS
+): CumulativeProgressSummary {
+  let totalPracticeCompleted = 0;
+  let totalPracticeGoal = 0;
+  let totalMocksCompleted = 0;
+  let totalMockReviewsCompleted = 0;
+  const allPracticeScores: number[] = [];
+
+  const questions: QuestionTypeCumulative[] = QUESTION_TYPES.map((meta) => {
+    const dailyTarget = targets[meta.id] ?? meta.defaultTarget;
+    const totalTarget = dailyTarget * totalDays;
+    totalPracticeGoal += totalTarget;
+
+    const scoresForType: number[] = [];
+    let completedForType = 0;
+
+    for (let d = 1; d <= totalDays; d++) {
+      const day = days[d];
+      if (!day) continue;
+      const atts = day.questionProgress?.[meta.id]?.attempts || {};
+      for (const [_, a] of Object.entries(atts)) {
+        if (a && typeof a.score === 'number' && !isNaN(a.score)) {
+          scoresForType.push(a.score);
+          allPracticeScores.push(a.score);
+          completedForType++;
+          totalPracticeCompleted++;
+        }
+      }
+    }
+
+    const avg = calculateAverage(scoresForType).average;
+    const percent = totalTarget > 0 ? Math.round((completedForType / totalTarget) * 100) : 0;
+
+    return {
+      meta,
+      dailyTarget,
+      totalTarget,
+      completed: completedForType,
+      average: avg,
+      percent
+    };
+  });
+
+  const totalMocksGoal = 40;
+  for (let d = 1; d <= totalDays; d++) {
+    const day = days[d];
+    if (!day) continue;
+    const mocks = day.mockExams || {};
+    for (const [_, m] of Object.entries(mocks)) {
+      if (m && m.isCompleted) totalMocksCompleted++;
+    }
+    const revs = day.mockReviews || {};
+    for (const [_, r] of Object.entries(revs)) {
+      if (r && r.isCompleted) totalMockReviewsCompleted++;
+    }
+  }
+
+  const overallAvg = calculateAverage(allPracticeScores).average;
+  const practicePercent = totalPracticeGoal > 0 ? Math.round((totalPracticeCompleted / totalPracticeGoal) * 100) : 0;
+  const mocksPercent = totalMocksGoal > 0 ? Math.round((totalMocksCompleted / totalMocksGoal) * 100) : 0;
+
+  return {
+    questions,
+    totalPracticeCompleted,
+    totalPracticeGoal,
+    practicePercent,
+    totalMocksCompleted,
+    totalMocksGoal,
+    mocksPercent,
+    totalMockReviewsCompleted,
+    overallAverage: overallAvg
+  };
+}
+

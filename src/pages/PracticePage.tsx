@@ -14,7 +14,10 @@ import {
   Layers,
   Sparkles,
   ArrowRight,
-  GraduationCap
+  GraduationCap,
+  Target,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { usePteData } from '../context/PteDataContext';
 import { generateInterleavedQueue } from '../utils/interleaving';
@@ -23,6 +26,7 @@ import { QUESTION_TYPE_MAP, SKILL_COLORS, STUDY_GROUPS, PRIORITY_STYLES } from '
 import { QueueItem, QuestionPriority } from '../types/pte';
 import { formatDateFriendly } from '../utils/dateUtils';
 import { DailyDrillsCard } from '../components/drills/DailyDrillsCard';
+import { MasterTargetTrackerCard } from '../components/analytics/MasterTargetTrackerCard';
 
 export const PracticePage: React.FC = () => {
   const {
@@ -61,6 +65,7 @@ export const PracticePage: React.FC = () => {
   const [matrixFilter, setMatrixFilter] = useState<'all' | 'unscored' | 'prediction' | 'hard' | 'flagged'>('all');
   const [autoAdvance, setAutoAdvance] = useState<boolean>(true);
   const [saveSuccessNotice, setSaveSuccessNotice] = useState<boolean>(false);
+  const [showMasterTracker, setShowMasterTracker] = useState<boolean>(false);
 
   useEffect(() => {
     localStorage.setItem(queueStorageKey, String(currentOverallIndex));
@@ -246,6 +251,38 @@ export const PracticePage: React.FC = () => {
       {/* Mandatory Daily Repeat Tasks (3 Core Drills) */}
       <div id="daily-drills">
         <DailyDrillsCard dayNumber={currentDay} />
+      </div>
+
+      {/* Collapsible November 16 Master Target Progress */}
+      <div className="space-y-3">
+        <button
+          type="button"
+          onClick={() => setShowMasterTracker((prev) => !prev)}
+          className="w-full p-4 rounded-2xl bg-gradient-to-r from-purple-950/30 to-[#141c31] border border-purple-500/30 hover:border-purple-500/50 text-left transition-all flex items-center justify-between cursor-pointer"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold flex-shrink-0">
+              <Target className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-xs font-bold text-[#edf2ff] flex items-center gap-2 flex-wrap">
+                <span>November 16 Master Target Progress (Question-Wise & Mock Tracker)</span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-semibold border border-purple-500/30">
+                  Cumulative
+                </span>
+              </span>
+              <p className="text-[11px] text-[#a9b5d0] mt-0.5">
+                Track your progress towards 6,000 Questions (RA 800, RS 1,000, etc.) and 40 Mocks across all study days.
+              </p>
+            </div>
+          </div>
+          <span className="text-xs font-semibold text-purple-300 flex items-center gap-1 whitespace-nowrap">
+            {showMasterTracker ? 'Hide Tracker' : 'View Cumulative Tracker'}
+            {showMasterTracker ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </span>
+        </button>
+
+        {showMasterTracker && <MasterTargetTrackerCard />}
       </div>
 
       {/* 10 Study Phases with Midpoint & End Checkpoint Mock Exams */}

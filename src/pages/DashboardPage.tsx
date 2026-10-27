@@ -22,6 +22,7 @@ import { formatDateFriendly, isDatePast } from '../utils/dateUtils';
 import { DAY_TARGET_SCORES, DEFAULT_ADDITIONAL_EXERCISES, TOTAL_MOCK_TARGET, TOTAL_PRACTICE_TARGET, TOTAL_STUDY_DAYS } from '../config/constants';
 import { DailyDrillsCard } from '../components/drills/DailyDrillsCard';
 import { CompletionGate } from '../components/gate/CompletionGate';
+import { MasterTargetTrackerCard } from '../components/analytics/MasterTargetTrackerCard';
 
 export const DashboardPage: React.FC = () => {
   const { studyPlan, currentDay, currentDayData, days, selectDay } = usePteData();
@@ -302,6 +303,9 @@ export const DashboardPage: React.FC = () => {
           <p className="text-[11px] text-[#a9b5d0]">{breakdown.dailyCount} scored practice attempts</p>
         </div>
       </div>
+
+      {/* November 16 Master Target Tracker (Question-Wise & Mock Simulation Overall Progress) */}
+      <MasterTargetTrackerCard />
 
       {/* Next Task Card & Skills Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

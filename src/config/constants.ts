@@ -1,6 +1,7 @@
 import { QuestionPriority, QuestionTypeMeta, StudyGroupDefinition, TargetScores } from '../types/pte';
 
 export const DEFAULT_START_DATE = '2026-10-25';
+export const FINAL_TARGET_DATE = '2026-11-16'; // Target summit deadline requested by user
 export const APP_TITLE = 'PTE - Daily Study Plan – Superior English';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
 export const TOTAL_STUDY_DAYS = 20; // 20 Days Plan
@@ -63,8 +64,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'RS',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 60,
-    estMinutes: '40 min',
+    defaultTarget: 50,
+    estMinutes: '35 min',
     isPrediction: true,
     scoreWeight: 7,
     maxScore: 90,
@@ -89,8 +90,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'SGD',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 10,
-    estMinutes: '18 min',
+    defaultTarget: 20,
+    estMinutes: '25 min',
     isPrediction: true,
     scoreWeight: 9,
     maxScore: 90,
@@ -406,17 +407,18 @@ function build10Phases(): StudyGroupDefinition[] {
         { questionTypeId: 'listening_fill_in_blanks', count: 10, startInstanceIndex: 0, priority: 'easy', priorityLabel: 'Supporting Weight (3%)', scoreWeight: 3 }
       ]
     },
-    // Phase 10: 25 RS + 5 RA = 30 Qs (End-of-Day Checkpoint: Mock Exam #2)
+    // Phase 10: 15 RS + 5 RA + 10 SGD = 30 Qs (End-of-Day Checkpoint: Mock Exam #2)
     {
       groupNumber: 10,
       title: 'Phase 10: Final Oral Push (30 Qs)',
       shortTitle: 'Phase 10',
-      subtitle: '25 RS · 5 RA',
+      subtitle: '15 RS · 5 RA · 10 SGD',
       skills: ['speaking'],
       checkpointMock: 2,
       items: [
-        { questionTypeId: 'repeat_sentence', count: 25, startInstanceIndex: 35, priority: 'hard', priorityLabel: 'High Score Weight (7%)', scoreWeight: 7 },
-        { questionTypeId: 'read_aloud', count: 5, startInstanceIndex: 35, priority: 'medium', priorityLabel: 'Score Weight (4%)', scoreWeight: 4 }
+        { questionTypeId: 'repeat_sentence', count: 15, startInstanceIndex: 35, priority: 'hard', priorityLabel: 'High Score Weight (7%)', scoreWeight: 7 },
+        { questionTypeId: 'read_aloud', count: 5, startInstanceIndex: 35, priority: 'medium', priorityLabel: 'Score Weight (4%)', scoreWeight: 4 },
+        { questionTypeId: 'summarize_group_discussion', count: 10, startInstanceIndex: 10, priority: 'prediction', priorityLabel: 'Top Score Weight (9%)', scoreWeight: 9 }
       ]
     }
   ];

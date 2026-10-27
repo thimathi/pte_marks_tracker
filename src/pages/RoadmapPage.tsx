@@ -23,13 +23,9 @@ export const RoadmapPage: React.FC = () => {
   const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
   const navigate = useNavigate();
 
-  const handleSelectDay = (dayNum: number, isUnlocked: boolean) => {
-    if (!isUnlocked) {
-      alert(`🔒 Day ${dayNum} is locked! Complete all criteria for Day ${dayNum - 1} first.`);
-      return;
-    }
+  const handleSelectDay = (dayNum: number) => {
     selectDay(dayNum);
-    navigate('/');
+    navigate('/practice');
   };
 
   return (
@@ -63,7 +59,7 @@ export const RoadmapPage: React.FC = () => {
           return (
             <div
               key={dayNum}
-              onClick={() => handleSelectDay(dayNum, isUnlocked)}
+              onClick={() => handleSelectDay(dayNum)}
               className={`rounded-2xl border p-5 transition-all relative overflow-hidden flex flex-col justify-between space-y-4 cursor-pointer ${
                 isCurrent
                   ? 'bg-gradient-to-br from-[#192746] to-[#141c31] border-blue-500 shadow-xl shadow-blue-500/10 ring-1 ring-blue-400'
@@ -71,7 +67,7 @@ export const RoadmapPage: React.FC = () => {
                   ? 'bg-[#10192c] border-emerald-500/40 hover:border-emerald-400'
                   : isUnlocked
                   ? 'bg-[#141c31] border-[#2b3856] hover:border-blue-400'
-                  : 'bg-[#0d1424]/60 border-[#2b3856]/40 opacity-70 cursor-not-allowed'
+                  : 'bg-[#141c31]/80 border-[#2b3856] hover:border-[#3d4f7a]'
               }`}
             >
               {/* Card Header */}
@@ -86,7 +82,7 @@ export const RoadmapPage: React.FC = () => {
                       ? 'bg-[#253655] text-blue-300 border-[#3a4b70]'
                       : 'bg-[#10192c] text-[#a9b5d0] border-[#2b3856]'
                   }`}>
-                    {isCompleted ? <CheckCircle2 className="w-5 h-5 text-emerald-400" /> : !isUnlocked ? <Lock className="w-4 h-4 text-red-400" /> : `D${dayNum}`}
+                    {isCompleted ? <CheckCircle2 className="w-5 h-5 text-emerald-400" /> : `D${dayNum}`}
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-[#edf2ff] flex items-center gap-1.5">
@@ -108,12 +104,10 @@ export const RoadmapPage: React.FC = () => {
                     isCompleted
                       ? 'bg-emerald-500/20 text-emerald-400'
                       : isOverdue
-                      ? 'bg-red-500/20 text-red-400'
-                      : isUnlocked
-                      ? 'bg-blue-500/20 text-blue-400'
-                      : 'bg-[#253655] text-[#a9b5d0]'
+                      ? 'bg-amber-500/20 text-amber-300'
+                      : 'bg-blue-500/20 text-blue-400'
                   }`}>
-                    {isCompleted ? 'Completed ✓' : isOverdue ? 'Overdue Rolled' : isUnlocked ? 'In Progress' : 'Locked 🔒'}
+                    {isCompleted ? 'Completed ✓' : isOverdue ? 'Flexible Catchup' : 'In Progress'}
                   </span>
                 </div>
               </div>
@@ -156,12 +150,12 @@ export const RoadmapPage: React.FC = () => {
                 <span className="text-[11px] text-[#a9b5d0]">
                   {isCompleted
                     ? 'Day gate passed'
-                    : isUnlocked
-                    ? 'All 5 criteria required'
-                    : `Locked until Day ${dayNum - 1} complete`}
+                    : isOverdue
+                    ? 'Missed day · Catch up anytime'
+                    : 'Active study workspace'}
                 </span>
                 <span className="text-blue-400 font-semibold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                  {isUnlocked ? 'Open Day' : 'Locked'} <ChevronRight className="w-3.5 h-3.5" />
+                  Open Day <ChevronRight className="w-3.5 h-3.5" />
                 </span>
               </div>
             </div>

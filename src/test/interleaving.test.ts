@@ -63,10 +63,11 @@ describe('10-Phase Study Plan & 300-Question Daily Queue Generation', () => {
     expect(p9.filter(q => q.questionTypeId === 'r_fill_in_blanks').length).toBe(20);
     expect(p9.filter(q => q.questionTypeId === 'listening_fill_in_blanks').length).toBe(10);
 
-    // Verify Phase 10: 25 RS + 5 RA
+    // Verify Phase 10: 15 RS + 5 RA + 10 SGD
     const p10 = queue.filter(q => q.groupId === 'phase_10');
-    expect(p10.filter(q => q.questionTypeId === 'repeat_sentence').length).toBe(25);
+    expect(p10.filter(q => q.questionTypeId === 'repeat_sentence').length).toBe(15);
     expect(p10.filter(q => q.questionTypeId === 'read_aloud').length).toBe(5);
+    expect(p10.filter(q => q.questionTypeId === 'summarize_group_discussion').length).toBe(10);
   });
 
   it('matches each question-type target count exactly across all phases', () => {
@@ -84,9 +85,9 @@ describe('10-Phase Study Plan & 300-Question Daily Queue Generation', () => {
 
     // Exact counts for 300 Qs:
     expect(counts['describe_image']).toBe(20);
-    expect(counts['repeat_sentence']).toBe(60);
+    expect(counts['repeat_sentence']).toBe(50);
     expect(counts['read_aloud']).toBe(40);
-    expect(counts['summarize_group_discussion']).toBe(10);
+    expect(counts['summarize_group_discussion']).toBe(20);
     expect(counts['retell_lecture']).toBe(10);
     expect(counts['respond_to_situation']).toBe(10);
     expect(counts['answer_short_question']).toBe(20);

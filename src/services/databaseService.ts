@@ -27,7 +27,7 @@ import {
   QUESTION_TYPE_MAP,
   TOTAL_STUDY_DAYS
 } from '../config/constants';
-import { calculate21StudyDates } from '../utils/dateUtils';
+import { calculate21StudyDates, getCalendarDayNumber, getTodayIso } from '../utils/dateUtils';
 
 /**
  * Creates default initial DayData object for a given dayNumber
@@ -521,10 +521,13 @@ export function subscribeToUserData(
       const totalDays = plan.durationDays || TOTAL_STUDY_DAYS;
       const dates = calculate21StudyDates(plan.startDate, totalDays);
 
+      const calendarDay = getCalendarDayNumber(plan.startDate, getTodayIso(), totalDays);
       for (let d = 1; d <= totalDays; d++) {
         const key = formatDayKey(d);
         const raw = rawDays[key];
-        const defaultDay = createDefaultDayData(d, raw?.date || dates[d - 1], d === 1);
+        // Automatically unlock any day up to current calendar date (00:00 timeout auto-unlock)
+        const isCalendarActive = d <= calendarDay;
+        const defaultDay = createDefaultDayData(d, raw?.date || dates[d - 1], isCalendarActive);
         if (raw) {
           days[d] = {
             ...defaultDay,
@@ -547,7 +550,8 @@ export function subscribeToUserData(
             },
             gateStatus: {
               ...defaultDay.gateStatus,
-              ...(raw.gateStatus || {})
+              ...(raw.gateStatus || {}),
+              isUnlocked: isCalendarActive || !!raw.gateStatus?.isUnlocked
             }
           };
         } else {

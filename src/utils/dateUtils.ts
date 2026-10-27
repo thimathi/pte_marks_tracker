@@ -61,3 +61,42 @@ export function getTodayIso(): string {
 export function isDatePast(dateStr: string): boolean {
   return dateStr < getTodayIso();
 }
+
+/**
+ * Calculates current study day number based on actual calendar date.
+ * If today is the start date (e.g. 2026-10-25), returns 1.
+ * As midnight (00:00) strikes each day, it automatically advances to Day 2, Day 3, etc.
+ */
+export function getCalendarDayNumber(
+  startDateStr: string,
+  todayIso: string = getTodayIso(),
+  totalDays: number = TOTAL_STUDY_DAYS
+): number {
+  if (!startDateStr) return 1;
+  const parts = startDateStr.split('-').map(Number);
+  const start = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+  const tParts = todayIso.split('-').map(Number);
+  const today = new Date(Date.UTC(tParts[0], tParts[1] - 1, tParts[2]));
+
+  const diffMs = today.getTime() - start.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const dayNum = diffDays + 1;
+  return Math.min(Math.max(1, dayNum), totalDays);
+}
+
+/**
+ * Returns remaining days until target summit deadline (e.g. 2026-11-16)
+ */
+export function getDaysRemainingUntilDeadline(
+  deadlineStr: string = '2026-11-16',
+  todayIso: string = getTodayIso()
+): number {
+  const dParts = deadlineStr.split('-').map(Number);
+  const deadline = new Date(Date.UTC(dParts[0], dParts[1] - 1, dParts[2]));
+  const tParts = todayIso.split('-').map(Number);
+  const today = new Date(Date.UTC(tParts[0], tParts[1] - 1, tParts[2]));
+
+  const diffMs = deadline.getTime() - today.getTime();
+  return Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+}
+

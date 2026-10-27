@@ -24,8 +24,8 @@ import {
 } from '../services/databaseService';
 import { ref, update } from 'firebase/database';
 import { db } from '../config/firebase';
-import { calculate21StudyDates } from '../utils/dateUtils';
-import { QUESTION_TYPES, DEFAULT_ADDITIONAL_EXERCISES } from '../config/constants';
+import { calculate21StudyDates, getCalendarDayNumber, getTodayIso } from '../utils/dateUtils';
+import { QUESTION_TYPES, DEFAULT_ADDITIONAL_EXERCISES, TOTAL_STUDY_DAYS } from '../config/constants';
 
 interface PteDataContextType {
   studyPlan: StudyPlan;
@@ -84,7 +84,8 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     initializeUserData(user.uid, user.email || '')
       .then(({ plan }) => {
         setStudyPlan(plan);
-        setCurrentDay(plan.currentDay || 1);
+        const calendarDay = getCalendarDayNumber(plan.startDate, getTodayIso(), plan.durationDays || TOTAL_STUDY_DAYS);
+        setCurrentDay(calendarDay || plan.currentDay || 1);
 
         unsubListener = subscribeToUserData(
           user.uid,
@@ -113,9 +114,38 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
   }, [user]);
 
-  // Safe day selector: does not allow accessing future locked days without unlocking
+  // Midnight 00:00 Auto-Advance & Date Checker
+  useEffect(() => {
+    let lastDate = getTodayIso();
+    const interval = setInterval(() => {
+      const currentDate = getTodayIso();
+      if (currentDate !== lastDate) {
+        lastDate = currentDate;
+        const newCalendarDay = getCalendarDayNumber(studyPlan.startDate, currentDate, studyPlan.durationDays || TOTAL_STUDY_DAYS);
+        setCurrentDay(newCalendarDay);
+        setDays((prev) => {
+          const updated = { ...prev };
+          if (updated[newCalendarDay]) {
+            updated[newCalendarDay] = {
+              ...updated[newCalendarDay],
+              status: updated[newCalendarDay].status === 'completed' ? 'completed' : 'active',
+              gateStatus: {
+                ...updated[newCalendarDay].gateStatus,
+                isUnlocked: true
+              }
+            };
+          }
+          return updated;
+        });
+      }
+    }, 15000); // Check every 15s for midnight date roll
+
+    return () => clearInterval(interval);
+  }, [studyPlan.startDate, studyPlan.durationDays]);
+
+  // Flexible day selector: user can jump between days freely to catch up or skip
   const selectDay = useCallback((dayNumber: number) => {
-    if (dayNumber < 1 || dayNumber > 21) return;
+    if (dayNumber < 1 || dayNumber > 25) return;
     setCurrentDay(dayNumber);
   }, []);
 
