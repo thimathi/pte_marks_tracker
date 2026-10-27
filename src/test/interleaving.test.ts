@@ -8,25 +8,65 @@ describe('10-Phase Study Plan & 300-Question Daily Queue Generation', () => {
     expect(queue.length).toBe(300);
   });
 
-  it('correctly divides questions into 10 phases of exactly 30 questions each', () => {
+  it('correctly divides questions into the 10 user-defined focused phases totaling 300 questions', () => {
     const queue = generateGroupedStudyQueue();
     expect(queue.length).toBe(300);
 
+    const expectedPhaseCounts = [30, 30, 30, 20, 30, 40, 30, 30, 30, 30];
     for (let p = 1; p <= 10; p++) {
       const phaseQuestions = queue.filter(q => q.groupId === `phase_${p}`);
-      expect(phaseQuestions.length).toBe(30);
-
-      // Verify each phase represents all four modules:
-      const speaking = phaseQuestions.filter(q => q.skill === 'speaking');
-      const writing = phaseQuestions.filter(q => q.skill === 'writing');
-      const reading = phaseQuestions.filter(q => q.skill === 'reading');
-      const listening = phaseQuestions.filter(q => q.skill === 'listening');
-
-      expect(speaking.length).toBe(17);
-      expect(writing.length).toBe(1);
-      expect(reading.length).toBe(6);
-      expect(listening.length).toBe(6);
+      expect(phaseQuestions.length).toBe(expectedPhaseCounts[p - 1]);
     }
+
+    // Verify Phase 1: 20 ASQ + 10 SGD
+    const p1 = queue.filter(q => q.groupId === 'phase_1');
+    expect(p1.filter(q => q.questionTypeId === 'answer_short_question').length).toBe(20);
+    expect(p1.filter(q => q.questionTypeId === 'summarize_group_discussion').length).toBe(10);
+
+    // Verify Phase 2: 15 RS + 15 RA
+    const p2 = queue.filter(q => q.groupId === 'phase_2');
+    expect(p2.filter(q => q.questionTypeId === 'repeat_sentence').length).toBe(15);
+    expect(p2.filter(q => q.questionTypeId === 'read_aloud').length).toBe(15);
+
+    // Verify Phase 3: 10 RTS + 10 RO + 10 HIW
+    const p3 = queue.filter(q => q.groupId === 'phase_3');
+    expect(p3.filter(q => q.questionTypeId === 'respond_to_situation').length).toBe(10);
+    expect(p3.filter(q => q.questionTypeId === 'reorder_paragraph').length).toBe(10);
+    expect(p3.filter(q => q.questionTypeId === 'highlight_incorrect_words').length).toBe(10);
+
+    // Verify Phase 4: 8 SWT + 2 WE + 10 SST
+    const p4 = queue.filter(q => q.groupId === 'phase_4');
+    expect(p4.filter(q => q.questionTypeId === 'summarize_written_text').length).toBe(8);
+    expect(p4.filter(q => q.questionTypeId === 'write_essay').length).toBe(2);
+    expect(p4.filter(q => q.questionTypeId === 'summarize_spoken_text').length).toBe(10);
+
+    // Verify Phase 5: 10 RL + 20 DI
+    const p5 = queue.filter(q => q.groupId === 'phase_5');
+    expect(p5.filter(q => q.questionTypeId === 'retell_lecture').length).toBe(10);
+    expect(p5.filter(q => q.questionTypeId === 'describe_image').length).toBe(20);
+
+    // Verify Phase 6: 20 RS + 20 RA
+    const p6 = queue.filter(q => q.groupId === 'phase_6');
+    expect(p6.filter(q => q.questionTypeId === 'repeat_sentence').length).toBe(20);
+    expect(p6.filter(q => q.questionTypeId === 'read_aloud').length).toBe(20);
+
+    // Verify Phase 7: 30 WFD
+    const p7 = queue.filter(q => q.groupId === 'phase_7');
+    expect(p7.filter(q => q.questionTypeId === 'write_from_dictation').length).toBe(30);
+
+    // Verify Phase 8: 30 R&W FIB
+    const p8 = queue.filter(q => q.groupId === 'phase_8');
+    expect(p8.filter(q => q.questionTypeId === 'rw_fill_in_blanks').length).toBe(30);
+
+    // Verify Phase 9: 20 R FIB + 10 L FIB
+    const p9 = queue.filter(q => q.groupId === 'phase_9');
+    expect(p9.filter(q => q.questionTypeId === 'r_fill_in_blanks').length).toBe(20);
+    expect(p9.filter(q => q.questionTypeId === 'listening_fill_in_blanks').length).toBe(10);
+
+    // Verify Phase 10: 25 RS + 5 RA
+    const p10 = queue.filter(q => q.groupId === 'phase_10');
+    expect(p10.filter(q => q.questionTypeId === 'repeat_sentence').length).toBe(25);
+    expect(p10.filter(q => q.questionTypeId === 'read_aloud').length).toBe(5);
   });
 
   it('matches each question-type target count exactly across all phases', () => {

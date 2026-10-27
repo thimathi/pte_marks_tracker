@@ -212,7 +212,7 @@ export const PracticePage: React.FC = () => {
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            Day {currentDay} Practice Workspace · 10 Phases ({fullQueue.length} Questions Total · 30 Qs/Phase) · Started: {formatDateFriendly(studyPlan.startDate)}
+            Day {currentDay} Practice Workspace · 10 Focused Phases ({fullQueue.length} Questions Total) · Started: {formatDateFriendly(studyPlan.startDate)}
           </p>
         </div>
 
@@ -254,7 +254,7 @@ export const PracticePage: React.FC = () => {
           <div className="flex items-center gap-2">
             <Layers className="w-4 h-4 text-blue-400" />
             <h2 className="text-sm font-bold text-[#edf2ff]">
-              Today's 10 Study Phases (30 Questions Each · All 4 Modules Represented)
+              Today's 10 Study Phases ({fullQueue.length} Questions Total)
             </h2>
           </div>
           <span className="text-xs text-[#a9b5d0]">
@@ -265,7 +265,7 @@ export const PracticePage: React.FC = () => {
         {/* Part 1: Phases 1 to 5 */}
         <div className="space-y-2">
           <div className="text-[11px] font-semibold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
-            <span>Part 1: Morning Focus (Phases 1 – 5 · 150 Qs)</span>
+            <span>Part 1: Morning Focus (Phases 1 – 5 · 140 Qs)</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
             {STUDY_GROUPS.slice(0, 5).map((group) => {
@@ -384,7 +384,7 @@ export const PracticePage: React.FC = () => {
         {/* Part 2: Phases 6 to 10 */}
         <div className="space-y-2">
           <div className="text-[11px] font-semibold text-blue-300 uppercase tracking-wider flex items-center gap-1.5">
-            <span>Part 2: Afternoon & Evening Focus (Phases 6 – 10 · 150 Qs)</span>
+            <span>Part 2: Afternoon & Evening Focus (Phases 6 – 10 · 160 Qs)</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
             {STUDY_GROUPS.slice(5, 10).map((group) => {
@@ -740,8 +740,8 @@ export const PracticePage: React.FC = () => {
             <Layers className="w-4 h-4 text-blue-400" />
             <h3 className="text-sm font-bold text-[#edf2ff]">
               {selectedGroupId === 'all'
-                ? `All ${fullQueue.length} Questions Matrix (10 Phases · Speaking 170 · Writing 10 · Reading 60 · Listening 60)`
-                : `${currentGroupDef.title} Matrix (${currentGroupDef.totalQuestions} Questions · All 4 Modules)`}
+                ? `All ${fullQueue.length} Questions Matrix (10 Focused Phases)`
+                : `${currentGroupDef.title} Matrix (${currentGroupDef.totalQuestions} Questions)`}
             </h3>
           </div>
 
