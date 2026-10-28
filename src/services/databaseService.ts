@@ -25,7 +25,9 @@ import {
   DEFAULT_TARGET_SCORES,
   QUESTION_TYPES,
   QUESTION_TYPE_MAP,
-  TOTAL_STUDY_DAYS
+  TOTAL_STUDY_DAYS,
+  getMockExamsForDay,
+  getExamNumberForMock
 } from '../config/constants';
 import { calculate21StudyDates, getCalendarDayNumber, getTodayIso } from '../utils/dateUtils';
 
@@ -53,10 +55,10 @@ export function createDefaultDayData(dayNumber: number, dateStr: string, isUnloc
   const mockExams: Record<string, MockExamRecord> = {};
   const mockReviews: Record<string, MockReviewRecord> = {};
 
-  const mockIds = ['mock01', 'mock02', 'mock03'];
+  const mockIds = getMockExamsForDay(dayNumber);
 
   mockIds.forEach((id, idx) => {
-    const examNum = (dayNumber - 1) * 3 + (idx + 1);
+    const examNum = getExamNumberForMock(dayNumber, idx);
     const reviewId = `review0${idx + 1}`;
 
     mockExams[id] = {
@@ -490,14 +492,14 @@ export async function completeDayAndUnlockNext(
   const currentData: DayData = snap.val();
 
   // Validate completion requirements:
-  // Priority #1: Mock Exams & Reviews (3 Mocks every day across 17 days = 51 Mocks total)
-  const mockKeys = ['mock01', 'mock02', 'mock03'];
+  // Priority #1: Mock Exams & Reviews (Day 1: 1 Mock, Days 2-3: 4 Mocks each, Days 4-17: 3 Mocks each)
+  const mockKeys = getMockExamsForDay(dayNumber);
 
   const gate = currentData.gateStatus;
   const missingRequirements: string[] = [];
 
   mockKeys.forEach((key, idx) => {
-    const examNum = (dayNumber - 1) * 3 + (idx + 1);
+    const examNum = getExamNumberForMock(dayNumber, idx);
     const mock = currentData.mockExams?.[key];
     const rev = currentData.mockReviews?.[`review0${idx + 1}`];
     if (!mock?.isCompleted) {
@@ -508,12 +510,12 @@ export async function completeDayAndUnlockNext(
     }
   });
 
-  // Priority #2: Practice Questions (300 practice questions required every day across 10 phases)
-  if (!gate.practiceCompleted) missingRequirements.push('All 300 practice questions must be scored');
-  if (!gate.dailyPracticeReviewCompleted) missingRequirements.push('Daily practice questions review must be confirmed');
-
-  // Priority #3: Mandatory Daily Drills
-  if (!gate.additionalExercisesCompleted) missingRequirements.push('All mandatory additional exercises must be completed');
+  // Priority #2: Practice Questions (Day 1 practice was rescheduled across Days 2–17)
+  if (dayNumber !== 1) {
+    if (!gate.practiceCompleted) missingRequirements.push('All practice questions must be scored');
+    if (!gate.dailyPracticeReviewCompleted) missingRequirements.push('Daily practice questions review must be confirmed');
+    if (!gate.additionalExercisesCompleted) missingRequirements.push('All mandatory additional exercises must be completed');
+  }
 
   if (missingRequirements.length > 0) {
     return {

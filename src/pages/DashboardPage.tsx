@@ -19,7 +19,7 @@ import {
 import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown, calculateStreak, getWeaknessAnalysis } from '../utils/scoring';
 import { formatDateFriendly, isDatePast } from '../utils/dateUtils';
-import { DAY_TARGET_SCORES, DEFAULT_ADDITIONAL_EXERCISES, TOTAL_MOCK_TARGET, TOTAL_PRACTICE_TARGET, TOTAL_STUDY_DAYS } from '../config/constants';
+import { DAY_TARGET_SCORES, DEFAULT_ADDITIONAL_EXERCISES, TOTAL_MOCK_TARGET, TOTAL_PRACTICE_TARGET, TOTAL_STUDY_DAYS, getMockExamsForDay, getExamNumberForMock } from '../config/constants';
 import { DailyDrillsCard } from '../components/drills/DailyDrillsCard';
 import { CompletionGate } from '../components/gate/CompletionGate';
 import { MasterTargetTrackerCard } from '../components/analytics/MasterTargetTrackerCard';
@@ -75,11 +75,11 @@ export const DashboardPage: React.FC = () => {
     studyPlan.targetScores
   );
 
-  // Mocks for currentDay (3 per day across 17 days = 51 Mocks total)
-  const mockKeys = ['mock01', 'mock02', 'mock03'];
+  // Mocks for currentDay (Day 1: 1, Days 2–3: 4 each, Days 4–17: 3 each = 51 Mocks total)
+  const mockKeys = getMockExamsForDay(currentDay);
 
   const todayMocks = mockKeys.map((key, idx) => {
-    const examNum = (currentDay - 1) * 3 + (idx + 1);
+    const examNum = getExamNumberForMock(currentDay, idx);
     const mockRec = currentDayData?.mockExams?.[key];
     const revRec = currentDayData?.mockReviews?.[`review0${idx + 1}`];
     return {
@@ -103,10 +103,10 @@ export const DashboardPage: React.FC = () => {
   const pendingReview = todayMocks.find((m) => m.isCompleted && !m.reviewCompleted);
 
   if (pendingMock) {
-    const mockNumInDay = pendingMock.key === 'mock01' ? '1' : pendingMock.key === 'mock02' ? '2' : '3';
+    const mockIdx = mockKeys.indexOf(pendingMock.key) + 1;
     nextTask = {
       title: `Complete Mock Exam #${pendingMock.examNum} [Priority #1]`,
-      desc: `Daily simulation ${mockNumInDay} of 3 (60 Qs timed test)`,
+      desc: `Daily simulation ${mockIdx} of ${mockKeys.length} (60 Qs timed test)`,
       link: '/mock-exams',
       btnText: 'Take Mock Exam'
     };
@@ -117,7 +117,7 @@ export const DashboardPage: React.FC = () => {
       link: '/mock-exams',
       btnText: 'Review Mock Exam'
     };
-  } else if (breakdown.totalCompleted < breakdown.totalDailyTarget) {
+  } else if (currentDay !== 1 && breakdown.totalCompleted < breakdown.totalDailyTarget) {
     nextTask = {
       title: 'Practice Questions (4 Sections)',
       desc: `${remainingQuestionsToday} questions remaining in today's ${breakdown.totalDailyTarget} practice queue`,
@@ -254,7 +254,7 @@ export const DashboardPage: React.FC = () => {
             />
           </div>
           <p className="text-[11px] text-[#a9b5d0]">
-            3 Mock Exams + reviews required daily
+            {todayMocks.length} Mock {todayMocks.length === 1 ? 'Exam' : 'Exams'} + reviews required today
           </p>
         </div>
 
@@ -277,7 +277,9 @@ export const DashboardPage: React.FC = () => {
             />
           </div>
           <p className="text-[11px] text-[#a9b5d0]">
-            {remainingQuestionsToday > 0
+            {currentDay === 1
+              ? 'Day 1 practice (300 Qs) rescheduled across Days 2–17 (+19 Qs/day)'
+              : remainingQuestionsToday > 0
               ? `${remainingQuestionsToday} questions left to score today`
               : `Daily ${breakdown.totalDailyTarget} questions target met!`}
           </p>

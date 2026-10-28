@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { usePteData } from '../../context/PteDataContext';
 import { calculateDayBreakdown } from '../../utils/scoring';
-import { DEFAULT_ADDITIONAL_EXERCISES } from '../../config/constants';
+import { DEFAULT_ADDITIONAL_EXERCISES, getMockExamsForDay, getExamNumberForMock } from '../../config/constants';
 
 interface CompletionGateProps {
   dayNumber: number;
@@ -39,21 +39,24 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
 
   // Calculate live completion metrics for Day
   const breakdown = calculateDayBreakdown(targetDayData, studyPlan.questionTargets);
-  const practiceDone = breakdown.totalCompleted >= breakdown.totalDailyTarget && breakdown.totalDailyTarget > 0;
-  const practiceReviewDone = !!targetDayData?.gateStatus?.dailyPracticeReviewCompleted;
+  const isDay1 = dayNumber === 1;
 
-  // Check additional exercises
-  const additionalDone = DEFAULT_ADDITIONAL_EXERCISES.every((ex) => {
+  // Day 1 practice was rescheduled across Days 2–17 (+19 Qs/day)
+  const practiceDone = isDay1 || (breakdown.totalCompleted >= breakdown.totalDailyTarget && breakdown.totalDailyTarget > 0);
+  const practiceReviewDone = isDay1 || !!targetDayData?.gateStatus?.dailyPracticeReviewCompleted;
+
+  // Check additional exercises (waived for Day 1 emergency)
+  const additionalDone = isDay1 || DEFAULT_ADDITIONAL_EXERCISES.every((ex) => {
     const record = targetDayData?.additionalExercises?.[ex.id];
     const targetCount = studyPlan.additionalExerciseTargets?.[ex.id] ?? ex.requiredCount;
     return record && record.completedCount >= targetCount;
   });
 
-  // Mock exams: 3 mock exams every day (Days 1–17 = 51 Mock Exams total)
-  const mockKeys = ['mock01', 'mock02', 'mock03'];
+  // Mock exams: Day 1 (1 Mock), Days 2–3 (4 Mocks each), Days 4–17 (3 Mocks each) = 51 Mocks total
+  const mockKeys = getMockExamsForDay(dayNumber);
 
   const mockStatuses = mockKeys.map((key, idx) => {
-    const examNum = (dayNumber - 1) * 3 + (idx + 1);
+    const examNum = getExamNumberForMock(dayNumber, idx);
     const mockRec = targetDayData?.mockExams?.[key];
     const revRec = targetDayData?.mockReviews?.[`review0${idx + 1}`];
     return {
@@ -95,30 +98,50 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     });
   });
 
-  // Priority #2: Practice Questions (300 required every day across 10 phases)
-  checklistItems.push({
-    id: 'practice',
-    label: `All ${breakdown.totalDailyTarget} Practice Questions Completed & Scored (${breakdown.totalCompleted} / ${breakdown.totalDailyTarget})`,
-    done: practiceDone,
-    canAutoDetect: true,
-    hint: `Scoring all ${breakdown.totalDailyTarget} practice questions (across 10 phases) is required.`
-  });
-  checklistItems.push({
-    id: 'dailyPracticeReviewCompleted',
-    label: 'Daily Practice Questions Review Completed',
-    done: practiceReviewDone,
-    canToggle: true,
-    hint: 'Confirm you analyzed your mistakes and low-scoring questions in the Review Center.'
-  });
+  // Priority #2: Practice Questions
+  if (isDay1) {
+    checklistItems.push({
+      id: 'practice',
+      label: 'Day 1 Practice Questions (300 Qs) Rescheduled to Days 2–17 (+19 Qs / Day)',
+      done: true,
+      canAutoDetect: true,
+      hint: '300 practice questions from Day 1 are distributed across Days 2–17.'
+    });
+  } else {
+    checklistItems.push({
+      id: 'practice',
+      label: `All ${breakdown.totalDailyTarget} Practice Questions Completed & Scored (${breakdown.totalCompleted} / ${breakdown.totalDailyTarget})`,
+      done: practiceDone,
+      canAutoDetect: true,
+      hint: `Scoring all ${breakdown.totalDailyTarget} practice questions (across 10 phases) is required.`
+    });
+    checklistItems.push({
+      id: 'dailyPracticeReviewCompleted',
+      label: 'Daily Practice Questions Review Completed',
+      done: practiceReviewDone,
+      canToggle: true,
+      hint: 'Confirm you analyzed your mistakes and low-scoring questions in the Review Center.'
+    });
+  }
 
   // Priority #3: Mandatory Daily Drills
-  checklistItems.push({
-    id: 'additional',
-    label: 'All Mandatory Daily Drills Completed (Twisters 2x, Collocations 100, Essay Templates 2x)',
-    done: additionalDone,
-    canAutoDetect: true,
-    hint: 'Log required repetition counts for all 3 daily repeat tasks.'
-  });
+  if (isDay1) {
+    checklistItems.push({
+      id: 'additional',
+      label: 'Day 1 Daily Drills Rescheduled to Days 2–17',
+      done: true,
+      canAutoDetect: true,
+      hint: 'Daily drills rolled over to subsequent study days.'
+    });
+  } else {
+    checklistItems.push({
+      id: 'additional',
+      label: 'All Mandatory Daily Drills Completed (Twisters 2x, Collocations 100, Essay Templates 2x)',
+      done: additionalDone,
+      canAutoDetect: true,
+      hint: 'Log required repetition counts for all 3 daily repeat tasks.'
+    });
+  }
 
   const allReady = allMocksDone && allReviewsDone && practiceDone && practiceReviewDone && additionalDone;
 
@@ -139,6 +162,8 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     await updateGateItem(dayNumber, 'mock2ReviewCompleted', mockStatuses[1]?.reviewCompleted ?? true);
     await updateGateItem(dayNumber, 'mock3Completed', mockStatuses[2]?.isCompleted ?? true);
     await updateGateItem(dayNumber, 'mock3ReviewCompleted', mockStatuses[2]?.reviewCompleted ?? true);
+    await updateGateItem(dayNumber, 'mock4Completed', mockStatuses[3]?.isCompleted ?? true);
+    await updateGateItem(dayNumber, 'mock4ReviewCompleted', mockStatuses[3]?.reviewCompleted ?? true);
     await updateGateItem(dayNumber, 'additionalExercisesCompleted', additionalDone);
 
     const res = await completeCurrentDay(dayNumber);

@@ -285,6 +285,32 @@ export const PracticePage: React.FC = () => {
         {showMasterTracker && <MasterTargetTrackerCard />}
       </div>
 
+      {/* Day 1 Practice Reschedule Notice */}
+      {currentDay === 1 && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-950/40 via-[#141c31] to-purple-950/40 border border-blue-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center font-bold flex-shrink-0">
+              <Sparkles className="w-5 h-5 text-blue-400" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-[#edf2ff]">
+                Day 1 Practice Questions Rescheduled (+19 Qs / Day on Days 2–17)
+              </h3>
+              <p className="text-xs text-[#a9b5d0] mt-0.5">
+                Today's 300 practice questions have been distributed across the remaining 16 days. Complete Mock Exam #1 to pass Day 1 and unlock Day 2!
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/mock-exams"
+            className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white shadow-md shadow-purple-600/30 flex items-center gap-1.5 self-start sm:self-center transition-colors whitespace-nowrap cursor-pointer"
+          >
+            <span>Go to Mock #1</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      )}
+
       {/* 10 Study Phases with Midpoint & End Checkpoint Mock Exams */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">

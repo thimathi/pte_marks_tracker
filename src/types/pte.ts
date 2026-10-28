@@ -76,7 +76,7 @@ export interface AdditionalExerciseRecord {
 }
 
 export interface DailyGateStatus {
-  practiceCompleted: boolean; // all 300 questions scored
+  practiceCompleted: boolean; // all practice questions scored
   dailyPracticeReviewCompleted: boolean;
   mock1Completed: boolean;
   mock1ReviewCompleted: boolean;
@@ -84,6 +84,8 @@ export interface DailyGateStatus {
   mock2ReviewCompleted: boolean;
   mock3Completed?: boolean;
   mock3ReviewCompleted?: boolean;
+  mock4Completed?: boolean;
+  mock4ReviewCompleted?: boolean;
   additionalExercisesCompleted: boolean;
   isUnlocked: boolean;
   completedAt?: string;

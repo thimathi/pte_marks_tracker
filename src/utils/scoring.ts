@@ -74,6 +74,25 @@ export function calculateQuestionTypeStats(
  * Calculates daily performance breakdown for a given DayData
  */
 export function calculateDayBreakdown(dayData: DayData | null | undefined, targets: Record<string, number>) {
+  // Day 1 practice questions were rescheduled across Days 2–17 (+19 Qs/day) as requested
+  if (dayData?.dayNumber === 1) {
+    return {
+      totalCompleted: 0,
+      totalDailyTarget: 0,
+      completionPercentage: 100,
+      dailyAverage: null,
+      dailyCount: 0,
+      speakingAverage: null,
+      speakingCount: 0,
+      writingAverage: null,
+      writingCount: 0,
+      readingAverage: null,
+      readingCount: 0,
+      listeningAverage: null,
+      listeningCount: 0
+    };
+  }
+
   const skillScores: Record<SkillType, number[]> = {
     speaking: [],
     writing: [],

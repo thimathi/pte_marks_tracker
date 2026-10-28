@@ -28,20 +28,34 @@ export const DAY_TARGET_SCORES: number[] = [
   78, 79              // Days 16–17: Peak 79+ Exam Ready
 ];
 
-export function getDailyMockTarget(_dayNumber: number): number {
+export function getDailyMockTarget(dayNumber: number): number {
+  if (dayNumber === 1) return 1;
+  if (dayNumber === 2 || dayNumber === 3) return 4;
   return 3;
 }
 
-export function getDailyPracticeTarget(_dayNumber: number): number {
-  return DAILY_PRACTICE_TARGET;
+export function getDailyPracticeTarget(dayNumber: number): number {
+  if (dayNumber === 1) return 0;
+  if (dayNumber >= 2 && dayNumber <= 13) return 319;
+  return 318;
 }
 
-export function getMockExamsForDay(_dayNumber: number): string[] {
-  return ['mock01', 'mock02', 'mock03'];
+export function getMockExamsForDay(dayNumber: number): string[] {
+  const count = getDailyMockTarget(dayNumber);
+  return Array.from({ length: count }, (_, i) => `mock0${i + 1}`);
 }
 
 export function getExamNumberForMock(dayNumber: number, mockIndex: number): number {
-  return (dayNumber - 1) * 3 + (mockIndex + 1);
+  if (dayNumber === 1) {
+    return 1;
+  }
+  if (dayNumber === 2) {
+    return 1 + (mockIndex + 1); // 2, 3, 4, 5
+  }
+  if (dayNumber === 3) {
+    return 5 + (mockIndex + 1); // 6, 7, 8, 9
+  }
+  return 9 + (dayNumber - 4) * 3 + (mockIndex + 1); // Day 4..17: 10..51
 }
 
 // 17 APEUni VIP Mock Exams (Repeated across 3 Rounds = 51 total mocks)

@@ -16,7 +16,7 @@ import {
 import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown } from '../utils/scoring';
 import { formatDateFriendly, isDatePast } from '../utils/dateUtils';
-import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS } from '../config/constants';
+import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS, getMockExamsForDay } from '../config/constants';
 
 export const RoadmapPage: React.FC = () => {
   const { studyPlan, days, currentDay, selectDay } = usePteData();
@@ -53,7 +53,7 @@ export const RoadmapPage: React.FC = () => {
           const isDay1 = dayNum === 1;
 
           const breakdown = calculateDayBreakdown(dayData, studyPlan.questionTargets);
-          const mockKeys = ['mock01', 'mock02', 'mock03'];
+          const mockKeys = getMockExamsForDay(dayNum);
           const completedMocksCount = mockKeys.filter((k) => dayData?.mockExams?.[k]?.isCompleted).length;
 
           return (
@@ -116,7 +116,7 @@ export const RoadmapPage: React.FC = () => {
               <div className="space-y-2 text-xs">
                 <div>
                   <div className="flex justify-between text-[11px] text-[#a9b5d0] mb-1">
-                    <span>Practice: {breakdown.totalCompleted} / {breakdown.totalDailyTarget || 200} Qs</span>
+                    <span>Practice: {dayNum === 1 ? 'Rescheduled to Days 2–17 (+19/d)' : `${breakdown.totalCompleted} / ${breakdown.totalDailyTarget || 300} Qs`}</span>
                     <span>{breakdown.completionPercentage}%</span>
                   </div>
                   <div className="w-full h-1.5 rounded-full bg-[#0e1729] overflow-hidden">

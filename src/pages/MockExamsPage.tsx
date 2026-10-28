@@ -14,7 +14,7 @@ import { usePteData } from '../context/PteDataContext';
 import { MockReviewModal } from '../components/mock/MockReviewModal';
 import { MockExamRecord, MockReviewRecord } from '../types/pte';
 import { formatDateFriendly } from '../utils/dateUtils';
-import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS, getMockExamDetails } from '../config/constants';
+import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS, getMockExamDetails, getMockExamsForDay, getExamNumberForMock } from '../config/constants';
 
 export const MockExamsPage: React.FC = () => {
   const { currentDay, currentDayData, days, studyPlan, updateMockExam, updateMockReview, selectDay } = usePteData();
@@ -26,7 +26,7 @@ export const MockExamsPage: React.FC = () => {
     review: MockReviewRecord | undefined;
   } | null>(null);
 
-  const mockKeys = ['mock01', 'mock02', 'mock03'];
+  const mockKeys = getMockExamsForDay(currentDay);
 
   const handleScoreChange = async (
     mockId: string,
@@ -50,7 +50,7 @@ export const MockExamsPage: React.FC = () => {
     await updateMockExam(currentDay, mockId, payload);
   };
 
-  // Build the complete list of all 51 planned mock exams (3 per day for 17 days)
+  // Build the complete list of all 51 planned mock exams across 17 days
   const allMocksSchedule: {
     examNumber: number;
     dayNumber: number;
@@ -59,14 +59,15 @@ export const MockExamsPage: React.FC = () => {
   }[] = [];
 
   for (let d = 1; d <= totalDays; d++) {
-    for (let m = 1; m <= 3; m++) {
+    const dayMocks = getMockExamsForDay(d);
+    dayMocks.forEach((mockId, idx) => {
       allMocksSchedule.push({
-        examNumber: (d - 1) * 3 + m,
+        examNumber: getExamNumberForMock(d, idx),
         dayNumber: d,
-        mockId: `mock0${m}`,
-        reviewId: `review0${m}`
+        mockId,
+        reviewId: `review0${idx + 1}`
       });
-    }
+    });
   }
 
   return (
@@ -87,7 +88,7 @@ export const MockExamsPage: React.FC = () => {
 
         <div className="flex items-center gap-2 text-xs">
           <span className="px-3 py-1.5 rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/30 font-semibold">
-            Day {currentDay} Focus: 3 Mock Exams (#{((currentDay - 1) * 3) + 1}, #{((currentDay - 1) * 3) + 2}, #{((currentDay - 1) * 3) + 3})
+            Day {currentDay} Focus: {mockKeys.length} {mockKeys.length === 1 ? 'Mock Exam' : 'Mock Exams'} ({mockKeys.map((_, i) => `#${getExamNumberForMock(currentDay, i)}`).join(', ')})
           </span>
         </div>
       </div>
@@ -107,7 +108,7 @@ export const MockExamsPage: React.FC = () => {
             const mock = currentDayData?.mockExams?.[key];
             const reviewId = `review0${idx + 1}`;
             const rev = currentDayData?.mockReviews?.[reviewId];
-            const examNumber = (currentDay - 1) * 3 + (idx + 1);
+            const examNumber = getExamNumberForMock(currentDay, idx);
             const examDetails = getMockExamDetails(examNumber);
 
             return (
