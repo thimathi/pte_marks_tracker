@@ -30,6 +30,32 @@ import {
 import { calculate21StudyDates, getCalendarDayNumber, getTodayIso } from '../utils/dateUtils';
 
 /**
+ * Deep-strips all undefined properties recursively from any value
+ * so Firebase RTDB set() / update() never throws on undefined values.
+ */
+export function deepCleanUndefined<T>(val: T): T {
+  if (val === null || val === undefined) return val;
+  if (Array.isArray(val)) {
+    return val.map(deepCleanUndefined) as unknown as T;
+  }
+  if (typeof val === 'object') {
+    const result: any = {};
+    for (const [key, value] of Object.entries(val as Record<string, any>)) {
+      if (value !== undefined) {
+        result[key] = deepCleanUndefined(value);
+      }
+    }
+    return result;
+  }
+  return val;
+}
+
+// Single-level alias for backwards compat
+export function cleanUndefined<T extends Record<string, any>>(obj: T): Partial<T> {
+  return deepCleanUndefined(obj) as Partial<T>;
+}
+
+/**
  * Creates default initial DayData object for a given dayNumber
  */
 export function createDefaultDayData(dayNumber: number, dateStr: string, isUnlocked: boolean): DayData {
@@ -74,7 +100,8 @@ export function createDefaultDayData(dayNumber: number, dateStr: string, isUnloc
       readingScore: isDay1Mock1 ? 40 : null,
       listeningScore: isDay1Mock1 ? 64 : null,
       isCompleted: isDay1Mock1,
-      notes: isDay1Mock1 ? 'Baseline Diagnostic (APEUni VIP Mock Test 45C)' : undefined,
+      mainMistakes: '',
+      notes: isDay1Mock1 ? 'Baseline Diagnostic (APEUni VIP Mock Test 45C)' : '',
     };
 
     mockReviews[reviewId] = {
@@ -84,6 +111,15 @@ export function createDefaultDayData(dayNumber: number, dateStr: string, isUnloc
       examNumber: examNum,
       durationMinutes: 0,
       isCompleted: false,
+      incorrectQuestionsSummary: '',
+      repeatedMistakes: '',
+      vocabularyIssues: '',
+      grammarIssues: '',
+      pronunciationFluencyIssues: '',
+      timeManagementIssues: '',
+      correctiveActions: '',
+      questionsToRepeat: '',
+      reviewNotes: '',
     };
   });
 
@@ -388,19 +424,6 @@ export async function saveQuestionAttempt(
   };
 
   await set(attemptRef, merged);
-}
-
-/**
- * Strips all undefined properties from an object so Firebase RTDB update never throws
- */
-export function cleanUndefined<T extends Record<string, any>>(obj: T): Partial<T> {
-  const result: any = {};
-  for (const [key, value] of Object.entries(obj)) {
-    if (value !== undefined) {
-      result[key] = value;
-    }
-  }
-  return result;
 }
 
 /**
