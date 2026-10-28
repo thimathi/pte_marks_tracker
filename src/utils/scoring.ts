@@ -260,7 +260,7 @@ export function calculateCumulativeProgress(
     };
   });
 
-  const totalMocksGoal = 40;
+  const totalMocksGoal = totalDays * 3;
   for (let d = 1; d <= totalDays; d++) {
     const day = days[d];
     if (!day) continue;

@@ -30,32 +30,6 @@ import {
 import { calculate21StudyDates, getCalendarDayNumber, getTodayIso } from '../utils/dateUtils';
 
 /**
- * Deep-strips all undefined properties recursively from any value
- * so Firebase RTDB set() / update() never throws on undefined values.
- */
-export function deepCleanUndefined<T>(val: T): T {
-  if (val === null || val === undefined) return val;
-  if (Array.isArray(val)) {
-    return val.map(deepCleanUndefined) as unknown as T;
-  }
-  if (typeof val === 'object') {
-    const result: any = {};
-    for (const [key, value] of Object.entries(val as Record<string, any>)) {
-      if (value !== undefined) {
-        result[key] = deepCleanUndefined(value);
-      }
-    }
-    return result;
-  }
-  return val;
-}
-
-// Single-level alias for backwards compat
-export function cleanUndefined<T extends Record<string, any>>(obj: T): Partial<T> {
-  return deepCleanUndefined(obj) as Partial<T>;
-}
-
-/**
  * Creates default initial DayData object for a given dayNumber
  */
 export function createDefaultDayData(dayNumber: number, dateStr: string, isUnlocked: boolean): DayData {
@@ -85,23 +59,20 @@ export function createDefaultDayData(dayNumber: number, dateStr: string, isUnloc
     const examNum = (dayNumber - 1) * 3 + (idx + 1);
     const reviewId = `review0${idx + 1}`;
 
-    const isDay1Mock1 = dayNumber === 1 && id === 'mock01';
-
     mockExams[id] = {
       id,
       studyDay: dayNumber,
       examNumber: examNum,
       date: dateStr,
       targetQuestions: 60,
-      questionsAttempted: isDay1Mock1 ? 60 : 0,
-      overallScore: isDay1Mock1 ? 59 : null,
-      speakingScore: isDay1Mock1 ? 72 : null,
-      writingScore: isDay1Mock1 ? 61 : null,
-      readingScore: isDay1Mock1 ? 40 : null,
-      listeningScore: isDay1Mock1 ? 64 : null,
-      isCompleted: isDay1Mock1,
-      mainMistakes: '',
-      notes: isDay1Mock1 ? 'Baseline Diagnostic (APEUni VIP Mock Test 45C)' : '',
+      questionsAttempted: 0,
+      overallScore: null,
+      speakingScore: null,
+      writingScore: null,
+      readingScore: null,
+      listeningScore: null,
+      isCompleted: false,
+      notes: '',
     };
 
     mockReviews[reviewId] = {
@@ -111,15 +82,6 @@ export function createDefaultDayData(dayNumber: number, dateStr: string, isUnloc
       examNumber: examNum,
       durationMinutes: 0,
       isCompleted: false,
-      incorrectQuestionsSummary: '',
-      repeatedMistakes: '',
-      vocabularyIssues: '',
-      grammarIssues: '',
-      pronunciationFluencyIssues: '',
-      timeManagementIssues: '',
-      correctiveActions: '',
-      questionsToRepeat: '',
-      reviewNotes: '',
     };
   });
 
@@ -132,9 +94,9 @@ export function createDefaultDayData(dayNumber: number, dateStr: string, isUnloc
     mockReviews,
     additionalExercises,
     gateStatus: {
-      practiceCompleted: dayNumber === 1,
-      dailyPracticeReviewCompleted: dayNumber === 1,
-      mock1Completed: dayNumber === 1,
+      practiceCompleted: false,
+      dailyPracticeReviewCompleted: false,
+      mock1Completed: false,
       mock1ReviewCompleted: false,
       mock2Completed: false,
       mock2ReviewCompleted: false,
@@ -207,12 +169,14 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
       initialDays[key] = createDefaultDayData(d, dates[d - 1], d === 1);
     }
 
-    await set(userRef, {
+    const initialPayload = deepCleanUndefined({
       profile,
       studyPlan: plan,
       days: initialDays,
       createdAt: serverTimestamp()
     });
+
+    await set(userRef, initialPayload);
 
     return { plan, profile };
   } else {
@@ -292,18 +256,6 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
             durationMinutes: 0,
             isCompleted: false,
           };
-        }
-        // Pre-populate Day 1 Mock 45C baseline if not yet set
-        if (d === 1 && (!existingDays[key].mockExams?.mock01 || existingDays[key].mockExams?.mock01?.overallScore === null)) {
-          updates[`users/${uid}/days/${key}/mockExams/mock01/overallScore`] = 59;
-          updates[`users/${uid}/days/${key}/mockExams/mock01/listeningScore`] = 64;
-          updates[`users/${uid}/days/${key}/mockExams/mock01/readingScore`] = 40;
-          updates[`users/${uid}/days/${key}/mockExams/mock01/speakingScore`] = 72;
-          updates[`users/${uid}/days/${key}/mockExams/mock01/writingScore`] = 61;
-          updates[`users/${uid}/days/${key}/mockExams/mock01/questionsAttempted`] = 60;
-          updates[`users/${uid}/days/${key}/mockExams/mock01/isCompleted`] = true;
-          updates[`users/${uid}/days/${key}/mockExams/mock01/notes`] = 'Baseline Diagnostic (APEUni VIP Mock Test 45C)';
-          updates[`users/${uid}/days/${key}/gateStatus/mock1Completed`] = true;
         }
       }
     }
@@ -424,6 +376,41 @@ export async function saveQuestionAttempt(
   };
 
   await set(attemptRef, merged);
+}
+
+/**
+ * Recursively strips all undefined properties from any object or array so Firebase RTDB set/update never throws
+ */
+export function deepCleanUndefined<T>(val: T): T {
+  if (val === null || val === undefined) {
+    return null as any;
+  }
+  if (Array.isArray(val)) {
+    return val.map(deepCleanUndefined) as any;
+  }
+  if (typeof val === 'object') {
+    const res: any = {};
+    for (const [k, v] of Object.entries(val as Record<string, any>)) {
+      if (v !== undefined) {
+        res[k] = deepCleanUndefined(v);
+      }
+    }
+    return res;
+  }
+  return val;
+}
+
+/**
+ * Strips all undefined properties from an object so Firebase RTDB update never throws
+ */
+export function cleanUndefined<T extends Record<string, any>>(obj: T): Partial<T> {
+  const result: any = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (value !== undefined) {
+      result[key] = value;
+    }
+  }
+  return result;
 }
 
 /**

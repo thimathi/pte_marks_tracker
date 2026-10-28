@@ -272,7 +272,7 @@ export const PracticePage: React.FC = () => {
                 </span>
               </span>
               <p className="text-[11px] text-[#a9b5d0] mt-0.5">
-                Track your progress towards 6,000 Questions (RA 800, RS 1,000, etc.) and 40 Mocks across all study days.
+                Track your progress towards 5,100 Questions and 51 Mocks (3 Mocks / Day) across all study days.
               </p>
             </div>
           </div>

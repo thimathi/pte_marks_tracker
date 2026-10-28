@@ -131,9 +131,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <div className="p-3 rounded-xl bg-[#141c31] border border-[#2b3856]/60">
             <div className="flex items-center gap-2 mb-1">
               <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-              <span className="text-xs font-semibold text-[#edf2ff]">22-Day Intensive Plan</span>
+              <span className="text-xs font-semibold text-[#edf2ff]">{totalDays}-Day Intensive Plan</span>
             </div>
-            <p className="text-[10px] text-[#a9b5d0]">Started: Oct 25, 2026 · 47 Mocks · 4,000+ Qs</p>
+            <p className="text-[10px] text-[#a9b5d0]">Started: Oct 28, 2026 · {TOTAL_MOCK_TARGET} Mocks · 5,100 Qs</p>
           </div>
         </div>
       </aside>

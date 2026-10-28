@@ -134,7 +134,7 @@ export const MockExamsPage: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="pt-1">
+                  <div className="pt-1 flex items-center justify-between gap-2 flex-wrap">
                     <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-xl border ${
                       mock?.isCompleted && rev?.isCompleted
                         ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
@@ -148,6 +148,27 @@ export const MockExamsPage: React.FC = () => {
                         ? 'Review Pending'
                         : 'Exam Pending'}
                     </span>
+
+                    {examNumber === 1 && !mock?.isCompleted && (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          await updateMockExam(currentDay, key, {
+                            overallScore: 59,
+                            listeningScore: 64,
+                            readingScore: 40,
+                            speakingScore: 72,
+                            writingScore: 61,
+                            questionsAttempted: 60,
+                            isCompleted: true,
+                            notes: 'Baseline Diagnostic (APEUni VIP Mock Test 45C)'
+                          });
+                        }}
+                        className="py-1 px-2.5 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-200 border border-purple-500/40 text-[10px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                      >
+                        <span>⚡ Load Mock 45C Baseline (59/90)</span>
+                      </button>
+                    )}
                   </div>
                 </div>
 

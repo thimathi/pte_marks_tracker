@@ -6,6 +6,7 @@ import { usePteData } from '../../context/PteDataContext';
 import { SyncIndicator } from '../common/SyncIndicator';
 import { formatDateFriendly } from '../../utils/dateUtils';
 import { calculateStreak } from '../../utils/scoring';
+import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS } from '../../config/constants';
 
 interface NavbarProps {
   onToggleSidebar?: () => void;
@@ -41,7 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                 <span className="font-bold text-base tracking-tight text-[#edf2ff]">PTE - Daily Study Plan</span>
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-semibold border border-blue-500/30">Superior English</span>
               </div>
-              <p className="text-[11px] text-[#a9b5d0] leading-none">PTE Bridge · Started Oct 25, 2026 · 22 Days · 47 Mocks · 193 Qs/Day</p>
+              <p className="text-[11px] text-[#a9b5d0] leading-none">PTE Bridge · Started {formatDateFriendly(studyPlan?.startDate || '2026-10-28')} · {studyPlan?.durationDays || TOTAL_STUDY_DAYS} Days · {TOTAL_MOCK_TARGET} Mocks · 300 Qs/Day</p>
             </div>
           </Link>
         </div>

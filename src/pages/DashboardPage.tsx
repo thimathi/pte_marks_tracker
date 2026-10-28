@@ -254,7 +254,7 @@ export const DashboardPage: React.FC = () => {
             />
           </div>
           <p className="text-[11px] text-[#a9b5d0]">
-            {isDay1 ? '5 Mock Exams required today' : '2 Mock Exams + reviews required daily'}
+            3 Mock Exams + reviews required daily
           </p>
         </div>
 
@@ -277,9 +277,7 @@ export const DashboardPage: React.FC = () => {
             />
           </div>
           <p className="text-[11px] text-[#a9b5d0]">
-            {isDay1
-              ? 'Day 1 practice waived (5 mocks focus)'
-              : remainingQuestionsToday > 0
+            {remainingQuestionsToday > 0
               ? `${remainingQuestionsToday} questions left to score today`
               : `Daily ${breakdown.totalDailyTarget} questions target met!`}
           </p>
@@ -412,10 +410,10 @@ export const DashboardPage: React.FC = () => {
         <div className="flex items-center justify-between border-b border-[#2b3856] pb-3">
           <div className="flex items-center gap-2">
             <Mountain className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-sm font-bold text-[#edf2ff]">{totalDays}-Day Mountain Staircase (Target: 6,000 Questions & 40 Mocks)</h3>
+            <h3 className="text-sm font-bold text-[#edf2ff]">{totalDays}-Day Mountain Staircase (Target: {TOTAL_PRACTICE_TARGET.toLocaleString()} Questions & {TOTAL_MOCK_TARGET} Mocks)</h3>
           </div>
           <span className="text-xs font-semibold px-2.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
-            20-Day Intensive
+            {totalDays}-Day Intensive
           </span>
         </div>
 
