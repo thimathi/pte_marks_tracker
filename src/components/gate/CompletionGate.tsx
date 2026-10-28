@@ -49,11 +49,11 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     return record && record.completedCount >= targetCount;
   });
 
-  // Mock exams: 2 mock exams every day (Days 1–20 = 40 Mock Exams total)
-  const mockKeys = ['mock01', 'mock02'];
+  // Mock exams: 3 mock exams every day (Days 1–17 = 51 Mock Exams total)
+  const mockKeys = ['mock01', 'mock02', 'mock03'];
 
   const mockStatuses = mockKeys.map((key, idx) => {
-    const examNum = (dayNumber - 1) * 2 + (idx + 1);
+    const examNum = (dayNumber - 1) * 3 + (idx + 1);
     const mockRec = targetDayData?.mockExams?.[key];
     const revRec = targetDayData?.mockReviews?.[`review0${idx + 1}`];
     return {
@@ -137,6 +137,8 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     await updateGateItem(dayNumber, 'mock1ReviewCompleted', mockStatuses[0]?.reviewCompleted ?? true);
     await updateGateItem(dayNumber, 'mock2Completed', mockStatuses[1]?.isCompleted ?? true);
     await updateGateItem(dayNumber, 'mock2ReviewCompleted', mockStatuses[1]?.reviewCompleted ?? true);
+    await updateGateItem(dayNumber, 'mock3Completed', mockStatuses[2]?.isCompleted ?? true);
+    await updateGateItem(dayNumber, 'mock3ReviewCompleted', mockStatuses[2]?.reviewCompleted ?? true);
     await updateGateItem(dayNumber, 'additionalExercisesCompleted', additionalDone);
 
     const res = await completeCurrentDay(dayNumber);

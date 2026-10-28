@@ -75,11 +75,11 @@ export const DashboardPage: React.FC = () => {
     studyPlan.targetScores
   );
 
-  // Mocks for currentDay (2 per day for 20 days)
-  const mockKeys = ['mock01', 'mock02'];
+  // Mocks for currentDay (3 per day across 17 days = 51 Mocks total)
+  const mockKeys = ['mock01', 'mock02', 'mock03'];
 
   const todayMocks = mockKeys.map((key, idx) => {
-    const examNum = (currentDay - 1) * 2 + (idx + 1);
+    const examNum = (currentDay - 1) * 3 + (idx + 1);
     const mockRec = currentDayData?.mockExams?.[key];
     const revRec = currentDayData?.mockReviews?.[`review0${idx + 1}`];
     return {
@@ -103,9 +103,10 @@ export const DashboardPage: React.FC = () => {
   const pendingReview = todayMocks.find((m) => m.isCompleted && !m.reviewCompleted);
 
   if (pendingMock) {
+    const mockNumInDay = pendingMock.key === 'mock01' ? '1' : pendingMock.key === 'mock02' ? '2' : '3';
     nextTask = {
       title: `Complete Mock Exam #${pendingMock.examNum} [Priority #1]`,
-      desc: `Daily simulation ${pendingMock.key === 'mock01' ? '1' : '2'} of 2 (60 Qs timed test)`,
+      desc: `Daily simulation ${mockNumInDay} of 3 (60 Qs timed test)`,
       link: '/mock-exams',
       btnText: 'Take Mock Exam'
     };

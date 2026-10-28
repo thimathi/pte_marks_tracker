@@ -103,10 +103,11 @@ export function exportMockExamsCsv(days: Record<number, DayData>, maxDays: numbe
     const dayData = days[d];
     if (!dayData) continue;
 
-    const mocks: ('mock01' | 'mock02')[] = ['mock01', 'mock02'];
+    const mocks = ['mock01', 'mock02', 'mock03'];
     for (const mId of mocks) {
       const mock = dayData.mockExams?.[mId];
-      const rev = dayData.mockReviews?.[mId === 'mock01' ? 'review01' : 'review02'];
+      const revId = mId.replace('mock', 'review');
+      const rev = dayData.mockReviews?.[revId];
       if (!mock) continue;
 
       rows.push([

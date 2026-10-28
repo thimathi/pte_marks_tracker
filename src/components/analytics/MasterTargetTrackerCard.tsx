@@ -10,12 +10,14 @@ import {
   Award,
   ChevronDown,
   ChevronUp,
-  Filter
+  Filter,
+  AlertTriangle,
+  Flame
 } from 'lucide-react';
 import { usePteData } from '../../context/PteDataContext';
 import { calculateCumulativeProgress } from '../../utils/scoring';
 import { getDaysRemainingUntilDeadline, formatDateFriendly } from '../../utils/dateUtils';
-import { FINAL_TARGET_DATE, SKILL_COLORS, PRIORITY_STYLES, TOTAL_STUDY_DAYS } from '../../config/constants';
+import { FINAL_TARGET_DATE, SKILL_COLORS, PRIORITY_STYLES, TOTAL_STUDY_DAYS, BASELINE_MOCK_45C_SCORES, TOTAL_PRACTICE_TARGET, TOTAL_MOCK_TARGET } from '../../config/constants';
 import { SkillType } from '../../types/pte';
 
 export const MasterTargetTrackerCard: React.FC = () => {
@@ -47,22 +49,22 @@ export const MasterTargetTrackerCard: React.FC = () => {
           <div className="flex items-center gap-2.5 flex-wrap">
             <span className="px-3 py-1 rounded-xl bg-purple-500/20 text-purple-300 font-bold text-xs border border-purple-500/30 flex items-center gap-1.5">
               <Target className="w-3.5 h-3.5 text-purple-400" />
-              November 16 Master Target
+              17-Day Summit Push (Target 79+ Superior)
             </span>
             <span className="px-3 py-1 rounded-xl bg-blue-500/15 text-blue-300 text-xs font-semibold border border-blue-500/30 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-blue-400" />
               Deadline: {formatDateFriendly(FINAL_TARGET_DATE)} ({daysRemaining} Days Left)
             </span>
             <span className="px-3 py-1 rounded-xl bg-emerald-500/15 text-emerald-300 text-xs font-semibold border border-emerald-500/30">
-              Cumulative Question-Wise Tracking
+              Cumulative Question & Mock Tracking
             </span>
           </div>
 
           <h2 className="text-2xl font-extrabold text-[#edf2ff] mt-2 flex items-center gap-2">
-            <span>Exam Summit Plan: 6,000 Questions & 40 Mock Exams</span>
+            <span>Summit Plan: {cumulative.totalPracticeGoal.toLocaleString()} Questions & {cumulative.totalMocksGoal} Mock Exams</span>
           </h2>
           <p className="text-xs text-[#a9b5d0] mt-1 max-w-2xl leading-relaxed">
-            Missed a day or had a busy schedule? No problem! Questions are tracked cumulatively towards November 16 regardless of day numbers.
+            Missed a day or had a busy schedule? Questions and mock exams are tracked cumulatively towards November 13. Every completed item pushes your score closer to 79+.
           </p>
         </div>
 
@@ -73,6 +75,91 @@ export const MasterTargetTrackerCard: React.FC = () => {
           <span>{isExpanded ? 'Collapse Grid' : 'Expand All 16 Question Types'}</span>
           {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </button>
+      </div>
+
+      {/* Baseline Diagnostic vs Target Comparison Banner */}
+      <div className="rounded-2xl bg-gradient-to-r from-[#1c1836] via-[#161d33] to-[#122238] border border-purple-500/40 p-5 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#2b3856] pb-3">
+          <div className="flex items-center gap-2">
+            <Flame className="w-5 h-5 text-amber-400" />
+            <h3 className="text-sm font-bold text-[#edf2ff]">
+              Diagnostic Baseline (Mock 45C) vs Target Summit (79+ Superior)
+            </h3>
+          </div>
+          <span className="text-[11px] font-semibold text-rose-300 bg-rose-500/10 px-2.5 py-1 rounded-lg border border-rose-500/30">
+            Emergency Focus: Reading (40 ➔ 72) & Writing (61 ➔ 76)
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
+          <div className="p-3 rounded-xl bg-[#0e1729]/80 border border-[#2b3856]">
+            <span className="text-[10px] text-[#a9b5d0] uppercase font-semibold block">Overall</span>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <span className="text-lg font-extrabold text-rose-400">{BASELINE_MOCK_45C_SCORES.overall}</span>
+              <span className="text-xs text-[#a9b5d0]">➔</span>
+              <span className="text-lg font-extrabold text-emerald-400">79</span>
+            </div>
+            <span className="text-[10px] text-emerald-400 font-semibold">+20 pts needed</span>
+          </div>
+
+          <div className="p-3 rounded-xl bg-[#0e1729]/80 border border-emerald-500/40">
+            <span className="text-[10px] text-emerald-400 uppercase font-semibold block">Reading (Critical)</span>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <span className="text-lg font-extrabold text-rose-400">{BASELINE_MOCK_45C_SCORES.reading}</span>
+              <span className="text-xs text-[#a9b5d0]">➔</span>
+              <span className="text-lg font-extrabold text-emerald-400">72</span>
+            </div>
+            <span className="text-[10px] text-rose-400 font-semibold">+32 pts needed</span>
+          </div>
+
+          <div className="p-3 rounded-xl bg-[#0e1729]/80 border border-purple-500/40">
+            <span className="text-[10px] text-purple-400 uppercase font-semibold block">Writing</span>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <span className="text-lg font-extrabold text-amber-400">{BASELINE_MOCK_45C_SCORES.writing}</span>
+              <span className="text-xs text-[#a9b5d0]">➔</span>
+              <span className="text-lg font-extrabold text-emerald-400">76</span>
+            </div>
+            <span className="text-[10px] text-amber-300 font-semibold">+15 pts needed</span>
+          </div>
+
+          <div className="p-3 rounded-xl bg-[#0e1729]/80 border border-amber-500/40">
+            <span className="text-[10px] text-amber-400 uppercase font-semibold block">Listening</span>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <span className="text-lg font-extrabold text-amber-400">{BASELINE_MOCK_45C_SCORES.listening}</span>
+              <span className="text-xs text-[#a9b5d0]">➔</span>
+              <span className="text-lg font-extrabold text-emerald-400">76</span>
+            </div>
+            <span className="text-[10px] text-amber-300 font-semibold">+12 pts needed</span>
+          </div>
+
+          <div className="p-3 rounded-xl bg-[#0e1729]/80 border border-blue-500/40">
+            <span className="text-[10px] text-blue-400 uppercase font-semibold block">Speaking</span>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <span className="text-lg font-extrabold text-blue-300">{BASELINE_MOCK_45C_SCORES.speaking}</span>
+              <span className="text-xs text-[#a9b5d0]">➔</span>
+              <span className="text-lg font-extrabold text-emerald-400">79</span>
+            </div>
+            <span className="text-[10px] text-blue-300 font-semibold">+7 pts needed</span>
+          </div>
+        </div>
+
+        {/* Weakness breakdown pills */}
+        <div className="pt-1">
+          <span className="text-[11px] font-bold text-[#a9b5d0] block mb-2">Priority Error Correction Focus (from your Mock 45C diagnostic):</span>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+            {BASELINE_MOCK_45C_SCORES.weaknesses.map((w, i) => (
+              <div key={i} className="p-2 rounded-lg bg-[#0e1729] border border-[#2b3856] text-left">
+                <span className="text-[10px] font-bold text-[#edf2ff] block truncate" title={w.item}>
+                  {w.item}
+                </span>
+                <div className="flex items-baseline justify-between mt-1 text-[11px]">
+                  <span className="text-rose-400 font-bold">{w.correctness}%</span>
+                  <span className="text-[#a9b5d0] text-[9px]">Target: {w.target}%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Primary KPI Highlights */}
@@ -96,7 +183,7 @@ export const MasterTargetTrackerCard: React.FC = () => {
             />
           </div>
           <div className="flex items-center justify-between text-[11px] text-[#a9b5d0]">
-            <span>{cumulative.practicePercent}% of 6,000 target</span>
+            <span>{cumulative.practicePercent}% of {cumulative.totalPracticeGoal.toLocaleString()} target</span>
             <span className="text-emerald-400 font-semibold">Min 4,000+ benchmark</span>
           </div>
         </div>
@@ -120,7 +207,7 @@ export const MasterTargetTrackerCard: React.FC = () => {
             />
           </div>
           <div className="flex items-center justify-between text-[11px] text-[#a9b5d0]">
-            <span>{cumulative.mocksPercent}% of 40 simulations</span>
+            <span>{cumulative.mocksPercent}% of {cumulative.totalMocksGoal} simulations</span>
             <span className="text-purple-300 font-semibold">{cumulative.totalMockReviewsCompleted} Error Reviews</span>
           </div>
         </div>
@@ -149,7 +236,7 @@ export const MasterTargetTrackerCard: React.FC = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <span className="text-xs font-bold text-[#edf2ff] uppercase tracking-wider flex items-center gap-1.5">
               <Filter className="w-3.5 h-3.5 text-blue-400" />
-              Question Types Progress toward Nov 16:
+              Question Types Progress toward Nov 13:
             </span>
 
             <div className="flex items-center gap-1 bg-[#10192c] p-1 rounded-xl border border-[#2b3856]">
@@ -173,7 +260,6 @@ export const MasterTargetTrackerCard: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {filteredQuestions.map((q) => {
               const skillColor = SKILL_COLORS[q.meta.skill];
-              const priorityStyle = PRIORITY_STYLES[q.meta.isPrediction ? 'prediction' : 'hard'];
               const isGoalReached = q.completed >= q.totalTarget && q.totalTarget > 0;
 
               return (

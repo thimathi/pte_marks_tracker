@@ -53,11 +53,13 @@ export function createDefaultDayData(dayNumber: number, dateStr: string, isUnloc
   const mockExams: Record<string, MockExamRecord> = {};
   const mockReviews: Record<string, MockReviewRecord> = {};
 
-  const mockIds = ['mock01', 'mock02'];
+  const mockIds = ['mock01', 'mock02', 'mock03'];
 
   mockIds.forEach((id, idx) => {
-    const examNum = (dayNumber - 1) * 2 + (idx + 1);
+    const examNum = (dayNumber - 1) * 3 + (idx + 1);
     const reviewId = `review0${idx + 1}`;
+
+    const isDay1Mock1 = dayNumber === 1 && id === 'mock01';
 
     mockExams[id] = {
       id,
@@ -65,13 +67,14 @@ export function createDefaultDayData(dayNumber: number, dateStr: string, isUnloc
       examNumber: examNum,
       date: dateStr,
       targetQuestions: 60,
-      questionsAttempted: 0,
-      overallScore: null,
-      speakingScore: null,
-      writingScore: null,
-      readingScore: null,
-      listeningScore: null,
-      isCompleted: false,
+      questionsAttempted: isDay1Mock1 ? 60 : 0,
+      overallScore: isDay1Mock1 ? 59 : null,
+      speakingScore: isDay1Mock1 ? 72 : null,
+      writingScore: isDay1Mock1 ? 61 : null,
+      readingScore: isDay1Mock1 ? 40 : null,
+      listeningScore: isDay1Mock1 ? 64 : null,
+      isCompleted: isDay1Mock1,
+      notes: isDay1Mock1 ? 'Baseline Diagnostic (APEUni VIP Mock Test 45C)' : undefined,
     };
 
     mockReviews[reviewId] = {
@@ -95,10 +98,12 @@ export function createDefaultDayData(dayNumber: number, dateStr: string, isUnloc
     gateStatus: {
       practiceCompleted: dayNumber === 1,
       dailyPracticeReviewCompleted: dayNumber === 1,
-      mock1Completed: false,
+      mock1Completed: dayNumber === 1,
       mock1ReviewCompleted: false,
       mock2Completed: false,
       mock2ReviewCompleted: false,
+      mock3Completed: false,
+      mock3ReviewCompleted: false,
       additionalExercisesCompleted: false,
       isUnlocked,
     },
@@ -222,8 +227,48 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
       const expectedDate = dates[d - 1];
       if (!existingDays[key]) {
         updates[`users/${uid}/days/${key}`] = createDefaultDayData(d, expectedDate, d === 1);
-      } else if (existingDays[key].date !== expectedDate) {
-        updates[`users/${uid}/days/${key}/date`] = expectedDate;
+      } else {
+        if (existingDays[key].date !== expectedDate) {
+          updates[`users/${uid}/days/${key}/date`] = expectedDate;
+        }
+        // Ensure mock03 and review03 exist
+        if (!existingDays[key].mockExams?.mock03) {
+          const examNum = (d - 1) * 3 + 3;
+          updates[`users/${uid}/days/${key}/mockExams/mock03`] = {
+            id: 'mock03',
+            studyDay: d,
+            examNumber: examNum,
+            date: expectedDate,
+            targetQuestions: 60,
+            questionsAttempted: 0,
+            overallScore: null,
+            speakingScore: null,
+            writingScore: null,
+            readingScore: null,
+            listeningScore: null,
+            isCompleted: false,
+          };
+          updates[`users/${uid}/days/${key}/mockReviews/review03`] = {
+            id: 'review03',
+            mockId: 'mock03',
+            studyDay: d,
+            examNumber: examNum,
+            durationMinutes: 0,
+            isCompleted: false,
+          };
+        }
+        // Pre-populate Day 1 Mock 45C baseline if not yet set
+        if (d === 1 && (!existingDays[key].mockExams?.mock01 || existingDays[key].mockExams?.mock01?.overallScore === null)) {
+          updates[`users/${uid}/days/${key}/mockExams/mock01/overallScore`] = 59;
+          updates[`users/${uid}/days/${key}/mockExams/mock01/listeningScore`] = 64;
+          updates[`users/${uid}/days/${key}/mockExams/mock01/readingScore`] = 40;
+          updates[`users/${uid}/days/${key}/mockExams/mock01/speakingScore`] = 72;
+          updates[`users/${uid}/days/${key}/mockExams/mock01/writingScore`] = 61;
+          updates[`users/${uid}/days/${key}/mockExams/mock01/questionsAttempted`] = 60;
+          updates[`users/${uid}/days/${key}/mockExams/mock01/isCompleted`] = true;
+          updates[`users/${uid}/days/${key}/mockExams/mock01/notes`] = 'Baseline Diagnostic (APEUni VIP Mock Test 45C)';
+          updates[`users/${uid}/days/${key}/gateStatus/mock1Completed`] = true;
+        }
       }
     }
 
@@ -298,6 +343,7 @@ export async function saveStudyPlan(uid: string, plan: StudyPlan): Promise<void>
     updates[`users/${uid}/days/${key}/date`] = dates[d - 1];
     updates[`users/${uid}/days/${key}/mockExams/mock01/date`] = dates[d - 1];
     updates[`users/${uid}/days/${key}/mockExams/mock02/date`] = dates[d - 1];
+    updates[`users/${uid}/days/${key}/mockExams/mock03/date`] = dates[d - 1];
   }
   await update(ref(db), updates);
 }
@@ -419,14 +465,14 @@ export async function completeDayAndUnlockNext(
   const currentData: DayData = snap.val();
 
   // Validate completion requirements:
-  // Priority #1: Mock Exams & Reviews (2 Mocks every day)
-  const mockKeys = ['mock01', 'mock02'];
+  // Priority #1: Mock Exams & Reviews (3 Mocks every day across 17 days = 51 Mocks total)
+  const mockKeys = ['mock01', 'mock02', 'mock03'];
 
   const gate = currentData.gateStatus;
   const missingRequirements: string[] = [];
 
   mockKeys.forEach((key, idx) => {
-    const examNum = (dayNumber - 1) * 2 + (idx + 1);
+    const examNum = (dayNumber - 1) * 3 + (idx + 1);
     const mock = currentData.mockExams?.[key];
     const rev = currentData.mockReviews?.[`review0${idx + 1}`];
     if (!mock?.isCompleted) {

@@ -19,20 +19,20 @@ describe('Mandatory Rollover, Locking, and Gate Requirements', () => {
     expect(day20.gateStatus.isUnlocked).toBe(false);
   });
 
-  it('configures Day 1 with 2 mock exams and 300 practice questions required', () => {
-    const day1 = createDefaultDayData(1, '2026-10-25', true);
-    expect(Object.keys(day1.mockExams).length).toBe(2);
-    expect(Object.keys(day1.mockReviews).length).toBe(2);
+  it('configures Day 1 with 3 mock exams and 300 practice questions required', () => {
+    const day1 = createDefaultDayData(1, '2026-10-28', true);
+    expect(Object.keys(day1.mockExams).length).toBe(3);
+    expect(Object.keys(day1.mockReviews).length).toBe(3);
 
     const breakdown = calculateDayBreakdown(day1, DEFAULT_QUESTION_TARGETS);
     expect(breakdown.totalDailyTarget).toBe(300);
     expect(breakdown.totalCompleted).toBe(0);
   });
 
-  it('configures Day 2 with 2 mock exams and 300 practice questions required', () => {
-    const day2 = createDefaultDayData(2, '2026-10-26', false);
-    expect(Object.keys(day2.mockExams).length).toBe(2);
-    expect(Object.keys(day2.mockReviews).length).toBe(2);
+  it('configures Day 2 with 3 mock exams and 300 practice questions required', () => {
+    const day2 = createDefaultDayData(2, '2026-10-29', false);
+    expect(Object.keys(day2.mockExams).length).toBe(3);
+    expect(Object.keys(day2.mockReviews).length).toBe(3);
 
     const breakdown = calculateDayBreakdown(day2, DEFAULT_QUESTION_TARGETS);
     expect(breakdown.totalDailyTarget).toBe(300);
@@ -41,26 +41,26 @@ describe('Mandatory Rollover, Locking, and Gate Requirements', () => {
   });
 
   it('requires both Mock Exam score and Mock Review to mark simulation complete', () => {
-    const day1 = createDefaultDayData(1, '2026-10-25', true);
-    day1.mockExams.mock01.overallScore = 78;
-    day1.mockExams.mock01.isCompleted = true;
+    const day1 = createDefaultDayData(1, '2026-10-28', true);
+    day1.mockExams.mock02.overallScore = 78;
+    day1.mockExams.mock02.isCompleted = true;
 
     // Review is still incomplete
-    expect(day1.mockReviews.review01.isCompleted).toBe(false);
+    expect(day1.mockReviews.review02.isCompleted).toBe(false);
 
     // Both must be fulfilled
-    const mockAndReviewBothDone = day1.mockExams.mock01.isCompleted && day1.mockReviews.review01.isCompleted;
+    const mockAndReviewBothDone = day1.mockExams.mock02.isCompleted && day1.mockReviews.review02.isCompleted;
     expect(mockAndReviewBothDone).toBe(false);
 
     // When review is also completed
-    day1.mockReviews.review01.isCompleted = true;
-    expect(day1.mockExams.mock01.isCompleted && day1.mockReviews.review01.isCompleted).toBe(true);
+    day1.mockReviews.review02.isCompleted = true;
+    expect(day1.mockExams.mock02.isCompleted && day1.mockReviews.review02.isCompleted).toBe(true);
   });
 
   it('enforces that date change does not bypass lock state of future days', () => {
-    const day1 = createDefaultDayData(1, '2026-10-25', true);
-    const day2 = createDefaultDayData(2, '2026-10-26', false);
-    const day5 = createDefaultDayData(5, '2026-10-29', false);
+    const day1 = createDefaultDayData(1, '2026-10-28', true);
+    const day2 = createDefaultDayData(2, '2026-10-29', false);
+    const day5 = createDefaultDayData(5, '2026-11-01', false);
 
     expect(day1.status).toBe('active');
     expect(day1.status !== 'completed').toBe(true);
@@ -70,15 +70,15 @@ describe('Mandatory Rollover, Locking, and Gate Requirements', () => {
     expect(day5.gateStatus.isUnlocked).toBe(false);
   });
 
-  it('validates Day 1 completion requires all 2 mock exams and reviews', () => {
-    const day1 = createDefaultDayData(1, '2026-10-25', true);
-    const mockKeys = ['mock01', 'mock02'];
+  it('validates Day 1 completion requires all 3 mock exams and reviews', () => {
+    const day1 = createDefaultDayData(1, '2026-10-28', true);
+    const mockKeys = ['mock01', 'mock02', 'mock03'];
 
-    // Incomplete initially
+    // Incomplete initially (mock02 and mock03 still pending)
     const allMocksDone = mockKeys.every(k => day1.mockExams[k].isCompleted);
     expect(allMocksDone).toBe(false);
 
-    // Mark all 2 mocks and reviews complete
+    // Mark all 3 mocks and reviews complete
     mockKeys.forEach((k, idx) => {
       day1.mockExams[k].isCompleted = true;
       day1.mockExams[k].overallScore = 80;

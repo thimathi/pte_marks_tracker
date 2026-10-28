@@ -14,22 +14,19 @@ import { usePteData } from '../context/PteDataContext';
 import { MockReviewModal } from '../components/mock/MockReviewModal';
 import { MockExamRecord, MockReviewRecord } from '../types/pte';
 import { formatDateFriendly } from '../utils/dateUtils';
-import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS } from '../config/constants';
+import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS, getMockExamDetails } from '../config/constants';
 
 export const MockExamsPage: React.FC = () => {
   const { currentDay, currentDayData, days, studyPlan, updateMockExam, updateMockReview, selectDay } = usePteData();
   const totalDays = studyPlan?.durationDays || TOTAL_STUDY_DAYS;
-  const totalMocks = TOTAL_MOCK_TARGET; // 47
-  const isDay1 = currentDay === 1;
+  const totalMocks = TOTAL_MOCK_TARGET; // 51
 
   const [activeReviewModal, setActiveReviewModal] = useState<{
     mock: MockExamRecord;
     review: MockReviewRecord | undefined;
   } | null>(null);
 
-  const mockKeys = isDay1
-    ? ['mock01', 'mock02', 'mock03', 'mock04', 'mock05']
-    : ['mock01', 'mock02'];
+  const mockKeys = ['mock01', 'mock02', 'mock03'];
 
   const handleScoreChange = async (
     mockId: string,
@@ -49,7 +46,7 @@ export const MockExamsPage: React.FC = () => {
     });
   };
 
-  // Build the complete list of all 40 planned mock exams (2 per day for 20 days)
+  // Build the complete list of all 51 planned mock exams (3 per day for 17 days)
   const allMocksSchedule: {
     examNumber: number;
     dayNumber: number;
@@ -58,9 +55,9 @@ export const MockExamsPage: React.FC = () => {
   }[] = [];
 
   for (let d = 1; d <= totalDays; d++) {
-    for (let m = 1; m <= 2; m++) {
+    for (let m = 1; m <= 3; m++) {
       allMocksSchedule.push({
-        examNumber: (d - 1) * 2 + m,
+        examNumber: (d - 1) * 3 + m,
         dayNumber: d,
         mockId: `mock0${m}`,
         reviewId: `review0${m}`
@@ -80,13 +77,13 @@ export const MockExamsPage: React.FC = () => {
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            Daily Requirement: 2 Full Mock Exams per day (60 Qs each) + Deep error analysis reviews.
+            Daily Requirement: 3 Full Mock Exams per day (60 Qs each) + Deep error analysis reviews across 17 Days.
           </p>
         </div>
 
         <div className="flex items-center gap-2 text-xs">
           <span className="px-3 py-1.5 rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/30 font-semibold">
-            Day {currentDay} Focus: 2 Mock Exams (#{((currentDay - 1) * 2) + 1} & #{((currentDay - 1) * 2) + 2})
+            Day {currentDay} Focus: 3 Mock Exams (#{((currentDay - 1) * 3) + 1}, #{((currentDay - 1) * 3) + 2}, #{((currentDay - 1) * 3) + 3})
           </span>
         </div>
       </div>
@@ -96,45 +93,58 @@ export const MockExamsPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold text-[#edf2ff] flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
-            Today's Scheduled Mock Exams ({mockKeys.length} {mockKeys.length === 1 ? 'Exam' : 'Exams'} Required)
+            Today's Scheduled Mock Exams ({mockKeys.length} Exams Required Daily)
           </h2>
           <span className="text-xs text-purple-300 font-medium">Study Day {currentDay}</span>
         </div>
 
-        <div className={`grid grid-cols-1 ${mockKeys.length > 2 ? 'lg:grid-cols-2 xl:grid-cols-3' : 'lg:grid-cols-2'} gap-6`}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {mockKeys.map((key, idx) => {
             const mock = currentDayData?.mockExams?.[key];
             const reviewId = `review0${idx + 1}`;
             const rev = currentDayData?.mockReviews?.[reviewId];
-            const examNumber = (currentDay - 1) * 2 + (idx + 1);
+            const examNumber = (currentDay - 1) * 3 + (idx + 1);
+            const examDetails = getMockExamDetails(examNumber);
 
             return (
               <div
                 key={key}
-                className="rounded-3xl bg-[#141c31] border border-[#2b3856] p-6 space-y-4 shadow-xl hover:border-purple-500/40 transition-all"
+                className="rounded-3xl bg-[#141c31] border border-[#2b3856] p-6 space-y-4 shadow-xl hover:border-purple-500/40 transition-all flex flex-col justify-between"
               >
-                <div className="flex items-center justify-between border-b border-[#2b3856] pb-3">
-                  <div>
+                <div className="space-y-2 border-b border-[#2b3856] pb-3">
+                  <div className="flex items-center justify-between">
                     <span className="text-[10px] font-semibold text-purple-400 uppercase tracking-wider">
                       Simulation {idx + 1} of {mockKeys.length}
                     </span>
-                    <h3 className="text-lg font-bold text-[#edf2ff]">
-                      Mock Exam #{examNumber}
-                    </h3>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${examDetails.roundBadgeColor}`}>
+                      {examDetails.roundTitle.split(':')[0]}
+                    </span>
                   </div>
-                  <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-xl border ${
-                    mock?.isCompleted && rev?.isCompleted
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                      : mock?.isCompleted
-                      ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
-                      : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                  }`}>
-                    {mock?.isCompleted && rev?.isCompleted
-                      ? 'Exam & Review Complete ✓'
-                      : mock?.isCompleted
-                      ? 'Review Pending'
-                      : 'Exam Pending'}
-                  </span>
+
+                  <div>
+                    <h3 className="text-base font-bold text-[#edf2ff] leading-tight">
+                      Mock #{examNumber}: {examDetails.testName}
+                    </h3>
+                    <p className="text-[11px] text-[#a9b5d0] mt-0.5">
+                      {examDetails.roundTitle}
+                    </p>
+                  </div>
+
+                  <div className="pt-1">
+                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-xl border ${
+                      mock?.isCompleted && rev?.isCompleted
+                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                        : mock?.isCompleted
+                        ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                        : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                    }`}>
+                      {mock?.isCompleted && rev?.isCompleted
+                        ? 'Exam & Review Complete ✓'
+                        : mock?.isCompleted
+                        ? 'Review Pending'
+                        : 'Exam Pending'}
+                    </span>
+                  </div>
                 </div>
 
                 {/* Score inputs */}
@@ -256,7 +266,7 @@ export const MockExamsPage: React.FC = () => {
 
       {/* Mock Exams Complete Progression Table */}
       <div className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-[#2b3856] pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#2b3856] pb-3">
           <div className="flex items-center gap-2">
             <Award className="w-5 h-5 text-purple-400" />
             <h3 className="text-base font-bold text-[#edf2ff]">
@@ -264,7 +274,7 @@ export const MockExamsPage: React.FC = () => {
             </h3>
           </div>
           <span className="text-xs text-[#a9b5d0]">
-            Day 1 (5 Mocks) + Days 2–22 (2 Mocks / Day) = {totalMocks} Total Mocks
+            17 Unique VIP Tests × 3 Rounds = {totalMocks} Total Mocks (3 Mocks / Day)
           </span>
         </div>
 
@@ -273,6 +283,8 @@ export const MockExamsPage: React.FC = () => {
             <thead>
               <tr className="border-b border-[#2b3856] text-[#a9b5d0]">
                 <th className="py-2.5 px-3">Exam #</th>
+                <th className="py-2.5 px-3">APEUni Test Name</th>
+                <th className="py-2.5 px-3">Round</th>
                 <th className="py-2.5 px-3">Study Day</th>
                 <th className="py-2.5 px-3">Date</th>
                 <th className="py-2.5 px-3">Target</th>
@@ -291,6 +303,7 @@ export const MockExamsPage: React.FC = () => {
                 const dayRec = days[item.dayNumber];
                 const mockRec = dayRec?.mockExams?.[item.mockId];
                 const revRec = dayRec?.mockReviews?.[item.reviewId];
+                const details = getMockExamDetails(item.examNumber);
 
                 return (
                   <tr
@@ -301,6 +314,14 @@ export const MockExamsPage: React.FC = () => {
                   >
                     <td className="py-2.5 px-3 font-bold font-mono text-purple-300">
                       Mock #{item.examNumber}
+                    </td>
+                    <td className="py-2.5 px-3 font-medium text-[#edf2ff] max-w-xs truncate" title={details.testName}>
+                      {details.testName}
+                    </td>
+                    <td className="py-2.5 px-3">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${details.roundBadgeColor}`}>
+                        Round {details.roundNumber}
+                      </span>
                     </td>
                     <td className="py-2.5 px-3 text-[#edf2ff] font-medium">
                       Day {item.dayNumber}
@@ -339,7 +360,7 @@ export const MockExamsPage: React.FC = () => {
                     <td className="py-2.5 px-3 text-right">
                       <button
                         onClick={() => selectDay(item.dayNumber)}
-                        className="text-blue-400 hover:underline font-semibold"
+                        className="text-blue-400 hover:underline font-semibold cursor-pointer"
                       >
                         Select Day {item.dayNumber}
                       </button>

@@ -1,35 +1,35 @@
 import { QuestionPriority, QuestionTypeMeta, StudyGroupDefinition, TargetScores } from '../types/pte';
 
-export const DEFAULT_START_DATE = '2026-10-25';
-export const FINAL_TARGET_DATE = '2026-11-16'; // Target summit deadline requested by user
+export const DEFAULT_START_DATE = '2026-10-28';
+export const FINAL_TARGET_DATE = '2026-11-13'; // Exactly 17 Days: Oct 28 to Nov 13, 2026
 export const APP_TITLE = 'PTE - Daily Study Plan – Superior English';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
-export const TOTAL_STUDY_DAYS = 20; // 20 Days Plan
+export const TOTAL_STUDY_DAYS = 17; // Exactly 17 Days Plan
 export const DAILY_PRACTICE_TARGET = 300; // 10 Phases * 30 Qs = 300 Questions/Day (Speaking 170 · Writing 10 · Reading 60 · Listening 60)
-export const TOTAL_PRACTICE_TARGET = 6000; // 20 practice days * 300 = 6,000 Questions
-export const DAILY_MOCK_TARGET = 2; // 2 Mocks every day (Mock #1 after Phase 5, Mock #2 after Phase 10)
-export const TOTAL_MOCK_TARGET = 40; // 20 days * 2 = 40 Mocks (40+ target)
+export const TOTAL_PRACTICE_TARGET = 5100; // 17 practice days * 300 = 5,100 Questions (Exceeds 4,000+ benchmark)
+export const DAILY_MOCK_TARGET = 3; // 3 Mocks every day across 17 days
+export const TOTAL_MOCK_TARGET = 51; // 17 days * 3 = 51 Mocks (17 unique tests repeated 3 rounds)
 export const MOCK_EXAM_QUESTIONS = 60;
 
 export const DEFAULT_TARGET_SCORES: TargetScores = {
   overall: 79,
   speaking: 79,
-  writing: 79,
-  reading: 79,
-  listening: 79,
-  mockExam: 80,
+  writing: 76,
+  reading: 72,
+  listening: 76,
+  mockExam: 76,
 };
 
-// Target progression curve across 20 study days (Mountain Climb Staircase from 62 to 86)
+// Target progression curve across 17 study days (from baseline 59 to summit 79)
 export const DAY_TARGET_SCORES: number[] = [
-  62, 64, 66, 68, 70, // Basecamp (Days 1–5): Foundation & Rhythm
-  71, 72, 73, 74, 75, // Step 1 (Days 6–10): Momentum & Speed
-  76, 77, 78, 79, 80, // Step 2 (Days 11–15): The 75+ Push
-  81, 82, 83, 85, 86  // The Summit (Days 16–20): Peak 79+ Performance & Final Exam Simulation
+  60, 61, 62, 64, 65, // Days 1–5: Baseline Stabilization & Rhythm
+  67, 68, 70, 71, 72, // Days 6–10: Reading & Writing Acceleration
+  73, 74, 75, 76, 77, // Days 11–15: Approaching Summit 76+
+  78, 79              // Days 16–17: Peak 79+ Exam Ready
 ];
 
 export function getDailyMockTarget(_dayNumber: number): number {
-  return 2;
+  return 3;
 }
 
 export function getDailyPracticeTarget(_dayNumber: number): number {
@@ -37,12 +37,87 @@ export function getDailyPracticeTarget(_dayNumber: number): number {
 }
 
 export function getMockExamsForDay(_dayNumber: number): string[] {
-  return ['mock01', 'mock02'];
+  return ['mock01', 'mock02', 'mock03'];
 }
 
 export function getExamNumberForMock(dayNumber: number, mockIndex: number): number {
-  return (dayNumber - 1) * 2 + (mockIndex + 1);
+  return (dayNumber - 1) * 3 + (mockIndex + 1);
 }
+
+// 17 APEUni VIP Mock Exams (Repeated across 3 Rounds = 51 total mocks)
+export const APEUNI_VIP_MOCKS: string[] = [
+  '【VIP Full Test】PTE Mock Test 45C',
+  '【VIP Full Test】PTE Mock Test 44C',
+  '【VIP Full Test】PTE Mock Test 44B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 44A (7th Aug. new version)',
+  '【Free Full Test】Mock Test A (note: VIP required for scoring)',
+  '【VIP Full Test】PTE Mock Test 43B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 43A (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 42B (8.7 new version)',
+  '【VIP Full Test】PTE Mock Test 42A (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 41B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 41A (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 40B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 40A (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 39B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 39A (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 38B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 38A (7th Aug. new version)'
+];
+
+export interface MockExamDetails {
+  examNumber: number;
+  testName: string;
+  roundNumber: number;
+  roundTitle: string;
+  roundBadgeColor: string;
+}
+
+export function getMockExamDetails(examNumber: number): MockExamDetails {
+  const safeNumber = Math.max(1, examNumber);
+  const testIndex = (safeNumber - 1) % APEUNI_VIP_MOCKS.length;
+  const roundNumber = Math.floor((safeNumber - 1) / APEUNI_VIP_MOCKS.length) + 1;
+  const testName = APEUNI_VIP_MOCKS[testIndex] || `PTE Mock Test #${safeNumber}`;
+
+  let roundTitle = 'Round 1: Diagnostic Baseline';
+  let roundBadgeColor = 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+  if (roundNumber === 2) {
+    roundTitle = 'Round 2: Targeted Error Correction';
+    roundBadgeColor = 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+  } else if (roundNumber >= 3) {
+    roundTitle = 'Round 3: Summit Peak 79+ Simulation';
+    roundBadgeColor = 'bg-purple-500/20 text-purple-300 border-purple-500/30';
+  }
+
+  return {
+    examNumber: safeNumber,
+    testName,
+    roundNumber,
+    roundTitle,
+    roundBadgeColor
+  };
+}
+
+export function getMockExamTitle(examNumber: number): string {
+  const details = getMockExamDetails(examNumber);
+  return `${details.testName} (${details.roundTitle.split(':')[0]})`;
+}
+
+export const BASELINE_MOCK_45C_SCORES = {
+  overall: 59,
+  listening: 64,
+  reading: 40,
+  speaking: 72,
+  writing: 61,
+  weaknesses: [
+    { item: 'Reading FIB (Drag & Drop)', correctness: 6.7, target: 90.0, urgency: 'EMERGENCY' },
+    { item: 'Reading & Writing FIB (Dropdown)', correctness: 34.8, target: 90.0, urgency: 'HIGH' },
+    { item: 'Re-order Paragraphs (RO)', correctness: 33.3, target: 50.0, urgency: 'HIGH' },
+    { item: 'Summarize Spoken Text (SST)', correctness: 50.0, target: 90.0, urgency: 'HIGH' },
+    { item: 'Write From Dictation (WFD)', correctness: 57.1, target: 90.0, urgency: 'HIGH' },
+    { item: 'Summarize Written Text (SWT)', correctness: 63.9, target: 95.0, urgency: 'MEDIUM' }
+  ]
+};
 
 export const QUESTION_TYPES: QuestionTypeMeta[] = [
   // SPEAKING (Total: 170 questions per day · 17 per phase · 3,400 over 20 days)
@@ -384,13 +459,14 @@ function build10Phases(): StudyGroupDefinition[] {
         { questionTypeId: 'write_from_dictation', count: 30, startInstanceIndex: 0, priority: 'medium', priorityLabel: 'Core Score Weight (5%)', scoreWeight: 5 }
       ]
     },
-    // Phase 8: 30 R&W FIB (Dropdown) = 30 Qs
+    // Phase 8: 30 R&W FIB (Dropdown) = 30 Qs (Afternoon Checkpoint: Mock Exam #2)
     {
       groupNumber: 8,
       title: 'Phase 8: Collocation Mastery (30 Qs)',
       shortTitle: 'Phase 8',
       subtitle: '30 R&W FIB (Dropdown)',
       skills: ['reading'],
+      checkpointMock: 2,
       items: [
         { questionTypeId: 'rw_fill_in_blanks', count: 30, startInstanceIndex: 0, priority: 'hard', priorityLabel: 'High Score Weight (7%)', scoreWeight: 7 }
       ]
@@ -407,14 +483,14 @@ function build10Phases(): StudyGroupDefinition[] {
         { questionTypeId: 'listening_fill_in_blanks', count: 10, startInstanceIndex: 0, priority: 'easy', priorityLabel: 'Supporting Weight (3%)', scoreWeight: 3 }
       ]
     },
-    // Phase 10: 15 RS + 5 RA + 10 SGD = 30 Qs (End-of-Day Checkpoint: Mock Exam #2)
+    // Phase 10: 15 RS + 5 RA + 10 SGD = 30 Qs (End-of-Day Checkpoint: Mock Exam #3)
     {
       groupNumber: 10,
       title: 'Phase 10: Final Oral Push (30 Qs)',
       shortTitle: 'Phase 10',
       subtitle: '15 RS · 5 RA · 10 SGD',
       skills: ['speaking'],
-      checkpointMock: 2,
+      checkpointMock: 3,
       items: [
         { questionTypeId: 'repeat_sentence', count: 15, startInstanceIndex: 35, priority: 'hard', priorityLabel: 'High Score Weight (7%)', scoreWeight: 7 },
         { questionTypeId: 'read_aloud', count: 5, startInstanceIndex: 35, priority: 'medium', priorityLabel: 'Score Weight (4%)', scoreWeight: 4 },

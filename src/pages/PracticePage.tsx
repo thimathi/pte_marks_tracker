@@ -367,7 +367,7 @@ export const PracticePage: React.FC = () => {
         {/* Mid-Day Checkpoint: Mock Exam #1 */}
         {(() => {
           const mock1 = currentDayData?.mockExams?.['mock01'];
-          const mock1ExamNum = (currentDay - 1) * 2 + 1;
+          const mock1ExamNum = (currentDay - 1) * 3 + 1;
           const isMock1Done = !!mock1?.isCompleted;
 
           return (
@@ -385,7 +385,7 @@ export const PracticePage: React.FC = () => {
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                      Checkpoint 1
+                      Checkpoint 1 (Simulation 1/3)
                     </span>
                     <span className="text-sm font-extrabold text-[#edf2ff]">
                       Full Simulation Mock Exam #{mock1ExamNum} (Priority #1)
@@ -483,59 +483,114 @@ export const PracticePage: React.FC = () => {
           </div>
         </div>
 
-        {/* End-of-Day Checkpoint: Mock Exam #2 */}
-        {(() => {
-          const mock2 = currentDayData?.mockExams?.['mock02'];
-          const mock2ExamNum = (currentDay - 1) * 2 + 2;
-          const isMock2Done = !!mock2?.isCompleted;
+        {/* End-of-Day Checkpoints: Mock Exam #2 & Mock Exam #3 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {(() => {
+            const mock2 = currentDayData?.mockExams?.['mock02'];
+            const mock2ExamNum = (currentDay - 1) * 3 + 2;
+            const isMock2Done = !!mock2?.isCompleted;
 
-          return (
-            <div className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-              isMock2Done
-                ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-200'
-                : 'bg-purple-950/25 border-purple-500/40 text-purple-200'
-            }`}>
-              <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold flex-shrink-0 ${
-                  isMock2Done ? 'bg-emerald-500/20 text-emerald-300' : 'bg-purple-500/20 text-purple-300'
-                }`}>
-                  <GraduationCap className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                      Checkpoint 2
-                    </span>
-                    <span className="text-sm font-extrabold text-[#edf2ff]">
-                      Full Simulation Mock Exam #{mock2ExamNum} (Priority #1)
-                    </span>
-                    {isMock2Done ? (
-                      <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Scored: {mock2?.overallScore}/90
-                      </span>
-                    ) : (
-                      <span className="text-[11px] font-semibold text-purple-300">
-                        Complete after Phase 10
-                      </span>
-                    )}
+            return (
+              <div className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                isMock2Done
+                  ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-200'
+                  : 'bg-purple-950/25 border-purple-500/40 text-purple-200'
+              }`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold flex-shrink-0 ${
+                    isMock2Done ? 'bg-emerald-500/20 text-emerald-300' : 'bg-purple-500/20 text-purple-300'
+                  }`}>
+                    <GraduationCap className="w-5 h-5" />
                   </div>
-                  <p className="text-xs text-[#a9b5d0] mt-0.5">
-                    {isMock2Done
-                      ? 'Completed and error-analyzed! Day complete.'
-                      : 'Mandatory final simulation after finishing all 10 practice phases.'}
-                  </p>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                        Checkpoint 2 (Simulation 2/3)
+                      </span>
+                      <span className="text-sm font-extrabold text-[#edf2ff]">
+                        Mock Exam #{mock2ExamNum} (Priority #1)
+                      </span>
+                      {isMock2Done ? (
+                        <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Scored: {mock2?.overallScore}/90
+                        </span>
+                      ) : (
+                        <span className="text-[11px] font-semibold text-purple-300">
+                          After Phase 10 / Afternoon
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-[#a9b5d0] mt-0.5">
+                      {isMock2Done
+                        ? 'Completed and error-analyzed!'
+                        : 'Daily simulation test #2. Essential for stamina.'}
+                    </p>
+                  </div>
                 </div>
+                <Link
+                  to="/mock-exams"
+                  className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white shadow-md shadow-purple-600/30 flex items-center gap-1.5 self-start sm:self-center transition-colors whitespace-nowrap"
+                >
+                  <span>{isMock2Done ? 'View Mock #2' : 'Take Mock #2'}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
-              <Link
-                to="/mock-exams"
-                className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white shadow-md shadow-purple-600/30 flex items-center gap-1.5 self-start sm:self-center transition-colors whitespace-nowrap"
-              >
-                <span>{isMock2Done ? 'View Mock #2' : 'Take Mock #2'}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          );
-        })()}
+            );
+          })()}
+
+          {(() => {
+            const mock3 = currentDayData?.mockExams?.['mock03'];
+            const mock3ExamNum = (currentDay - 1) * 3 + 3;
+            const isMock3Done = !!mock3?.isCompleted;
+
+            return (
+              <div className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                isMock3Done
+                  ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-200'
+                  : 'bg-purple-950/25 border-purple-500/40 text-purple-200'
+              }`}>
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold flex-shrink-0 ${
+                    isMock3Done ? 'bg-emerald-500/20 text-emerald-300' : 'bg-purple-500/20 text-purple-300'
+                  }`}>
+                    <GraduationCap className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                        Checkpoint 3 (Simulation 3/3)
+                      </span>
+                      <span className="text-sm font-extrabold text-[#edf2ff]">
+                        Mock Exam #{mock3ExamNum} (Priority #1)
+                      </span>
+                      {isMock3Done ? (
+                        <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Scored: {mock3?.overallScore}/90
+                        </span>
+                      ) : (
+                        <span className="text-[11px] font-semibold text-purple-300">
+                          Evening Final Simulation
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-[#a9b5d0] mt-0.5">
+                      {isMock3Done
+                        ? 'Completed and error-analyzed! Day complete.'
+                        : 'Final daily simulation to lock in 79+ peak performance.'}
+                    </p>
+                  </div>
+                </div>
+                <Link
+                  to="/mock-exams"
+                  className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white shadow-md shadow-purple-600/30 flex items-center gap-1.5 self-start sm:self-center transition-colors whitespace-nowrap"
+                >
+                  <span>{isMock3Done ? 'View Mock #3' : 'Take Mock #3'}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            );
+          })()}
+        </div>
       </div>
 
       {/* Main Practice Workspace Card */}
