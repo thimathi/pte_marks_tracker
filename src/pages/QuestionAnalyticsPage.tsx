@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   BarChart3,
   Flame,
@@ -7,7 +8,9 @@ import {
   CheckCircle2,
   TrendingUp,
   Filter,
-  Check
+  Check,
+  GraduationCap,
+  ArrowRight
 } from 'lucide-react';
 import { usePteData } from '../context/PteDataContext';
 import { QUESTION_TYPES, SKILL_COLORS } from '../config/constants';
@@ -80,6 +83,37 @@ export const QuestionAnalyticsPage: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* Day 1 Practice Reschedule Notice */}
+      {currentDay === 1 && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-950/40 via-purple-950/30 to-blue-950/40 border border-blue-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center font-bold flex-shrink-0">
+              <GraduationCap className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                  Day 1 Rescheduled
+                </span>
+                <span className="text-xs font-bold text-[#edf2ff]">
+                  Practice Questions Distributed to Days 2–17 (+19 Qs / Day)
+                </span>
+              </div>
+              <p className="text-[11px] text-[#a9b5d0] mt-0.5">
+                Practice question scoring begins on Day 2 with 319 questions per day. Today focus on Mock Exam #1 (Diagnostic Baseline 45C).
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/mock-exams"
+            className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white shadow-md shadow-purple-600/30 flex items-center gap-1.5 self-start sm:self-center transition-colors whitespace-nowrap"
+          >
+            <span>Mock Exam Center</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      )}
 
       {/* Question Types List */}
       <div className="space-y-4">

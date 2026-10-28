@@ -7,12 +7,13 @@ import {
   AlertTriangle,
   ChevronRight,
   Flame,
+  GraduationCap,
   Calendar as CalendarIcon
 } from 'lucide-react';
 import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown } from '../utils/scoring';
 import { formatDateFriendly, isDatePast, getTodayIso } from '../utils/dateUtils';
-import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS } from '../config/constants';
+import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS, getMockExamsForDay, getExamNumberForMock, TOTAL_MOCK_TARGET, TOTAL_PRACTICE_TARGET } from '../config/constants';
 
 export const CalendarPage: React.FC = () => {
   const { studyPlan, days, currentDay, selectDay } = usePteData();
@@ -23,6 +24,7 @@ export const CalendarPage: React.FC = () => {
   const selectedBreakdown = calculateDayBreakdown(selectedDayData, studyPlan.questionTargets);
   const selectedTarget = DAY_TARGET_SCORES[selectedDayNum - 1];
   const todayIso = getTodayIso();
+  const selectedMockKeys = getMockExamsForDay(selectedDayNum);
 
   return (
     <div className="space-y-6">
@@ -36,7 +38,7 @@ export const CalendarPage: React.FC = () => {
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · {totalDays}-Day Study Schedule (2 Mocks + 300 questions daily across 10 phases).
+            Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · {totalDays}-Day Summit Plan ({TOTAL_MOCK_TARGET} Mock Exams · {TOTAL_PRACTICE_TARGET.toLocaleString()} Practice Questions across 10 Phases).
           </p>
         </div>
 
@@ -157,14 +159,40 @@ export const CalendarPage: React.FC = () => {
                 Status: <b className="text-white capitalize">{selectedDayData?.status || 'Locked'}</b>
               </p>
               <p className="text-[#a9b5d0]">
-                Practice Done: <b className="text-white">{selectedBreakdown.totalCompleted} / {selectedBreakdown.totalDailyTarget} Questions</b>
+                Practice: <b className="text-white">
+                  {selectedDayNum === 1
+                    ? 'Rescheduled across Days 2–17 (+19 Qs/day)'
+                    : `${selectedBreakdown.totalCompleted} / ${selectedBreakdown.totalDailyTarget || 300} Questions`}
+                </b>
               </p>
-              <p className="text-[#a9b5d0]">
-                Practice Average: <b className="text-emerald-400">{selectedBreakdown.dailyAverage !== null ? `${selectedBreakdown.dailyAverage}/90` : '—'}</b>
-              </p>
-              <p className="text-[#a9b5d0]">
-                Mock Exam (1/Day): <b className="text-white">{selectedDayData?.mockExams?.mock01?.overallScore !== null ? `${selectedDayData?.mockExams?.mock01?.overallScore}/90` : 'Pending'}</b>
-              </p>
+              {selectedDayNum !== 1 && (
+                <p className="text-[#a9b5d0]">
+                  Practice Average: <b className="text-emerald-400">{selectedBreakdown.dailyAverage !== null ? `${selectedBreakdown.dailyAverage}/90` : '—'}</b>
+                </p>
+              )}
+
+              {/* Dynamic Mocks List for Day */}
+              <div className="pt-2 border-t border-[#2b3856]/60">
+                <span className="text-[11px] font-semibold text-purple-300 block mb-1.5 flex items-center gap-1">
+                  <GraduationCap className="w-3.5 h-3.5" />
+                  Mock Exams ({selectedMockKeys.length} Scheduled):
+                </span>
+                <div className="space-y-1.5">
+                  {selectedMockKeys.map((mKey, idx) => {
+                    const examNum = getExamNumberForMock(selectedDayNum, idx);
+                    const mockRec = selectedDayData?.mockExams?.[mKey];
+                    const isDone = !!mockRec?.isCompleted;
+                    return (
+                      <div key={mKey} className="flex items-center justify-between p-2 rounded-lg bg-[#0e1729] border border-[#2b3856] text-[11px]">
+                        <span className="font-semibold text-[#edf2ff]">Mock #{examNum}</span>
+                        <span className={isDone ? 'text-emerald-400 font-bold' : 'text-[#a9b5d0]'}>
+                          {isDone ? `${mockRec?.overallScore}/90 ✓` : 'Pending'}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
 

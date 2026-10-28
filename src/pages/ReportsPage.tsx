@@ -23,20 +23,20 @@ import {
 import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown, calculateStreak } from '../utils/scoring';
 import { exportPracticeScoresCsv, exportMockExamsCsv } from '../utils/csvExport';
-import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS } from '../config/constants';
+import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS, TOTAL_MOCK_TARGET, getMockExamsForDay, getExamNumberForMock } from '../config/constants';
 
 export const ReportsPage: React.FC = () => {
   const { studyPlan, days } = usePteData();
   const streak = calculateStreak(days);
   const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
-  const totalMocks = totalDays * 1;
+  const totalMocks = TOTAL_MOCK_TARGET;
 
   // Prepare chart data for study days
   const practiceTrendData = Array.from({ length: totalDays }, (_, i) => {
     const dayNum = i + 1;
     const day = days[dayNum];
     const b = calculateDayBreakdown(day, studyPlan.questionTargets);
-    const target = DAY_TARGET_SCORES[i];
+    const target = DAY_TARGET_SCORES[i] || 79;
 
     return {
       day: `D${dayNum}`,
@@ -50,17 +50,20 @@ export const ReportsPage: React.FC = () => {
     };
   });
 
-  // Prepare chart data for mock exams
+  // Prepare chart data for all 51 mock exams across 17 days
   const mockProgressionData: { mock: string; score: number | null; target: number }[] = [];
   for (let d = 1; d <= totalDays; d++) {
     const day = days[d];
-    const target = DAY_TARGET_SCORES[d - 1];
-    const m1Score = day?.mockExams?.mock01?.overallScore ?? null;
-
-    mockProgressionData.push({
-      mock: `M${d}`,
-      score: m1Score,
-      target
+    const target = DAY_TARGET_SCORES[d - 1] || 79;
+    const mockIds = getMockExamsForDay(d);
+    mockIds.forEach((mId, idx) => {
+      const examNum = getExamNumberForMock(d, idx);
+      const score = day?.mockExams?.[mId]?.overallScore ?? null;
+      mockProgressionData.push({
+        mock: `M${examNum}`,
+        score,
+        target
+      });
     });
   }
 
@@ -152,17 +155,17 @@ export const ReportsPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <Award className="w-5 h-5 text-purple-400" />
             <h3 className="text-base font-bold text-[#edf2ff]">
-              All {totalMocks} Mock Simulations Progression (Mock 1 to {totalMocks})
+              All {totalMocks} Mock Simulations Progression (Mock #1 to #{totalMocks})
             </h3>
           </div>
-          <span className="text-xs text-[#a9b5d0]">Target: 80+ / 90</span>
+          <span className="text-xs text-[#a9b5d0]">Target: 79+ / 90</span>
         </div>
 
         <div className="h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={mockProgressionData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#2b3856" />
-              <XAxis dataKey="mock" stroke="#a9b5d0" interval={1} tick={{ fontSize: 10 }} />
+              <XAxis dataKey="mock" stroke="#a9b5d0" interval={2} tick={{ fontSize: 9 }} />
               <YAxis domain={[50, 90]} stroke="#a9b5d0" tick={{ fontSize: 11 }} />
               <Tooltip
                 contentStyle={{ backgroundColor: '#141c31', borderColor: '#2b3856', borderRadius: '12px' }}
@@ -192,16 +195,16 @@ export const ReportsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Chart 3: Daily Practice Questions Completed (out of 200) */}
+      {/* Chart 3: Daily Practice Questions Completed */}
       <div className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-6 space-y-4">
         <div className="flex items-center justify-between border-b border-[#2b3856] pb-3">
           <div className="flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-blue-400" />
             <h3 className="text-base font-bold text-[#edf2ff]">
-              Daily Practice Load Completed (200 Questions / Day)
+              Daily Practice Load Completed (300 Questions / Day across 10 Phases)
             </h3>
           </div>
-          <span className="text-xs text-[#a9b5d0]">Target: 200 / Day</span>
+          <span className="text-xs text-[#a9b5d0]">Target: 300 / Day (Days 2-17: 319 / 318)</span>
         </div>
 
         <div className="h-64 w-full">
@@ -209,7 +212,7 @@ export const ReportsPage: React.FC = () => {
             <BarChart data={practiceTrendData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#2b3856" />
               <XAxis dataKey="day" stroke="#a9b5d0" tick={{ fontSize: 11 }} />
-              <YAxis domain={[0, 280]} stroke="#a9b5d0" tick={{ fontSize: 11 }} />
+              <YAxis domain={[0, 350]} stroke="#a9b5d0" tick={{ fontSize: 11 }} />
               <Tooltip
                 contentStyle={{ backgroundColor: '#141c31', borderColor: '#2b3856', borderRadius: '12px' }}
                 itemStyle={{ color: '#edf2ff', fontSize: '12px' }}

@@ -186,7 +186,7 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
     let plan: StudyPlan = data.studyPlan;
     if (!plan) {
       plan = createDefaultStudyPlan(DEFAULT_START_DATE);
-      await set(ref(db, `users/${uid}/studyPlan`), plan);
+      await set(ref(db, `users/${uid}/studyPlan`), deepCleanUndefined(plan));
     } else {
       let needsPlanUpdate = false;
       const planUpdates: Partial<StudyPlan> = {};
@@ -214,11 +214,10 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
 
       if (needsPlanUpdate) {
         planUpdates.updatedAt = new Date().toISOString();
-        await update(ref(db, `users/${uid}/studyPlan`), planUpdates);
+        await update(ref(db, `users/${uid}/studyPlan`), deepCleanUndefined(planUpdates));
       }
     }
 
-    // Ensure all days exist in DB and reflect the correct date
     const totalDays = plan.durationDays || TOTAL_STUDY_DAYS;
     const dates = calculate21StudyDates(plan.startDate, totalDays);
     const existingDays = data.days || {};
@@ -233,32 +232,40 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
         if (existingDays[key].date !== expectedDate) {
           updates[`users/${uid}/days/${key}/date`] = expectedDate;
         }
-        // Ensure mock03 and review03 exist
-        if (!existingDays[key].mockExams?.mock03) {
-          const examNum = (d - 1) * 3 + 3;
-          updates[`users/${uid}/days/${key}/mockExams/mock03`] = {
-            id: 'mock03',
-            studyDay: d,
-            examNumber: examNum,
-            date: expectedDate,
-            targetQuestions: 60,
-            questionsAttempted: 0,
-            overallScore: null,
-            speakingScore: null,
-            writingScore: null,
-            readingScore: null,
-            listeningScore: null,
-            isCompleted: false,
-          };
-          updates[`users/${uid}/days/${key}/mockReviews/review03`] = {
-            id: 'review03',
-            mockId: 'mock03',
-            studyDay: d,
-            examNumber: examNum,
-            durationMinutes: 0,
-            isCompleted: false,
-          };
-        }
+        // Ensure all required mocks for this day exist according to getMockExamsForDay(d)
+        const mockKeys = getMockExamsForDay(d);
+        mockKeys.forEach((mId, idx) => {
+          const examNum = getExamNumberForMock(d, idx);
+          const revId = `review0${idx + 1}`;
+          if (!existingDays[key].mockExams?.[mId]) {
+            updates[`users/${uid}/days/${key}/mockExams/${mId}`] = {
+              id: mId,
+              studyDay: d,
+              examNumber: examNum,
+              date: expectedDate,
+              targetQuestions: 60,
+              questionsAttempted: 0,
+              overallScore: null,
+              speakingScore: null,
+              writingScore: null,
+              readingScore: null,
+              listeningScore: null,
+              isCompleted: false,
+              notes: '',
+            };
+          }
+          if (!existingDays[key].mockReviews?.[revId]) {
+            updates[`users/${uid}/days/${key}/mockReviews/${revId}`] = {
+              id: revId,
+              mockId: mId,
+              studyDay: d,
+              examNumber: examNum,
+              durationMinutes: 0,
+              isCompleted: false,
+              notes: '',
+            };
+          }
+        });
       }
     }
 
@@ -306,7 +313,7 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
     }
 
     if (Object.keys(updates).length > 0) {
-      await update(ref(db), updates);
+      await update(ref(db), deepCleanUndefined(updates));
     }
 
     return { plan, profile: data.profile || profile };
@@ -322,7 +329,7 @@ export async function saveStudyPlan(uid: string, plan: StudyPlan): Promise<void>
     ...plan,
     updatedAt: new Date().toISOString()
   };
-  await set(planRef, updatedPlan);
+  await set(planRef, deepCleanUndefined(updatedPlan));
 
   // Recalculate planned dates for all days if startDate changed
   const totalDays = plan.durationDays || TOTAL_STUDY_DAYS;
@@ -331,11 +338,12 @@ export async function saveStudyPlan(uid: string, plan: StudyPlan): Promise<void>
   for (let d = 1; d <= totalDays; d++) {
     const key = formatDayKey(d);
     updates[`users/${uid}/days/${key}/date`] = dates[d - 1];
-    updates[`users/${uid}/days/${key}/mockExams/mock01/date`] = dates[d - 1];
-    updates[`users/${uid}/days/${key}/mockExams/mock02/date`] = dates[d - 1];
-    updates[`users/${uid}/days/${key}/mockExams/mock03/date`] = dates[d - 1];
+    const mockKeys = getMockExamsForDay(d);
+    mockKeys.forEach((mId) => {
+      updates[`users/${uid}/days/${key}/mockExams/${mId}/date`] = dates[d - 1];
+    });
   }
-  await update(ref(db), updates);
+  await update(ref(db), deepCleanUndefined(updates));
 }
 
 /**
@@ -377,7 +385,7 @@ export async function saveQuestionAttempt(
     updatedAt: new Date().toISOString()
   };
 
-  await set(attemptRef, merged);
+  await set(attemptRef, deepCleanUndefined(merged));
 }
 
 /**
@@ -426,7 +434,7 @@ export async function saveMockExamRecord(
 ): Promise<void> {
   const dayKey = formatDayKey(dayNumber);
   const mockRef = ref(db, `users/${uid}/days/${dayKey}/mockExams/${mockId}`);
-  const payload = cleanUndefined({
+  const payload = deepCleanUndefined({
     ...data,
     updatedAt: new Date().toISOString()
   });
@@ -444,7 +452,7 @@ export async function saveMockReviewRecord(
 ): Promise<void> {
   const dayKey = formatDayKey(dayNumber);
   const revRef = ref(db, `users/${uid}/days/${dayKey}/mockReviews/${reviewId}`);
-  const payload = cleanUndefined({
+  const payload = deepCleanUndefined({
     ...data,
     updatedAt: new Date().toISOString()
   });
@@ -463,11 +471,11 @@ export async function saveAdditionalExercise(
 ): Promise<void> {
   const dayKey = formatDayKey(dayNumber);
   const exRef = ref(db, `users/${uid}/days/${dayKey}/additionalExercises/${exerciseId}`);
-  await update(exRef, {
+  await update(exRef, deepCleanUndefined({
     completedCount: count,
-    notes: notes !== undefined ? notes : '',
+    notes: notes || '',
     updatedAt: new Date().toISOString()
-  });
+  }));
 }
 
 /**
@@ -543,7 +551,7 @@ export async function completeDayAndUnlockNext(
     updates[`users/${uid}/studyPlan/currentDay`] = nextDayNumber;
   }
 
-  await update(ref(db), updates);
+  await update(ref(db), deepCleanUndefined(updates));
 
   return {
     success: true,
@@ -573,7 +581,7 @@ export async function emergencyUnlockDay(uid: string, targetDayNumber: number, r
     timestamp: nowIso
   };
 
-  await update(ref(db), updates);
+  await update(ref(db), deepCleanUndefined(updates));
 }
 
 /**

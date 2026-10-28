@@ -1,5 +1,5 @@
 import { DayData, QuestionAttempt, SkillType, TargetScores } from '../types/pte';
-import { QUESTION_TYPE_MAP, QUESTION_TYPES, TOTAL_STUDY_DAYS } from '../config/constants';
+import { QUESTION_TYPE_MAP, QUESTION_TYPES, TOTAL_STUDY_DAYS, TOTAL_MOCK_TARGET, TOTAL_PRACTICE_TARGET } from '../config/constants';
 
 export interface ScoreSummary {
   average: number | null;
@@ -279,7 +279,7 @@ export function calculateCumulativeProgress(
     };
   });
 
-  const totalMocksGoal = totalDays * 3;
+  const totalMocksGoal = TOTAL_MOCK_TARGET;
   for (let d = 1; d <= totalDays; d++) {
     const day = days[d];
     if (!day) continue;

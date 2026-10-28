@@ -14,13 +14,13 @@ import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown, calculateAverage } from '../utils/scoring';
 import { exportPracticeScoresCsv, exportMockExamsCsv } from '../utils/csvExport';
 import { formatDateFriendly } from '../utils/dateUtils';
-import { QUESTION_TYPES, TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS } from '../config/constants';
+import { QUESTION_TYPES, TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS, TOTAL_PRACTICE_TARGET } from '../config/constants';
 
 export const FinalReportPage: React.FC = () => {
   const { studyPlan, days } = usePteData();
   const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
   const totalMocks = TOTAL_MOCK_TARGET;
-  const totalPracticeTarget = totalDays * 300;
+  const totalPracticeTarget = TOTAL_PRACTICE_TARGET;
 
   const [personalNotes, setPersonalNotes] = useState(
     () => localStorage.getItem('pte_21day_lessons_learned') || ''
@@ -201,7 +201,7 @@ export const FinalReportPage: React.FC = () => {
             <span className="text-[11px] text-[#a9b5d0] block">Mock Simulations</span>
             <div className="text-2xl font-bold text-[#edf2ff]">{totalMocksDone} / {totalMocks}</div>
             <span className="text-[10px] text-purple-400 font-semibold">
-              2 Mocks / Day (40 Total)
+              3 Mocks / Day (51 Total)
             </span>
           </div>
 
