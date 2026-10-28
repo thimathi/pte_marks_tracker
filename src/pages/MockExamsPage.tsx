@@ -40,10 +40,14 @@ export const MockExamsPage: React.FC = () => {
       parsedVal = null;
     }
 
-    await updateMockExam(currentDay, mockId, {
-      [field]: parsedVal,
-      isCompleted: field === 'overallScore' ? parsedVal !== null : undefined
-    });
+    const payload: Partial<MockExamRecord> = {
+      [field]: parsedVal
+    };
+    if (field === 'overallScore') {
+      payload.isCompleted = parsedVal !== null;
+    }
+
+    await updateMockExam(currentDay, mockId, payload);
   };
 
   // Build the complete list of all 51 planned mock exams (3 per day for 17 days)

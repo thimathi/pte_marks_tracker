@@ -391,6 +391,19 @@ export async function saveQuestionAttempt(
 }
 
 /**
+ * Strips all undefined properties from an object so Firebase RTDB update never throws
+ */
+export function cleanUndefined<T extends Record<string, any>>(obj: T): Partial<T> {
+  const result: any = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (value !== undefined) {
+      result[key] = value;
+    }
+  }
+  return result;
+}
+
+/**
  * Saves mock exam record
  */
 export async function saveMockExamRecord(
@@ -401,10 +414,11 @@ export async function saveMockExamRecord(
 ): Promise<void> {
   const dayKey = formatDayKey(dayNumber);
   const mockRef = ref(db, `users/${uid}/days/${dayKey}/mockExams/${mockId}`);
-  await update(mockRef, {
+  const payload = cleanUndefined({
     ...data,
     updatedAt: new Date().toISOString()
   });
+  await update(mockRef, payload);
 }
 
 /**
@@ -418,10 +432,11 @@ export async function saveMockReviewRecord(
 ): Promise<void> {
   const dayKey = formatDayKey(dayNumber);
   const revRef = ref(db, `users/${uid}/days/${dayKey}/mockReviews/${reviewId}`);
-  await update(revRef, {
+  const payload = cleanUndefined({
     ...data,
     updatedAt: new Date().toISOString()
   });
+  await update(revRef, payload);
 }
 
 /**
