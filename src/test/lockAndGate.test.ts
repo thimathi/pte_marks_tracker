@@ -4,10 +4,10 @@ import { calculateDayBreakdown } from '../utils/scoring';
 import { DEFAULT_QUESTION_TARGETS, TOTAL_STUDY_DAYS } from '../config/constants';
 
 describe('Mandatory Rollover, Locking, and Gate Requirements', () => {
-  it('initializes Day 1 as active and Day 2 through Day 20 as locked', () => {
-    const day1 = createDefaultDayData(1, '2026-10-25', true);
-    const day2 = createDefaultDayData(2, '2026-10-26', false);
-    const day20 = createDefaultDayData(20, '2026-11-13', false);
+  it('initializes Day 1 as active and Day 2 through Day 15 as locked', () => {
+    const day1 = createDefaultDayData(1, '2026-10-29', true);
+    const day2 = createDefaultDayData(2, '2026-10-30', false);
+    const day15 = createDefaultDayData(15, '2026-11-12', false);
 
     expect(day1.status).toBe('active');
     expect(day1.gateStatus.isUnlocked).toBe(true);
@@ -15,8 +15,8 @@ describe('Mandatory Rollover, Locking, and Gate Requirements', () => {
     expect(day2.status).toBe('locked');
     expect(day2.gateStatus.isUnlocked).toBe(false);
 
-    expect(day20.status).toBe('locked');
-    expect(day20.gateStatus.isUnlocked).toBe(false);
+    expect(day15.status).toBe('locked');
+    expect(day15.gateStatus.isUnlocked).toBe(false);
   });
 
   it('configures Day 1 with 5 mock exams and 100 practice questions required', () => {

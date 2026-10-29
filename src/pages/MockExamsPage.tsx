@@ -308,7 +308,7 @@ export const MockExamsPage: React.FC = () => {
             </h3>
           </div>
           <span className="text-xs text-[#a9b5d0]">
-            17 Unique VIP Tests × 3 Rounds = {totalMocks} Total Mocks (3 Mocks / Day)
+            35 Unique Papers × 2 Shuffled Rounds (+ Day 15 Summit) = {totalMocks} Total Mocks (5 Mocks / Day)
           </span>
         </div>
 

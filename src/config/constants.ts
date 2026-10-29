@@ -1,15 +1,17 @@
 import { QuestionPriority, QuestionTypeMeta, StudyGroupDefinition, TargetScores } from '../types/pte';
 
-export const DEFAULT_START_DATE = '2026-10-28';
-export const FINAL_TARGET_DATE = '2026-11-13'; // Exactly 17 Days: Oct 28 to Nov 13, 2026
+export const DEFAULT_START_DATE = '2026-10-29';
+export const FINAL_TARGET_DATE = '2026-11-12'; // Exactly 15 Days: Oct 29 to Nov 12, 2026
 export const APP_TITLE = 'PTE - Daily Study Plan – Superior English';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
-export const TOTAL_STUDY_DAYS = 17; // Exactly 17 Days Plan
+export const TOTAL_STUDY_DAYS = 15; // Exactly 15 Days Mission
 export const DAILY_PRACTICE_TARGET = 100; // 100 Daily Questions ordered by High Score Weight Priority
-export const TOTAL_PRACTICE_TARGET = 1700; // 17 practice days * 100 = 1,700 Targeted Questions (+ 5,100 Qs in Mocks = 6,800 Total)
+export const TOTAL_PRACTICE_TARGET = 1500; // 15 practice days * 100 = 1,500 Individual Questions
 export const DAILY_MOCK_TARGET = 5; // 5 Mock Exams every day (covers 300 exam questions/day)
-export const TOTAL_MOCK_TARGET = 85; // 17 days * 5 = 85 Mocks total (5 Rounds of 17 VIP Tests)
+export const TOTAL_MOCK_TARGET = 75; // 15 days * 5 = 75 Mocks total (2 Full Rounds of 35 Shuffled VIP Tests + Final Summit Simulation)
 export const MOCK_EXAM_QUESTIONS = 60;
+export const TOTAL_MOCK_EXAM_QUESTIONS = 4500; // 75 mocks * 60 questions = 4,500 Mock Exam Questions
+export const TOTAL_MISSION_QUESTIONS = 6000; // 1,500 Individual Questions + 4,500 Mock Questions = 6,000 Questions Cover With Review & Progress
 
 export interface MockScheduleSlot {
   mockIndex: number;
@@ -34,12 +36,11 @@ export const DEFAULT_TARGET_SCORES: TargetScores = {
   mockExam: 76,
 };
 
-// Target progression curve across 17 study days (from baseline 59 to summit 79)
+// Target progression curve across 15 study days (from baseline 60 to summit 79)
 export const DAY_TARGET_SCORES: number[] = [
-  60, 61, 62, 64, 65, // Days 1–5: Baseline Stabilization & Rhythm
-  67, 68, 70, 71, 72, // Days 6–10: Reading & Writing Acceleration
-  73, 74, 75, 76, 77, // Days 11–15: Approaching Summit 76+
-  78, 79              // Days 16–17: Peak 79+ Exam Ready
+  60, 61, 63, 64, 66, // Days 1–5: Baseline Stabilization & Rhythm
+  68, 69, 71, 72, 73, // Days 6–10: Reading & Writing Acceleration
+  74, 75, 77, 78, 79  // Days 11–15: Approaching & Achieving Summit Peak 79+
 ];
 
 export function getDailyMockTarget(_dayNumber: number): number {
@@ -58,7 +59,7 @@ export function getExamNumberForMock(dayNumber: number, mockIndex: number): numb
   return (dayNumber - 1) * 5 + (mockIndex + 1);
 }
 
-// 17 APEUni VIP Mock Exams (Repeated across 3 Rounds = 51 total mocks)
+// 35 Available APEUni VIP Mock Exam Papers (User-Provided Exact Catalog)
 export const APEUNI_VIP_MOCKS: string[] = [
   '【VIP Full Test】PTE Mock Test 45C',
   '【VIP Full Test】PTE Mock Test 44C',
@@ -69,14 +70,59 @@ export const APEUNI_VIP_MOCKS: string[] = [
   '【VIP Full Test】PTE Mock Test 43A (7th Aug. new version)',
   '【VIP Full Test】PTE Mock Test 42B (8.7 new version)',
   '【VIP Full Test】PTE Mock Test 42A (7th Aug. new version)',
-  '【VIP Full Test】PTE Mock Test 41B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 41B (7th Aug. new version - Set 1)',
+  '【VIP Full Test】PTE Mock Test 41B (7th Aug. new version - Set 2)',
   '【VIP Full Test】PTE Mock Test 41A (7th Aug. new version)',
   '【VIP Full Test】PTE Mock Test 40B (7th Aug. new version)',
   '【VIP Full Test】PTE Mock Test 40A (7th Aug. new version)',
   '【VIP Full Test】PTE Mock Test 39B (7th Aug. new version)',
   '【VIP Full Test】PTE Mock Test 39A (7th Aug. new version)',
   '【VIP Full Test】PTE Mock Test 38B (7th Aug. new version)',
-  '【VIP Full Test】PTE Mock Test 38A (7th Aug. new version)'
+  '【VIP Full Test】PTE Mock Test 38A (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 37B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 37A (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 36B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 35B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 34B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 33B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 32B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 31B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 30B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 29B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 28B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 27B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 26B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 25B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 24B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 23B (7th Aug. new version)',
+  '【VIP Full Test】PTE Mock Test 22B (7th Aug. new version)'
+];
+
+/**
+ * Deterministic pseudo-random shuffle generator (Seeded Fisher-Yates)
+ * Guarantees that every run generates the exact same engaging, reproducible shuffle sequence.
+ */
+function generateSeededPermutation(count: number, seed: number): number[] {
+  const arr = Array.from({ length: count }, (_, i) => i);
+  let s = seed;
+  for (let i = arr.length - 1; i > 0; i--) {
+    s = (s * 9301 + 49297) % 233280;
+    const j = Math.floor((s / 233280) * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/**
+ * 75 Planned Mock Exams Across 15 Days (5 Mocks / Day):
+ * - Round 1 (Days 1–7, Mocks 1–35): All 35 papers shuffled (Complete 1st Pass)
+ * - Round 2 (Days 8–14, Mocks 36–70): All 35 papers re-shuffled (Complete 2nd Pass Error Correction)
+ * - Round 3 / Summit (Day 15, Mocks 71–75): Top 5 VIP Mock Tests (Mock 45C, 44C, 44B, 44A, 43B)
+ */
+export const MOCK_EXAM_SCHEDULE_INDICES: number[] = [
+  ...generateSeededPermutation(35, 777),   // Round 1: 35 tests
+  ...generateSeededPermutation(35, 1492),  // Round 2: 35 tests
+  0, 1, 2, 3, 5                            // Day 15 Summit: 5 top tests (45C, 44C, 44B, 44A, 43B)
 ];
 
 export interface MockExamDetails {
@@ -85,30 +131,43 @@ export interface MockExamDetails {
   roundNumber: number;
   roundTitle: string;
   roundBadgeColor: string;
+  paperNumber: number;
+  timeSlot: string;
+  sessionName: string;
 }
 
 export function getMockExamDetails(examNumber: number): MockExamDetails {
   const safeNumber = Math.max(1, examNumber);
-  const testIndex = (safeNumber - 1) % APEUNI_VIP_MOCKS.length;
-  const roundNumber = Math.floor((safeNumber - 1) / APEUNI_VIP_MOCKS.length) + 1;
-  const testName = APEUNI_VIP_MOCKS[testIndex] || `PTE Mock Test #${safeNumber}`;
+  const scheduleIndex = (safeNumber - 1) % MOCK_EXAM_SCHEDULE_INDICES.length;
+  const paperIndex = MOCK_EXAM_SCHEDULE_INDICES[scheduleIndex] ?? 0;
+  const testName = APEUNI_VIP_MOCKS[paperIndex] || `PTE Mock Test #${safeNumber}`;
 
-  let roundTitle = 'Round 1: Diagnostic Baseline';
+  let roundNumber = 1;
+  let roundTitle = 'Round 1: Shuffled Diagnostic Simulation';
   let roundBadgeColor = 'bg-blue-500/20 text-blue-300 border-blue-500/30';
-  if (roundNumber === 2) {
-    roundTitle = 'Round 2: Targeted Error Correction';
-    roundBadgeColor = 'bg-amber-500/20 text-amber-300 border-amber-500/30';
-  } else if (roundNumber >= 3) {
-    roundTitle = 'Round 3: Summit Peak 79+ Simulation';
+
+  if (safeNumber > 70) {
+    roundNumber = 3;
+    roundTitle = 'Round 3: Grand Summit 79+ Peak Simulation';
     roundBadgeColor = 'bg-purple-500/20 text-purple-300 border-purple-500/30';
+  } else if (safeNumber > 35) {
+    roundNumber = 2;
+    roundTitle = 'Round 2: Shuffled Error Correction & 2nd Pass';
+    roundBadgeColor = 'bg-amber-500/20 text-amber-300 border-amber-500/30';
   }
+
+  const slotIndex = (safeNumber - 1) % DAILY_MOCK_SCHEDULE.length;
+  const scheduleSlot = DAILY_MOCK_SCHEDULE[slotIndex] || DAILY_MOCK_SCHEDULE[0];
 
   return {
     examNumber: safeNumber,
     testName,
     roundNumber,
     roundTitle,
-    roundBadgeColor
+    roundBadgeColor,
+    paperNumber: paperIndex + 1,
+    timeSlot: scheduleSlot.timeSlot,
+    sessionName: scheduleSlot.sessionName
   };
 }
 

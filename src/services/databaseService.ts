@@ -204,9 +204,9 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
         needsPlanUpdate = true;
       }
 
-      // Check if targets need updating to 300 (Speaking 170 + Writing 10 + Reading 60 + Listening 60)
+      // Check if targets need updating to 100 High-Yield Questions
       const totalTargets = Object.values(plan.questionTargets || {}).reduce((a, b) => a + b, 0);
-      if (totalTargets !== 300) {
+      if (totalTargets !== 100) {
         plan.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
         planUpdates.questionTargets = { ...DEFAULT_QUESTION_TARGETS };
         needsPlanUpdate = true;

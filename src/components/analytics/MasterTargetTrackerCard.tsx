@@ -49,22 +49,22 @@ export const MasterTargetTrackerCard: React.FC = () => {
           <div className="flex items-center gap-2.5 flex-wrap">
             <span className="px-3 py-1 rounded-xl bg-purple-500/20 text-purple-300 font-bold text-xs border border-purple-500/30 flex items-center gap-1.5">
               <Target className="w-3.5 h-3.5 text-purple-400" />
-              17-Day Summit Push (Target 79+ Superior)
+              15-Day Summit Mission (Target 79+ Superior)
             </span>
             <span className="px-3 py-1 rounded-xl bg-blue-500/15 text-blue-300 text-xs font-semibold border border-blue-500/30 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-blue-400" />
               Deadline: {formatDateFriendly(FINAL_TARGET_DATE)} ({daysRemaining} Days Left)
             </span>
             <span className="px-3 py-1 rounded-xl bg-emerald-500/15 text-emerald-300 text-xs font-semibold border border-emerald-500/30">
-              Cumulative Question & Mock Tracking
+              6,000 Total Questions Tracking
             </span>
           </div>
 
           <h2 className="text-2xl font-extrabold text-[#edf2ff] mt-2 flex items-center gap-2">
-            <span>Summit Plan: {cumulative.totalPracticeGoal.toLocaleString()} Questions & {cumulative.totalMocksGoal} Mock Exams</span>
+            <span>Mission: 6,000 Questions (1,500 Practice + 4,500 Mock Questions across {cumulative.totalMocksGoal} Mocks)</span>
           </h2>
           <p className="text-xs text-[#a9b5d0] mt-1 max-w-2xl leading-relaxed">
-            Missed a day or had a busy schedule? Questions and mock exams are tracked cumulatively towards November 13. Every completed item pushes your score closer to 79+.
+            Target tracking across 15 days: 35 unique mock exams covered 2 times (5 timed slots daily) + 100 high-priority daily practice questions.
           </p>
         </div>
 
@@ -184,7 +184,7 @@ export const MasterTargetTrackerCard: React.FC = () => {
           </div>
           <div className="flex items-center justify-between text-[11px] text-[#a9b5d0]">
             <span>{cumulative.practicePercent}% of {cumulative.totalPracticeGoal.toLocaleString()} target</span>
-            <span className="text-emerald-400 font-semibold">Min 4,000+ benchmark</span>
+            <span className="text-emerald-400 font-semibold">1,500 Practice Questions Goal</span>
           </div>
         </div>
 

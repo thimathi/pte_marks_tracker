@@ -50,7 +50,7 @@ export const ReportsPage: React.FC = () => {
     };
   });
 
-  // Prepare chart data for all 51 mock exams across 17 days
+  // Prepare chart data for all planned mock exams across study days
   const mockProgressionData: { mock: string; score: number | null; target: number }[] = [];
   for (let d = 1; d <= totalDays; d++) {
     const day = days[d];
