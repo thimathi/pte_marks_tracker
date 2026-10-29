@@ -12,7 +12,7 @@ describe('10-Phase Study Plan & 300-Question Daily Queue Generation', () => {
     const queue = generateGroupedStudyQueue();
     expect(queue.length).toBe(300);
 
-    const expectedPhaseCounts = [30, 30, 30, 20, 30, 40, 30, 30, 30, 30];
+    const expectedPhaseCounts = [30, 30, 30, 20, 30, 30, 30, 30, 40, 30];
     for (let p = 1; p <= 10; p++) {
       const phaseQuestions = queue.filter(q => q.groupId === `phase_${p}`);
       expect(phaseQuestions.length).toBe(expectedPhaseCounts[p - 1]);
@@ -23,16 +23,14 @@ describe('10-Phase Study Plan & 300-Question Daily Queue Generation', () => {
     expect(p1.filter(q => q.questionTypeId === 'answer_short_question').length).toBe(20);
     expect(p1.filter(q => q.questionTypeId === 'summarize_group_discussion').length).toBe(10);
 
-    // Verify Phase 2: 15 RS + 15 RA
+    // Verify Phase 2: 30 R&W FIB
     const p2 = queue.filter(q => q.groupId === 'phase_2');
-    expect(p2.filter(q => q.questionTypeId === 'repeat_sentence').length).toBe(15);
-    expect(p2.filter(q => q.questionTypeId === 'read_aloud').length).toBe(15);
+    expect(p2.filter(q => q.questionTypeId === 'rw_fill_in_blanks').length).toBe(30);
 
-    // Verify Phase 3: 10 RTS + 10 RO + 10 HIW
+    // Verify Phase 3: 10 RL + 20 DI
     const p3 = queue.filter(q => q.groupId === 'phase_3');
-    expect(p3.filter(q => q.questionTypeId === 'respond_to_situation').length).toBe(10);
-    expect(p3.filter(q => q.questionTypeId === 'reorder_paragraph').length).toBe(10);
-    expect(p3.filter(q => q.questionTypeId === 'highlight_incorrect_words').length).toBe(10);
+    expect(p3.filter(q => q.questionTypeId === 'retell_lecture').length).toBe(10);
+    expect(p3.filter(q => q.questionTypeId === 'describe_image').length).toBe(20);
 
     // Verify Phase 4: 8 SWT + 2 WE + 10 SST
     const p4 = queue.filter(q => q.groupId === 'phase_4');
@@ -40,34 +38,36 @@ describe('10-Phase Study Plan & 300-Question Daily Queue Generation', () => {
     expect(p4.filter(q => q.questionTypeId === 'write_essay').length).toBe(2);
     expect(p4.filter(q => q.questionTypeId === 'summarize_spoken_text').length).toBe(10);
 
-    // Verify Phase 5: 10 RL + 20 DI
+    // Verify Phase 5: 30 WFD
     const p5 = queue.filter(q => q.groupId === 'phase_5');
-    expect(p5.filter(q => q.questionTypeId === 'retell_lecture').length).toBe(10);
-    expect(p5.filter(q => q.questionTypeId === 'describe_image').length).toBe(20);
+    expect(p5.filter(q => q.questionTypeId === 'write_from_dictation').length).toBe(30);
 
-    // Verify Phase 6: 20 RS + 20 RA
+    // Verify Phase 6: 20 R FIB + 10 L FIB
     const p6 = queue.filter(q => q.groupId === 'phase_6');
-    expect(p6.filter(q => q.questionTypeId === 'repeat_sentence').length).toBe(20);
-    expect(p6.filter(q => q.questionTypeId === 'read_aloud').length).toBe(20);
+    expect(p6.filter(q => q.questionTypeId === 'r_fill_in_blanks').length).toBe(20);
+    expect(p6.filter(q => q.questionTypeId === 'listening_fill_in_blanks').length).toBe(10);
 
-    // Verify Phase 7: 30 WFD
+    // Verify Phase 7: 15 RS + 5 RA + 10 SGD
     const p7 = queue.filter(q => q.groupId === 'phase_7');
-    expect(p7.filter(q => q.questionTypeId === 'write_from_dictation').length).toBe(30);
+    expect(p7.filter(q => q.questionTypeId === 'repeat_sentence').length).toBe(15);
+    expect(p7.filter(q => q.questionTypeId === 'read_aloud').length).toBe(5);
+    expect(p7.filter(q => q.questionTypeId === 'summarize_group_discussion').length).toBe(10);
 
-    // Verify Phase 8: 30 R&W FIB
+    // Verify Phase 8: 15 RS + 15 RA
     const p8 = queue.filter(q => q.groupId === 'phase_8');
-    expect(p8.filter(q => q.questionTypeId === 'rw_fill_in_blanks').length).toBe(30);
+    expect(p8.filter(q => q.questionTypeId === 'repeat_sentence').length).toBe(15);
+    expect(p8.filter(q => q.questionTypeId === 'read_aloud').length).toBe(15);
 
-    // Verify Phase 9: 20 R FIB + 10 L FIB
+    // Verify Phase 9: 20 RS + 20 RA
     const p9 = queue.filter(q => q.groupId === 'phase_9');
-    expect(p9.filter(q => q.questionTypeId === 'r_fill_in_blanks').length).toBe(20);
-    expect(p9.filter(q => q.questionTypeId === 'listening_fill_in_blanks').length).toBe(10);
+    expect(p9.filter(q => q.questionTypeId === 'repeat_sentence').length).toBe(20);
+    expect(p9.filter(q => q.questionTypeId === 'read_aloud').length).toBe(20);
 
-    // Verify Phase 10: 15 RS + 5 RA + 10 SGD
+    // Verify Phase 10: 10 RTS + 10 RO + 10 HIW
     const p10 = queue.filter(q => q.groupId === 'phase_10');
-    expect(p10.filter(q => q.questionTypeId === 'repeat_sentence').length).toBe(15);
-    expect(p10.filter(q => q.questionTypeId === 'read_aloud').length).toBe(5);
-    expect(p10.filter(q => q.questionTypeId === 'summarize_group_discussion').length).toBe(10);
+    expect(p10.filter(q => q.questionTypeId === 'respond_to_situation').length).toBe(10);
+    expect(p10.filter(q => q.questionTypeId === 'reorder_paragraph').length).toBe(10);
+    expect(p10.filter(q => q.questionTypeId === 'highlight_incorrect_words').length).toBe(10);
   });
 
   it('matches each question-type target count exactly across all phases', () => {
