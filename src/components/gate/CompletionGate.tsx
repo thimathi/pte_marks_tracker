@@ -49,7 +49,7 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     return record && record.completedCount >= targetCount;
   });
 
-  // Mock exams: 4 Mocks every day
+  // Mock exams: 5 Mocks every day
   const mockKeys = getMockExamsForDay(dayNumber);
 
   const mockStatuses = mockKeys.map((key, idx) => {
@@ -133,14 +133,10 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     // Sync computed gate states first
     await updateGateItem(dayNumber, 'practiceCompleted', practiceDone);
     await updateGateItem(dayNumber, 'dailyPracticeReviewCompleted', practiceReviewDone);
-    await updateGateItem(dayNumber, 'mock1Completed', mockStatuses[0]?.isCompleted ?? true);
-    await updateGateItem(dayNumber, 'mock1ReviewCompleted', mockStatuses[0]?.reviewCompleted ?? true);
-    await updateGateItem(dayNumber, 'mock2Completed', mockStatuses[1]?.isCompleted ?? true);
-    await updateGateItem(dayNumber, 'mock2ReviewCompleted', mockStatuses[1]?.reviewCompleted ?? true);
-    await updateGateItem(dayNumber, 'mock3Completed', mockStatuses[2]?.isCompleted ?? true);
-    await updateGateItem(dayNumber, 'mock3ReviewCompleted', mockStatuses[2]?.reviewCompleted ?? true);
-    await updateGateItem(dayNumber, 'mock4Completed', mockStatuses[3]?.isCompleted ?? true);
-    await updateGateItem(dayNumber, 'mock4ReviewCompleted', mockStatuses[3]?.reviewCompleted ?? true);
+    for (let i = 0; i < mockStatuses.length; i++) {
+      await updateGateItem(dayNumber, `mock${i + 1}Completed`, mockStatuses[i]?.isCompleted ?? true);
+      await updateGateItem(dayNumber, `mock${i + 1}ReviewCompleted`, mockStatuses[i]?.reviewCompleted ?? true);
+    }
     await updateGateItem(dayNumber, 'additionalExercisesCompleted', additionalDone);
 
     const res = await completeCurrentDay(dayNumber);

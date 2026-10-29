@@ -14,7 +14,7 @@ import { usePteData } from '../context/PteDataContext';
 import { MockReviewModal } from '../components/mock/MockReviewModal';
 import { MockExamRecord, MockReviewRecord } from '../types/pte';
 import { formatDateFriendly } from '../utils/dateUtils';
-import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS, getMockExamDetails, getMockExamsForDay, getExamNumberForMock } from '../config/constants';
+import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS, getMockExamDetails, getMockExamsForDay, getExamNumberForMock, DAILY_MOCK_SCHEDULE } from '../config/constants';
 
 export const MockExamsPage: React.FC = () => {
   const { currentDay, currentDayData, days, studyPlan, updateMockExam, updateMockReview, selectDay } = usePteData();
@@ -82,13 +82,13 @@ export const MockExamsPage: React.FC = () => {
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            Daily Requirement: 3 Full Mock Exams per day (60 Qs each) + Deep error analysis reviews across 17 Days.
+            Daily Requirement: 5 Full Mock Exams per day (60 Qs each = 300 Qs) across 5 Timed Sessions + 100 Daily Practice Questions.
           </p>
         </div>
 
         <div className="flex items-center gap-2 text-xs">
           <span className="px-3 py-1.5 rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/30 font-semibold">
-            Day {currentDay} Focus: {mockKeys.length} {mockKeys.length === 1 ? 'Mock Exam' : 'Mock Exams'} ({mockKeys.map((_, i) => `#${getExamNumberForMock(currentDay, i)}`).join(', ')})
+            Day {currentDay} Focus: {mockKeys.length} Mock Exams (5 Sessions: 8-10 AM, 11-1 PM, 2-4 PM, 8-10 PM, 11-1 AM)
           </span>
         </div>
       </div>
@@ -98,23 +98,24 @@ export const MockExamsPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold text-[#edf2ff] flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
-            Today's Scheduled Mock Exams ({mockKeys.length} Exams Required Daily)
+            Today's Scheduled Mock Exams ({mockKeys.length} Timed Simulations Daily)
           </h2>
           <span className="text-xs text-purple-300 font-medium">Study Day {currentDay}</span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {mockKeys.map((key, idx) => {
             const mock = currentDayData?.mockExams?.[key];
             const reviewId = `review0${idx + 1}`;
             const rev = currentDayData?.mockReviews?.[reviewId];
             const examNumber = getExamNumberForMock(currentDay, idx);
             const examDetails = getMockExamDetails(examNumber);
+            const schedule = DAILY_MOCK_SCHEDULE[idx];
 
             return (
               <div
                 key={key}
-                className="rounded-3xl bg-[#141c31] border border-[#2b3856] p-6 space-y-4 shadow-xl hover:border-purple-500/40 transition-all flex flex-col justify-between"
+                className="rounded-3xl bg-[#141c31] border border-[#2b3856] p-5 space-y-3.5 shadow-xl hover:border-purple-500/40 transition-all flex flex-col justify-between"
               >
                 <div className="space-y-2 border-b border-[#2b3856] pb-3">
                   <div className="flex items-center justify-between">
@@ -126,12 +127,19 @@ export const MockExamsPage: React.FC = () => {
                     </span>
                   </div>
 
+                  {schedule && (
+                    <div className="p-1.5 rounded-xl bg-[#0e1729] border border-[#2b3856] text-[11px] text-amber-300 flex items-center gap-1.5 font-medium">
+                      <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <span className="truncate">{schedule.timeSlot}</span>
+                    </div>
+                  )}
+
                   <div>
-                    <h3 className="text-base font-bold text-[#edf2ff] leading-tight">
+                    <h3 className="text-sm font-bold text-[#edf2ff] leading-tight line-clamp-2">
                       Mock #{examNumber}: {examDetails.testName}
                     </h3>
-                    <p className="text-[11px] text-[#a9b5d0] mt-0.5">
-                      {examDetails.roundTitle}
+                    <p className="text-[11px] text-[#a9b5d0] mt-0.5 truncate">
+                      {schedule?.sessionName || examDetails.roundTitle}
                     </p>
                   </div>
 

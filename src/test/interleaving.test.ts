@@ -2,15 +2,15 @@ import { describe, it, expect } from 'vitest';
 import { generateInterleavedQueue, generateGroupedStudyQueue, getPhaseRanges } from '../utils/interleaving';
 import { DEFAULT_QUESTION_TARGETS, QUESTION_TYPES, STUDY_GROUPS } from '../config/constants';
 
-describe('High-Yield Priority Study Plan & 300-Question Daily Queue Generation', () => {
-  it('generates exactly 300 questions in total matching the priority plan', () => {
+describe('High-Yield Priority Study Plan & 100-Question Daily Queue Generation', () => {
+  it('generates exactly 100 questions in total matching the priority plan', () => {
     const queue = generateInterleavedQueue(DEFAULT_QUESTION_TARGETS, 1, 42);
-    expect(queue.length).toBe(300);
+    expect(queue.length).toBe(100);
   });
 
-  it('correctly orders questions by high score weight priority totaling 300 questions', () => {
+  it('correctly orders questions by high score weight priority totaling 100 questions', () => {
     const queue = generateGroupedStudyQueue();
-    expect(queue.length).toBe(300);
+    expect(queue.length).toBe(100);
 
     // Verify first question type in queue is Describe Image (15% weight)
     expect(queue[0].questionTypeId).toBe('describe_image');
@@ -18,7 +18,7 @@ describe('High-Yield Priority Study Plan & 300-Question Daily Queue Generation',
 
     // Verify second group is Summarize Group Discussion (9% weight)
     const sgdItems = queue.filter(q => q.questionTypeId === 'summarize_group_discussion');
-    expect(sgdItems.length).toBe(20);
+    expect(sgdItems.length).toBe(8);
     expect(sgdItems[0].scoreWeight).toBe(9);
 
     // Verify last question type is Answer Short Questions (2% weight)
@@ -28,7 +28,7 @@ describe('High-Yield Priority Study Plan & 300-Question Daily Queue Generation',
     // Verify all 16 priority groups exist in STUDY_GROUPS
     expect(STUDY_GROUPS.length).toBe(16);
     const totalGroupQuestions = STUDY_GROUPS.reduce((acc, g) => acc + g.totalQuestions, 0);
-    expect(totalGroupQuestions).toBe(300);
+    expect(totalGroupQuestions).toBe(100);
   });
 
   it('matches each question-type target count exactly across all groups', () => {
@@ -44,26 +44,26 @@ describe('High-Yield Priority Study Plan & 300-Question Daily Queue Generation',
       expect(counts[meta.id]).toBe(expectedTarget);
     }
 
-    // Exact counts for 300 Qs:
-    expect(counts['describe_image']).toBe(20);
-    expect(counts['repeat_sentence']).toBe(50);
-    expect(counts['read_aloud']).toBe(40);
-    expect(counts['summarize_group_discussion']).toBe(20);
-    expect(counts['retell_lecture']).toBe(10);
-    expect(counts['respond_to_situation']).toBe(10);
-    expect(counts['answer_short_question']).toBe(20);
+    // Exact counts for 100 Qs:
+    expect(counts['describe_image']).toBe(12);
+    expect(counts['repeat_sentence']).toBe(15);
+    expect(counts['read_aloud']).toBe(8);
+    expect(counts['summarize_group_discussion']).toBe(8);
+    expect(counts['retell_lecture']).toBe(5);
+    expect(counts['respond_to_situation']).toBe(5);
+    expect(counts['answer_short_question']).toBe(2);
 
-    expect(counts['summarize_written_text']).toBe(8);
+    expect(counts['summarize_written_text']).toBe(4);
     expect(counts['write_essay']).toBe(2);
 
-    expect(counts['rw_fill_in_blanks']).toBe(30);
-    expect(counts['r_fill_in_blanks']).toBe(20);
-    expect(counts['reorder_paragraph']).toBe(10);
+    expect(counts['rw_fill_in_blanks']).toBe(10);
+    expect(counts['r_fill_in_blanks']).toBe(8);
+    expect(counts['reorder_paragraph']).toBe(2);
 
-    expect(counts['write_from_dictation']).toBe(30);
-    expect(counts['listening_fill_in_blanks']).toBe(10);
-    expect(counts['highlight_incorrect_words']).toBe(10);
-    expect(counts['summarize_spoken_text']).toBe(10);
+    expect(counts['write_from_dictation']).toBe(10);
+    expect(counts['listening_fill_in_blanks']).toBe(3);
+    expect(counts['highlight_incorrect_words']).toBe(3);
+    expect(counts['summarize_spoken_text']).toBe(3);
   });
 
   it('verifies non-overlapping instance indices across all phases', () => {

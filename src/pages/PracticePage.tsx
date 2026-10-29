@@ -32,7 +32,8 @@ import {
   PRIORITY_STYLES,
   getMockExamsForDay,
   getExamNumberForMock,
-  getMockExamDetails
+  getMockExamDetails,
+  DAILY_MOCK_SCHEDULE
 } from '../config/constants';
 import { QueueItem, QuestionPriority } from '../types/pte';
 import { formatDateFriendly } from '../utils/dateUtils';
@@ -247,30 +248,38 @@ export const PracticePage: React.FC = () => {
               </span>
             </div>
             <p className="text-xs sm:text-sm text-slate-400 mt-1.5 leading-relaxed">
-              4 Full Mock Exams · 300 High-Impact Practice Questions ordered from 15% Describe Image down to 2% Answer Short Questions.
+              5 Full Mock Exams (300 Exam Qs) · 100 Targeted Practice Questions ordered by Score Weight (400 Total Qs/Day).
             </p>
           </div>
 
           {/* Quick Counter Pills & Batch Action */}
-          <div className="flex items-center gap-3 flex-wrap">
-            {/* 4 Mocks Counter */}
-            <div className="bg-slate-950/60 border border-slate-800 rounded-2xl px-4 py-2 text-center min-w-[90px]">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            {/* 5 Mocks Counter */}
+            <div className="bg-slate-950/60 border border-slate-800 rounded-2xl px-3 sm:px-4 py-2 text-center min-w-[85px]">
               <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400 block">Mock Exams</span>
-              <span className={`text-base font-bold ${completedMocksCount === 4 ? 'text-emerald-400' : 'text-indigo-400'}`}>
-                {completedMocksCount} / 4
+              <span className={`text-base font-bold ${completedMocksCount === 5 ? 'text-emerald-400' : 'text-indigo-400'}`}>
+                {completedMocksCount} / 5
               </span>
             </div>
 
-            {/* 300 Qs Counter */}
-            <div className="bg-slate-950/60 border border-slate-800 rounded-2xl px-4 py-2 text-center min-w-[90px]">
-              <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400 block">Questions</span>
+            {/* 300 Exam Qs via Mocks */}
+            <div className="bg-slate-950/60 border border-slate-800 rounded-2xl px-3 sm:px-4 py-2 text-center min-w-[85px]">
+              <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400 block">Mocks Qs</span>
+              <span className={`text-base font-bold ${completedMocksCount === 5 ? 'text-emerald-400' : 'text-purple-400'}`}>
+                {completedMocksCount * 60} / 300
+              </span>
+            </div>
+
+            {/* 100 Qs Counter */}
+            <div className="bg-slate-950/60 border border-slate-800 rounded-2xl px-3 sm:px-4 py-2 text-center min-w-[85px]">
+              <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400 block">Practice Qs</span>
               <span className={`text-base font-bold ${breakdown.totalCompleted >= breakdown.totalDailyTarget ? 'text-emerald-400' : 'text-slate-100'}`}>
                 {breakdown.totalCompleted} / {breakdown.totalDailyTarget}
               </span>
             </div>
 
             {/* Daily Avg */}
-            <div className="bg-slate-950/60 border border-slate-800 rounded-2xl px-4 py-2 text-center min-w-[90px]">
+            <div className="bg-slate-950/60 border border-slate-800 rounded-2xl px-3 sm:px-4 py-2 text-center min-w-[85px]">
               <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400 block">Daily Avg</span>
               <span className="text-base font-bold text-amber-400">
                 {breakdown.dailyAverage !== null ? `${breakdown.dailyAverage.toFixed(1)}/90` : '—'}
@@ -290,13 +299,13 @@ export const PracticePage: React.FC = () => {
         </div>
       </div>
 
-      {/* 4 Daily Mock Exams Section */}
+      {/* 5 Daily Mock Exams Section */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <GraduationCap className="w-4 h-4 text-indigo-400" />
             <h2 className="text-sm font-bold text-slate-200">
-              Today's 4 Full Simulation Mock Exams (Priority #1 · 4 Mocks/Day)
+              Today's 5 Full Simulation Mock Exams (5 Fixed Timed Slots · 300 Exam Questions Covered)
             </h2>
           </div>
           <Link
@@ -308,17 +317,18 @@ export const PracticePage: React.FC = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {dayMockKeys.map((mKey, idx) => {
             const examNum = getExamNumberForMock(currentDay, idx);
             const mockRec = currentDayData?.mockExams?.[mKey];
             const isDone = !!mockRec?.isCompleted;
             const details = getMockExamDetails(examNum);
+            const schedule = DAILY_MOCK_SCHEDULE[idx];
 
             return (
               <div
                 key={mKey}
-                className={`p-4 rounded-2xl border transition-all duration-300 flex flex-col justify-between gap-3 ${
+                className={`p-3.5 rounded-2xl border transition-all duration-300 flex flex-col justify-between gap-3 ${
                   isDone
                     ? 'bg-emerald-950/20 border-emerald-500/30 shadow-md shadow-emerald-950/20'
                     : 'bg-slate-900/70 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900'
@@ -327,7 +337,7 @@ export const PracticePage: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 border border-indigo-500/25">
-                      Mock #{idx + 1} of 4
+                      Mock #{idx + 1} of 5
                     </span>
                     {isDone ? (
                       <span className="text-[11px] font-bold text-emerald-400 flex items-center gap-1 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30">
@@ -340,16 +350,23 @@ export const PracticePage: React.FC = () => {
                     )}
                   </div>
 
+                  {schedule && (
+                    <div className="mb-2 p-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] text-amber-300 flex items-center gap-1.5 font-medium">
+                      <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <span className="truncate">{schedule.timeSlot}</span>
+                    </div>
+                  )}
+
                   <h3 className="text-xs font-bold text-slate-100 line-clamp-2" title={details.testName}>
                     Test #{examNum}: {details.testName}
                   </h3>
-                  <span className="text-[10px] text-slate-400 mt-0.5 block">
-                    {details.roundTitle.split(':')[0]}
+                  <span className="text-[10px] text-slate-400 mt-0.5 block truncate">
+                    {schedule?.sessionName || details.roundTitle.split(':')[0]}
                   </span>
                 </div>
 
                 <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     {[79, 85].map((preset) => (
                       <button
                         key={preset}
@@ -373,7 +390,7 @@ export const PracticePage: React.FC = () => {
 
                   <Link
                     to="/mock-exams"
-                    className="px-3 py-1 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-[11px] font-bold text-white transition-colors"
+                    className="px-2.5 py-1 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-[11px] font-bold text-white transition-colors"
                   >
                     {isDone ? 'Edit' : 'Take'}
                   </Link>
@@ -827,7 +844,7 @@ export const PracticePage: React.FC = () => {
                 className="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-xs font-bold text-white shadow-lg flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
               >
                 <Award className="w-4 h-4" />
-                <span>Complete Everything (300 Qs + 4 Mocks with Score {batchScore})</span>
+                <span>Complete Everything (5 Mocks [300 Qs] + 100 Practice Qs = 400 Total Qs with Score {batchScore})</span>
               </button>
 
               <button
@@ -836,7 +853,7 @@ export const PracticePage: React.FC = () => {
                 className="w-full py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
               >
                 <CheckSquare className="w-4 h-4 text-indigo-400" />
-                <span>Complete All 300 Questions Only</span>
+                <span>Complete All 100 Questions Only</span>
               </button>
 
               <button
@@ -845,7 +862,7 @@ export const PracticePage: React.FC = () => {
                 className="w-full py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
               >
                 <GraduationCap className="w-4 h-4 text-indigo-400" />
-                <span>Complete All 4 Mock Exams Only</span>
+                <span>Complete All 5 Mock Exams Only</span>
               </button>
             </div>
           </div>

@@ -5,11 +5,25 @@ export const FINAL_TARGET_DATE = '2026-11-13'; // Exactly 17 Days: Oct 28 to Nov
 export const APP_TITLE = 'PTE - Daily Study Plan – Superior English';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
 export const TOTAL_STUDY_DAYS = 17; // Exactly 17 Days Plan
-export const DAILY_PRACTICE_TARGET = 300; // 300 Questions/Day ordered by High Score Weight Priority
-export const TOTAL_PRACTICE_TARGET = 5100; // 17 practice days * 300 = 5,100 Questions
-export const DAILY_MOCK_TARGET = 4; // 4 Mock Exams every day across 17 days
-export const TOTAL_MOCK_TARGET = 68; // 17 days * 4 = 68 Mocks total (4 Mocks/Day)
+export const DAILY_PRACTICE_TARGET = 100; // 100 Daily Questions ordered by High Score Weight Priority
+export const TOTAL_PRACTICE_TARGET = 1700; // 17 practice days * 100 = 1,700 Targeted Questions (+ 5,100 Qs in Mocks = 6,800 Total)
+export const DAILY_MOCK_TARGET = 5; // 5 Mock Exams every day (covers 300 exam questions/day)
+export const TOTAL_MOCK_TARGET = 85; // 17 days * 5 = 85 Mocks total (5 Rounds of 17 VIP Tests)
 export const MOCK_EXAM_QUESTIONS = 60;
+
+export interface MockScheduleSlot {
+  mockIndex: number;
+  timeSlot: string;
+  sessionName: string;
+}
+
+export const DAILY_MOCK_SCHEDULE: MockScheduleSlot[] = [
+  { mockIndex: 0, timeSlot: '8:00 AM – 10:00 AM', sessionName: 'Session 1: Morning Simulation' },
+  { mockIndex: 1, timeSlot: '11:00 AM – 1:00 PM', sessionName: 'Session 2: Late Morning Simulation' },
+  { mockIndex: 2, timeSlot: '2:00 PM – 4:00 PM', sessionName: 'Session 3: Afternoon Simulation' },
+  { mockIndex: 3, timeSlot: '8:00 PM – 10:00 PM', sessionName: 'Session 4: Night Simulation' },
+  { mockIndex: 4, timeSlot: '11:00 PM – 1:00 AM', sessionName: 'Session 5: Late Night Peak Simulation' }
+];
 
 export const DEFAULT_TARGET_SCORES: TargetScores = {
   overall: 79,
@@ -29,19 +43,19 @@ export const DAY_TARGET_SCORES: number[] = [
 ];
 
 export function getDailyMockTarget(_dayNumber: number): number {
-  return 4;
+  return 5;
 }
 
 export function getDailyPracticeTarget(_dayNumber: number): number {
-  return 300;
+  return 100;
 }
 
 export function getMockExamsForDay(_dayNumber: number): string[] {
-  return ['mock01', 'mock02', 'mock03', 'mock04'];
+  return ['mock01', 'mock02', 'mock03', 'mock04', 'mock05'];
 }
 
 export function getExamNumberForMock(dayNumber: number, mockIndex: number): number {
-  return (dayNumber - 1) * 4 + (mockIndex + 1);
+  return (dayNumber - 1) * 5 + (mockIndex + 1);
 }
 
 // 17 APEUni VIP Mock Exams (Repeated across 3 Rounds = 51 total mocks)
@@ -120,14 +134,14 @@ export const BASELINE_MOCK_45C_SCORES = {
 };
 
 export const QUESTION_TYPES: QuestionTypeMeta[] = [
-  // SPEAKING (Total: 170 questions per day · 17 per phase · 3,400 over 20 days)
+  // SPEAKING (Total: 50 targeted daily questions)
   {
     id: 'describe_image',
     name: 'Describe Image',
     shortName: 'DI',
     skill: 'speaking',
-    defaultTarget: 20,
-    estMinutes: '20 min',
+    defaultTarget: 12,
+    estMinutes: '12 min',
     isPrediction: true,
     scoreWeight: 15,
     maxScore: 90,
@@ -139,8 +153,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'RS',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 50,
-    estMinutes: '35 min',
+    defaultTarget: 15,
+    estMinutes: '15 min',
     isPrediction: true,
     scoreWeight: 7,
     maxScore: 90,
@@ -152,12 +166,12 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'RA',
     skill: 'speaking',
     secondarySkill: 'reading',
-    defaultTarget: 40,
-    estMinutes: '32 min',
+    defaultTarget: 8,
+    estMinutes: '10 min',
     isPrediction: true,
     scoreWeight: 4,
     maxScore: 90,
-    description: 'A text appears on screen. Read it aloud naturally with correct pronunciation and oral fluency. (PTE score weight: 4% · 800 total over 20 days)'
+    description: 'A text appears on screen. Read it aloud naturally with correct pronunciation and oral fluency. (PTE score weight: 4%)'
   },
   {
     id: 'summarize_group_discussion',
@@ -165,8 +179,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'SGD',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 20,
-    estMinutes: '25 min',
+    defaultTarget: 8,
+    estMinutes: '10 min',
     isPrediction: true,
     scoreWeight: 9,
     maxScore: 90,
@@ -178,8 +192,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'RL',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 10,
-    estMinutes: '18 min',
+    defaultTarget: 5,
+    estMinutes: '8 min',
     isPrediction: false,
     scoreWeight: 6,
     maxScore: 90,
@@ -190,8 +204,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Respond to a Situation',
     shortName: 'RTS',
     skill: 'speaking',
-    defaultTarget: 10,
-    estMinutes: '16 min',
+    defaultTarget: 5,
+    estMinutes: '8 min',
     isPrediction: false,
     scoreWeight: 6,
     maxScore: 90,
@@ -203,23 +217,23 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'ASQ',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 20,
-    estMinutes: '15 min',
+    defaultTarget: 2,
+    estMinutes: '3 min',
     isPrediction: false,
     scoreWeight: 2,
     maxScore: 90,
     description: 'Answer simple factual questions with one or a few concise words. (PTE score weight: 2%)'
   },
 
-  // WRITING (Total: 10 questions per day · 1 per phase · 200 over 20 days)
+  // WRITING (Total: 6 targeted daily questions)
   {
     id: 'summarize_written_text',
     name: 'Summarize Written Text',
     shortName: 'SWT',
     skill: 'writing',
     secondarySkill: 'reading',
-    defaultTarget: 8,
-    estMinutes: '20 min',
+    defaultTarget: 4,
+    estMinutes: '10 min',
     isPrediction: false,
     scoreWeight: 7,
     maxScore: 90,
@@ -238,15 +252,15 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     description: 'Write a 200–300 word argumentative essay on a given prompt using proper structure. (PTE score weight: 7%)'
   },
 
-  // READING (Total: 60 questions per day · 6 per phase · 1,200 over 20 days)
+  // READING (Total: 20 targeted daily questions)
   {
     id: 'rw_fill_in_blanks',
     name: 'Reading & Writing: Fill in the Blanks',
     shortName: 'R&W FIB',
     skill: 'reading',
     secondarySkill: 'writing',
-    defaultTarget: 30,
-    estMinutes: '40 min',
+    defaultTarget: 10,
+    estMinutes: '15 min',
     isPrediction: true,
     scoreWeight: 7,
     maxScore: 90,
@@ -257,8 +271,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Reading: Fill in the Blanks',
     shortName: 'R FIB',
     skill: 'reading',
-    defaultTarget: 20,
-    estMinutes: '25 min',
+    defaultTarget: 8,
+    estMinutes: '10 min',
     isPrediction: false,
     scoreWeight: 6,
     maxScore: 90,
@@ -269,23 +283,23 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Reorder Paragraph',
     shortName: 'RO',
     skill: 'reading',
-    defaultTarget: 10,
-    estMinutes: '15 min',
+    defaultTarget: 2,
+    estMinutes: '5 min',
     isPrediction: false,
     scoreWeight: 3,
     maxScore: 90,
     description: 'Arrange text boxes in the correct chronological or logical sequence. (PTE score weight: 3%)'
   },
 
-  // LISTENING (Total: 60 questions per day · 6 per phase · 1,200 over 20 days)
+  // LISTENING (Total: 19 targeted daily questions)
   {
     id: 'write_from_dictation',
     name: 'Write From Dictation',
     shortName: 'WFD',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 30,
-    estMinutes: '30 min',
+    defaultTarget: 10,
+    estMinutes: '10 min',
     isPrediction: true,
     scoreWeight: 5,
     maxScore: 90,
@@ -297,8 +311,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'L FIB',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 10,
-    estMinutes: '15 min',
+    defaultTarget: 3,
+    estMinutes: '5 min',
     isPrediction: false,
     scoreWeight: 3,
     maxScore: 90,
@@ -310,8 +324,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'HIW',
     skill: 'listening',
     secondarySkill: 'reading',
-    defaultTarget: 10,
-    estMinutes: '15 min',
+    defaultTarget: 3,
+    estMinutes: '5 min',
     isPrediction: false,
     scoreWeight: 4,
     maxScore: 90,
@@ -323,8 +337,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'SST',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 10,
-    estMinutes: '20 min',
+    defaultTarget: 3,
+    estMinutes: '8 min',
     isPrediction: false,
     scoreWeight: 4,
     maxScore: 90,
@@ -341,25 +355,25 @@ export const DEFAULT_QUESTION_TARGETS: Record<string, number> = Object.fromEntri
 );
 
 /**
- * 16 High-Yield Priority Question Groups (300 Questions/Day):
+ * 16 High-Yield Priority Question Groups (100 Daily Questions):
  * Ordered strictly by PTE Score Weight Priority (Highest Impact First):
- * 1. Describe Image (DI) — 15% Score Weight · 20 Qs
- * 2. Summarize Group Discussion (SGD) — 9% Score Weight · 20 Qs
- * 3. Repeat Sentence (RS) — 7% Score Weight · 50 Qs
- * 4. Reading & Writing FIB (Dropdown) — 7% Score Weight · 30 Qs
- * 5. Summarize Written Text (SWT) — 7% Score Weight · 8 Qs
+ * 1. Describe Image (DI) — 15% Score Weight · 12 Qs
+ * 2. Summarize Group Discussion (SGD) — 9% Score Weight · 8 Qs
+ * 3. Repeat Sentence (RS) — 7% Score Weight · 15 Qs
+ * 4. Reading & Writing FIB (Dropdown) — 7% Score Weight · 10 Qs
+ * 5. Summarize Written Text (SWT) — 7% Score Weight · 4 Qs
  * 6. Write Essay (WE) — 7% Score Weight · 2 Qs
- * 7. Retell Lecture (RL) — 6% Score Weight · 10 Qs
- * 8. Respond to a Situation (RTS) — 6% Score Weight · 10 Qs
- * 9. Reading FIB (Drag & Drop) — 6% Score Weight · 20 Qs
- * 10. Write from Dictation (WFD) — 5% Score Weight · 30 Qs
- * 11. Read Aloud (RA) — 4% Score Weight · 40 Qs
- * 12. Summarize Spoken Text (SST) — 4% Score Weight · 10 Qs
- * 13. Highlight Incorrect Words (HIW) — 4% Score Weight · 10 Qs
- * 14. Listening FIB (Type In) — 3% Score Weight · 10 Qs
- * 15. Reorder Paragraph (RO) — 3% Score Weight · 10 Qs
- * 16. Answer Short Question (ASQ) — 2% Score Weight · 20 Qs
- * Total: Exactly 300 Questions per day.
+ * 7. Retell Lecture (RL) — 6% Score Weight · 5 Qs
+ * 8. Respond to a Situation (RTS) — 6% Score Weight · 5 Qs
+ * 9. Reading FIB (Drag & Drop) — 6% Score Weight · 8 Qs
+ * 10. Write from Dictation (WFD) — 5% Score Weight · 10 Qs
+ * 11. Read Aloud (RA) — 4% Score Weight · 8 Qs
+ * 12. Summarize Spoken Text (SST) — 4% Score Weight · 3 Qs
+ * 13. Highlight Incorrect Words (HIW) — 4% Score Weight · 3 Qs
+ * 14. Listening FIB (Type In) — 3% Score Weight · 3 Qs
+ * 15. Reorder Paragraph (RO) — 3% Score Weight · 2 Qs
+ * 16. Answer Short Question (ASQ) — 2% Score Weight · 2 Qs
+ * Total: Exactly 100 Questions per day (+ 300 Exam Questions covered in 5 Daily Mocks = 400 Total Questions).
  */
 function buildPriorityGroups(): StudyGroupDefinition[] {
   const groupColors = [

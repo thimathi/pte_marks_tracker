@@ -187,7 +187,7 @@ export const DashboardPage: React.FC = () => {
           </h1>
           <p className="text-sm text-[#a9b5d0] leading-relaxed">
             PTE Bridge · Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · Target: <b className="text-blue-400">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Target: <b className="text-emerald-400">{targetForToday}+</b>).
-            {' '}Daily Focus: 4 Mock Exams + 300 High-Yield Practice Questions daily (Ordered by Score Weight Priority).
+            {' '}Daily Focus: 5 Mock Exams (300 Exam Qs) + 100 High-Yield Practice Questions daily (Ordered by Score Weight Priority).
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
@@ -277,9 +277,7 @@ export const DashboardPage: React.FC = () => {
             />
           </div>
           <p className="text-[11px] text-[#a9b5d0]">
-            {currentDay === 1
-              ? 'Day 1 practice (300 Qs) rescheduled across Days 2–17 (+19 Qs/day)'
-              : remainingQuestionsToday > 0
+            {remainingQuestionsToday > 0
               ? `${remainingQuestionsToday} questions left to score today`
               : `Daily ${breakdown.totalDailyTarget} questions target met!`}
           </p>
