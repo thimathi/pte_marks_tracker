@@ -28,17 +28,15 @@ jobs:
         run: npm run build
 
       - name: Deploy to Firebase Hosting
-        if: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_PTEMARKSTRACKING != '' }}"
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PTEMARKSTRACKING }}'
-          channelId: live
-          projectId: ptemarkstracking
-
-      - name: Check Firebase Configuration
-        if: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_PTEMARKSTRACKING == '' }}"
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PTEMARKSTRACKING }}
         run: |
-          echo "Notice: Repository secret FIREBASE_SERVICE_ACCOUNT_PTEMARKSTRACKING is not yet configured in GitHub."
-          echo "The live app is already hosted at https://ptemarkstracking.web.app."
-          echo "To enable GitHub Actions auto-deploy on every push, add FIREBASE_SERVICE_ACCOUNT_PTEMARKSTRACKING in GitHub Settings -> Secrets and variables -> Actions."
+          if [ -n "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "$FIREBASE_SERVICE_ACCOUNT" > sa_key.json
+            export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/sa_key.json
+            npx firebase-tools deploy --only hosting --project ptemarkstracking
+            rm -f sa_key.json
+            echo "Successfully deployed to Firebase Hosting!"
+          else
+            echo "::notice title=Firebase Deploy::FIREBASE_SERVICE_ACCOUNT_PTEMARKSTRACKING secret is not set in GitHub repository settings. Automatic CI deployment skipped. The site is live at https://ptemarkstracking.web.app."
+          fi
