@@ -16,7 +16,7 @@ import {
 import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown } from '../utils/scoring';
 import { formatDateFriendly, isDatePast } from '../utils/dateUtils';
-import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS, getMockExamsForDay } from '../config/constants';
+import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS, getMockExamsForDay, TOTAL_MOCK_TARGET, TOTAL_PRACTICE_TARGET } from '../config/constants';
 
 export const RoadmapPage: React.FC = () => {
   const { studyPlan, days, currentDay, selectDay } = usePteData();
@@ -37,7 +37,7 @@ export const RoadmapPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-[#edf2ff]">PTE - Daily Study Plan – Superior English Roadmap</h1>
         </div>
         <p className="text-xs text-[#a9b5d0] leading-relaxed max-w-3xl">
-          Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · {totalDays}-Day Mountain Staircase (Target 59+ ➔ 79+). Priority #1: 51 Mock Exams (3 Mocks/Day) & 5,100 Practice Questions across 17 Days. Every Day: 3 Mock Exams + 300 Practice Questions (10 Phases) daily.
+          Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · {totalDays}-Day Summit Plan (Target 59+ ➔ 79+). Priority #1: {TOTAL_MOCK_TARGET} Mock Exams (4 Mocks/Day) & {TOTAL_PRACTICE_TARGET.toLocaleString()} Practice Questions (300 Qs/Day ordered by Score Weight Priority).
         </p>
       </div>
 

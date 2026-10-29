@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --bg: #0b1020;
-  --panel: #141c31;
-  --panel2: #19243d;
-  --text: #edf2ff;
-  --muted: #a9b5d0;
-  --accent: #80a7ff;
-  --line: #2b3856;
+  --bg: #0a0e1a;
+  --panel: #111827;
+  --panel2: #162032;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --accent: #6366f1;
+  --line: #1e293b;
   --good: #10b981;
   --warn: #f59e0b;
   --danger: #ef4444;
@@ -18,9 +18,9 @@
 
 body {
   margin: 0;
-  background: #0b1020;
-  background-image: radial-gradient(at 0% 0%, rgba(25, 39, 70, 0.4) 0px, transparent 50%),
-                    radial-gradient(at 100% 100%, rgba(16, 26, 48, 0.5) 0px, transparent 50%);
+  background: #0a0e1a;
+  background-image: radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.08) 0px, transparent 45%),
+                    radial-gradient(at 85% 85%, rgba(56, 189, 248, 0.05) 0px, transparent 45%);
   background-attachment: fixed;
   color: var(--text);
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -28,23 +28,23 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom scrollbars */
+/* Custom scrollbars - soft & muted */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0b1020;
+  background: #0a0e1a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2b3856;
-  border-radius: 4px;
+  background: #1e293b;
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #405477;
+  background: #334155;
 }
 
 /* Print styling for 21-Day Final Report */

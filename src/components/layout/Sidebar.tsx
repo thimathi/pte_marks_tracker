@@ -30,8 +30,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/mock-exams', label: `Mock Exams (${TOTAL_MOCK_TARGET})`, icon: GraduationCap, badge: 'Priority #1', highlight: true },
-    { to: '/practice', label: 'Daily Practice (10 Phases)', icon: Shuffle, badge: '300 Qs + Drills' },
+    { to: '/mock-exams', label: `Mock Exams (${TOTAL_MOCK_TARGET})`, icon: GraduationCap, badge: '4/Day', highlight: true },
+    { to: '/practice', label: 'Daily Practice', icon: Shuffle, badge: '300 Qs Priority' },
     { to: '/roadmap', label: `${totalDays}-Day Roadmap`, icon: Map, badge: `${totalDays} Days` },
     { to: '/analytics/questions', label: 'Question Analytics', icon: BarChart3 },
     { to: '/review', label: 'Review Center', icon: CheckSquare },

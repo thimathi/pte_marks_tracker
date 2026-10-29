@@ -19,14 +19,14 @@ describe('Mandatory Rollover, Locking, and Gate Requirements', () => {
     expect(day20.gateStatus.isUnlocked).toBe(false);
   });
 
-  it('configures Day 1 with 1 mock exam and rescheduled practice', () => {
+  it('configures Day 1 with 4 mock exams and 300 practice questions required', () => {
     const day1 = createDefaultDayData(1, '2026-10-28', true);
-    expect(Object.keys(day1.mockExams).length).toBe(1);
-    expect(Object.keys(day1.mockReviews).length).toBe(1);
+    expect(Object.keys(day1.mockExams).length).toBe(4);
+    expect(Object.keys(day1.mockReviews).length).toBe(4);
 
     const breakdown = calculateDayBreakdown(day1, DEFAULT_QUESTION_TARGETS);
-    expect(breakdown.totalDailyTarget).toBe(0);
-    expect(breakdown.completionPercentage).toBe(100);
+    expect(breakdown.totalDailyTarget).toBe(300);
+    expect(breakdown.totalCompleted).toBe(0);
   });
 
   it('configures Day 2 with 4 mock exams and 300 practice questions required', () => {

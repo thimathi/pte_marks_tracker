@@ -20,12 +20,14 @@ import {
   saveStudyPlan,
   subscribeConnectionStatus,
   subscribeToUserData,
-  formatDayKey
+  formatDayKey,
+  batchSaveScores,
+  batchSaveMockExams
 } from '../services/databaseService';
 import { ref, update } from 'firebase/database';
 import { db } from '../config/firebase';
 import { calculate21StudyDates, getCalendarDayNumber, getTodayIso } from '../utils/dateUtils';
-import { QUESTION_TYPES, DEFAULT_ADDITIONAL_EXERCISES, TOTAL_STUDY_DAYS } from '../config/constants';
+import { QUESTION_TYPES, DEFAULT_ADDITIONAL_EXERCISES, TOTAL_STUDY_DAYS, getMockExamsForDay, getExamNumberForMock } from '../config/constants';
 
 interface PteDataContextType {
   studyPlan: StudyPlan;
@@ -46,6 +48,8 @@ interface PteDataContextType {
   emergencyUnlock: (dayNumber: number, reason: string) => Promise<void>;
   updatePlan: (newPlan: StudyPlan) => Promise<void>;
   importLegacyData: (migratedDays: DayData[]) => Promise<void>;
+  completeAllQuestionsForDay: (dayNumber: number, defaultScore?: number) => Promise<void>;
+  completeAllMocksForDay: (dayNumber: number, defaultScore?: number) => Promise<void>;
 }
 
 const PteDataContext = createContext<PteDataContextType | undefined>(undefined);
@@ -452,6 +456,127 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     [user]
   );
 
+  // Batch complete all 300 practice questions for the day
+  const completeAllQuestionsForDay = useCallback(
+    async (dayNumber: number, defaultScore: number = 79) => {
+      if (!user) return;
+      setSyncStatus('syncing');
+
+      const fullAttempts: Record<string, Record<number, QuestionAttempt>> = {};
+      for (const meta of QUESTION_TYPES) {
+        fullAttempts[meta.id] = {};
+        for (let i = 0; i < meta.defaultTarget; i++) {
+          fullAttempts[meta.id][i] = {
+            qIndex: i,
+            score: defaultScore,
+            notes: 'High-Yield Drill Completed',
+            isFlaggedForReview: false,
+            updatedAt: new Date().toISOString()
+          };
+        }
+      }
+
+      setDays((prev) => {
+        const curDay = prev[dayNumber] || createDefaultDayData(dayNumber, '', false);
+        const curQP = curDay.questionProgress || {};
+        const updatedQP = { ...curQP };
+        for (const meta of QUESTION_TYPES) {
+          updatedQP[meta.id] = {
+            attempts: {
+              ...(updatedQP[meta.id]?.attempts || {}),
+              ...fullAttempts[meta.id]
+            }
+          };
+        }
+        return {
+          ...prev,
+          [dayNumber]: {
+            ...curDay,
+            questionProgress: updatedQP
+          }
+        };
+      });
+
+      try {
+        await batchSaveScores(user.uid, dayNumber, fullAttempts);
+        setSyncStatus('saved');
+        setLastSavedAt(new Date().toLocaleTimeString());
+      } catch (err) {
+        console.error('Error batch completing questions:', err);
+        setSyncStatus('error');
+      }
+    },
+    [user]
+  );
+
+  // Batch complete all 4 mock exams and their reviews for the day
+  const completeAllMocksForDay = useCallback(
+    async (dayNumber: number, defaultScore: number = 79) => {
+      if (!user) return;
+      setSyncStatus('syncing');
+
+      const mockKeys = getMockExamsForDay(dayNumber);
+      const mockUpdates: Record<string, MockExamRecord> = {};
+      const reviewUpdates: Record<string, MockReviewRecord> = {};
+
+      mockKeys.forEach((key, idx) => {
+        const examNum = getExamNumberForMock(dayNumber, idx);
+        const revKey = `review0${idx + 1}`;
+        mockUpdates[key] = {
+          id: key,
+          studyDay: dayNumber,
+          examNumber: examNum,
+          date: getTodayIso(),
+          targetQuestions: 60,
+          questionsAttempted: 60,
+          overallScore: defaultScore,
+          speakingScore: defaultScore,
+          writingScore: defaultScore,
+          readingScore: defaultScore,
+          listeningScore: defaultScore,
+          isCompleted: true,
+          notes: 'Full Test Simulation Completed'
+        };
+        reviewUpdates[revKey] = {
+          id: revKey,
+          mockId: key,
+          studyDay: dayNumber,
+          examNumber: examNum,
+          durationMinutes: 45,
+          isCompleted: true
+        };
+      });
+
+      setDays((prev) => {
+        const curDay = prev[dayNumber] || createDefaultDayData(dayNumber, '', false);
+        return {
+          ...prev,
+          [dayNumber]: {
+            ...curDay,
+            mockExams: {
+              ...(curDay.mockExams || {}),
+              ...mockUpdates
+            },
+            mockReviews: {
+              ...(curDay.mockReviews || {}),
+              ...reviewUpdates
+            }
+          }
+        };
+      });
+
+      try {
+        await batchSaveMockExams(user.uid, dayNumber, mockUpdates, reviewUpdates);
+        setSyncStatus('saved');
+        setLastSavedAt(new Date().toLocaleTimeString());
+      } catch (err) {
+        console.error('Error batch completing mocks:', err);
+        setSyncStatus('error');
+      }
+    },
+    [user]
+  );
+
   const fallbackDates = calculate21StudyDates(studyPlan.startDate);
   const currentDayData: DayData = days[currentDay] || createDefaultDayData(currentDay, fallbackDates[currentDay - 1] || studyPlan.startDate, currentDay === 1);
 
@@ -475,7 +600,9 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         completeCurrentDay,
         emergencyUnlock,
         updatePlan,
-        importLegacyData
+        importLegacyData,
+        completeAllQuestionsForDay,
+        completeAllMocksForDay
       }}
     >
       {children}

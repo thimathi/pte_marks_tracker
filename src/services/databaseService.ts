@@ -346,6 +346,38 @@ export async function saveStudyPlan(uid: string, plan: StudyPlan): Promise<void>
   await update(ref(db), deepCleanUndefined(updates));
 }
 
+export async function batchSaveScores(
+  uid: string,
+  dayNumber: number,
+  typeScores: Record<string, Record<number, QuestionAttempt>>
+): Promise<void> {
+  const dayKey = formatDayKey(dayNumber);
+  const updates: Record<string, any> = {};
+  for (const [typeId, attempts] of Object.entries(typeScores)) {
+    for (const [idx, attempt] of Object.entries(attempts)) {
+      updates[`users/${uid}/days/${dayKey}/questionProgress/${typeId}/attempts/${idx}`] = deepCleanUndefined(attempt);
+    }
+  }
+  await update(ref(db), updates);
+}
+
+export async function batchSaveMockExams(
+  uid: string,
+  dayNumber: number,
+  mockUpdates: Record<string, MockExamRecord>,
+  reviewUpdates: Record<string, MockReviewRecord>
+): Promise<void> {
+  const dayKey = formatDayKey(dayNumber);
+  const updates: Record<string, any> = {};
+  for (const [mockId, rec] of Object.entries(mockUpdates)) {
+    updates[`users/${uid}/days/${dayKey}/mockExams/${mockId}`] = deepCleanUndefined(rec);
+  }
+  for (const [revId, rec] of Object.entries(reviewUpdates)) {
+    updates[`users/${uid}/days/${dayKey}/mockReviews/${revId}`] = deepCleanUndefined(rec);
+  }
+  await update(ref(db), updates);
+}
+
 /**
  * Saves an individual question score efficiently without full document rewrite
  */

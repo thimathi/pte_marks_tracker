@@ -5,10 +5,10 @@ export const FINAL_TARGET_DATE = '2026-11-13'; // Exactly 17 Days: Oct 28 to Nov
 export const APP_TITLE = 'PTE - Daily Study Plan – Superior English';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
 export const TOTAL_STUDY_DAYS = 17; // Exactly 17 Days Plan
-export const DAILY_PRACTICE_TARGET = 300; // 10 Phases * 30 Qs = 300 Questions/Day (Speaking 170 · Writing 10 · Reading 60 · Listening 60)
-export const TOTAL_PRACTICE_TARGET = 5100; // 17 practice days * 300 = 5,100 Questions (Exceeds 4,000+ benchmark)
-export const DAILY_MOCK_TARGET = 3; // 3 Mocks every day across 17 days
-export const TOTAL_MOCK_TARGET = 51; // 17 days * 3 = 51 Mocks (17 unique tests repeated 3 rounds)
+export const DAILY_PRACTICE_TARGET = 300; // 300 Questions/Day ordered by High Score Weight Priority
+export const TOTAL_PRACTICE_TARGET = 5100; // 17 practice days * 300 = 5,100 Questions
+export const DAILY_MOCK_TARGET = 4; // 4 Mock Exams every day across 17 days
+export const TOTAL_MOCK_TARGET = 68; // 17 days * 4 = 68 Mocks total (4 Mocks/Day)
 export const MOCK_EXAM_QUESTIONS = 60;
 
 export const DEFAULT_TARGET_SCORES: TargetScores = {
@@ -28,34 +28,20 @@ export const DAY_TARGET_SCORES: number[] = [
   78, 79              // Days 16–17: Peak 79+ Exam Ready
 ];
 
-export function getDailyMockTarget(dayNumber: number): number {
-  if (dayNumber === 1) return 1;
-  if (dayNumber === 2 || dayNumber === 3) return 4;
-  return 3;
+export function getDailyMockTarget(_dayNumber: number): number {
+  return 4;
 }
 
-export function getDailyPracticeTarget(dayNumber: number): number {
-  if (dayNumber === 1) return 0;
-  if (dayNumber >= 2 && dayNumber <= 13) return 319;
-  return 318;
+export function getDailyPracticeTarget(_dayNumber: number): number {
+  return 300;
 }
 
-export function getMockExamsForDay(dayNumber: number): string[] {
-  const count = getDailyMockTarget(dayNumber);
-  return Array.from({ length: count }, (_, i) => `mock0${i + 1}`);
+export function getMockExamsForDay(_dayNumber: number): string[] {
+  return ['mock01', 'mock02', 'mock03', 'mock04'];
 }
 
 export function getExamNumberForMock(dayNumber: number, mockIndex: number): number {
-  if (dayNumber === 1) {
-    return 1;
-  }
-  if (dayNumber === 2) {
-    return 1 + (mockIndex + 1); // 2, 3, 4, 5
-  }
-  if (dayNumber === 3) {
-    return 5 + (mockIndex + 1); // 6, 7, 8, 9
-  }
-  return 9 + (dayNumber - 4) * 3 + (mockIndex + 1); // Day 4..17: 10..51
+  return (dayNumber - 1) * 4 + (mockIndex + 1);
 }
 
 // 17 APEUni VIP Mock Exams (Repeated across 3 Rounds = 51 total mocks)
@@ -355,179 +341,88 @@ export const DEFAULT_QUESTION_TARGETS: Record<string, number> = Object.fromEntri
 );
 
 /**
- * 10 User-Defined Focused Phases per day (Reordered):
- * Phase 1: 20 ASQ + 10 SGD = 30 Qs
- * Phase 2: 30 R&W FIB (Dropdown) = 30 Qs
- * Phase 3: 10 RL + 20 DI = 30 Qs
- * Phase 4: 8 SWT + 2 WE + 10 SST = 20 Qs
- * Phase 5: 30 WFD = 30 Qs  (Mid-Day Checkpoint: Mock Exam #1)
- * Phase 6: 20 R FIB (Drag & Drop) + 10 L FIB (Type In) = 30 Qs
- * Phase 7: 15 RS + 5 RA + 10 SGD = 30 Qs
- * Phase 8: 15 RS + 15 RA = 30 Qs  (Afternoon Checkpoint: Mock Exam #2)
- * Phase 9: 20 RS + 20 RA = 40 Qs
- * Phase 10: 10 RTS + 10 RO + 10 HIW = 30 Qs  (End-of-Day Checkpoint: Mock Exam #3)
+ * 16 High-Yield Priority Question Groups (300 Questions/Day):
+ * Ordered strictly by PTE Score Weight Priority (Highest Impact First):
+ * 1. Describe Image (DI) — 15% Score Weight · 20 Qs
+ * 2. Summarize Group Discussion (SGD) — 9% Score Weight · 20 Qs
+ * 3. Repeat Sentence (RS) — 7% Score Weight · 50 Qs
+ * 4. Reading & Writing FIB (Dropdown) — 7% Score Weight · 30 Qs
+ * 5. Summarize Written Text (SWT) — 7% Score Weight · 8 Qs
+ * 6. Write Essay (WE) — 7% Score Weight · 2 Qs
+ * 7. Retell Lecture (RL) — 6% Score Weight · 10 Qs
+ * 8. Respond to a Situation (RTS) — 6% Score Weight · 10 Qs
+ * 9. Reading FIB (Drag & Drop) — 6% Score Weight · 20 Qs
+ * 10. Write from Dictation (WFD) — 5% Score Weight · 30 Qs
+ * 11. Read Aloud (RA) — 4% Score Weight · 40 Qs
+ * 12. Summarize Spoken Text (SST) — 4% Score Weight · 10 Qs
+ * 13. Highlight Incorrect Words (HIW) — 4% Score Weight · 10 Qs
+ * 14. Listening FIB (Type In) — 3% Score Weight · 10 Qs
+ * 15. Reorder Paragraph (RO) — 3% Score Weight · 10 Qs
+ * 16. Answer Short Question (ASQ) — 2% Score Weight · 20 Qs
  * Total: Exactly 300 Questions per day.
  */
-function build10Phases(): StudyGroupDefinition[] {
-  const phaseColors = ['blue', 'indigo', 'purple', 'violet', 'fuchsia', 'cyan', 'teal', 'emerald', 'amber', 'rose'];
-
-  const phaseConfigs: {
-    groupNumber: number;
-    title: string;
-    shortTitle: string;
-    subtitle: string;
-    skills: ('speaking' | 'writing' | 'reading' | 'listening')[];
-    checkpointMock?: number;
-    items: {
-      questionTypeId: string;
-      count: number;
-      startInstanceIndex: number;
-      priority: QuestionPriority;
-      priorityLabel: string;
-      scoreWeight: number;
-    }[];
-  }[] = [
-    // Phase 1: 20 ASQ + 10 SGD = 30 Qs (Current Phase 1)
-    {
-      groupNumber: 1,
-      title: 'Phase 1: Speed & Fluency (30 Qs)',
-      shortTitle: 'Phase 1',
-      subtitle: '20 ASQ · 10 SGD',
-      skills: ['speaking'],
-      items: [
-        { questionTypeId: 'answer_short_question', count: 20, startInstanceIndex: 0, priority: 'easy', priorityLabel: 'Supporting Weight (2%)', scoreWeight: 2 },
-        { questionTypeId: 'summarize_group_discussion', count: 10, startInstanceIndex: 0, priority: 'prediction', priorityLabel: 'Top Score Weight (9%)', scoreWeight: 9 }
-      ]
-    },
-    // Phase 2: 30 R&W FIB (Dropdown) = 30 Qs (Current Phase 8 -> Phase 2)
-    {
-      groupNumber: 2,
-      title: 'Phase 2: Collocation Mastery (30 Qs)',
-      shortTitle: 'Phase 2',
-      subtitle: '30 R&W FIB (Dropdown)',
-      skills: ['reading'],
-      items: [
-        { questionTypeId: 'rw_fill_in_blanks', count: 30, startInstanceIndex: 0, priority: 'hard', priorityLabel: 'High Score Weight (7%)', scoreWeight: 7 }
-      ]
-    },
-    // Phase 3: 10 RL + 20 DI = 30 Qs (Current Phase 5 -> Phase 3)
-    {
-      groupNumber: 3,
-      title: 'Phase 3: High-Yield Speaking (30 Qs)',
-      shortTitle: 'Phase 3',
-      subtitle: '10 RL · 20 DI',
-      skills: ['speaking'],
-      items: [
-        { questionTypeId: 'retell_lecture', count: 10, startInstanceIndex: 0, priority: 'hard', priorityLabel: 'High Score Weight (6%)', scoreWeight: 6 },
-        { questionTypeId: 'describe_image', count: 20, startInstanceIndex: 0, priority: 'prediction', priorityLabel: 'Top Score Weight (15%)', scoreWeight: 15 }
-      ]
-    },
-    // Phase 4: 8 SWT + 2 WE + 10 SST = 20 Qs (Current Phase 4)
-    {
-      groupNumber: 4,
-      title: 'Phase 4: Writing & Summary Master (20 Qs)',
-      shortTitle: 'Phase 4',
-      subtitle: '8 SWT · 2 WE · 10 SST',
-      skills: ['writing', 'listening'],
-      items: [
-        { questionTypeId: 'summarize_written_text', count: 8, startInstanceIndex: 0, priority: 'hard', priorityLabel: 'High Score Weight (7%)', scoreWeight: 7 },
-        { questionTypeId: 'write_essay', count: 2, startInstanceIndex: 0, priority: 'hard', priorityLabel: 'High Score Weight (7%)', scoreWeight: 7 },
-        { questionTypeId: 'summarize_spoken_text', count: 10, startInstanceIndex: 0, priority: 'medium', priorityLabel: 'Score Weight (4%)', scoreWeight: 4 }
-      ]
-    },
-    // Phase 5: 30 WFD = 30 Qs (Current Phase 7 -> Phase 5) (Mid-Day Checkpoint: Mock Exam #1)
-    {
-      groupNumber: 5,
-      title: 'Phase 5: Dictation Fortress (30 Qs)',
-      shortTitle: 'Phase 5',
-      subtitle: '30 WFD',
-      skills: ['listening'],
-      checkpointMock: 1,
-      items: [
-        { questionTypeId: 'write_from_dictation', count: 30, startInstanceIndex: 0, priority: 'medium', priorityLabel: 'Core Score Weight (5%)', scoreWeight: 5 }
-      ]
-    },
-    // Phase 6: 20 R FIB + 10 L FIB = 30 Qs (Current Phase 9 -> Phase 6)
-    {
-      groupNumber: 6,
-      title: 'Phase 6: Blanks Precision (30 Qs)',
-      shortTitle: 'Phase 6',
-      subtitle: '20 R FIB · 10 L FIB',
-      skills: ['reading', 'listening'],
-      items: [
-        { questionTypeId: 'r_fill_in_blanks', count: 20, startInstanceIndex: 0, priority: 'hard', priorityLabel: 'High Score Weight (6%)', scoreWeight: 6 },
-        { questionTypeId: 'listening_fill_in_blanks', count: 10, startInstanceIndex: 0, priority: 'easy', priorityLabel: 'Supporting Weight (3%)', scoreWeight: 3 }
-      ]
-    },
-    // Phase 7: 15 RS + 5 RA + 10 SGD = 30 Qs (Current Phase 10 -> Phase 7)
-    {
-      groupNumber: 7,
-      title: 'Phase 7: Oral Push & Speed (30 Qs)',
-      shortTitle: 'Phase 7',
-      subtitle: '15 RS · 5 RA · 10 SGD',
-      skills: ['speaking'],
-      items: [
-        { questionTypeId: 'repeat_sentence', count: 15, startInstanceIndex: 0, priority: 'hard', priorityLabel: 'High Score Weight (7%)', scoreWeight: 7 },
-        { questionTypeId: 'read_aloud', count: 5, startInstanceIndex: 0, priority: 'medium', priorityLabel: 'Score Weight (4%)', scoreWeight: 4 },
-        { questionTypeId: 'summarize_group_discussion', count: 10, startInstanceIndex: 10, priority: 'prediction', priorityLabel: 'Top Score Weight (9%)', scoreWeight: 9 }
-      ]
-    },
-    // Phase 8: 15 RS + 15 RA = 30 Qs (Current Phase 2 -> Phase 8) (Afternoon Checkpoint: Mock Exam #2)
-    {
-      groupNumber: 8,
-      title: 'Phase 8: Oral Foundations (30 Qs)',
-      shortTitle: 'Phase 8',
-      subtitle: '15 RS · 15 RA',
-      skills: ['speaking'],
-      checkpointMock: 2,
-      items: [
-        { questionTypeId: 'repeat_sentence', count: 15, startInstanceIndex: 15, priority: 'hard', priorityLabel: 'High Score Weight (7%)', scoreWeight: 7 },
-        { questionTypeId: 'read_aloud', count: 15, startInstanceIndex: 5, priority: 'medium', priorityLabel: 'Score Weight (4%)', scoreWeight: 4 }
-      ]
-    },
-    // Phase 9: 20 RS + 20 RA = 40 Qs (Current Phase 6 -> Phase 9)
-    {
-      groupNumber: 9,
-      title: 'Phase 9: Core Speech Power (40 Qs)',
-      shortTitle: 'Phase 9',
-      subtitle: '20 RS · 20 RA',
-      skills: ['speaking'],
-      items: [
-        { questionTypeId: 'repeat_sentence', count: 20, startInstanceIndex: 30, priority: 'hard', priorityLabel: 'High Score Weight (7%)', scoreWeight: 7 },
-        { questionTypeId: 'read_aloud', count: 20, startInstanceIndex: 20, priority: 'medium', priorityLabel: 'Score Weight (4%)', scoreWeight: 4 }
-      ]
-    },
-    // Phase 10: 10 RTS + 10 RO + 10 HIW = 30 Qs (Current Phase 3 -> Phase 10) (End-of-Day Checkpoint: Mock Exam #3)
-    {
-      groupNumber: 10,
-      title: 'Phase 10: Logic & Attention (30 Qs)',
-      shortTitle: 'Phase 10',
-      subtitle: '10 RTS · 10 RO · 10 HIW',
-      skills: ['speaking', 'reading', 'listening'],
-      checkpointMock: 3,
-      items: [
-        { questionTypeId: 'respond_to_situation', count: 10, startInstanceIndex: 0, priority: 'hard', priorityLabel: 'High Score Weight (6%)', scoreWeight: 6 },
-        { questionTypeId: 'reorder_paragraph', count: 10, startInstanceIndex: 0, priority: 'easy', priorityLabel: 'Supporting Weight (3%)', scoreWeight: 3 },
-        { questionTypeId: 'highlight_incorrect_words', count: 10, startInstanceIndex: 0, priority: 'medium', priorityLabel: 'Score Weight (4%)', scoreWeight: 4 }
-      ]
-    }
+function buildPriorityGroups(): StudyGroupDefinition[] {
+  const groupColors = [
+    'rose', 'fuchsia', 'amber', 'indigo', 'blue', 'cyan',
+    'emerald', 'teal', 'violet', 'purple', 'sky', 'amber',
+    'rose', 'emerald', 'blue', 'slate'
   ];
 
-  return phaseConfigs.map((cfg, idx) => ({
-    id: `phase_${cfg.groupNumber}`,
-    groupNumber: cfg.groupNumber,
-    title: cfg.title,
-    shortTitle: cfg.shortTitle,
-    subtitle: cfg.subtitle,
-    skills: cfg.skills,
-    totalQuestions: cfg.items.reduce((acc, item) => acc + item.count, 0),
-    color: phaseColors[idx % phaseColors.length],
-    items: cfg.items,
-    checkpointMock: cfg.checkpointMock
-  }));
+  const priorityOrderConfigs: {
+    questionTypeId: string;
+    priority: QuestionPriority;
+    priorityLabel: string;
+  }[] = [
+    { questionTypeId: 'describe_image', priority: 'prediction', priorityLabel: 'Top Score Weight (15%)' },
+    { questionTypeId: 'summarize_group_discussion', priority: 'prediction', priorityLabel: 'Top Score Weight (9%)' },
+    { questionTypeId: 'repeat_sentence', priority: 'hard', priorityLabel: 'High Score Weight (7%)' },
+    { questionTypeId: 'rw_fill_in_blanks', priority: 'hard', priorityLabel: 'High Score Weight (7%)' },
+    { questionTypeId: 'summarize_written_text', priority: 'hard', priorityLabel: 'High Score Weight (7%)' },
+    { questionTypeId: 'write_essay', priority: 'hard', priorityLabel: 'High Score Weight (7%)' },
+    { questionTypeId: 'retell_lecture', priority: 'hard', priorityLabel: 'Score Weight (6%)' },
+    { questionTypeId: 'respond_to_situation', priority: 'hard', priorityLabel: 'Score Weight (6%)' },
+    { questionTypeId: 'r_fill_in_blanks', priority: 'hard', priorityLabel: 'Score Weight (6%)' },
+    { questionTypeId: 'write_from_dictation', priority: 'medium', priorityLabel: 'Score Weight (5%)' },
+    { questionTypeId: 'read_aloud', priority: 'medium', priorityLabel: 'Score Weight (4%)' },
+    { questionTypeId: 'summarize_spoken_text', priority: 'medium', priorityLabel: 'Score Weight (4%)' },
+    { questionTypeId: 'highlight_incorrect_words', priority: 'medium', priorityLabel: 'Score Weight (4%)' },
+    { questionTypeId: 'listening_fill_in_blanks', priority: 'easy', priorityLabel: 'Supporting Weight (3%)' },
+    { questionTypeId: 'reorder_paragraph', priority: 'easy', priorityLabel: 'Supporting Weight (3%)' },
+    { questionTypeId: 'answer_short_question', priority: 'easy', priorityLabel: 'Supporting Weight (2%)' }
+  ];
+
+  return priorityOrderConfigs.map((cfg, idx) => {
+    const meta = QUESTION_TYPE_MAP.get(cfg.questionTypeId);
+    const count = meta?.defaultTarget || 10;
+    const skills: ('speaking' | 'writing' | 'reading' | 'listening')[] = meta ? [meta.skill] : ['speaking'];
+    if (meta?.secondarySkill && !skills.includes(meta.secondarySkill)) {
+      skills.push(meta.secondarySkill);
+    }
+
+    return {
+      id: cfg.questionTypeId,
+      groupNumber: idx + 1,
+      title: `${meta?.name || cfg.questionTypeId} (${meta?.scoreWeight || 0}% Weight)`,
+      shortTitle: `${meta?.shortName || ''} · ${meta?.scoreWeight || 0}%`,
+      subtitle: `${count} Questions · ${meta?.skill.toUpperCase()} · ${cfg.priorityLabel}`,
+      skills,
+      totalQuestions: count,
+      color: groupColors[idx % groupColors.length],
+      items: [
+        {
+          questionTypeId: cfg.questionTypeId,
+          count,
+          startInstanceIndex: 0,
+          priority: cfg.priority,
+          priorityLabel: cfg.priorityLabel,
+          scoreWeight: meta?.scoreWeight || 0
+        }
+      ]
+    };
+  });
 }
 
-export const STUDY_GROUPS: StudyGroupDefinition[] = build10Phases();
+export const STUDY_GROUPS: StudyGroupDefinition[] = buildPriorityGroups();
 
 export const PRIORITY_STYLES: Record<QuestionPriority, { bg: string; text: string; border: string; badge: string; icon: string }> = {
   prediction: {

@@ -187,7 +187,7 @@ export const DashboardPage: React.FC = () => {
           </h1>
           <p className="text-sm text-[#a9b5d0] leading-relaxed">
             PTE Bridge · Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · Target: <b className="text-blue-400">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Target: <b className="text-emerald-400">{targetForToday}+</b>).
-            {' '}Daily Focus: 51 Mock Exams (3/Day, Days 2–3: 4 Mocks) + 5,100 Practice Questions across 10 Phases (Speaking 170 · Writing 10 · Reading 60 · Listening 60).
+            {' '}Daily Focus: 4 Mock Exams + 300 High-Yield Practice Questions daily (Ordered by Score Weight Priority).
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
