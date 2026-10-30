@@ -266,9 +266,9 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
   };
 
   return (
-    <div className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-5 lg:p-6 space-y-5">
+    <div className="rounded-2xl bg-[#141c31] border border-slate-800 p-5 lg:p-6 space-y-5">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#2b3856] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-bold text-[#edf2ff] flex items-center gap-2">
@@ -319,7 +319,7 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
             className={`p-3 rounded-xl border flex items-center justify-between transition-colors ${
               item.done
                 ? 'bg-[#10192c] border-emerald-500/30 text-[#edf2ff]'
-                : 'bg-[#10192c]/50 border-[#2b3856] text-[#a9b5d0]'
+                : 'bg-[#10192c]/50 border-slate-800 text-[#a9b5d0]'
             }`}
           >
             <div className="flex items-center gap-3">
@@ -379,7 +379,7 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
               disabled={completing || !allReady}
               className={`px-5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-2 transition-all ${
                 allReady
-                  ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 cursor-pointer'
+                  ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm cursor-pointer'
                   : 'bg-[#243553] text-[#a9b5d0] opacity-60 cursor-not-allowed border border-[#3a4b70]'
               }`}
             >
@@ -425,7 +425,7 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
                 value={recoveryReason}
                 onChange={(e) => setRecoveryReason(e.target.value)}
                 placeholder="e.g. Completed offline mock test with instructor; scores recorded in paper log"
-                className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl p-3 text-xs text-[#edf2ff] focus:outline-none focus:border-red-400 min-h-[80px]"
+                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-3 text-xs text-[#edf2ff] focus:outline-none focus:border-red-400 min-h-[80px]"
               />
             </div>
             <div className="flex items-center justify-end gap-3 pt-2">

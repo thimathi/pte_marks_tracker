@@ -39,12 +39,12 @@ export const MasterTargetTrackerCard: React.FC = () => {
   }, [cumulative.questions, selectedSkill]);
 
   return (
-    <div className="bg-[#141c31] border border-[#2b3856] rounded-3xl p-6 lg:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+    <div className="bg-[#141c31] border border-slate-800 rounded-3xl p-6 lg:p-8 space-y-6 shadow-2xl relative overflow-hidden">
       {/* Background Glow */}
       <div className="absolute -right-20 -top-20 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#2b3856] pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div>
           <div className="flex items-center gap-2.5 flex-wrap">
             <span className="px-3 py-1 rounded-xl bg-purple-500/20 text-purple-300 font-bold text-xs border border-purple-500/30 flex items-center gap-1.5">
@@ -70,7 +70,7 @@ export const MasterTargetTrackerCard: React.FC = () => {
 
         <button
           onClick={() => setIsExpanded((prev) => !prev)}
-          className="self-start sm:self-center px-3.5 py-2 rounded-xl bg-[#10192c] border border-[#2b3856] text-xs font-semibold text-[#a9b5d0] hover:text-[#edf2ff] flex items-center gap-1.5 transition-colors cursor-pointer"
+          className="self-start sm:self-center px-3.5 py-2 rounded-xl bg-[#10192c] border border-slate-800 text-xs font-semibold text-[#a9b5d0] hover:text-[#edf2ff] flex items-center gap-1.5 transition-colors cursor-pointer"
         >
           <span>{isExpanded ? 'Collapse Grid' : 'Expand All 16 Question Types'}</span>
           {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -79,7 +79,7 @@ export const MasterTargetTrackerCard: React.FC = () => {
 
       {/* Baseline Diagnostic vs Target Comparison Banner */}
       <div className="rounded-2xl bg-gradient-to-r from-[#1c1836] via-[#161d33] to-[#122238] border border-purple-500/40 p-5 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#2b3856] pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
           <div className="flex items-center gap-2">
             <Flame className="w-5 h-5 text-amber-400" />
             <h3 className="text-sm font-bold text-[#edf2ff]">
@@ -92,7 +92,7 @@ export const MasterTargetTrackerCard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
-          <div className="p-3 rounded-xl bg-[#0e1729]/80 border border-[#2b3856]">
+          <div className="p-3 rounded-xl bg-[#0e1729]/80 border border-slate-800">
             <span className="text-[10px] text-[#a9b5d0] uppercase font-semibold block">Overall</span>
             <div className="flex items-center justify-center gap-2 mt-1">
               <span className="text-lg font-extrabold text-rose-400">{BASELINE_MOCK_45C_SCORES.overall}</span>
@@ -148,7 +148,7 @@ export const MasterTargetTrackerCard: React.FC = () => {
           <span className="text-[11px] font-bold text-[#a9b5d0] block mb-2">Priority Error Correction Focus (from your Mock 45C diagnostic):</span>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
             {BASELINE_MOCK_45C_SCORES.weaknesses.map((w, i) => (
-              <div key={i} className="p-2 rounded-lg bg-[#0e1729] border border-[#2b3856] text-left">
+              <div key={i} className="p-2 rounded-lg bg-[#0e1729] border border-slate-800 text-left">
                 <span className="text-[10px] font-bold text-[#edf2ff] block truncate" title={w.item}>
                   {w.item}
                 </span>
@@ -213,7 +213,7 @@ export const MasterTargetTrackerCard: React.FC = () => {
         </div>
 
         {/* Overall Practice Average */}
-        <div className="p-4 rounded-2xl bg-[#0e1729] border border-[#2b3856] space-y-2">
+        <div className="p-4 rounded-2xl bg-[#0e1729] border border-slate-800 space-y-2">
           <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
             <span className="font-semibold text-emerald-300">Cumulative Accuracy</span>
             <TrendingUp className="w-4 h-4 text-emerald-400" />
@@ -239,7 +239,7 @@ export const MasterTargetTrackerCard: React.FC = () => {
               Question Types Progress toward Nov 13:
             </span>
 
-            <div className="flex items-center gap-1 bg-[#10192c] p-1 rounded-xl border border-[#2b3856]">
+            <div className="flex items-center gap-1 bg-[#10192c] p-1 rounded-xl border border-slate-800">
               {(['all', 'speaking', 'writing', 'reading', 'listening'] as const).map((skill) => (
                 <button
                   key={skill}
@@ -265,7 +265,7 @@ export const MasterTargetTrackerCard: React.FC = () => {
               return (
                 <div
                   key={q.meta.id}
-                  className="p-3.5 rounded-2xl bg-[#0e1729] border border-[#2b3856] space-y-2 hover:border-[#3d4f7a] transition-all flex flex-col justify-between"
+                  className="p-3.5 rounded-2xl bg-[#0e1729] border border-slate-800 space-y-2 hover:border-[#3d4f7a] transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-1">

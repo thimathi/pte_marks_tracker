@@ -40,7 +40,7 @@ export const RoadmapPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-6 space-y-2">
+      <div className="rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-2">
         <div className="flex items-center gap-2">
           <Map className="w-6 h-6 text-blue-400" />
           <h1 className="text-2xl font-bold text-[#edf2ff]">PTE - Daily Study Plan – Superior English Roadmap</h1>
@@ -71,12 +71,12 @@ export const RoadmapPage: React.FC = () => {
               onClick={() => handleSelectDay(dayNum)}
               className={`rounded-2xl border p-5 transition-all relative overflow-hidden flex flex-col justify-between space-y-4 cursor-pointer ${
                 isCurrent
-                  ? 'bg-gradient-to-br from-[#192746] to-[#141c31] border-blue-500 shadow-xl shadow-blue-500/10 ring-1 ring-blue-400'
+                  ? 'bg-gradient-to-br from-[#192746] to-[#141c31] border-blue-500 shadow-sm '
                   : isCompleted
                   ? 'bg-[#10192c] border-emerald-500/40 hover:border-emerald-400'
                   : isUnlocked
-                  ? 'bg-[#141c31] border-[#2b3856] hover:border-blue-400'
-                  : 'bg-[#141c31]/80 border-[#2b3856] hover:border-[#3d4f7a]'
+                  ? 'bg-[#141c31] border-slate-800 hover:border-blue-400'
+                  : 'bg-[#141c31]/80 border-slate-800 hover:border-[#3d4f7a]'
               }`}
             >
               {/* Card Header */}
@@ -89,7 +89,7 @@ export const RoadmapPage: React.FC = () => {
                       ? 'bg-blue-600 text-white border-blue-400'
                       : isUnlocked
                       ? 'bg-[#253655] text-blue-300 border-[#3a4b70]'
-                      : 'bg-[#10192c] text-[#a9b5d0] border-[#2b3856]'
+                      : 'bg-[#10192c] text-[#a9b5d0] border-slate-800'
                   }`}>
                     {isCompleted ? <CheckCircle2 className="w-5 h-5 text-emerald-400" /> : `D${dayNum}`}
                   </div>
@@ -138,14 +138,14 @@ export const RoadmapPage: React.FC = () => {
 
                 {/* Score and Mocks */}
                 <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
-                  <div className="p-2 rounded-lg bg-[#0e1729] border border-[#2b3856]">
+                  <div className="p-2 rounded-lg bg-[#0e1729] border border-slate-800">
                     <span className="text-[#a9b5d0] block text-[10px]">Practice Avg:</span>
                     <span className="font-bold text-[#edf2ff]">
                       {breakdown.dailyAverage !== null ? `${breakdown.dailyAverage.toFixed(1)}/90` : '—'}
                     </span>
                   </div>
 
-                  <div className="p-2 rounded-lg bg-[#0e1729] border border-[#2b3856]">
+                  <div className="p-2 rounded-lg bg-[#0e1729] border border-slate-800">
                     <span className="text-[#a9b5d0] block text-[10px]">Mocks (5 Target):</span>
                     <span className="font-bold text-[#edf2ff]">
                       {completedMocksCount} / 5 Done
@@ -155,7 +155,7 @@ export const RoadmapPage: React.FC = () => {
               </div>
 
               {/* Card Footer */}
-              <div className="pt-2 border-t border-[#2b3856]/60 flex items-center justify-between text-xs">
+              <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between text-xs">
                 <span className="text-[11px] text-[#a9b5d0]">
                   {isCompleted
                     ? 'Day gate passed'

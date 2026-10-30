@@ -51,9 +51,9 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-[#141c31] border border-[#2b3856] rounded-2xl p-6 max-w-2xl w-full my-8 space-y-5 shadow-2xl">
+      <div className="bg-[#141c31] border border-slate-800 rounded-2xl p-6 max-w-2xl w-full my-8 space-y-5 shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#2b3856] pb-4">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
           <div>
             <div className="flex items-center gap-2">
               <BookOpen className="w-5 h-5 text-blue-400" />
@@ -86,7 +86,7 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
                 max="300"
                 value={durationMinutes}
                 onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl px-3 py-2 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400"
+                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl px-3 py-2 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400"
                 required
               />
             </div>
@@ -101,7 +101,7 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
                 placeholder="e.g. Pausing on commas in Read Aloud, spelling in WFD"
                 value={repeatedMistakes}
                 onChange={(e) => setRepeatedMistakes(e.target.value)}
-                className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl px-3 py-2 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400"
+                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl px-3 py-2 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400"
               />
             </div>
           </div>
@@ -115,7 +115,7 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
                 placeholder="Document unnatural tone drops, word stress, hesitation"
                 value={pronunciationIssues}
                 onChange={(e) => setPronunciationIssues(e.target.value)}
-                className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl p-2.5 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400 min-h-[60px]"
+                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2.5 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400 min-h-[60px]"
               />
             </div>
 
@@ -127,7 +127,7 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
                 placeholder="List unfamiliar words from R/W FIB and Listening"
                 value={vocabIssues}
                 onChange={(e) => setVocabIssues(e.target.value)}
-                className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl p-2.5 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400 min-h-[60px]"
+                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2.5 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400 min-h-[60px]"
               />
             </div>
           </div>
@@ -141,7 +141,7 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
                 placeholder="Subject-verb agreement, SWT single sentence rule, prepositions"
                 value={grammarIssues}
                 onChange={(e) => setGrammarIssues(e.target.value)}
-                className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl p-2.5 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400 min-h-[60px]"
+                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2.5 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400 min-h-[60px]"
               />
             </div>
 
@@ -153,7 +153,7 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
                 placeholder="Did you run out of time in Reading or Listening Section 2?"
                 value={timeIssues}
                 onChange={(e) => setTimeIssues(e.target.value)}
-                className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl p-2.5 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400 min-h-[60px]"
+                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2.5 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400 min-h-[60px]"
               />
             </div>
           </div>
@@ -166,12 +166,12 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
               placeholder="e.g. Re-attempt the 3 missed R/W FIB passages; drill 10 WFDs from prediction file"
               value={correctiveActions}
               onChange={(e) => setCorrectiveActions(e.target.value)}
-              className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl p-2.5 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400 min-h-[65px]"
+              className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2.5 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400 min-h-[65px]"
             />
           </div>
 
           {/* Completion Toggle */}
-          <div className="p-3.5 rounded-xl bg-[#10192c] border border-[#2b3856] flex items-center justify-between">
+          <div className="p-3.5 rounded-xl bg-[#10192c] border border-slate-800 flex items-center justify-between">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -196,7 +196,7 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#2b3856]">
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
             <button
               type="button"
               onClick={onClose}
@@ -207,7 +207,7 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-lg shadow-blue-600/30 flex items-center gap-2"
+              className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-sm flex items-center gap-2"
             >
               <CheckCircle className="w-4 h-4" />
               <span>{saving ? 'Saving...' : 'Save Mock Review'}</span>

@@ -24,9 +24,9 @@ export const ForgotPasswordPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0b1020] text-[#edf2ff] flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-[#141c31] border border-[#2b3856] rounded-3xl p-7 lg:p-8 space-y-6 shadow-2xl">
+      <div className="w-full max-w-md bg-[#141c31] border border-slate-800 rounded-3xl p-7 lg:p-8 space-y-6 shadow-2xl">
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center mx-auto shadow-lg shadow-blue-500/25">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center mx-auto shadow-sm">
             <Target className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-[#edf2ff]">Reset Password</h1>
@@ -72,21 +72,21 @@ export const ForgotPasswordPage: React.FC = () => {
                   setEmail(e.target.value);
                 }}
                 placeholder="e.g. user@example.com"
-                className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl px-3.5 py-2.5 text-sm text-[#edf2ff] placeholder-[#a9b5d0]/50 focus:outline-none focus:border-blue-400"
+                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-[#edf2ff] placeholder-[#a9b5d0]/50 focus:outline-none focus:border-blue-400"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-sm text-white shadow-lg shadow-blue-600/30 transition-colors disabled:opacity-50"
+              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 font-semibold text-sm text-white shadow-sm transition-colors disabled:opacity-50"
             >
               {loading ? 'Sending link...' : 'Send Reset Link'}
             </button>
           </form>
         )}
 
-        <div className="pt-2 text-center border-t border-[#2b3856]">
+        <div className="pt-2 text-center border-t border-slate-800">
           <Link to="/login" className="text-xs text-[#a9b5d0] hover:text-[#edf2ff] flex items-center justify-center gap-1">
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Sign In
           </Link>

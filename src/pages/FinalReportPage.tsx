@@ -118,7 +118,7 @@ export const FinalReportPage: React.FC = () => {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Action Header (Hidden in Print) */}
-      <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-[#141c31] border border-[#2b3856] p-6">
+      <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-[#141c31] border border-slate-800 p-6">
         <div>
           <div className="flex items-center gap-2">
             <Award className="w-6 h-6 text-blue-400" />
@@ -134,7 +134,7 @@ export const FinalReportPage: React.FC = () => {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => window.print()}
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-md shadow-blue-600/30 flex items-center gap-2 cursor-pointer transition-colors"
+            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-sm flex items-center gap-2 cursor-pointer transition-colors"
           >
             <Printer className="w-4 h-4" />
             <span>Print to PDF</span>
@@ -151,9 +151,9 @@ export const FinalReportPage: React.FC = () => {
       </div>
 
       {/* Printable Report Document Card */}
-      <div className="card-print bg-[#141c31] border border-[#2b3856] rounded-3xl p-6 sm:p-10 space-y-8 shadow-2xl">
+      <div className="card-print bg-[#141c31] border border-slate-800 rounded-3xl p-6 sm:p-10 space-y-8 shadow-2xl">
         {/* Document Header */}
-        <div className="border-b border-[#2b3856] pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="border-b border-slate-800 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold px-2.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
@@ -181,7 +181,7 @@ export const FinalReportPage: React.FC = () => {
 
         {/* Executive Summary Key Metrics Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-[#0e1729] border border-[#2b3856]">
+          <div className="p-4 rounded-xl bg-[#0e1729] border border-slate-800">
             <span className="text-[11px] text-[#a9b5d0] block">Days Completed</span>
             <div className="text-2xl font-bold text-[#edf2ff]">{completedDaysCount} / {totalDays}</div>
             <span className="text-[10px] text-emerald-400 font-semibold">
@@ -189,7 +189,7 @@ export const FinalReportPage: React.FC = () => {
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#0e1729] border border-[#2b3856]">
+          <div className="p-4 rounded-xl bg-[#0e1729] border border-slate-800">
             <span className="text-[11px] text-[#a9b5d0] block">Practice Questions</span>
             <div className="text-2xl font-bold text-[#edf2ff]">{totalPracticeQuestionsScored} / {totalPracticeTarget.toLocaleString()}</div>
             <span className="text-[10px] text-blue-400 font-semibold">
@@ -197,7 +197,7 @@ export const FinalReportPage: React.FC = () => {
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#0e1729] border border-[#2b3856]">
+          <div className="p-4 rounded-xl bg-[#0e1729] border border-slate-800">
             <span className="text-[11px] text-[#a9b5d0] block">Mock Simulations</span>
             <div className="text-2xl font-bold text-[#edf2ff]">{totalMocksDone} / {totalMocks}</div>
             <span className="text-[10px] text-purple-400 font-semibold">
@@ -205,7 +205,7 @@ export const FinalReportPage: React.FC = () => {
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#0e1729] border border-[#2b3856]">
+          <div className="p-4 rounded-xl bg-[#0e1729] border border-slate-800">
             <span className="text-[11px] text-[#a9b5d0] block">Mock Reviews</span>
             <div className="text-2xl font-bold text-[#edf2ff]">{totalMockReviewsDone} / {totalMocks}</div>
             <span className="text-[10px] text-amber-400 font-semibold">
@@ -257,8 +257,8 @@ export const FinalReportPage: React.FC = () => {
         </div>
 
         {/* Mock Exam Score Progression & Net Improvement */}
-        <div className="p-5 rounded-2xl bg-[#0e1729] border border-[#2b3856] space-y-3">
-          <div className="flex items-center justify-between border-b border-[#2b3856] pb-2">
+        <div className="p-5 rounded-2xl bg-[#0e1729] border border-slate-800 space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
             <h3 className="text-sm font-bold text-[#edf2ff] flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-purple-400" />
               Mock Simulation Trajectory & Net Gain
@@ -344,12 +344,12 @@ export const FinalReportPage: React.FC = () => {
             value={personalNotes}
             onChange={(e) => handleNotesChange(e.target.value)}
             placeholder="Document key takeaways, exam day strategies, microphone placement tips, and mindset notes..."
-            className="w-full bg-[#0e1729] border border-[#2b3856] rounded-2xl p-4 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400 min-h-[100px]"
+            className="w-full bg-[#0e1729] border border-slate-800 rounded-2xl p-4 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400 min-h-[100px]"
           />
         </div>
 
         {/* Footer verification note */}
-        <div className="pt-4 border-t border-[#2b3856] text-[11px] text-[#a9b5d0] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="pt-4 border-t border-slate-800 text-[11px] text-[#a9b5d0] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <span>PTE Academic {totalDays}-Day Preparation Progress Tracking Application</span>
           <span>Verified Firebase Realtime Database Records · Asian Southeast (Singapore)</span>
         </div>

@@ -156,7 +156,7 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Hero Welcome Header */}
-      <div className="rounded-3xl bg-gradient-to-r from-[#192746] via-[#151d32] to-[#11192d] border border-[#2b3856] p-6 lg:p-8 relative overflow-hidden shadow-xl">
+      <div className="rounded-3xl bg-gradient-to-r from-[#192746] via-[#151d32] to-[#11192d] border border-slate-800 p-6 lg:p-8 relative overflow-hidden shadow-xl">
         <div className="relative z-10 max-w-3xl space-y-3">
           <div className="flex flex-wrap items-center gap-2">
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30 flex items-center gap-1.5">
@@ -189,7 +189,7 @@ export const DashboardPage: React.FC = () => {
           <div className="flex flex-wrap gap-3 pt-2">
             <Link
               to="/practice"
-              className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-lg shadow-blue-600/30 flex items-center gap-2 transition-all hover:scale-105"
+              className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-sm flex items-center gap-2 transition-all hover:scale-105"
             >
               <Layers className="w-4 h-4 text-white" />
               <span>Open 5-Phase Plan (Day {currentDay})</span>
@@ -213,7 +213,7 @@ export const DashboardPage: React.FC = () => {
       {/* Primary KPI Metrics Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Journey Completion */}
-        <div className="p-5 rounded-2xl bg-[#141c31] border border-[#2b3856] space-y-2">
+        <div className="p-5 rounded-2xl bg-[#141c31] border border-slate-800 space-y-2">
           <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
             <span>{totalDays}-Day Summit Plan</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
@@ -255,7 +255,7 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Card 3: Today's Practice Target (100 Qs across 5 phases) */}
-        <div className="p-5 rounded-2xl bg-[#141c31] border border-[#2b3856] space-y-2">
+        <div className="p-5 rounded-2xl bg-[#141c31] border border-slate-800 space-y-2">
           <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
             <span>100 Practice Qs (5 Phases)</span>
             <Shuffle className="w-4 h-4 text-blue-400" />
@@ -280,7 +280,7 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Card 4: Daily Practice Avg */}
-        <div className="p-5 rounded-2xl bg-[#141c31] border border-[#2b3856] space-y-2">
+        <div className="p-5 rounded-2xl bg-[#141c31] border border-slate-800 space-y-2">
           <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
             <span>Daily Practice Avg</span>
             <TrendingUp className="w-4 h-4 text-emerald-400" />
@@ -376,7 +376,7 @@ export const DashboardPage: React.FC = () => {
                 className={`p-4 rounded-2xl border transition-all flex flex-col justify-between space-y-3 ${
                   isPhaseDone
                     ? 'bg-[#10192c] border-emerald-500/40 shadow-sm'
-                    : 'bg-[#141c31] border-[#2b3856] hover:border-blue-500/40'
+                    : 'bg-[#141c31] border-slate-800 hover:border-blue-500/40'
                 }`}
               >
                 <div className="space-y-2">
@@ -429,7 +429,7 @@ export const DashboardPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-[#2b3856]/60 flex items-center justify-between gap-1.5">
+                <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between gap-1.5">
                   <Link
                     to="/practice"
                     className="flex-1 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 text-[11px] font-semibold text-center transition-colors"
@@ -438,7 +438,7 @@ export const DashboardPage: React.FC = () => {
                   </Link>
                   <Link
                     to="/mock-exams"
-                    className="py-1.5 px-2 rounded-lg bg-[#1e2a47] hover:bg-[#28375c] text-[11px] text-[#a9b5d0] hover:text-white border border-[#2b3856] transition-colors"
+                    className="py-1.5 px-2 rounded-lg bg-[#1e2a47] hover:bg-[#28375c] text-[11px] text-[#a9b5d0] hover:text-white border border-slate-800 transition-colors"
                     title="Go to Mock Exam"
                   >
                     Mock
@@ -488,8 +488,8 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* 4 Skills Live Averages */}
-        <div className="lg:col-span-2 rounded-2xl bg-[#141c31] border border-[#2b3856] p-6 space-y-4">
-          <div className="flex items-center justify-between border-b border-[#2b3856] pb-3">
+        <div className="lg:col-span-2 rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <h3 className="text-base font-bold text-[#edf2ff] flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-blue-400" />
               Four-Skill Performance & Weakness Diagnostics

@@ -29,7 +29,7 @@ export const CalendarPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-[#141c31] border border-[#2b3856] p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-[#141c31] border border-slate-800 p-6">
         <div>
           <div className="flex items-center gap-2">
             <CalendarDays className="w-6 h-6 text-blue-400" />
@@ -51,8 +51,8 @@ export const CalendarPage: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Calendar Matrix (2 cols on large) */}
-        <div className="lg:col-span-2 rounded-2xl bg-[#141c31] border border-[#2b3856] p-6 space-y-4">
-          <div className="flex items-center justify-between border-b border-[#2b3856] pb-3">
+        <div className="lg:col-span-2 rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <h3 className="text-sm font-bold text-[#edf2ff] flex items-center gap-2">
               <CalendarIcon className="w-4 h-4 text-blue-400" />
               Day 1 through Day {totalDays} Schedule Matrix
@@ -77,14 +77,14 @@ export const CalendarPage: React.FC = () => {
                   onClick={() => setSelectedDayNum(dNum)}
                   className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer relative min-h-[90px] ${
                     isSelected
-                      ? 'ring-2 ring-blue-400 bg-[#1e2a47] border-blue-500 shadow-lg'
+                      ? ' bg-[#1e2a47] border-blue-500 shadow-lg'
                       : isCompleted
                       ? 'bg-[#10192c] border-emerald-500/40 hover:border-emerald-400'
                       : isOverdue
                       ? 'bg-red-500/10 border-red-500/30 hover:border-red-400'
                       : isUnlocked
-                      ? 'bg-[#141c31] border-[#2b3856] hover:border-blue-400'
-                      : 'bg-[#0d1424]/50 border-[#2b3856]/30 opacity-60'
+                      ? 'bg-[#141c31] border-slate-800 hover:border-blue-400'
+                      : 'bg-[#0d1424]/50 border-slate-800/30 opacity-60'
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -120,7 +120,7 @@ export const CalendarPage: React.FC = () => {
           </div>
 
           {/* Legend */}
-          <div className="flex flex-wrap items-center gap-4 text-xs text-[#a9b5d0] pt-3 border-t border-[#2b3856]">
+          <div className="flex flex-wrap items-center gap-4 text-xs text-[#a9b5d0] pt-3 border-t border-slate-800">
             <div className="flex items-center gap-1.5">
               <span className="w-3 h-3 rounded bg-emerald-500/30 border border-emerald-500" />
               <span>Completed</span>
@@ -134,16 +134,16 @@ export const CalendarPage: React.FC = () => {
               <span>Overdue (Rolled Forward)</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded bg-[#0d1424] border border-[#2b3856]" />
+              <span className="w-3 h-3 rounded bg-[#0d1424] border border-slate-800" />
               <span>Locked</span>
             </div>
           </div>
         </div>
 
         {/* Selected Day Inspector */}
-        <div className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-6 space-y-4 flex flex-col justify-between">
+        <div className="rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-4 flex flex-col justify-between">
           <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-[#2b3856] pb-3">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div>
                 <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">Inspector</span>
                 <h3 className="text-lg font-bold text-[#edf2ff]">Study Day {selectedDayNum}</h3>
@@ -172,7 +172,7 @@ export const CalendarPage: React.FC = () => {
               )}
 
               {/* Dynamic Mocks List for Day */}
-              <div className="pt-2 border-t border-[#2b3856]/60">
+              <div className="pt-2 border-t border-slate-800/60">
                 <span className="text-[11px] font-semibold text-purple-300 block mb-1.5 flex items-center gap-1">
                   <GraduationCap className="w-3.5 h-3.5" />
                   Mock Exams ({selectedMockKeys.length} Scheduled):
@@ -183,7 +183,7 @@ export const CalendarPage: React.FC = () => {
                     const mockRec = selectedDayData?.mockExams?.[mKey];
                     const isDone = !!mockRec?.isCompleted;
                     return (
-                      <div key={mKey} className="flex items-center justify-between p-2 rounded-lg bg-[#0e1729] border border-[#2b3856] text-[11px]">
+                      <div key={mKey} className="flex items-center justify-between p-2 rounded-lg bg-[#0e1729] border border-slate-800 text-[11px]">
                         <span className="font-semibold text-[#edf2ff]">Mock #{examNum}</span>
                         <span className={isDone ? 'text-emerald-400 font-bold' : 'text-[#a9b5d0]'}>
                           {isDone ? `${mockRec?.overallScore}/90 ✓` : 'Pending'}
@@ -196,13 +196,13 @@ export const CalendarPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-[#2b3856]">
+          <div className="pt-4 border-t border-slate-800">
             <button
               onClick={() => {
                 selectDay(selectedDayNum);
                 alert(`Selected Day ${selectedDayNum} as active study day.`);
               }}
-              className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-lg shadow-blue-600/30 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-sm flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             >
               <span>Make Day {selectedDayNum} Active View</span>
               <ChevronRight className="w-4 h-4" />

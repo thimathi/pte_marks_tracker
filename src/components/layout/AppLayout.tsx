@@ -13,13 +13,13 @@ export const AppLayout: React.FC = () => {
         isSidebarOpen={sidebarOpen}
       />
 
-      <div className="flex-1 flex max-w-7xl w-full mx-auto">
+      <div className="flex-1 flex max-w-[1720px] w-full mx-auto px-2 sm:px-4 lg:px-6">
         <Sidebar
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
         />
 
-        <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+        <main className="flex-1 min-w-0 p-3 sm:p-5 lg:p-6 overflow-y-auto">
           <Outlet />
         </main>
       </div>

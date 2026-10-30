@@ -83,7 +83,7 @@ export const SettingsPage: React.FC = () => {
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-[#141c31] border border-[#2b3856] p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-[#141c31] border border-slate-800 p-6">
         <div>
           <div className="flex items-center gap-2">
             <Settings className="w-6 h-6 text-blue-400" />
@@ -106,8 +106,8 @@ export const SettingsPage: React.FC = () => {
       {/* Form: Start Date & Target Scores */}
       <form onSubmit={handleSaveSettings} className="space-y-6">
         {/* Start Date Configuration */}
-        <div className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-6 space-y-4">
-          <div className="flex items-center gap-2 border-b border-[#2b3856] pb-3">
+        <div className="rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
             <Calendar className="w-5 h-5 text-blue-400" />
             <h3 className="text-base font-bold text-[#edf2ff]">{totalDays}-Day Study Start Date</h3>
           </div>
@@ -121,7 +121,7 @@ export const SettingsPage: React.FC = () => {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl px-3.5 py-2.5 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400"
+                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400"
                 required
               />
               <p className="text-[11px] text-[#a9b5d0] mt-1">
@@ -129,7 +129,7 @@ export const SettingsPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-[#0e1729] border border-[#2b3856] text-xs space-y-1">
+            <div className="p-3.5 rounded-xl bg-[#0e1729] border border-slate-800 text-xs space-y-1">
               <span className="font-semibold text-blue-300">Automatic Timeline Recalculation</span>
               <p className="text-[#a9b5d0]">
                 Changing the start date recalculates the calendar timeline for all {totalDays} study days while preserving all existing scores and mock exam attempts.
@@ -139,8 +139,8 @@ export const SettingsPage: React.FC = () => {
         </div>
 
         {/* Target Scores Configuration */}
-        <div className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-6 space-y-4">
-          <div className="flex items-center gap-2 border-b border-[#2b3856] pb-3">
+        <div className="rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
             <Target className="w-5 h-5 text-purple-400" />
             <h3 className="text-base font-bold text-[#edf2ff]">PTE Target Benchmarks (/ 90)</h3>
           </div>
@@ -154,7 +154,7 @@ export const SettingsPage: React.FC = () => {
                 max="90"
                 value={targetScores.overall}
                 onChange={(e) => setTargetScores({ ...targetScores, overall: Number(e.target.value) })}
-                className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
+                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
               />
             </div>
 
@@ -166,7 +166,7 @@ export const SettingsPage: React.FC = () => {
                 max="90"
                 value={targetScores.speaking}
                 onChange={(e) => setTargetScores({ ...targetScores, speaking: Number(e.target.value) })}
-                className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
+                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
               />
             </div>
 
@@ -178,7 +178,7 @@ export const SettingsPage: React.FC = () => {
                 max="90"
                 value={targetScores.writing}
                 onChange={(e) => setTargetScores({ ...targetScores, writing: Number(e.target.value) })}
-                className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
+                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
               />
             </div>
 
@@ -190,7 +190,7 @@ export const SettingsPage: React.FC = () => {
                 max="90"
                 value={targetScores.reading}
                 onChange={(e) => setTargetScores({ ...targetScores, reading: Number(e.target.value) })}
-                className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
+                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
               />
             </div>
 
@@ -202,7 +202,7 @@ export const SettingsPage: React.FC = () => {
                 max="90"
                 value={targetScores.listening}
                 onChange={(e) => setTargetScores({ ...targetScores, listening: Number(e.target.value) })}
-                className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
+                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
               />
             </div>
 
@@ -214,7 +214,7 @@ export const SettingsPage: React.FC = () => {
                 max="90"
                 value={targetScores.mockExam}
                 onChange={(e) => setTargetScores({ ...targetScores, mockExam: Number(e.target.value) })}
-                className="w-full bg-[#0e1729] border border-[#2b3856] rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
+                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
               />
             </div>
           </div>
@@ -222,7 +222,7 @@ export const SettingsPage: React.FC = () => {
           <div className="pt-2 flex justify-end">
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-lg shadow-blue-600/30 cursor-pointer transition-colors"
+              className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-sm cursor-pointer transition-colors"
             >
               Save Configuration
             </button>
@@ -231,8 +231,8 @@ export const SettingsPage: React.FC = () => {
       </form>
 
       {/* Legacy Data Migration Section */}
-      <div className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-[#2b3856] pb-3">
+      <div className="rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
           <div className="flex items-center gap-2">
             <Database className="w-5 h-5 text-emerald-400" />
             <h3 className="text-base font-bold text-[#edf2ff]">
@@ -257,7 +257,7 @@ export const SettingsPage: React.FC = () => {
         </div>
 
         {legacyScan && (
-          <div className="p-4 rounded-xl bg-[#0e1729] border border-[#2b3856] space-y-3 text-xs">
+          <div className="p-4 rounded-xl bg-[#0e1729] border border-slate-800 space-y-3 text-xs">
             <h4 className="font-bold text-blue-300">Scan Results:</h4>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <div className="p-2.5 rounded-lg bg-[#141c31]">
@@ -283,7 +283,7 @@ export const SettingsPage: React.FC = () => {
                 <button
                   onClick={handleMigrateLegacy}
                   disabled={migrating}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white shadow-lg shadow-emerald-600/30 flex items-center gap-2 cursor-pointer transition-colors disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white shadow-sm flex items-center gap-2 cursor-pointer transition-colors disabled:opacity-50"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>{migrating ? 'Migrating...' : 'Migrate Found Records into Firebase'}</span>
@@ -305,8 +305,8 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {/* Account Details & Sign Out */}
-      <div className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-6 space-y-4">
-        <div className="flex items-center gap-2 border-b border-[#2b3856] pb-3">
+      <div className="rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-4">
+        <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
           <User className="w-5 h-5 text-blue-400" />
           <h3 className="text-base font-bold text-[#edf2ff]">User Account & Security</h3>
         </div>

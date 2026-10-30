@@ -291,7 +291,7 @@ export const PracticePage: React.FC = () => {
             {/* Complete All / Auto-Fill Trigger */}
             <button
               onClick={() => setShowBatchModal(true)}
-              className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-xs font-bold text-white shadow-lg shadow-emerald-900/30 flex items-center gap-2 transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-xs font-bold text-white shadow-sm flex items-center gap-2 transition-all cursor-pointer"
               title="Quick Complete Questions & Mock Exams"
             >
               <Zap className="w-4 h-4 text-emerald-200" />
@@ -310,7 +310,7 @@ export const PracticePage: React.FC = () => {
             }}
             className={`px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-2 ${
               selectedPhase === 'all'
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 ring-1 ring-blue-400'
+                ? 'bg-blue-600 text-white shadow-sm '
                 : 'bg-slate-950/80 text-slate-400 hover:text-slate-200 border border-slate-800 hover:border-slate-700'
             }`}
           >
@@ -346,7 +346,7 @@ export const PracticePage: React.FC = () => {
                 }}
                 className={`px-3.5 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-2 border ${
                   isSelected
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 border-blue-400'
+                    ? 'bg-blue-600 text-white shadow-sm border-blue-400'
                     : isDone
                     ? 'bg-emerald-950/30 text-emerald-300 border-emerald-500/30 hover:border-emerald-500/50'
                     : 'bg-slate-950/80 text-slate-300 hover:text-white border-slate-800 hover:border-slate-700'
@@ -397,7 +397,7 @@ export const PracticePage: React.FC = () => {
                 key={mKey}
                 className={`p-3.5 rounded-2xl border transition-all duration-300 flex flex-col justify-between gap-3 ${
                   isDone
-                    ? 'bg-emerald-950/20 border-emerald-500/30 shadow-md shadow-emerald-950/20'
+                    ? 'bg-emerald-950/20 border-emerald-500/30 shadow-sm'
                     : 'bg-slate-900/70 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900'
                 }`}
               >
@@ -493,7 +493,7 @@ export const PracticePage: React.FC = () => {
             onClick={() => setSelectedGroupId('all')}
             className={`px-3.5 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-2 ${
               selectedGroupId === 'all'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25 ring-1 ring-indigo-400'
+                ? 'bg-indigo-600 text-white shadow-sm '
                 : 'bg-slate-900/80 text-slate-400 hover:text-slate-200 border border-slate-800 hover:border-slate-700'
             }`}
           >
@@ -518,7 +518,7 @@ export const PracticePage: React.FC = () => {
                 }}
                 className={`px-3.5 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-2 ${
                   isSelected
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/25 ring-1 ring-indigo-400'
+                    ? 'bg-indigo-600 text-white shadow-sm '
                     : isDone
                     ? 'bg-emerald-950/30 text-emerald-300 border border-emerald-500/30 hover:border-emerald-500/50'
                     : 'bg-slate-900/80 text-slate-300 hover:text-slate-100 border border-slate-800 hover:border-slate-700'
@@ -712,7 +712,7 @@ export const PracticePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => handleSaveAttempt()}
-                  className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white shadow-lg shadow-indigo-600/30 flex items-center gap-2 cursor-pointer transition-colors"
+                  className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white shadow-sm flex items-center gap-2 cursor-pointer transition-colors"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Save Score & Next</span>
@@ -812,7 +812,7 @@ export const PracticePage: React.FC = () => {
                 onClick={() => setCurrentOverallIndex(item.overallQueueIndex)}
                 className={`h-8 rounded-lg text-[10px] font-mono font-bold flex items-center justify-center border transition-all cursor-pointer ${
                   isCurrent
-                    ? 'ring-2 ring-indigo-400 border-white bg-indigo-600 text-white z-10 scale-105 shadow-md'
+                    ? ' border-white bg-indigo-600 text-white z-10 scale-105 shadow-md'
                     : isScored
                     ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
                     : item.priority === 'prediction'

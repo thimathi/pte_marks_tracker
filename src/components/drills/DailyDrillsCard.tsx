@@ -230,9 +230,9 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
   const activeSgd = PTE_BRIDGE_SGD_TEMPLATES[selectedSgdType];
 
   return (
-    <div id="daily-drills" className="rounded-2xl bg-[#141c31] border border-[#2b3856] p-5 lg:p-6 space-y-6">
+    <div id="daily-drills" className="rounded-2xl bg-[#141c31] border border-slate-800 p-5 lg:p-6 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#2b3856] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
             <Sparkles className="w-5 h-5 text-amber-400" />
@@ -255,7 +255,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
         </div>
 
         {/* Phase Filter Tabs */}
-        <div className="flex items-center gap-1 bg-[#0e1729] p-1 rounded-xl border border-[#2b3856] self-start sm:self-center overflow-x-auto max-w-full">
+        <div className="flex items-center gap-1 bg-[#0e1729] p-1 rounded-xl border border-slate-800 self-start sm:self-center overflow-x-auto max-w-full">
           <button
             onClick={() => setActivePhaseFilter('all')}
             className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
@@ -289,8 +289,8 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
           <div
             className={`p-5 rounded-2xl border flex flex-col justify-between space-y-4 transition-all ${
               isTwistersFulfilled
-                ? 'bg-[#10192c] border-emerald-500/30 shadow-md shadow-emerald-500/5'
-                : 'bg-[#12192b] border-[#2b3856] hover:border-blue-500/40'
+                ? 'bg-[#10192c] border-emerald-500/30 shadow-sm'
+                : 'bg-[#12192b] border-slate-800 hover:border-blue-500/40'
             }`}
           >
             <div className="space-y-2.5">
@@ -321,7 +321,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                       className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
                         isChecked
                           ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
-                          : 'bg-[#0e1729] text-[#a9b5d0] border-[#2b3856] hover:border-blue-400'
+                          : 'bg-[#0e1729] text-[#a9b5d0] border-slate-800 hover:border-blue-400'
                       }`}
                     >
                       {isChecked ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
@@ -332,7 +332,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
               </div>
             </div>
 
-            <div className="pt-2 border-t border-[#2b3856]/60">
+            <div className="pt-2 border-t border-slate-800/60">
               <button
                 onClick={() => {
                   setActiveModal('tongue_twister');
@@ -353,8 +353,8 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
           <div
             className={`p-5 rounded-2xl border flex flex-col justify-between space-y-4 transition-all ${
               isCollocFwdFulfilled
-                ? 'bg-[#10192c] border-emerald-500/30 shadow-md shadow-emerald-500/5'
-                : 'bg-[#12192b] border-[#2b3856] hover:border-purple-500/40'
+                ? 'bg-[#10192c] border-emerald-500/30 shadow-sm'
+                : 'bg-[#12192b] border-slate-800 hover:border-purple-500/40'
             }`}
           >
             <div className="space-y-2.5">
@@ -396,13 +396,13 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
               <div className="flex items-center gap-1.5 pt-1">
                 <button
                   onClick={() => handleSetCount('collocations_fwd', collocFwdCount + 25)}
-                  className="flex-1 py-1 rounded-lg bg-[#0e1729] hover:bg-purple-600/20 text-[11px] font-semibold text-[#a9b5d0] hover:text-purple-300 border border-[#2b3856]"
+                  className="flex-1 py-1 rounded-lg bg-[#0e1729] hover:bg-purple-600/20 text-[11px] font-semibold text-[#a9b5d0] hover:text-purple-300 border border-slate-800"
                 >
                   +25
                 </button>
                 <button
                   onClick={() => handleSetCount('collocations_fwd', collocFwdCount + 50)}
-                  className="flex-1 py-1 rounded-lg bg-[#0e1729] hover:bg-purple-600/20 text-[11px] font-semibold text-[#a9b5d0] hover:text-purple-300 border border-[#2b3856]"
+                  className="flex-1 py-1 rounded-lg bg-[#0e1729] hover:bg-purple-600/20 text-[11px] font-semibold text-[#a9b5d0] hover:text-purple-300 border border-slate-800"
                 >
                   +50
                 </button>
@@ -419,7 +419,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
               </div>
             </div>
 
-            <div className="pt-2 border-t border-[#2b3856]/60">
+            <div className="pt-2 border-t border-slate-800/60">
               <button
                 onClick={() => {
                   setCollocationMode('forward');
@@ -439,8 +439,8 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
           <div
             className={`p-5 rounded-2xl border flex flex-col justify-between space-y-4 transition-all ${
               isCollocBwdFulfilled
-                ? 'bg-[#10192c] border-emerald-500/30 shadow-md shadow-emerald-500/5'
-                : 'bg-[#12192b] border-[#2b3856] hover:border-emerald-500/40'
+                ? 'bg-[#10192c] border-emerald-500/30 shadow-sm'
+                : 'bg-[#12192b] border-slate-800 hover:border-emerald-500/40'
             }`}
           >
             <div className="space-y-2.5">
@@ -482,13 +482,13 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
               <div className="flex items-center gap-1.5 pt-1">
                 <button
                   onClick={() => handleSetCount('collocations_bwd', collocBwdCount + 25)}
-                  className="flex-1 py-1 rounded-lg bg-[#0e1729] hover:bg-emerald-600/20 text-[11px] font-semibold text-[#a9b5d0] hover:text-emerald-300 border border-[#2b3856]"
+                  className="flex-1 py-1 rounded-lg bg-[#0e1729] hover:bg-emerald-600/20 text-[11px] font-semibold text-[#a9b5d0] hover:text-emerald-300 border border-slate-800"
                 >
                   +25
                 </button>
                 <button
                   onClick={() => handleSetCount('collocations_bwd', collocBwdCount + 50)}
-                  className="flex-1 py-1 rounded-lg bg-[#0e1729] hover:bg-emerald-600/20 text-[11px] font-semibold text-[#a9b5d0] hover:text-emerald-300 border border-[#2b3856]"
+                  className="flex-1 py-1 rounded-lg bg-[#0e1729] hover:bg-emerald-600/20 text-[11px] font-semibold text-[#a9b5d0] hover:text-emerald-300 border border-slate-800"
                 >
                   +50
                 </button>
@@ -505,7 +505,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
               </div>
             </div>
 
-            <div className="pt-2 border-t border-[#2b3856]/60">
+            <div className="pt-2 border-t border-slate-800/60">
               <button
                 onClick={() => {
                   setCollocationMode('backward');
@@ -525,8 +525,8 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
           <div
             className={`p-5 rounded-2xl border flex flex-col justify-between space-y-4 transition-all ${
               isP4Fulfilled
-                ? 'bg-[#10192c] border-emerald-500/30 shadow-md shadow-emerald-500/5'
-                : 'bg-[#12192b] border-[#2b3856] hover:border-amber-500/40'
+                ? 'bg-[#10192c] border-emerald-500/30 shadow-sm'
+                : 'bg-[#12192b] border-slate-800 hover:border-amber-500/40'
             }`}
           >
             <div className="space-y-2.5">
@@ -553,7 +553,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                   className={`py-1.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
                     essayP4Count >= 1
                       ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
-                      : 'bg-[#0e1729] text-[#a9b5d0] border-[#2b3856] hover:border-amber-400'
+                      : 'bg-[#0e1729] text-[#a9b5d0] border-slate-800 hover:border-amber-400'
                   }`}
                 >
                   {essayP4Count >= 1 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
@@ -565,7 +565,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                   className={`py-1.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
                     sgdP4Count >= 1
                       ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
-                      : 'bg-[#0e1729] text-[#a9b5d0] border-[#2b3856] hover:border-amber-400'
+                      : 'bg-[#0e1729] text-[#a9b5d0] border-slate-800 hover:border-amber-400'
                   }`}
                 >
                   {sgdP4Count >= 1 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
@@ -574,7 +574,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#2b3856]/60">
+            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/60">
               <button
                 onClick={() => {
                   setSelectedEssayPhase(4);
@@ -604,8 +604,8 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
           <div
             className={`p-5 rounded-2xl border flex flex-col justify-between space-y-4 transition-all ${
               isP5Fulfilled
-                ? 'bg-[#10192c] border-emerald-500/30 shadow-md shadow-emerald-500/5'
-                : 'bg-[#12192b] border-[#2b3856] hover:border-rose-500/40'
+                ? 'bg-[#10192c] border-emerald-500/30 shadow-sm'
+                : 'bg-[#12192b] border-slate-800 hover:border-rose-500/40'
             }`}
           >
             <div className="space-y-2.5">
@@ -632,7 +632,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                   className={`py-1.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
                     essayP5Count >= 1
                       ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
-                      : 'bg-[#0e1729] text-[#a9b5d0] border-[#2b3856] hover:border-rose-400'
+                      : 'bg-[#0e1729] text-[#a9b5d0] border-slate-800 hover:border-rose-400'
                   }`}
                 >
                   {essayP5Count >= 1 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
@@ -644,7 +644,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                   className={`py-1.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
                     sgdP5Count >= 1
                       ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
-                      : 'bg-[#0e1729] text-[#a9b5d0] border-[#2b3856] hover:border-rose-400'
+                      : 'bg-[#0e1729] text-[#a9b5d0] border-slate-800 hover:border-rose-400'
                   }`}
                 >
                   {sgdP5Count >= 1 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
@@ -653,7 +653,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#2b3856]/60">
+            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/60">
               <button
                 onClick={() => {
                   setSelectedEssayPhase(5);
@@ -682,9 +682,9 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
       {/* ================= MODAL 1: TONGUE TWISTERS (50 TWISTERS) ================= */}
       {activeModal === 'tongue_twister' && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#141c31] border border-[#2b3856] rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-[#141c31] border border-slate-800 rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             {/* Modal Header */}
-            <div className="p-5 border-b border-[#2b3856] flex items-center justify-between">
+            <div className="p-5 border-b border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-400">
                   <Mic className="w-5 h-5" />
@@ -708,7 +708,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
             </div>
 
             {/* Timer & Search Toolbar */}
-            <div className="p-4 bg-[#0e1729] border-b border-[#2b3856] flex flex-wrap items-center justify-between gap-3">
+            <div className="p-4 bg-[#0e1729] border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <Timer className="w-5 h-5 text-blue-400" />
                 <div>
@@ -742,7 +742,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                   value={twisterQuery}
                   onChange={(e) => setTwisterQuery(e.target.value)}
                   placeholder="Filter twisters (e.g., Peter Piper)..."
-                  className="w-full bg-[#141c31] border border-[#2b3856] rounded-xl pl-8 pr-3 py-1.5 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400 placeholder:text-[#a9b5d0]/50"
+                  className="w-full bg-[#141c31] border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400 placeholder:text-[#a9b5d0]/50"
                 />
               </div>
             </div>
@@ -753,7 +753,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                 {filteredTwisters.map((item) => (
                   <div
                     key={item.id}
-                    className="p-4 rounded-xl bg-[#0e1729] border border-[#2b3856] hover:border-blue-500/40 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                    className="p-4 rounded-xl bg-[#0e1729] border border-slate-800 hover:border-blue-500/40 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                   >
                     <div className="space-y-1 flex-1">
                       <div className="flex items-center gap-2">
@@ -777,7 +777,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                         className={`p-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer ${
                           speakingId === item.id
                             ? 'bg-blue-600 text-white border-blue-400 animate-pulse'
-                            : 'bg-[#1e2a47] hover:bg-[#28375c] text-[#a9b5d0] hover:text-white border-[#2b3856]'
+                            : 'bg-[#1e2a47] hover:bg-[#28375c] text-[#a9b5d0] hover:text-white border-slate-800'
                         }`}
                         title="Listen to pronunciation audio"
                       >
@@ -791,7 +791,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-[#2b3856] bg-[#0e1729]/80 flex items-center justify-between">
+            <div className="p-4 border-t border-slate-800 bg-[#0e1729]/80 flex items-center justify-between">
               <span className="text-xs text-[#a9b5d0]">
                 Logged today: <b className="text-white">{twisterCount} / 2 reps</b>
               </span>
@@ -813,9 +813,9 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
       {/* ================= MODAL 2 & 3: COLLOCATIONS (FORWARD & BACKWARD) ================= */}
       {(activeModal === 'collocations_fwd' || activeModal === 'collocations_bwd') && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#141c31] border border-[#2b3856] rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-[#141c31] border border-slate-800 rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
-            <div className="p-5 border-b border-[#2b3856] flex items-center justify-between">
+            <div className="p-5 border-b border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className={`p-2 rounded-xl border ${collocationMode === 'forward' ? 'bg-purple-500/20 border-purple-500/30 text-purple-400' : 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400'}`}>
                   {collocationMode === 'forward' ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
@@ -835,7 +835,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
 
               <div className="flex items-center gap-2">
                 {/* Mode Toggle */}
-                <div className="flex items-center bg-[#0e1729] rounded-xl p-1 border border-[#2b3856]">
+                <div className="flex items-center bg-[#0e1729] rounded-xl p-1 border border-slate-800">
                   <button
                     onClick={() => setCollocationMode('forward')}
                     className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
@@ -868,7 +868,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
             </div>
 
             {/* Toolbar */}
-            <div className="p-4 bg-[#0e1729] border-b border-[#2b3856] flex flex-wrap items-center justify-between gap-3">
+            <div className="p-4 bg-[#0e1729] border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-[#a9b5d0]">
                   Target: <b className="text-white">{collocationsTarget} Pairs</b> · Mode: <b className={collocationMode === 'forward' ? 'text-purple-400' : 'text-emerald-400'}>{collocationMode.toUpperCase()}</b>
@@ -882,7 +882,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                   value={collocationQuery}
                   onChange={(e) => setCollocationQuery(e.target.value)}
                   placeholder="Filter collocations (word, POS)..."
-                  className="w-full bg-[#141c31] border border-[#2b3856] rounded-xl pl-8 pr-3 py-1.5 text-xs text-[#edf2ff] focus:outline-none focus:border-purple-400"
+                  className="w-full bg-[#141c31] border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-[#edf2ff] focus:outline-none focus:border-purple-400"
                 />
               </div>
             </div>
@@ -893,7 +893,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                 {collocationsForModal.slice(0, 150).map((colloc, idx) => (
                   <div
                     key={`${colloc.id}-${idx}`}
-                    className="p-3 rounded-xl bg-[#0e1729] border border-[#2b3856] hover:border-purple-500/40 transition-all flex items-center justify-between"
+                    className="p-3 rounded-xl bg-[#0e1729] border border-slate-800 hover:border-purple-500/40 transition-all flex items-center justify-between"
                   >
                     <div>
                       <div className="flex items-center gap-1.5 text-[10px] text-[#a9b5d0] mb-0.5">
@@ -920,7 +920,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-[#2b3856] bg-[#0e1729]/80 flex items-center justify-between">
+            <div className="p-4 border-t border-slate-800 bg-[#0e1729]/80 flex items-center justify-between">
               <span className="text-xs text-[#a9b5d0]">
                 {collocationMode === 'forward' ? 'Phase 2 Progress: ' : 'Phase 3 Progress: '}
                 <b className="text-white">
@@ -934,7 +934,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                     const cur = collocationMode === 'forward' ? collocFwdCount : collocBwdCount;
                     handleSetCount(key, cur + 50);
                   }}
-                  className="px-3 py-2 rounded-xl bg-[#1e2a47] hover:bg-[#28375c] text-xs font-semibold text-[#edf2ff] border border-[#2b3856]"
+                  className="px-3 py-2 rounded-xl bg-[#1e2a47] hover:bg-[#28375c] text-xs font-semibold text-[#edf2ff] border border-slate-800"
                 >
                   +50 Learned
                 </button>
@@ -958,9 +958,9 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
       {/* ================= MODAL 4: WRITE ESSAY TEMPLATES ================= */}
       {activeModal === 'essay_template' && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#141c31] border border-[#2b3856] rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-[#141c31] border border-slate-800 rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
-            <div className="p-5 border-b border-[#2b3856] flex items-center justify-between">
+            <div className="p-5 border-b border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-xl bg-amber-500/20 border border-amber-500/30 text-amber-400">
                   <PenTool className="w-5 h-5" />
@@ -978,7 +978,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleCopyTemplate(activeEssay.fullText)}
-                  className="px-3 py-1.5 rounded-xl bg-[#1e2a47] hover:bg-[#28375c] border border-[#2b3856] text-xs font-semibold text-[#edf2ff] flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-xl bg-[#1e2a47] hover:bg-[#28375c] border border-slate-800 text-xs font-semibold text-[#edf2ff] flex items-center gap-1.5"
                 >
                   {copiedTemplate ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copiedTemplate ? 'Copied!' : 'Copy Template'}</span>
@@ -994,7 +994,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
             </div>
 
             {/* Tabs for Template Types */}
-            <div className="p-3 bg-[#0e1729] border-b border-[#2b3856] flex items-center justify-between flex-wrap gap-2">
+            <div className="p-3 bg-[#0e1729] border-b border-slate-800 flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setSelectedEssayType('discussion')}
@@ -1035,7 +1035,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
 
             {/* Template Body */}
             <div className="p-6 overflow-y-auto space-y-4">
-              <div className="p-4 rounded-2xl bg-[#0e1729] border border-[#2b3856] space-y-3">
+              <div className="p-4 rounded-2xl bg-[#0e1729] border border-slate-800 space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400">
                   {activeEssay.name}
                 </h4>
@@ -1044,7 +1044,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                     <div key={idx} className="space-y-1">
                       <p className="font-bold text-[#80a7ff]">{s.title}:</p>
                       {s.points.map((pt, pIdx) => (
-                        <p key={pIdx} className="text-[#a9b5d0] pl-2 border-l border-[#2b3856]">
+                        <p key={pIdx} className="text-[#a9b5d0] pl-2 border-l border-slate-800">
                           {pt}
                         </p>
                       ))}
@@ -1066,13 +1066,13 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                     if (!isTypingActive) setIsTypingActive(true);
                   }}
                   placeholder="Type the essay template from memory here..."
-                  className="w-full h-36 bg-[#0e1729] border border-[#2b3856] rounded-xl p-3 text-xs text-[#edf2ff] focus:outline-none focus:border-amber-400 font-mono resize-none"
+                  className="w-full h-36 bg-[#0e1729] border border-slate-800 rounded-xl p-3 text-xs text-[#edf2ff] focus:outline-none focus:border-amber-400 font-mono resize-none"
                 />
               </div>
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-[#2b3856] bg-[#0e1729]/80 flex items-center justify-between">
+            <div className="p-4 border-t border-slate-800 bg-[#0e1729]/80 flex items-center justify-between">
               <span className="text-xs text-[#a9b5d0]">
                 Phase {selectedEssayPhase} Essay Drill: <b className="text-white">Target: 1 Repetition</b>
               </span>
@@ -1095,9 +1095,9 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
       {/* ================= MODAL 5: SUMMARIZE GROUP DISCUSSION (SGD) TEMPLATE ================= */}
       {activeModal === 'sgd_template' && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#141c31] border border-[#2b3856] rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-[#141c31] border border-slate-800 rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
-            <div className="p-5 border-b border-[#2b3856] flex items-center justify-between">
+            <div className="p-5 border-b border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="p-2 rounded-xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-400">
                   <Users className="w-5 h-5" />
@@ -1115,7 +1115,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleCopySgdTemplate(activeSgd.fullText)}
-                  className="px-3 py-1.5 rounded-xl bg-[#1e2a47] hover:bg-[#28375c] border border-[#2b3856] text-xs font-semibold text-[#edf2ff] flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-xl bg-[#1e2a47] hover:bg-[#28375c] border border-slate-800 text-xs font-semibold text-[#edf2ff] flex items-center gap-1.5"
                 >
                   {copiedSgdTemplate ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copiedSgdTemplate ? 'Copied!' : 'Copy Template'}</span>
@@ -1131,7 +1131,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
             </div>
 
             {/* Toolbar */}
-            <div className="p-3 bg-[#0e1729] border-b border-[#2b3856] flex items-center justify-between flex-wrap gap-2">
+            <div className="p-3 bg-[#0e1729] border-b border-slate-800 flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setSelectedSgdType('three_speakers')}
@@ -1172,7 +1172,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
 
             {/* Template Body */}
             <div className="p-6 overflow-y-auto space-y-4">
-              <div className="p-4 rounded-2xl bg-[#0e1729] border border-[#2b3856] space-y-3">
+              <div className="p-4 rounded-2xl bg-[#0e1729] border border-slate-800 space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-400">
                   {activeSgd.name}
                 </h4>
@@ -1181,7 +1181,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                     <div key={idx} className="space-y-1">
                       <p className="font-bold text-[#80a7ff]">{s.title}:</p>
                       {s.points.map((pt, pIdx) => (
-                        <p key={pIdx} className="text-[#a9b5d0] pl-2 border-l border-[#2b3856]">
+                        <p key={pIdx} className="text-[#a9b5d0] pl-2 border-l border-slate-800">
                           {pt}
                         </p>
                       ))}
@@ -1190,7 +1190,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                 </div>
 
                 {activeSgd.tips && (
-                  <div className="pt-2 border-t border-[#2b3856]/60">
+                  <div className="pt-2 border-t border-slate-800/60">
                     <p className="text-[11px] font-bold text-amber-300 mb-1">Key SGD Scoring Tips:</p>
                     <ul className="list-disc list-inside text-[11px] text-[#a9b5d0] space-y-0.5">
                       {activeSgd.tips.map((tip, idx) => (
@@ -1214,13 +1214,13 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                     if (!isSgdTimerActive) setIsSgdTimerActive(true);
                   }}
                   placeholder="Type the SGD template here to solidify memory..."
-                  className="w-full h-32 bg-[#0e1729] border border-[#2b3856] rounded-xl p-3 text-xs text-[#edf2ff] focus:outline-none focus:border-indigo-400 font-mono resize-none"
+                  className="w-full h-32 bg-[#0e1729] border border-slate-800 rounded-xl p-3 text-xs text-[#edf2ff] focus:outline-none focus:border-indigo-400 font-mono resize-none"
                 />
               </div>
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-[#2b3856] bg-[#0e1729]/80 flex items-center justify-between">
+            <div className="p-4 border-t border-slate-800 bg-[#0e1729]/80 flex items-center justify-between">
               <span className="text-xs text-[#a9b5d0]">
                 Phase {selectedSgdPhase} SGD Drill: <b className="text-white">Target: 1 Repetition</b>
               </span>

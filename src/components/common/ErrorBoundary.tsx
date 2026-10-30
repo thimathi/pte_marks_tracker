@@ -38,7 +38,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="min-h-screen bg-[#0b1020] flex items-center justify-center p-6 text-[#edf2ff]">
-          <div className="max-w-md w-full bg-[#141c31] border border-[#2b3856] rounded-3xl p-6 sm:p-8 space-y-5 text-center shadow-2xl">
+          <div className="max-w-md w-full bg-[#141c31] border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-5 text-center shadow-2xl">
             <div className="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/30">
               <AlertTriangle className="w-7 h-7" />
             </div>
@@ -48,14 +48,14 @@ export class ErrorBoundary extends Component<Props, State> {
               <p className="text-xs text-[#a9b5d0] leading-relaxed">
                 An unexpected UI render issue occurred:
               </p>
-              <div className="p-3 rounded-xl bg-[#0e1729] border border-[#2b3856] text-[11px] font-mono text-rose-300 text-left overflow-x-auto">
+              <div className="p-3 rounded-xl bg-[#0e1729] border border-slate-800 text-[11px] font-mono text-rose-300 text-left overflow-x-auto">
                 {this.state.error?.message || 'Unknown error'}
               </div>
             </div>
 
             <button
               onClick={this.handleReset}
-              className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 cursor-pointer transition-colors"
+              className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-colors"
             >
               <RotateCcw className="w-4 h-4" />
               <span>Reload Workspace</span>

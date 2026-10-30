@@ -53,7 +53,7 @@ export const QuestionAnalyticsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-[#141c31] border border-[#2b3856] p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-[#141c31] border border-slate-800 p-6">
         <div>
           <div className="flex items-center gap-2">
             <BarChart3 className="w-6 h-6 text-blue-400" />
@@ -74,8 +74,8 @@ export const QuestionAnalyticsPage: React.FC = () => {
               onClick={() => setSelectedSkill(s)}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-colors ${
                 selectedSkill === s
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                  : 'bg-[#10192c] text-[#a9b5d0] hover:text-[#edf2ff] border border-[#2b3856]'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-[#10192c] text-[#a9b5d0] hover:text-[#edf2ff] border border-slate-800'
               }`}
             >
               {s}
@@ -107,7 +107,7 @@ export const QuestionAnalyticsPage: React.FC = () => {
           </div>
           <Link
             to="/mock-exams"
-            className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white shadow-md shadow-purple-600/30 flex items-center gap-1.5 self-start sm:self-center transition-colors whitespace-nowrap"
+            className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-bold text-white shadow-sm flex items-center gap-1.5 self-start sm:self-center transition-colors whitespace-nowrap"
           >
             <span>Mock Exam Center</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -128,7 +128,7 @@ export const QuestionAnalyticsPage: React.FC = () => {
           return (
             <div
               key={meta.id}
-              className="rounded-2xl bg-[#141c31] border border-[#2b3856] overflow-hidden transition-all"
+              className="rounded-2xl bg-[#141c31] border border-slate-800 overflow-hidden transition-all"
             >
               {/* Type Header Summary */}
               <div
@@ -169,7 +169,7 @@ export const QuestionAnalyticsPage: React.FC = () => {
                     </span>
                   </div>
 
-                  <button className="p-1.5 rounded-lg bg-[#10192c] border border-[#2b3856] text-[#a9b5d0]">
+                  <button className="p-1.5 rounded-lg bg-[#10192c] border border-slate-800 text-[#a9b5d0]">
                     {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                   </button>
                 </div>
@@ -177,7 +177,7 @@ export const QuestionAnalyticsPage: React.FC = () => {
 
               {/* Collapsible Phase Breakdown */}
               {isExpanded && (
-                <div className="p-5 pt-0 space-y-4 border-t border-[#2b3856]/60 bg-[#0e1729]/50">
+                <div className="p-5 pt-0 space-y-4 border-t border-slate-800/60 bg-[#0e1729]/50">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-4">
                     {phases.map((ph) => {
                       const phaseStat = calculatePhaseAverage(attempts, ph.startIndex, ph.endIndex);
@@ -186,9 +186,9 @@ export const QuestionAnalyticsPage: React.FC = () => {
                       return (
                         <div
                           key={ph.phaseNumber}
-                          className="rounded-xl bg-[#141c31] border border-[#2b3856] p-4 space-y-3"
+                          className="rounded-xl bg-[#141c31] border border-slate-800 p-4 space-y-3"
                         >
-                          <div className="flex items-center justify-between text-xs border-b border-[#2b3856] pb-2">
+                          <div className="flex items-center justify-between text-xs border-b border-slate-800 pb-2">
                             <span className="font-bold text-blue-300">
                               Phase {ph.phaseNumber} · Q{ph.startIndex + 1}–{ph.endIndex}
                             </span>
@@ -224,7 +224,7 @@ export const QuestionAnalyticsPage: React.FC = () => {
                                         ? 'bg-emerald-600/30 border border-emerald-400 text-emerald-300'
                                         : currentVal !== ''
                                         ? 'bg-[#10192c] border border-blue-500/40 text-white'
-                                        : 'bg-[#0b1020] border border-[#2b3856] text-[#a9b5d0]'
+                                        : 'bg-[#0b1020] border border-slate-800 text-[#a9b5d0]'
                                     }`}
                                   />
                                 </div>
