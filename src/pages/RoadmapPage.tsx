@@ -11,12 +11,21 @@ import {
   Award,
   ChevronRight,
   TrendingUp,
-  Clock
+  Clock,
+  Layers,
+  GraduationCap
 } from 'lucide-react';
 import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown } from '../utils/scoring';
 import { formatDateFriendly, isDatePast } from '../utils/dateUtils';
-import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS, getMockExamsForDay, TOTAL_MOCK_TARGET, TOTAL_PRACTICE_TARGET } from '../config/constants';
+import {
+  DAY_TARGET_SCORES,
+  TOTAL_STUDY_DAYS,
+  getMockExamsForDay,
+  TOTAL_MOCK_TARGET,
+  TOTAL_PRACTICE_TARGET,
+  PHASE_DEFINITIONS
+} from '../config/constants';
 
 export const RoadmapPage: React.FC = () => {
   const { studyPlan, days, currentDay, selectDay } = usePteData();
@@ -37,7 +46,8 @@ export const RoadmapPage: React.FC = () => {
           <h1 className="text-2xl font-bold text-[#edf2ff]">PTE - Daily Study Plan – Superior English Roadmap</h1>
         </div>
         <p className="text-xs text-[#a9b5d0] leading-relaxed max-w-3xl">
-          Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · {totalDays}-Day Summit Plan (Target 59+ ➔ 79+). Priority #1: {TOTAL_MOCK_TARGET} Mock Exams (4 Mocks/Day) & {TOTAL_PRACTICE_TARGET.toLocaleString()} Practice Questions (300 Qs/Day ordered by Score Weight Priority).
+          Started: <b className="text-blue-300">{formatDateFriendly(studyPlan?.startDate || '2026-10-30')}</b> · {totalDays}-Day Summit Plan (Target 59+ ➔ 79+).
+          {' '}Structured into <b>5 Daily Phases</b>: {TOTAL_MOCK_TARGET} Mock Exams (5 Mocks/Day) & {TOTAL_PRACTICE_TARGET.toLocaleString()} Practice Questions (100 Qs/Day · 20 Qs per phase).
         </p>
       </div>
 
@@ -50,7 +60,6 @@ export const RoadmapPage: React.FC = () => {
           const isCurrent = dayNum === currentDay;
           const targetScore = DAY_TARGET_SCORES[dayNum - 1];
           const isOverdue = !isCompleted && dayData && isDatePast(dayData.date) && isUnlocked;
-          const isDay1 = dayNum === 1;
 
           const breakdown = calculateDayBreakdown(dayData, studyPlan.questionTargets);
           const mockKeys = getMockExamsForDay(dayNum);
@@ -107,7 +116,7 @@ export const RoadmapPage: React.FC = () => {
                       ? 'bg-amber-500/20 text-amber-300'
                       : 'bg-blue-500/20 text-blue-400'
                   }`}>
-                    {isCompleted ? 'Completed ✓' : isOverdue ? 'Flexible Catchup' : 'In Progress'}
+                    {isCompleted ? 'Completed ✓' : isOverdue ? 'Catchup' : '5 Phases'}
                   </span>
                 </div>
               </div>
@@ -116,8 +125,8 @@ export const RoadmapPage: React.FC = () => {
               <div className="space-y-2 text-xs">
                 <div>
                   <div className="flex justify-between text-[11px] text-[#a9b5d0] mb-1">
-                    <span>Practice: {dayNum === 1 ? 'Rescheduled to Days 2–17 (+19/d)' : `${breakdown.totalCompleted} / ${breakdown.totalDailyTarget || 300} Qs`}</span>
-                    <span>{breakdown.completionPercentage}%</span>
+                    <span>Practice (100 Qs across 5 phases)</span>
+                    <span>{breakdown.totalCompleted} / 100 ({breakdown.completionPercentage}%)</span>
                   </div>
                   <div className="w-full h-1.5 rounded-full bg-[#0e1729] overflow-hidden">
                     <div
@@ -137,9 +146,9 @@ export const RoadmapPage: React.FC = () => {
                   </div>
 
                   <div className="p-2 rounded-lg bg-[#0e1729] border border-[#2b3856]">
-                    <span className="text-[#a9b5d0] block text-[10px]">Mocks ({mockKeys.length} Target):</span>
+                    <span className="text-[#a9b5d0] block text-[10px]">Mocks (5 Target):</span>
                     <span className="font-bold text-[#edf2ff]">
-                      {completedMocksCount} / {mockKeys.length} Done
+                      {completedMocksCount} / 5 Done
                     </span>
                   </div>
                 </div>
@@ -152,7 +161,7 @@ export const RoadmapPage: React.FC = () => {
                     ? 'Day gate passed'
                     : isOverdue
                     ? 'Missed day · Catch up anytime'
-                    : 'Active study workspace'}
+                    : '5 Phases · 5 Mocks + 100 Qs'}
                 </span>
                 <span className="text-blue-400 font-semibold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
                   Open Day <ChevronRight className="w-3.5 h-3.5" />

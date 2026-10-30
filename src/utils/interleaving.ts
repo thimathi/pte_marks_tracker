@@ -17,6 +17,10 @@ export function generateGroupedStudyQueue(): QueueItem[] {
 
       for (let i = 0; i < item.count; i++) {
         const instanceIndex = item.startInstanceIndex + i;
+        const currentOverallIndex = queue.length;
+        const phaseNumber = Math.min(5, Math.floor(currentOverallIndex / 20) + 1);
+        const phaseQuestionIndex = currentOverallIndex % 20;
+
         queue.push({
           id: `${group.id}_${item.questionTypeId}_${i}`,
           questionTypeId: item.questionTypeId,
@@ -26,7 +30,7 @@ export function generateGroupedStudyQueue(): QueueItem[] {
           instanceIndex,
           isPrediction: item.priority === 'prediction' || meta.isPrediction,
           scoreWeight: item.scoreWeight ?? meta.scoreWeight,
-          overallQueueIndex: queue.length,
+          overallQueueIndex: currentOverallIndex,
           groupId: group.id,
           groupNumber: group.groupNumber,
           groupTitle: group.title,
@@ -35,7 +39,10 @@ export function generateGroupedStudyQueue(): QueueItem[] {
           priority: item.priority,
           priorityLabel: item.priorityLabel,
           typeIndexInGroup: i + 1,
-          typeTotalInGroup: item.count
+          typeTotalInGroup: item.count,
+          phaseNumber,
+          phaseTitle: `Phase ${phaseNumber}`,
+          phaseQuestionIndex
         });
         groupIndex++;
       }
@@ -55,6 +62,13 @@ export function generateInterleavedQueue(
   _seedModifier: number = 42
 ): QueueItem[] {
   return generateGroupedStudyQueue();
+}
+
+/**
+ * Returns questions filtered by Phase Number (1 to 5, exactly 20 questions each)
+ */
+export function getPhaseQuestions(phaseNumber: number, queue: QueueItem[]): QueueItem[] {
+  return queue.filter(q => q.phaseNumber === phaseNumber);
 }
 
 /**

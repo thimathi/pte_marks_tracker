@@ -1,13 +1,13 @@
 import { QuestionPriority, QuestionTypeMeta, StudyGroupDefinition, TargetScores } from '../types/pte';
 
-export const DEFAULT_START_DATE = '2026-10-29';
-export const FINAL_TARGET_DATE = '2026-11-12'; // Exactly 15 Days: Oct 29 to Nov 12, 2026
+export const DEFAULT_START_DATE = '2026-10-30';
+export const FINAL_TARGET_DATE = '2026-11-13'; // Exactly 15 Days: Oct 30 to Nov 13, 2026
 export const APP_TITLE = 'PTE - Daily Study Plan – Superior English';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
 export const TOTAL_STUDY_DAYS = 15; // Exactly 15 Days Mission
-export const DAILY_PRACTICE_TARGET = 100; // 100 Daily Questions ordered by High Score Weight Priority
+export const DAILY_PRACTICE_TARGET = 100; // 100 Daily Questions ordered across 5 phases (20 Qs per phase)
 export const TOTAL_PRACTICE_TARGET = 1500; // 15 practice days * 100 = 1,500 Individual Questions
-export const DAILY_MOCK_TARGET = 5; // 5 Mock Exams every day (covers 300 exam questions/day)
+export const DAILY_MOCK_TARGET = 5; // 5 Mock Exams every day (1 Mock per phase)
 export const TOTAL_MOCK_TARGET = 75; // 15 days * 5 = 75 Mocks total (2 Full Rounds of 35 Shuffled VIP Tests + Final Summit Simulation)
 export const MOCK_EXAM_QUESTIONS = 60;
 export const TOTAL_MOCK_EXAM_QUESTIONS = 4500; // 75 mocks * 60 questions = 4,500 Mock Exam Questions
@@ -528,27 +528,431 @@ export const PRIORITY_STYLES: Record<QuestionPriority, { bg: string; text: strin
   }
 };
 
+export interface PhaseQuestionType {
+  typeId: string;
+  name: string;
+  shortName: string;
+  count: number;
+  scoreWeight: number;
+  priorityLabel: string;
+}
+
+export interface PhaseDrillDefinition {
+  id: string;
+  drillKey: 'tongue_twister' | 'collocations_fwd' | 'collocations_bwd' | 'essay_template' | 'sgd_template';
+  name: string;
+  requirement: (dayNumber: number) => string;
+  getTargetCount: (dayNumber: number) => number;
+  notes: string;
+}
+
+export interface PhaseDefinition {
+  phaseNumber: number; // 1 to 5
+  id: string;
+  title: string;
+  subtitle: string;
+  mockIndex: number; // 0 to 4 (Mock 1 to 5)
+  mockName: string;
+  timeSlot: string;
+  sessionName: string;
+  questionCount: number; // 20
+  color: string;
+  accentBorder: string;
+  accentBg: string;
+  accentText: string;
+  badgeBg: string;
+  badgeBorder: string;
+  badgeText: string;
+  questionTypes: PhaseQuestionType[];
+  drills: PhaseDrillDefinition[];
+}
+
+/**
+ * Academic Collocations Target Progression:
+ * Day 1: 100, each day +50 from previous day (Day 2: 150, Day 3: 200, Day 4: 250...)
+ */
+export function getAcademicCollocationsTarget(dayNumber: number): number {
+  return 100 + Math.max(0, dayNumber - 1) * 50;
+}
+
+/**
+ * Exactly 5 Daily Phases Configured Per User Request:
+ * Phase 1: Mock Exam 1 · 20 Questions (DI 12 + SGD 8) · Tongue Twisters 2
+ * Phase 2: Mock Exam 2 · 20 Questions (RS 15 + RL 5) · Academic Collocations Fwd (Day 1: 100, +50/day)
+ * Phase 3: Mock Exam 3 · 20 Questions (R&W FIB 10 + R FIB 8 + RO 2) · Academic Collocations Bwd (Day 1: 100, +50/day)
+ * Phase 4: Mock Exam 4 · 20 Questions (WFD 10 + RA 8 + WE 2) · Write Essay Template - 1 · SGD Template - 1
+ * Phase 5: Mock Exam 5 · 20 Questions (RTS 5 + SWT 4 + SST 3 + HIW 3 + L FIB 3 + ASQ 2) · Write Essay Template - 1 · SGD Template - 1
+ */
+export const PHASE_DEFINITIONS: PhaseDefinition[] = [
+  {
+    phaseNumber: 1,
+    id: 'phase1',
+    title: 'Phase 1: Speaking Foundation & Fluency Warmup',
+    subtitle: 'Mock Exam 1 · 20 Daily Questions · Tongue Twisters 2x',
+    mockIndex: 0,
+    mockName: 'Mock Exam 1',
+    timeSlot: '8:00 AM – 10:00 AM',
+    sessionName: 'Session 1: Morning Simulation',
+    questionCount: 20,
+    color: 'blue',
+    accentBorder: 'border-blue-500/40',
+    accentBg: 'bg-blue-500/10',
+    accentText: 'text-blue-400',
+    badgeBg: 'bg-blue-500/20',
+    badgeBorder: 'border-blue-500/30',
+    badgeText: 'text-blue-300',
+    questionTypes: [
+      {
+        typeId: 'describe_image',
+        name: 'Describe Image',
+        shortName: 'DI',
+        count: 12,
+        scoreWeight: 15,
+        priorityLabel: 'Top Score Weight (15%)'
+      },
+      {
+        typeId: 'summarize_group_discussion',
+        name: 'Summarize Group Discussion',
+        shortName: 'SGD',
+        count: 8,
+        scoreWeight: 9,
+        priorityLabel: 'Top Score Weight (9%)'
+      }
+    ],
+    drills: [
+      {
+        id: 'tongue_twister',
+        drillKey: 'tongue_twister',
+        name: 'Tongue Twisters Enunciation Drill',
+        requirement: () => '50 Twisters List x 2 Reps',
+        getTargetCount: () => 2,
+        notes: 'Speed, clarity, and continuous oral fluency enunciation drills.'
+      }
+    ]
+  },
+  {
+    phaseNumber: 2,
+    id: 'phase2',
+    title: 'Phase 2: Oral Repetition & Forward Collocations',
+    subtitle: 'Mock Exam 2 · 20 Daily Questions · Academic Collocations Fwd',
+    mockIndex: 1,
+    mockName: 'Mock Exam 2',
+    timeSlot: '11:00 AM – 1:00 PM',
+    sessionName: 'Session 2: Late Morning Simulation',
+    questionCount: 20,
+    color: 'purple',
+    accentBorder: 'border-purple-500/40',
+    accentBg: 'bg-purple-500/10',
+    accentText: 'text-purple-400',
+    badgeBg: 'bg-purple-500/20',
+    badgeBorder: 'border-purple-500/30',
+    badgeText: 'text-purple-300',
+    questionTypes: [
+      {
+        typeId: 'repeat_sentence',
+        name: 'Repeat Sentence',
+        shortName: 'RS',
+        count: 15,
+        scoreWeight: 7,
+        priorityLabel: 'High Score Weight (7%)'
+      },
+      {
+        typeId: 'retell_lecture',
+        name: 'Retell Lecture',
+        shortName: 'RL',
+        count: 5,
+        scoreWeight: 6,
+        priorityLabel: 'Score Weight (6%)'
+      }
+    ],
+    drills: [
+      {
+        id: 'collocations_fwd',
+        drillKey: 'collocations_fwd',
+        name: 'Academic Collocations Forward',
+        requirement: (d) => `Day ${d}: ${getAcademicCollocationsTarget(d)} Collocations (+50/day)`,
+        getTargetCount: (d) => getAcademicCollocationsTarget(d),
+        notes: 'Forward progression through Pearson Academic Collocations list (Day 1: 100, Day 2: 150, Day 3: 200...).'
+      }
+    ]
+  },
+  {
+    phaseNumber: 3,
+    id: 'phase3',
+    title: 'Phase 3: Reading FIB Blanks & Backward Collocations',
+    subtitle: 'Mock Exam 3 · 20 Daily Questions · Academic Collocations Bwd',
+    mockIndex: 2,
+    mockName: 'Mock Exam 3',
+    timeSlot: '2:00 PM – 4:00 PM',
+    sessionName: 'Session 3: Afternoon Simulation',
+    questionCount: 20,
+    color: 'emerald',
+    accentBorder: 'border-emerald-500/40',
+    accentBg: 'bg-emerald-500/10',
+    accentText: 'text-emerald-400',
+    badgeBg: 'bg-emerald-500/20',
+    badgeBorder: 'border-emerald-500/30',
+    badgeText: 'text-emerald-300',
+    questionTypes: [
+      {
+        typeId: 'rw_fill_in_blanks',
+        name: 'Reading & Writing FIB (Dropdown)',
+        shortName: 'R&W FIB',
+        count: 10,
+        scoreWeight: 7,
+        priorityLabel: 'High Score Weight (7%)'
+      },
+      {
+        typeId: 'r_fill_in_blanks',
+        name: 'Reading FIB (Drag & Drop)',
+        shortName: 'R FIB',
+        count: 8,
+        scoreWeight: 6,
+        priorityLabel: 'Score Weight (6%)'
+      },
+      {
+        typeId: 'reorder_paragraph',
+        name: 'Reorder Paragraph',
+        shortName: 'RO',
+        count: 2,
+        scoreWeight: 3,
+        priorityLabel: 'Supporting Weight (3%)'
+      }
+    ],
+    drills: [
+      {
+        id: 'collocations_bwd',
+        drillKey: 'collocations_bwd',
+        name: 'Academic Collocations Backward',
+        requirement: (d) => `Day ${d}: ${getAcademicCollocationsTarget(d)} Collocations in Reverse (+50/day)`,
+        getTargetCount: (d) => getAcademicCollocationsTarget(d),
+        notes: 'Backward progression through Pearson Academic Collocations in reverse order (Day 1: 100, Day 2: 150, Day 3: 200...).'
+      }
+    ]
+  },
+  {
+    phaseNumber: 4,
+    id: 'phase4',
+    title: 'Phase 4: Dictation, Read Aloud & Template Mastery',
+    subtitle: 'Mock Exam 4 · 20 Daily Questions · Essay Template - 1 · SGD Template - 1',
+    mockIndex: 3,
+    mockName: 'Mock Exam 4',
+    timeSlot: '8:00 PM – 10:00 PM',
+    sessionName: 'Session 4: Night Simulation',
+    questionCount: 20,
+    color: 'amber',
+    accentBorder: 'border-amber-500/40',
+    accentBg: 'bg-amber-500/10',
+    accentText: 'text-amber-400',
+    badgeBg: 'bg-amber-500/20',
+    badgeBorder: 'border-amber-500/30',
+    badgeText: 'text-amber-300',
+    questionTypes: [
+      {
+        typeId: 'write_from_dictation',
+        name: 'Write From Dictation',
+        shortName: 'WFD',
+        count: 10,
+        scoreWeight: 5,
+        priorityLabel: 'Score Weight (5%)'
+      },
+      {
+        typeId: 'read_aloud',
+        name: 'Read Aloud',
+        shortName: 'RA',
+        count: 8,
+        scoreWeight: 4,
+        priorityLabel: 'Score Weight (4%)'
+      },
+      {
+        typeId: 'write_essay',
+        name: 'Write Essay',
+        shortName: 'WE',
+        count: 2,
+        scoreWeight: 7,
+        priorityLabel: 'High Score Weight (7%)'
+      }
+    ],
+    drills: [
+      {
+        id: 'essay_template_p4',
+        drillKey: 'essay_template',
+        name: 'Write Essay Template - 1',
+        requirement: () => 'Write Essay Template - 1 rep',
+        getTargetCount: () => 1,
+        notes: 'Official PTE Bridge Essay Template practice (Discussion / Problem-Solution).'
+      },
+      {
+        id: 'sgd_template_p4',
+        drillKey: 'sgd_template',
+        name: 'Summarize Group Discussion Template - 1',
+        requirement: () => 'SGD Template - 1 rep',
+        getTargetCount: () => 1,
+        notes: 'Official PTE Bridge Summarize Group Discussion 3-speaker template practice.'
+      }
+    ]
+  },
+  {
+    phaseNumber: 5,
+    id: 'phase5',
+    title: 'Phase 5: Synthesis, Speed & Template Reinforcement',
+    subtitle: 'Mock Exam 5 · 20 Daily Questions · Essay Template - 1 · SGD Template - 1',
+    mockIndex: 4,
+    mockName: 'Mock Exam 5',
+    timeSlot: '11:00 PM – 1:00 AM',
+    sessionName: 'Session 5: Late Night Peak Simulation',
+    questionCount: 20,
+    color: 'rose',
+    accentBorder: 'border-rose-500/40',
+    accentBg: 'bg-rose-500/10',
+    accentText: 'text-rose-400',
+    badgeBg: 'bg-rose-500/20',
+    badgeBorder: 'border-rose-500/30',
+    badgeText: 'text-rose-300',
+    questionTypes: [
+      {
+        typeId: 'respond_to_situation',
+        name: 'Respond to a Situation',
+        shortName: 'RTS',
+        count: 5,
+        scoreWeight: 6,
+        priorityLabel: 'Score Weight (6%)'
+      },
+      {
+        typeId: 'summarize_written_text',
+        name: 'Summarize Written Text',
+        shortName: 'SWT',
+        count: 4,
+        scoreWeight: 7,
+        priorityLabel: 'High Score Weight (7%)'
+      },
+      {
+        typeId: 'summarize_spoken_text',
+        name: 'Summarize Spoken Text',
+        shortName: 'SST',
+        count: 3,
+        scoreWeight: 4,
+        priorityLabel: 'Score Weight (4%)'
+      },
+      {
+        typeId: 'highlight_incorrect_words',
+        name: 'Highlight Incorrect Words',
+        shortName: 'HIW',
+        count: 3,
+        scoreWeight: 4,
+        priorityLabel: 'Score Weight (4%)'
+      },
+      {
+        typeId: 'listening_fill_in_blanks',
+        name: 'Listening FIB (Type In)',
+        shortName: 'L FIB',
+        count: 3,
+        scoreWeight: 3,
+        priorityLabel: 'Supporting Weight (3%)'
+      },
+      {
+        typeId: 'answer_short_question',
+        name: 'Answer Short Question',
+        shortName: 'ASQ',
+        count: 2,
+        scoreWeight: 2,
+        priorityLabel: 'Supporting Weight (2%)'
+      }
+    ],
+    drills: [
+      {
+        id: 'essay_template_p5',
+        drillKey: 'essay_template',
+        name: 'Write Essay Template - 1',
+        requirement: () => 'Write Essay Template - 1 rep',
+        getTargetCount: () => 1,
+        notes: 'Official PTE Bridge Essay Template practice (Discussion / Problem-Solution).'
+      },
+      {
+        id: 'sgd_template_p5',
+        drillKey: 'sgd_template',
+        name: 'Summarize Group Discussion Template - 1',
+        requirement: () => 'SGD Template - 1 rep',
+        getTargetCount: () => 1,
+        notes: 'Official PTE Bridge Summarize Group Discussion 3-speaker template practice.'
+      }
+    ]
+  }
+];
+
 export const DEFAULT_ADDITIONAL_EXERCISES = [
   {
     id: 'tongue_twister',
-    name: 'Tongue Twisters Enunciation Drill',
-    requirement: '50 Twisters List x 2 Reps / Day',
+    name: 'Tongue Twisters Enunciation Drill (Phase 1)',
+    requirement: '50 Twisters List x 2 Reps',
     requiredCount: 2,
-    notes: 'Speed, clarity, and continuous oral fluency enunciation drills.'
+    phaseNumber: 1,
+    notes: 'Phase 1: Speed, clarity, and continuous oral fluency enunciation drills.'
   },
+  {
+    id: 'collocations_fwd',
+    name: 'Academic Collocations Forward (Phase 2)',
+    requirement: 'Day 1: 100, +50 each day',
+    requiredCount: 100,
+    phaseNumber: 2,
+    notes: 'Phase 2: Academic Collocations Fwd (Day 1: 100, Day 2: 150, Day 3: 200...).'
+  },
+  {
+    id: 'collocations_bwd',
+    name: 'Academic Collocations Backward (Phase 3)',
+    requirement: 'Day 1: 100, +50 each day',
+    requiredCount: 100,
+    phaseNumber: 3,
+    notes: 'Phase 3: Academic Collocations Bwd in reverse order (Day 1: 100, Day 2: 150, Day 3: 200...).'
+  },
+  {
+    id: 'essay_template_p4',
+    name: 'Write Essay Template (Phase 4)',
+    requirement: 'Write Essay Template - 1 rep',
+    requiredCount: 1,
+    phaseNumber: 4,
+    notes: 'Phase 4: Official PTE Bridge Essay Template practice.'
+  },
+  {
+    id: 'sgd_template_p4',
+    name: 'Summarize Group Discussion Template (Phase 4)',
+    requirement: 'SGD Template - 1 rep',
+    requiredCount: 1,
+    phaseNumber: 4,
+    notes: 'Phase 4: Official PTE Bridge SGD 3-speaker template practice.'
+  },
+  {
+    id: 'essay_template_p5',
+    name: 'Write Essay Template (Phase 5)',
+    requirement: 'Write Essay Template - 1 rep',
+    requiredCount: 1,
+    phaseNumber: 5,
+    notes: 'Phase 5: Official PTE Bridge Essay Template practice.'
+  },
+  {
+    id: 'sgd_template_p5',
+    name: 'Summarize Group Discussion Template (Phase 5)',
+    requirement: 'SGD Template - 1 rep',
+    requiredCount: 1,
+    phaseNumber: 5,
+    notes: 'Phase 5: Official PTE Bridge SGD 3-speaker template practice.'
+  },
+  // Backward compatibility aliases
   {
     id: 'academic_collocations',
     name: 'Pearson Academic Collocations',
     requirement: '100 Collocations / Day',
     requiredCount: 100,
-    notes: 'Master 100 high-frequency Pearson academic collocations daily for Reading & Writing FIB.'
+    phaseNumber: 2,
+    notes: 'Master 100 high-frequency Pearson academic collocations daily.'
   },
   {
     id: 'essay_template',
     name: 'PTE Bridge Essay Templates',
-    requirement: 'Write 2x / Day (Discussion + Problems/Solutions)',
+    requirement: 'Write 2x / Day',
     requiredCount: 2,
-    notes: 'Practice writing the two official PTE Bridge essay templates (Discussion & Problems/Solutions).'
+    phaseNumber: 4,
+    notes: 'Practice writing official PTE Bridge essay templates.'
   }
 ];
 

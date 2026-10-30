@@ -33,7 +33,8 @@ import {
   getMockExamsForDay,
   getExamNumberForMock,
   getMockExamDetails,
-  DAILY_MOCK_SCHEDULE
+  DAILY_MOCK_SCHEDULE,
+  PHASE_DEFINITIONS
 } from '../config/constants';
 import { QueueItem, QuestionPriority } from '../types/pte';
 import { formatDateFriendly } from '../utils/dateUtils';
@@ -51,7 +52,10 @@ export const PracticePage: React.FC = () => {
     completeAllMocksForDay
   } = usePteData();
 
-  // Generate 300 questions ordered by High Score Weight Priority
+  // Active Phase Filter: 'all' | 1 | 2 | 3 | 4 | 5
+  const [selectedPhase, setSelectedPhase] = useState<number | 'all'>('all');
+
+  // Generate 100 questions ordered by High Score Weight Priority across 5 phases
   const fullQueue: QueueItem[] = useMemo(() => {
     return generateInterleavedQueue(
       studyPlan.questionTargets,
@@ -63,11 +67,17 @@ export const PracticePage: React.FC = () => {
   // Selected Question Type Filter ('all' or questionTypeId)
   const [selectedGroupId, setSelectedGroupId] = useState<string>('all');
 
-  // Filtered queue based on selected group
+  // Filtered queue based on selected Phase and Group
   const activeQueue = useMemo(() => {
-    if (selectedGroupId === 'all') return fullQueue;
-    return fullQueue.filter((q) => q.groupId === selectedGroupId);
-  }, [fullQueue, selectedGroupId]);
+    let queue = fullQueue;
+    if (selectedPhase !== 'all') {
+      queue = queue.filter((q) => q.phaseNumber === selectedPhase);
+    }
+    if (selectedGroupId !== 'all') {
+      queue = queue.filter((q) => q.groupId === selectedGroupId);
+    }
+    return queue;
+  }, [fullQueue, selectedPhase, selectedGroupId]);
 
   // Overall queue index tracked in localStorage
   const queueStorageKey = `pte_queue_pos_day_${currentDay}`;
@@ -237,18 +247,18 @@ export const PracticePage: React.FC = () => {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           <div>
             <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                <Shuffle className="w-5 h-5" />
+              <span className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                <Layers className="w-5 h-5" />
               </span>
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-100">
-                Day {currentDay} High-Yield Practice Workspace
+                Day {currentDay} · 5-Phase Daily Plan
               </h1>
-              <span className="text-xs px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/25 font-semibold">
-                Score Weight Priority
+              <span className="text-xs px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/25 font-semibold">
+                Superior English · PTE Bridge
               </span>
             </div>
             <p className="text-xs sm:text-sm text-slate-400 mt-1.5 leading-relaxed">
-              5 Full Mock Exams (300 Exam Qs) · 100 Targeted Practice Questions ordered by Score Weight (400 Total Qs/Day).
+              Divided into <b>5 Daily Phases</b>: 5 Mock Exams (1 per phase) · 100 Daily Questions (20 per phase) · Structured daily drills.
             </p>
           </div>
 
@@ -257,16 +267,8 @@ export const PracticePage: React.FC = () => {
             {/* 5 Mocks Counter */}
             <div className="bg-slate-950/60 border border-slate-800 rounded-2xl px-3 sm:px-4 py-2 text-center min-w-[85px]">
               <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400 block">Mock Exams</span>
-              <span className={`text-base font-bold ${completedMocksCount === 5 ? 'text-emerald-400' : 'text-indigo-400'}`}>
+              <span className={`text-base font-bold ${completedMocksCount === 5 ? 'text-emerald-400' : 'text-blue-400'}`}>
                 {completedMocksCount} / 5
-              </span>
-            </div>
-
-            {/* 300 Exam Qs via Mocks */}
-            <div className="bg-slate-950/60 border border-slate-800 rounded-2xl px-3 sm:px-4 py-2 text-center min-w-[85px]">
-              <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400 block">Mocks Qs</span>
-              <span className={`text-base font-bold ${completedMocksCount === 5 ? 'text-emerald-400' : 'text-purple-400'}`}>
-                {completedMocksCount * 60} / 300
               </span>
             </div>
 
@@ -296,6 +298,71 @@ export const PracticePage: React.FC = () => {
               <span>Complete All / Auto Fill</span>
             </button>
           </div>
+        </div>
+
+        {/* 5-Phase Tabs Selector Strip */}
+        <div className="mt-5 pt-4 border-t border-slate-800 flex items-center gap-2 overflow-x-auto scrollbar-none">
+          <button
+            onClick={() => {
+              setSelectedPhase('all');
+              setSelectedGroupId('all');
+              setCurrentOverallIndex(0);
+            }}
+            className={`px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-2 ${
+              selectedPhase === 'all'
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 ring-1 ring-blue-400'
+                : 'bg-slate-950/80 text-slate-400 hover:text-slate-200 border border-slate-800 hover:border-slate-700'
+            }`}
+          >
+            <span>All 5 Phases</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-900 font-mono">
+              100 Qs
+            </span>
+          </button>
+
+          {PHASE_DEFINITIONS.map((p) => {
+            const isSelected = selectedPhase === p.phaseNumber;
+            const mockKey = `mock0${p.mockIndex + 1}`;
+            const mockDone = !!currentDayData?.mockExams?.[mockKey]?.isCompleted;
+
+            // Calculate scored questions in this phase
+            let phaseScored = 0;
+            p.questionTypes.forEach((qt) => {
+              const atts = currentDayData?.questionProgress?.[qt.typeId]?.attempts || {};
+              for (let i = 0; i < qt.count; i++) {
+                if (atts[i]?.score !== null && atts[i]?.score !== undefined) phaseScored++;
+              }
+            });
+            const isDone = mockDone && phaseScored >= p.questionCount;
+
+            return (
+              <button
+                key={p.phaseNumber}
+                onClick={() => {
+                  setSelectedPhase(p.phaseNumber);
+                  setSelectedGroupId('all');
+                  const firstOfPhase = fullQueue.find((q) => q.phaseNumber === p.phaseNumber);
+                  if (firstOfPhase) setCurrentOverallIndex(firstOfPhase.overallQueueIndex);
+                }}
+                className={`px-3.5 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer flex items-center gap-2 border ${
+                  isSelected
+                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25 border-blue-400'
+                    : isDone
+                    ? 'bg-emerald-950/30 text-emerald-300 border-emerald-500/30 hover:border-emerald-500/50'
+                    : 'bg-slate-950/80 text-slate-300 hover:text-white border-slate-800 hover:border-slate-700'
+                }`}
+              >
+                <span>Phase {p.phaseNumber}</span>
+                {isDone ? (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                ) : (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-900 font-mono text-slate-400">
+                    {phaseScored}/{p.questionCount}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -401,9 +468,9 @@ export const PracticePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Mandatory Daily Repeat Tasks (3 Core Drills) */}
+      {/* Mandatory Daily Repeat Tasks (5-Phase Drills) */}
       <div id="daily-drills">
-        <DailyDrillsCard dayNumber={currentDay} />
+        <DailyDrillsCard dayNumber={currentDay} initialPhaseFilter={selectedPhase} />
       </div>
 
       {/* High-Yield Question Priority Filter Chips */}

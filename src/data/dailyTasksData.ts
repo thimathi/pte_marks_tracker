@@ -187,6 +187,109 @@ In conclusion, although [Topic (phrase)] presents serious challenges, these issu
   }
 };
 
+export interface SgdTemplateType {
+  id: string;
+  name: string;
+  duration: string;
+  speakerCount: number;
+  sections: {
+    title: string;
+    points: string[];
+  }[];
+  fullText: string;
+  tips: string[];
+}
+
+/**
+ * PTE Bridge Official Summarize Group Discussion (SGD) Templates
+ * Designed for 3-speaker and 2-speaker PTE academic group discussions
+ */
+export const PTE_BRIDGE_SGD_TEMPLATES: Record<'three_speakers' | 'two_speakers', SgdTemplateType> = {
+  three_speakers: {
+    id: 'three_speakers',
+    name: '3-Speaker Group Discussion Template (PTE Bridge Official)',
+    duration: '2 min speaking',
+    speakerCount: 3,
+    sections: [
+      {
+        title: 'Introduction (Main Topic)',
+        points: [
+          'The group discussion was mainly focused on the topic of [Main Topic].',
+          'The speakers explored several perspectives regarding this significant issue.'
+        ]
+      },
+      {
+        title: 'Speaker 1 Viewpoint',
+        points: [
+          'Initially, the first speaker emphasized that [Speaker 1 Key Point], highlighting the importance of [Key Evidence/Detail].'
+        ]
+      },
+      {
+        title: 'Speaker 2 Viewpoint / Counterpoint',
+        points: [
+          'In addition / However, the second speaker pointed out that [Speaker 2 Point], arguing that [Supporting Detail].'
+        ]
+      },
+      {
+        title: 'Speaker 3 Contribution & Solution',
+        points: [
+          'Furthermore, the third speaker contributed by explaining that [Speaker 3 Point], suggesting that [Action/Measure].'
+        ]
+      },
+      {
+        title: 'Conclusion / Group Consensus',
+        points: [
+          'In conclusion, the speakers mutually acknowledged that [Key Takeaway/Consensus], which is essential for future development.'
+        ]
+      }
+    ],
+    fullText: `The group discussion was mainly focused on the topic of [Main Topic]. The speakers explored several perspectives regarding this significant issue. Initially, the first speaker emphasized that [Speaker 1 Key Point], highlighting the importance of [Key Evidence/Detail]. In addition / However, the second speaker pointed out that [Speaker 2 Point], arguing that [Supporting Detail]. Furthermore, the third speaker contributed by explaining that [Speaker 3 Point], suggesting that [Action/Measure]. In conclusion, the speakers mutually acknowledged that [Key Takeaway/Consensus], which is essential for future development.`,
+    tips: [
+      'Listen for the topic statement in the first 10 seconds of the discussion.',
+      'Identify each speaker (usually 3 speakers) and note 1 keyword or argument per speaker.',
+      'Maintain continuous oral fluency without pausing or hesitating.',
+      'Use the connector phrases: "Initially", "In addition / However", "Furthermore", "In conclusion".'
+    ]
+  },
+  two_speakers: {
+    id: 'two_speakers',
+    name: '2-Speaker Debate / Discussion Template',
+    duration: '2 min speaking',
+    speakerCount: 2,
+    sections: [
+      {
+        title: 'Introduction',
+        points: [
+          'The speakers were engaged in a constructive dialogue regarding [Main Topic].'
+        ]
+      },
+      {
+        title: 'First Speaker Argument',
+        points: [
+          'The first speaker asserted that [Speaker 1 Point], underlining the fact that [Detail].'
+        ]
+      },
+      {
+        title: 'Second Speaker Perspective',
+        points: [
+          'On the other hand, the second speaker highlighted that [Speaker 2 Point], drawing attention to [Detail].'
+        ]
+      },
+      {
+        title: 'Conclusion',
+        points: [
+          'Overall, both participants agreed that a well-balanced perspective is vital to address [Topic].'
+        ]
+      }
+    ],
+    fullText: `The speakers were engaged in a constructive dialogue regarding [Main Topic]. The first speaker asserted that [Speaker 1 Point], underlining the fact that [Detail]. On the other hand, the second speaker highlighted that [Speaker 2 Point], drawing attention to [Detail]. Overall, both participants agreed that a well-balanced perspective is vital to address [Topic].`,
+    tips: [
+      'Clearly contrast the two speakers using "asserted that" and "on the other hand".',
+      'Keep pronunciation crisp and maintain normal conversational pace.'
+    ]
+  }
+};
+
 /**
  * Backward compatibility export
  */
@@ -364,8 +467,86 @@ export const PEARSON_ACADEMIC_COLLOCATIONS: CollocationItem[] = [
   { id: 147, component1: 'brief', pos1: 'adj', component2: 'history', pos2: 'n' },
   { id: 148, component1: 'brief', pos1: 'adj', component2: 'introduction', pos2: 'n' },
   { id: 149, component1: 'brief', pos1: 'adj', component2: 'overview', pos2: 'n' },
-  { id: 150, component1: 'brief', pos1: 'adj', component2: 'period', pos2: 'n' }
+  { id: 150, component1: 'brief', pos1: 'adj', component2: 'period', pos2: 'n' },
+  { id: 151, component1: 'broad', pos1: 'adj', component2: 'category', pos2: 'n' },
+  { id: 152, component1: 'broad', pos1: 'adj', component2: 'range', pos2: 'n' },
+  { id: 153, component1: 'causal', pos1: 'adj', component2: 'relationship', pos2: 'n' },
+  { id: 154, component1: 'central', pos1: 'adj', component2: 'issue', pos2: 'n' },
+  { id: 155, component1: 'central', pos1: 'adj', component2: 'theme', pos2: 'n' },
+  { id: 156, component1: 'certain', pos1: 'adj', component2: 'circumstances', pos2: 'n' },
+  { id: 157, component1: 'clear', pos1: 'adj', component2: 'distinction', pos2: 'n' },
+  { id: 158, component1: 'clear', pos1: 'adj', component2: 'evidence', pos2: 'n' },
+  { id: 159, component1: 'closely', pos1: 'adv', component2: 'linked', pos2: 'vpp' },
+  { id: 160, component1: 'closely', pos1: 'adv', component2: 'related', pos2: 'vpp' },
+  { id: 161, component1: 'cognitive', pos1: 'adj', component2: 'development', pos2: 'n' },
+  { id: 162, component1: 'coherent', pos1: 'adj', component2: 'argument', pos2: 'n' },
+  { id: 163, component1: 'collective', pos1: 'adj', component2: 'action', pos2: 'n' },
+  { id: 164, component1: 'common', pos1: 'adj', component2: 'feature', pos2: 'n' },
+  { id: 165, component1: 'comparative', pos1: 'adj', component2: 'study', pos2: 'n' },
+  { id: 166, component1: 'complex', pos1: 'adj', component2: 'process', pos2: 'n' },
+  { id: 167, component1: 'conclusive', pos1: 'adj', component2: 'evidence', pos2: 'n' },
+  { id: 168, component1: 'consistent', pos1: 'adj', component2: 'pattern', pos2: 'n' },
+  { id: 169, component1: 'constant', pos1: 'adj', component2: 'rate', pos2: 'n' },
+  { id: 170, component1: 'construct', pos1: 'v', component2: 'model', pos2: 'n' },
+  { id: 171, component1: 'contemporary', pos1: 'adj', component2: 'society', pos2: 'n' },
+  { id: 172, component1: 'crucial', pos1: 'adj', component2: 'role', pos2: 'n' },
+  { id: 173, component1: 'cultural', pos1: 'adj', component2: 'diversity', pos2: 'n' },
+  { id: 174, component1: 'data', pos1: 'n', component2: 'analysis', pos2: 'n' },
+  { id: 175, component1: 'deeply', pos1: 'adv', component2: 'rooted', pos2: 'vpp' },
+  { id: 176, component1: 'define (a)', pos1: 'v', component2: 'concept', pos2: 'n' },
+  { id: 177, component1: 'demonstrate (an)', pos1: 'v', component2: 'ability', pos2: 'n' },
+  { id: 178, component1: 'direct', pos1: 'adj', component2: 'correlation', pos2: 'n' },
+  { id: 179, component1: 'distinct', pos1: 'adj', component2: 'category', pos2: 'n' },
+  { id: 180, component1: 'dominant', pos1: 'adj', component2: 'culture', pos2: 'n' },
+  { id: 181, component1: 'draw (a)', pos1: 'v', component2: 'conclusion', pos2: 'n' },
+  { id: 182, component1: 'economic', pos1: 'adj', component2: 'growth', pos2: 'n' },
+  { id: 183, component1: 'empirical', pos1: 'adj', component2: 'data', pos2: 'n' },
+  { id: 184, component1: 'establish (a)', pos1: 'v', component2: 'relationship', pos2: 'n' },
+  { id: 185, component1: 'ethical', pos1: 'adj', component2: 'issue', pos2: 'n' },
+  { id: 186, component1: 'evidence', pos1: 'n', component2: 'suggests', pos2: 'v' },
+  { id: 187, component1: 'examine (the)', pos1: 'v', component2: 'evidence', pos2: 'n' },
+  { id: 188, component1: 'experimental', pos1: 'adj', component2: 'results', pos2: 'n' },
+  { id: 189, component1: 'extensive', pos1: 'adj', component2: 'research', pos2: 'n' },
+  { id: 190, component1: 'facilitate', pos1: 'v', component2: 'learning', pos2: 'n' },
+  { id: 191, component1: 'fundamental', pos1: 'adj', component2: 'principle', pos2: 'n' },
+  { id: 192, component1: 'gather', pos1: 'v', component2: 'data', pos2: 'n' },
+  { id: 193, component1: 'global', pos1: 'adj', component2: 'economy', pos2: 'n' },
+  { id: 194, component1: 'growing', pos1: 'adj', component2: 'evidence', pos2: 'n' },
+  { id: 195, component1: 'high', pos1: 'adj', component2: 'priority', pos2: 'n' },
+  { id: 196, component1: 'historical', pos1: 'adj', component2: 'context', pos2: 'n' },
+  { id: 197, component1: 'identify (the)', pos1: 'v', component2: 'cause', pos2: 'n' },
+  { id: 198, component1: 'immediate', pos1: 'adj', component2: 'effect', pos2: 'n' },
+  { id: 199, component1: 'important', pos1: 'adj', component2: 'implication', pos2: 'n' },
+  { id: 200, component1: 'increasing', pos1: 'adj', component2: 'trend', pos2: 'n' }
 ];
+
+/**
+ * Returns collocations for a study day in Forward (1 to N) or Backward (N down to 1) order.
+ * Day 1: 100 collocations, Day 2: 150, Day 3: 200, etc. (+50 each day).
+ */
+export function getCollocationsForDay(
+  dayNumber: number,
+  mode: 'forward' | 'backward' = 'forward',
+  customCount?: number
+): CollocationItem[] {
+  const targetCount = customCount ?? (100 + Math.max(0, dayNumber - 1) * 50);
+  const baseList = PEARSON_ACADEMIC_COLLOCATIONS;
+  const list: CollocationItem[] = [];
+
+  for (let i = 0; i < targetCount; i++) {
+    const baseItem = baseList[i % baseList.length];
+    list.push({
+      ...baseItem,
+      id: i + 1
+    });
+  }
+
+  if (mode === 'backward') {
+    return list.slice().reverse();
+  }
+
+  return list;
+}
 
 /**
  * Backward compatibility export

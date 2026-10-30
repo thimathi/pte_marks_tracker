@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import {
   LayoutDashboard,
   Map,
@@ -12,10 +12,13 @@ import {
   FileText,
   Settings,
   Sparkles,
-  Lock
+  Lock,
+  Layers,
+  ChevronRight
 } from 'lucide-react';
 import { usePteData } from '../../context/PteDataContext';
-import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS } from '../../config/constants';
+import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS, PHASE_DEFINITIONS } from '../../config/constants';
+import { formatDateFriendly } from '../../utils/dateUtils';
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -23,18 +26,17 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const { currentDay, days, studyPlan } = usePteData();
+  const { currentDay, currentDayData, days, studyPlan } = usePteData();
   const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
-  const isDay1 = currentDay === 1;
   const currentDayLocked = !days[currentDay]?.gateStatus?.isUnlocked && currentDay > 1;
 
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/mock-exams', label: `Mock Exams (${TOTAL_MOCK_TARGET})`, icon: GraduationCap, badge: '4/Day', highlight: true },
-    { to: '/practice', label: 'Daily Practice', icon: Shuffle, badge: '300 Qs Priority' },
+    { to: '/practice', label: '5-Phase Daily Plan', icon: Layers, badge: '5 Phases · 100 Qs', highlight: true },
+    { to: '/mock-exams', label: `Mock Exam Center`, icon: GraduationCap, badge: '5 Mocks/Day', highlight: false },
     { to: '/roadmap', label: `${totalDays}-Day Roadmap`, icon: Map, badge: `${totalDays} Days` },
+    { to: '/review', label: 'Review & Error Center', icon: CheckSquare },
     { to: '/analytics/questions', label: 'Question Analytics', icon: BarChart3 },
-    { to: '/review', label: 'Review Center', icon: CheckSquare },
     { to: '/analytics', label: 'Trends & Stats', icon: LineChart },
     { to: '/calendar', label: 'Study Calendar', icon: CalendarDays },
     { to: '/report/final', label: `Final ${totalDays}-Day Report`, icon: FileText },
@@ -61,7 +63,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           {/* Day Status Card */}
           <div className="p-3 mb-3 rounded-xl bg-gradient-to-br from-[#19243d] to-[#141c31] border border-[#2b3856]">
             <div className="flex items-center justify-between text-xs mb-1.5">
-              <span className="text-[#a9b5d0] font-medium">Current Focus:</span>
+              <span className="text-[#a9b5d0] font-medium">Daily Focus:</span>
               <span className={`font-semibold px-2 py-0.5 rounded text-[11px] ${
                 days[currentDay]?.status === 'completed'
                   ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
@@ -72,15 +74,46 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 {days[currentDay]?.status === 'completed' ? 'Completed' : currentDayLocked ? 'Locked' : 'In Progress'}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-sm border border-purple-500/30">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-lg bg-blue-600/30 text-blue-300 flex items-center justify-center font-bold text-sm border border-blue-500/30">
                 {currentDayLocked ? <Lock className="w-4 h-4 text-red-400" /> : `D${currentDay}`}
               </div>
               <div>
                 <p className="text-sm font-semibold text-[#edf2ff]">Study Day {currentDay} of {totalDays}</p>
                 <p className="text-xs text-[#a9b5d0]">
-                  Target: 2 Mocks + 300 Practice Qs
+                  5 Phases · 5 Mocks + 100 Qs
                 </p>
+              </div>
+            </div>
+
+            {/* Quick 5-Phase Progress Row */}
+            <div className="pt-2 border-t border-[#2b3856]/60">
+              <div className="flex items-center justify-between text-[10px] text-[#a9b5d0] mb-1">
+                <span>5 Daily Phases</span>
+                <Link to="/practice" onClick={onClose} className="text-blue-400 hover:underline flex items-center">
+                  <span>Open</span>
+                  <ChevronRight className="w-3 h-3" />
+                </Link>
+              </div>
+              <div className="grid grid-cols-5 gap-1">
+                {PHASE_DEFINITIONS.map((p) => {
+                  const mockDone = !!currentDayData?.mockExams?.[`mock0${p.mockIndex + 1}`]?.isCompleted;
+                  return (
+                    <Link
+                      key={p.phaseNumber}
+                      to="/practice"
+                      onClick={onClose}
+                      className={`text-center py-1 rounded text-[10px] font-bold border transition-colors ${
+                        mockDone
+                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                          : 'bg-[#0b1020] text-[#a9b5d0] border-[#2b3856] hover:border-blue-400'
+                      }`}
+                      title={`Phase ${p.phaseNumber}: ${p.mockName}`}
+                    >
+                      P{p.phaseNumber}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -101,7 +134,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     `flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                       isActive
                         ? item.highlight
-                          ? 'bg-purple-600 text-white shadow-md shadow-purple-500/20 font-semibold'
+                          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20 font-semibold'
                           : 'bg-blue-600 text-white shadow-md shadow-blue-500/20 font-semibold'
                         : 'text-[#a9b5d0] hover:bg-[#141c31] hover:text-[#edf2ff]'
                     }`
@@ -114,7 +147,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   {item.badge && (
                     <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${
                       item.highlight
-                        ? 'bg-purple-500/20 text-purple-300 border-purple-500/40'
+                        ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
                         : 'bg-[#253655] text-blue-300 border-[#3a4b70]'
                     }`}>
                       {item.badge}
@@ -131,9 +164,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <div className="p-3 rounded-xl bg-[#141c31] border border-[#2b3856]/60">
             <div className="flex items-center gap-2 mb-1">
               <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-              <span className="text-xs font-semibold text-[#edf2ff]">{totalDays}-Day Intensive Plan</span>
+              <span className="text-xs font-semibold text-[#edf2ff]">{totalDays}-Day Summit Plan</span>
             </div>
-            <p className="text-[10px] text-[#a9b5d0]">Started: Oct 28, 2026 · {TOTAL_MOCK_TARGET} Mocks · 5,100 Qs</p>
+            <p className="text-[10px] text-[#a9b5d0]">
+              Started: {formatDateFriendly(studyPlan?.startDate || '2026-10-30')} · {TOTAL_MOCK_TARGET} Mocks · 5 Phases/Day
+            </p>
           </div>
         </div>
       </aside>

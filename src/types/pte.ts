@@ -178,6 +178,9 @@ export interface QueueItem {
   priorityLabel: string;
   typeIndexInGroup: number; // 1 to count
   typeTotalInGroup: number;
+  phaseNumber?: number; // 1 to 5
+  phaseTitle?: string;
+  phaseQuestionIndex?: number; // 0 to 19
 }
 
 export interface DayPerformanceSummary {
