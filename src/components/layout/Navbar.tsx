@@ -32,7 +32,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
   const { studyPlan, currentDay, currentDayData, days, selectDay } = usePteData();
   const streak = calculateStreak(days);
 
-  // Calculate completion status of each of the 5 phases for today
+  // Calculate completion status of each of the 6 phases for today
   const breakdown = calculateDayBreakdown(currentDayData, studyPlan.questionTargets);
   const phaseStatuses = PHASE_DEFINITIONS.map((phase) => {
     const mockKey = `mock0${phase.mockIndex + 1}`;
@@ -42,8 +42,21 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
     let phaseQuestionsScored = 0;
     phase.questionTypes.forEach((qt) => {
       const attempts = currentDayData?.questionProgress?.[qt.typeId]?.attempts || {};
+      const startIndex =
+        phase.phaseNumber === 6 && qt.typeId === 'repeat_sentence'
+          ? 15
+          : phase.phaseNumber === 6 && qt.typeId === 'write_from_dictation'
+          ? 10
+          : phase.phaseNumber === 6 && qt.typeId === 'read_aloud'
+          ? 8
+          : phase.phaseNumber === 6 && qt.typeId === 'rw_fill_in_blanks'
+          ? 10
+          : phase.phaseNumber === 6 && qt.typeId === 'write_essay'
+          ? 2
+          : 0;
       for (let i = 0; i < qt.count; i++) {
-        if (attempts[i]?.score !== null && attempts[i]?.score !== undefined) {
+        const attempt = attempts[startIndex + i];
+        if (attempt?.score !== null && attempt?.score !== undefined) {
           phaseQuestionsScored++;
         }
       }
@@ -61,8 +74,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
 
   const navLinks = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/practice', label: '5-Phase Plan', icon: Layers, badge: '5 Phases' },
-    { to: '/mock-exams', label: 'Mock Exams', icon: GraduationCap, badge: '5/Day' },
+    { to: '/practice', label: '6-Phase Plan', icon: Layers, badge: '6 Phases · 120 Qs' },
+    { to: '/mock-exams', label: 'Mock Exams', icon: GraduationCap, badge: '6/Day' },
     { to: '/roadmap', label: 'Roadmap', icon: Map },
     { to: '/review', label: 'Review', icon: CheckSquare },
     { to: '/analytics', label: 'Analytics', icon: BarChart3 }
@@ -95,11 +108,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                     PTE Marks Tracker
                   </span>
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 font-semibold border border-blue-500/30 whitespace-nowrap">
-                    5 Phases · 79+ Target
+                    6 Phases · 79+ Target
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 leading-tight truncate">
-                  Start: {formatDateFriendly(studyPlan?.startDate || '2026-10-30')} · 15 Days · 5 Mocks/Day · 100 Qs/Day
+                  Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-01')} · {studyPlan?.durationDays || TOTAL_STUDY_DAYS} Days · 6 Mocks/Day · 120 Qs/Day
                 </p>
               </div>
             </Link>
@@ -135,8 +148,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
 
           {/* Center-Right: Active View Day Switcher & Streak */}
           <div className="hidden md:flex items-center gap-2.5 shrink-0">
-            {/* 5-Phase Mini Status Indicator */}
-            <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-xl px-2 py-1" title="Daily 5 Phases Progress">
+            {/* 6-Phase Mini Status Indicator */}
+            <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-xl px-2 py-1" title="Daily 6 Phases Progress">
               <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mr-1">Phases:</span>
               {phaseStatuses.map((p) => (
                 <Link
@@ -164,7 +177,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                 onChange={(e) => selectDay(Number(e.target.value))}
                 className="bg-slate-950 text-xs font-semibold text-blue-400 rounded-lg px-2 py-1 border border-slate-700 focus:outline-none focus:border-blue-400 cursor-pointer"
               >
-                {Array.from({ length: studyPlan.durationDays || 15 }, (_, i) => i + 1).map((d) => {
+                {Array.from({ length: studyPlan.durationDays || 10 }, (_, i) => i + 1).map((d) => {
                   const dayStatus = days[d]?.status;
                   const isUnlocked = days[d]?.gateStatus?.isUnlocked ?? (d === 1);
                   return (

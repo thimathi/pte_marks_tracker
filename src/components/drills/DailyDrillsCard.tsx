@@ -237,11 +237,11 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
           <div className="flex items-center gap-2 flex-wrap">
             <Sparkles className="w-5 h-5 text-amber-400" />
             <h2 className="text-lg font-bold text-[#edf2ff]">
-              5-Phase Daily Mandatory Drills
+              6-Phase Daily Mandatory Drills
             </h2>
             {isAllTasksFulfilled ? (
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                All 5 Phases Completed ✓
+                All 6 Phases Completed ✓
               </span>
             ) : (
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">
@@ -250,7 +250,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
             )}
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            Exact drills structured across the 5 daily phases: Tongue Twisters 2x, Collocations Fwd & Bwd, and Essay & SGD templates.
+            Exact drills structured across the 6 daily phases: Tongue Twisters 2x, Collocations Fwd & Bwd, and Essay & SGD templates.
           </p>
         </div>
 
@@ -266,7 +266,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
           >
             All Phases
           </button>
-          {[1, 2, 3, 4, 5].map((pNum) => (
+          {[1, 2, 3, 4, 5, 6].map((pNum) => (
             <button
               key={pNum}
               onClick={() => setActivePhaseFilter(pNum)}

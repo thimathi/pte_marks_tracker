@@ -1,37 +1,28 @@
 import { describe, it, expect } from 'vitest';
 import { generateInterleavedQueue, generateGroupedStudyQueue, getPhaseRanges } from '../utils/interleaving';
-import { DEFAULT_QUESTION_TARGETS, QUESTION_TYPES, STUDY_GROUPS } from '../config/constants';
+import { DEFAULT_QUESTION_TARGETS, QUESTION_TYPES } from '../config/constants';
 
-describe('High-Yield Priority Study Plan & 100-Question Daily Queue Generation', () => {
-  it('generates exactly 100 questions in total matching the priority plan', () => {
+describe('High-Yield Priority Study Plan & 120-Question Daily Queue Generation', () => {
+  it('generates exactly 120 questions in total matching the priority plan', () => {
     const queue = generateInterleavedQueue(DEFAULT_QUESTION_TARGETS, 1, 42);
-    expect(queue.length).toBe(100);
+    expect(queue.length).toBe(120);
   });
 
-  it('correctly orders questions by high score weight priority totaling 100 questions', () => {
+  it('correctly structures 120 questions across 6 phases (20 Qs per phase)', () => {
     const queue = generateGroupedStudyQueue();
-    expect(queue.length).toBe(100);
+    expect(queue.length).toBe(120);
 
-    // Verify first question type in queue is Describe Image (15% weight)
+    // Verify first question type in queue is Describe Image (Phase 1)
     expect(queue[0].questionTypeId).toBe('describe_image');
     expect(queue[0].scoreWeight).toBe(15);
+    expect(queue[0].phaseNumber).toBe(1);
 
-    // Verify second group is Summarize Group Discussion (9% weight)
-    const sgdItems = queue.filter(q => q.questionTypeId === 'summarize_group_discussion');
-    expect(sgdItems.length).toBe(8);
-    expect(sgdItems[0].scoreWeight).toBe(9);
-
-    // Verify last question type is Answer Short Questions (2% weight)
-    expect(queue[queue.length - 1].questionTypeId).toBe('answer_short_question');
-    expect(queue[queue.length - 1].scoreWeight).toBe(2);
-
-    // Verify all 16 priority groups exist in STUDY_GROUPS
-    expect(STUDY_GROUPS.length).toBe(16);
-    const totalGroupQuestions = STUDY_GROUPS.reduce((acc, g) => acc + g.totalQuestions, 0);
-    expect(totalGroupQuestions).toBe(100);
+    // Verify Phase 6 questions exist (Indices 100 to 119)
+    const p6Items = queue.filter(q => q.phaseNumber === 6);
+    expect(p6Items.length).toBe(20);
   });
 
-  it('matches each question-type target count exactly across all groups', () => {
+  it('matches each question-type target count exactly summing to 120', () => {
     const queue = generateInterleavedQueue(DEFAULT_QUESTION_TARGETS, 1, 42);
 
     const counts: Record<string, number> = {};
@@ -44,26 +35,29 @@ describe('High-Yield Priority Study Plan & 100-Question Daily Queue Generation',
       expect(counts[meta.id]).toBe(expectedTarget);
     }
 
-    // Exact counts for 100 Qs:
+    // Exact counts for 120 Qs:
     expect(counts['describe_image']).toBe(12);
-    expect(counts['repeat_sentence']).toBe(15);
-    expect(counts['read_aloud']).toBe(8);
+    expect(counts['repeat_sentence']).toBe(20); // 15 + 5
+    expect(counts['read_aloud']).toBe(12); // 8 + 4
     expect(counts['summarize_group_discussion']).toBe(8);
     expect(counts['retell_lecture']).toBe(5);
     expect(counts['respond_to_situation']).toBe(5);
     expect(counts['answer_short_question']).toBe(2);
 
     expect(counts['summarize_written_text']).toBe(4);
-    expect(counts['write_essay']).toBe(2);
+    expect(counts['write_essay']).toBe(4); // 2 + 2
 
-    expect(counts['rw_fill_in_blanks']).toBe(10);
+    expect(counts['rw_fill_in_blanks']).toBe(14); // 10 + 4
     expect(counts['r_fill_in_blanks']).toBe(8);
     expect(counts['reorder_paragraph']).toBe(2);
 
-    expect(counts['write_from_dictation']).toBe(10);
+    expect(counts['write_from_dictation']).toBe(15); // 10 + 5
     expect(counts['listening_fill_in_blanks']).toBe(3);
     expect(counts['highlight_incorrect_words']).toBe(3);
     expect(counts['summarize_spoken_text']).toBe(3);
+
+    const total = Object.values(counts).reduce((a, b) => a + b, 0);
+    expect(total).toBe(120);
   });
 
   it('verifies non-overlapping instance indices across all phases', () => {
@@ -86,18 +80,10 @@ describe('High-Yield Priority Study Plan & 100-Question Daily Queue Generation',
     }
   });
 
-  it('generates correct phase groupings of up to 5 questions', () => {
-    const phases20 = getPhaseRanges(20);
-    expect(phases20.length).toBe(4);
-    expect(phases20[0]).toEqual({ phaseNumber: 1, startIndex: 0, endIndex: 5 });
-    expect(phases20[3]).toEqual({ phaseNumber: 4, startIndex: 15, endIndex: 20 });
-
-    const phases8 = getPhaseRanges(8);
-    expect(phases8.length).toBe(2);
-    expect(phases8[0]).toEqual({ phaseNumber: 1, startIndex: 0, endIndex: 5 });
-    expect(phases8[1]).toEqual({ phaseNumber: 2, startIndex: 5, endIndex: 8 });
-
-    const phases35 = getPhaseRanges(35);
-    expect(phases35.length).toBe(7);
+  it('generates correct phase groupings of up to 20 questions', () => {
+    const phases = getPhaseRanges(120);
+    expect(phases.length).toBe(6);
+    expect(phases[0]).toEqual({ phaseNumber: 1, startIndex: 0, endIndex: 20 });
+    expect(phases[5]).toEqual({ phaseNumber: 6, startIndex: 100, endIndex: 120 });
   });
 });

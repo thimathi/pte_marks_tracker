@@ -32,8 +32,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/practice', label: '5-Phase Daily Plan', icon: Layers, badge: '5 Phases · 100 Qs', highlight: true },
-    { to: '/mock-exams', label: `Mock Exam Center`, icon: GraduationCap, badge: '5 Mocks/Day', highlight: false },
+    { to: '/practice', label: '6-Phase Daily Plan', icon: Layers, badge: '6 Phases · 120 Qs', highlight: true },
+    { to: '/mock-exams', label: `Mock Exam Center`, icon: GraduationCap, badge: '6 Mocks/Day', highlight: false },
     { to: '/roadmap', label: `${totalDays}-Day Roadmap`, icon: Map, badge: `${totalDays} Days` },
     { to: '/review', label: 'Review & Error Center', icon: CheckSquare },
     { to: '/analytics/questions', label: 'Question Analytics', icon: BarChart3 },
@@ -81,21 +81,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-white leading-tight">Study Day {currentDay} of {totalDays}</p>
                 <p className="text-xs text-slate-400 truncate">
-                  5 Phases · 5 Mocks + 100 Qs
+                  6 Phases · 6 Mocks + 120 Qs
                 </p>
               </div>
             </div>
 
-            {/* Quick 5-Phase Progress Row */}
+            {/* Quick 6-Phase Progress Row */}
             <div className="pt-2 border-t border-slate-800">
               <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1">
-                <span>5 Daily Phases</span>
+                <span>6 Daily Phases</span>
                 <Link to="/practice" onClick={onClose} className="text-blue-400 hover:underline flex items-center">
                   <span>Open</span>
                   <ChevronRight className="w-3 h-3" />
                 </Link>
               </div>
-              <div className="grid grid-cols-5 gap-1">
+              <div className="grid grid-cols-6 gap-1">
                 {PHASE_DEFINITIONS.map((p) => {
                   const mockDone = !!currentDayData?.mockExams?.[`mock0${p.mockIndex + 1}`]?.isCompleted;
                   return (
@@ -158,10 +158,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
             <div className="flex items-center gap-2 mb-1">
               <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-              <span className="text-xs font-semibold text-slate-200">{totalDays}-Day Sprint Plan</span>
+              <span className="text-xs font-semibold text-slate-200">{totalDays}-Day Intensive Protocol</span>
             </div>
             <p className="text-[10px] text-slate-400">
-              Start: {formatDateFriendly(studyPlan?.startDate || '2026-10-30')} · 5 Mocks/Day · 100 Qs/Day
+              Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-01')} · 6 Mocks/Day · 120 Qs/Day
             </p>
           </div>
         </div>

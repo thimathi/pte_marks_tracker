@@ -13,7 +13,7 @@ import {
   getExamNumberForMock
 } from '../config/constants';
 
-describe('35 Mock Exam Catalog & 15-Day Shuffled Progression Verification', () => {
+describe('35 Mock Exam Catalog & 6 Daily Mocks Progression Verification', () => {
   it('contains exactly 35 user-specified mock exam papers', () => {
     expect(APEUNI_VIP_MOCKS.length).toBe(35);
     expect(APEUNI_VIP_MOCKS[0]).toBe('【VIP Full Test】PTE Mock Test 45C');
@@ -21,13 +21,13 @@ describe('35 Mock Exam Catalog & 15-Day Shuffled Progression Verification', () =
     expect(APEUNI_VIP_MOCKS[34]).toBe('【VIP Full Test】PTE Mock Test 22B (7th Aug. new version)');
   });
 
-  it('configures 15 study days and 75 total mocks (covering 35 papers 2 full times + Day 15 summit)', () => {
-    expect(TOTAL_STUDY_DAYS).toBe(15);
-    expect(TOTAL_MOCK_TARGET).toBe(75);
-    expect(MOCK_EXAM_SCHEDULE_INDICES.length).toBe(75);
+  it('configures 10 intensive study days and 60 total mocks (6 mocks/day)', () => {
+    expect(TOTAL_STUDY_DAYS).toBe(10);
+    expect(TOTAL_MOCK_TARGET).toBe(60);
+    expect(DAILY_MOCK_SCHEDULE.length).toBe(6);
   });
 
-  it('guarantees Round 1 (Days 1–7, Mocks 1–35) covers all 35 papers without duplicate', () => {
+  it('guarantees Round 1 covers all 35 papers without duplicate', () => {
     const round1Indices = MOCK_EXAM_SCHEDULE_INDICES.slice(0, 35);
     expect(round1Indices.length).toBe(35);
     const uniquePapers = new Set(round1Indices);
@@ -37,52 +37,46 @@ describe('35 Mock Exam Catalog & 15-Day Shuffled Progression Verification', () =
     }
   });
 
-  it('guarantees Round 2 (Days 8–14, Mocks 36–70) covers all 35 papers without duplicate', () => {
-    const round2Indices = MOCK_EXAM_SCHEDULE_INDICES.slice(35, 70);
-    expect(round2Indices.length).toBe(35);
-    const uniquePapers = new Set(round2Indices);
-    expect(uniquePapers.size).toBe(35);
-    for (let i = 0; i < 35; i++) {
-      expect(uniquePapers.has(i)).toBe(true);
-    }
-  });
-
-  it('configures Day 15 Grand Summit with top 5 high-yield VIP simulation papers', () => {
-    const day15Indices = MOCK_EXAM_SCHEDULE_INDICES.slice(70, 75);
-    expect(day15Indices.length).toBe(5);
-    // 45C, 44C, 44B, 44A, 43B
-    expect(day15Indices).toEqual([0, 1, 2, 3, 5]);
-  });
-
-  it('maps every mock to its exact timed session slot and round details', () => {
-    // Test Exam 1 (Day 1 Mock 1)
+  it('maps every mock to its exact user-specified timed session slot', () => {
+    // Mock 1: 8:00 AM – 10:00 AM
     const mock1 = getMockExamDetails(1);
     expect(mock1.examNumber).toBe(1);
-    expect(mock1.roundNumber).toBe(1);
     expect(mock1.timeSlot).toBe('8:00 AM – 10:00 AM');
-    expect(mock1.sessionName).toBe('Session 1: Morning Simulation');
+    expect(mock1.sessionName).toBe('Mock 1: Morning Simulation');
 
-    // Test Exam 5 (Day 1 Mock 5)
+    // Mock 2: 11:00 AM – 1:00 PM
+    const mock2 = getMockExamDetails(2);
+    expect(mock2.timeSlot).toBe('11:00 AM – 1:00 PM');
+
+    // Mock 3: 2:00 PM – 4:00 PM
+    const mock3 = getMockExamDetails(3);
+    expect(mock3.timeSlot).toBe('2:00 PM – 4:00 PM');
+
+    // Mock 4: 8:00 PM – 10:00 PM
+    const mock4 = getMockExamDetails(4);
+    expect(mock4.timeSlot).toBe('8:00 PM – 10:00 PM');
+
+    // Mock 5: 10:30 PM – 12:30 AM
     const mock5 = getMockExamDetails(5);
-    expect(mock5.timeSlot).toBe('11:00 PM – 1:00 AM');
-    expect(mock5.sessionName).toBe('Session 5: Late Night Peak Simulation');
+    expect(mock5.timeSlot).toBe('10:30 PM – 12:30 AM');
 
-    // Test Exam 36 (Day 8 Mock 1 - Start of Round 2)
-    const mock36 = getMockExamDetails(36);
-    expect(mock36.roundNumber).toBe(2);
-    expect(mock36.roundTitle).toContain('Round 2');
-
-    // Test Exam 71 (Day 15 Mock 1 - Summit)
-    const mock71 = getMockExamDetails(71);
-    expect(mock71.roundNumber).toBe(3);
-    expect(mock71.roundTitle).toContain('Grand Summit');
-    expect(mock71.testName).toBe('【VIP Full Test】PTE Mock Test 45C');
+    // Mock 6: 1:00 AM – 3:00 AM
+    const mock6 = getMockExamDetails(6);
+    expect(mock6.timeSlot).toBe('1:00 AM – 3:00 AM');
   });
 
-  it('validates total question targets: 1500 practice + 4500 mock = 6000 total questions', () => {
-    expect(TOTAL_PRACTICE_TARGET).toBe(1500);
-    expect(TOTAL_MOCK_EXAM_QUESTIONS).toBe(4500);
-    expect(TOTAL_MISSION_QUESTIONS).toBe(6000);
+  it('returns 6 mock exams per study day', () => {
+    const day1Mocks = getMockExamsForDay(1);
+    expect(day1Mocks).toEqual(['mock01', 'mock02', 'mock03', 'mock04', 'mock05', 'mock06']);
+    expect(getExamNumberForMock(1, 0)).toBe(1);
+    expect(getExamNumberForMock(1, 5)).toBe(6);
+    expect(getExamNumberForMock(2, 0)).toBe(7);
+  });
+
+  it('validates total question targets: 1200 practice + 3600 mock = 4800 total questions', () => {
+    expect(TOTAL_PRACTICE_TARGET).toBe(1200);
+    expect(TOTAL_MOCK_EXAM_QUESTIONS).toBe(3600);
+    expect(TOTAL_MISSION_QUESTIONS).toBe(4800);
     expect(TOTAL_PRACTICE_TARGET + TOTAL_MOCK_EXAM_QUESTIONS).toBe(TOTAL_MISSION_QUESTIONS);
   });
 });

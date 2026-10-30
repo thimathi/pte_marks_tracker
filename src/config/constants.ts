@@ -1,17 +1,17 @@
 import { QuestionPriority, QuestionTypeMeta, StudyGroupDefinition, TargetScores } from '../types/pte';
 
-export const DEFAULT_START_DATE = '2026-10-30';
-export const FINAL_TARGET_DATE = '2026-11-13'; // Exactly 15 Days: Oct 30 to Nov 13, 2026
+export const DEFAULT_START_DATE = '2026-11-01'; // 10 Intensive Study Days (Oct 30-31 shifted to Nov 1-10)
+export const FINAL_TARGET_DATE = '2026-11-10'; // Exactly 10 Intensive Days: Nov 1 to Nov 10, 2026
 export const APP_TITLE = 'PTE - Daily Study Plan – Superior English';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
-export const TOTAL_STUDY_DAYS = 15; // Exactly 15 Days Mission
-export const DAILY_PRACTICE_TARGET = 100; // 100 Daily Questions ordered across 5 phases (20 Qs per phase)
-export const TOTAL_PRACTICE_TARGET = 1500; // 15 practice days * 100 = 1,500 Individual Questions
-export const DAILY_MOCK_TARGET = 5; // 5 Mock Exams every day (1 Mock per phase)
-export const TOTAL_MOCK_TARGET = 75; // 15 days * 5 = 75 Mocks total (2 Full Rounds of 35 Shuffled VIP Tests + Final Summit Simulation)
+export const TOTAL_STUDY_DAYS = 10; // Exactly 10 Intensive Days (6 Mocks + 120 Qs daily)
+export const DAILY_PRACTICE_TARGET = 120; // 120 Daily Questions ordered across 6 phases (20 Qs per phase)
+export const TOTAL_PRACTICE_TARGET = 1200; // 10 intensive days * 120 = 1,200 Individual Questions
+export const DAILY_MOCK_TARGET = 6; // 6 Mock Exams every day (1 Mock per phase)
+export const TOTAL_MOCK_TARGET = 60; // 10 days * 6 = 60 Mocks total (Complete 35 VIP Tests + 2nd Pass Shuffled)
 export const MOCK_EXAM_QUESTIONS = 60;
-export const TOTAL_MOCK_EXAM_QUESTIONS = 4500; // 75 mocks * 60 questions = 4,500 Mock Exam Questions
-export const TOTAL_MISSION_QUESTIONS = 6000; // 1,500 Individual Questions + 4,500 Mock Questions = 6,000 Questions Cover With Review & Progress
+export const TOTAL_MOCK_EXAM_QUESTIONS = 3600; // 60 mocks * 60 questions = 3,600 Mock Exam Questions
+export const TOTAL_MISSION_QUESTIONS = 4800; // 1,200 Practice Questions + 3,600 Mock Questions = 4,800 Questions
 
 export interface MockScheduleSlot {
   mockIndex: number;
@@ -20,11 +20,12 @@ export interface MockScheduleSlot {
 }
 
 export const DAILY_MOCK_SCHEDULE: MockScheduleSlot[] = [
-  { mockIndex: 0, timeSlot: '8:00 AM – 10:00 AM', sessionName: 'Session 1: Morning Simulation' },
-  { mockIndex: 1, timeSlot: '11:00 AM – 1:00 PM', sessionName: 'Session 2: Late Morning Simulation' },
-  { mockIndex: 2, timeSlot: '2:00 PM – 4:00 PM', sessionName: 'Session 3: Afternoon Simulation' },
-  { mockIndex: 3, timeSlot: '8:00 PM – 10:00 PM', sessionName: 'Session 4: Night Simulation' },
-  { mockIndex: 4, timeSlot: '11:00 PM – 1:00 AM', sessionName: 'Session 5: Late Night Peak Simulation' }
+  { mockIndex: 0, timeSlot: '8:00 AM – 10:00 AM', sessionName: 'Mock 1: Morning Simulation' },
+  { mockIndex: 1, timeSlot: '11:00 AM – 1:00 PM', sessionName: 'Mock 2: Late Morning Simulation' },
+  { mockIndex: 2, timeSlot: '2:00 PM – 4:00 PM', sessionName: 'Mock 3: Afternoon Simulation' },
+  { mockIndex: 3, timeSlot: '8:00 PM – 10:00 PM', sessionName: 'Mock 4: Night Simulation' },
+  { mockIndex: 4, timeSlot: '10:30 PM – 12:30 AM', sessionName: 'Mock 5: Late Night Simulation' },
+  { mockIndex: 5, timeSlot: '1:00 AM – 3:00 AM', sessionName: 'Mock 6: Midnight Peak Simulation' }
 ];
 
 export const DEFAULT_TARGET_SCORES: TargetScores = {
@@ -36,27 +37,26 @@ export const DEFAULT_TARGET_SCORES: TargetScores = {
   mockExam: 76,
 };
 
-// Target progression curve across 15 study days (from baseline 60 to summit 79)
+// Target progression curve across 10 study days (from baseline 60 to summit 79)
 export const DAY_TARGET_SCORES: number[] = [
-  60, 61, 63, 64, 66, // Days 1–5: Baseline Stabilization & Rhythm
-  68, 69, 71, 72, 73, // Days 6–10: Reading & Writing Acceleration
-  74, 75, 77, 78, 79  // Days 11–15: Approaching & Achieving Summit Peak 79+
+  60, 62, 64, 66, 68, // Days 1–5: Baseline Stabilization & Rhythm
+  70, 72, 74, 76, 79  // Days 6–10: Reading & Writing Acceleration to Summit Peak 79+
 ];
 
 export function getDailyMockTarget(_dayNumber: number): number {
-  return 5;
+  return 6;
 }
 
 export function getDailyPracticeTarget(_dayNumber: number): number {
-  return 100;
+  return 120;
 }
 
 export function getMockExamsForDay(_dayNumber: number): string[] {
-  return ['mock01', 'mock02', 'mock03', 'mock04', 'mock05'];
+  return ['mock01', 'mock02', 'mock03', 'mock04', 'mock05', 'mock06'];
 }
 
 export function getExamNumberForMock(dayNumber: number, mockIndex: number): number {
-  return (dayNumber - 1) * 5 + (mockIndex + 1);
+  return (dayNumber - 1) * 6 + (mockIndex + 1);
 }
 
 // 35 Available APEUni VIP Mock Exam Papers (User-Provided Exact Catalog)
@@ -212,8 +212,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'RS',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 15,
-    estMinutes: '15 min',
+    defaultTarget: 20,
+    estMinutes: '18 min',
     isPrediction: true,
     scoreWeight: 7,
     maxScore: 90,
@@ -225,8 +225,8 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'RA',
     skill: 'speaking',
     secondarySkill: 'reading',
-    defaultTarget: 8,
-    estMinutes: '10 min',
+    defaultTarget: 12,
+    estMinutes: '14 min',
     isPrediction: true,
     scoreWeight: 4,
     maxScore: 90,
@@ -303,23 +303,23 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Write Essay',
     shortName: 'WE',
     skill: 'writing',
-    defaultTarget: 2,
-    estMinutes: '20 min',
+    defaultTarget: 4,
+    estMinutes: '25 min',
     isPrediction: false,
     scoreWeight: 7,
     maxScore: 90,
-    description: 'Write a 200–300 word argumentative essay on a given prompt using proper structure. (PTE score weight: 7%)'
+    description: 'Write a 200–300 word argumentative essay on a given prompt using proper structure. (PTE score weight: 7% - High Priority: 6 Mock Essays + 4 Practice Essays Daily)'
   },
 
-  // READING (Total: 20 targeted daily questions)
+  // READING (Total: 24 targeted daily questions)
   {
     id: 'rw_fill_in_blanks',
     name: 'Reading & Writing: Fill in the Blanks',
     shortName: 'R&W FIB',
     skill: 'reading',
     secondarySkill: 'writing',
-    defaultTarget: 10,
-    estMinutes: '15 min',
+    defaultTarget: 14,
+    estMinutes: '18 min',
     isPrediction: true,
     scoreWeight: 7,
     maxScore: 90,
@@ -350,15 +350,15 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     description: 'Arrange text boxes in the correct chronological or logical sequence. (PTE score weight: 3%)'
   },
 
-  // LISTENING (Total: 19 targeted daily questions)
+  // LISTENING (Total: 24 targeted daily questions)
   {
     id: 'write_from_dictation',
     name: 'Write From Dictation',
     shortName: 'WFD',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 10,
-    estMinutes: '10 min',
+    defaultTarget: 15,
+    estMinutes: '15 min',
     isPrediction: true,
     scoreWeight: 5,
     maxScore: 90,
@@ -795,12 +795,12 @@ export const PHASE_DEFINITIONS: PhaseDefinition[] = [
   {
     phaseNumber: 5,
     id: 'phase5',
-    title: 'Phase 5: Synthesis, Speed & Template Reinforcement',
+    title: 'Phase 5: Late Night Simulation & Synthesis Drills',
     subtitle: 'Mock Exam 5 · 20 Daily Questions · Essay Template - 1 · SGD Template - 1',
     mockIndex: 4,
     mockName: 'Mock Exam 5',
-    timeSlot: '11:00 PM – 1:00 AM',
-    sessionName: 'Session 5: Late Night Peak Simulation',
+    timeSlot: '10:30 PM – 12:30 AM',
+    sessionName: 'Mock 5: Late Night Simulation',
     questionCount: 20,
     color: 'rose',
     accentBorder: 'border-rose-500/40',
@@ -877,6 +877,84 @@ export const PHASE_DEFINITIONS: PhaseDefinition[] = [
         notes: 'Official PTE Bridge Summarize Group Discussion 3-speaker template practice.'
       }
     ]
+  },
+  {
+    phaseNumber: 6,
+    id: 'phase6',
+    title: 'Phase 6: Midnight Peak Simulation & High-Yield Essay Mastery',
+    subtitle: 'Mock Exam 6 · 20 Daily Questions · Essay Template - 1 · SGD Template - 1',
+    mockIndex: 5,
+    mockName: 'Mock Exam 6',
+    timeSlot: '1:00 AM – 3:00 AM',
+    sessionName: 'Mock 6: Midnight Peak Simulation',
+    questionCount: 20,
+    color: 'teal',
+    accentBorder: 'border-teal-500/40',
+    accentBg: 'bg-teal-500/10',
+    accentText: 'text-teal-400',
+    badgeBg: 'bg-teal-500/20',
+    badgeBorder: 'border-teal-500/30',
+    badgeText: 'text-teal-300',
+    questionTypes: [
+      {
+        typeId: 'repeat_sentence',
+        name: 'Repeat Sentence (High Frequency)',
+        shortName: 'RS',
+        count: 5,
+        scoreWeight: 7,
+        priorityLabel: 'High Score Weight (7%)'
+      },
+      {
+        typeId: 'write_from_dictation',
+        name: 'Write From Dictation (High Frequency)',
+        shortName: 'WFD',
+        count: 5,
+        scoreWeight: 5,
+        priorityLabel: 'Score Weight (5%)'
+      },
+      {
+        typeId: 'read_aloud',
+        name: 'Read Aloud (Fluency Speed)',
+        shortName: 'RA',
+        count: 4,
+        scoreWeight: 4,
+        priorityLabel: 'Score Weight (4%)'
+      },
+      {
+        typeId: 'rw_fill_in_blanks',
+        name: 'R&W FIB (Collocation Pairs)',
+        shortName: 'R&W FIB',
+        count: 4,
+        scoreWeight: 7,
+        priorityLabel: 'High Score Weight (7%)'
+      },
+      {
+        typeId: 'write_essay',
+        name: 'Write Essay (Prompt Mastery)',
+        shortName: 'WE',
+        count: 2,
+        scoreWeight: 7,
+        priorityLabel: 'High Score Weight (7%)'
+      }
+    ],
+    drills: [
+      {
+        id: 'essay_template_p6',
+        drillKey: 'essay_template',
+        name: 'Write Essay Template - 1',
+        requirement: () => 'Write Essay Template - 1 rep',
+        getTargetCount: () => 1,
+        notes: 'Official PTE Bridge Essay Template practice (Discussion / Problem-Solution).'
+      },
+      {
+        id: 'sgd_template_p6',
+        drillKey: 'sgd_template',
+        name: 'Summarize Group Discussion Template - 1',
+        requirement: () => 'SGD Template - 1 rep',
+        getTargetCount: () => 1,
+        notes: 'Official PTE Bridge Summarize Group Discussion 3-speaker template practice.'
+      }
+    ]
   }
 ];
 
@@ -936,6 +1014,22 @@ export const DEFAULT_ADDITIONAL_EXERCISES = [
     requiredCount: 1,
     phaseNumber: 5,
     notes: 'Phase 5: Official PTE Bridge SGD 3-speaker template practice.'
+  },
+  {
+    id: 'essay_template_p6',
+    name: 'Write Essay Template (Phase 6)',
+    requirement: 'Write Essay Template - 1 rep',
+    requiredCount: 1,
+    phaseNumber: 6,
+    notes: 'Phase 6: Official PTE Bridge Essay Template practice.'
+  },
+  {
+    id: 'sgd_template_p6',
+    name: 'Summarize Group Discussion Template (Phase 6)',
+    requirement: 'SGD Template - 1 rep',
+    requiredCount: 1,
+    phaseNumber: 6,
+    notes: 'Phase 6: Official PTE Bridge SGD 3-speaker template practice.'
   },
   // Backward compatibility aliases
   {

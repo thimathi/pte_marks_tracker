@@ -494,13 +494,13 @@ export const MockExamsPage: React.FC = () => {
             </h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Daily Requirement: 5 Full Mock Exams per day across 5 Timed Sessions + 100 Daily Practice Questions.
+            Daily Requirement: 6 Full Mock Exams per day across 6 Timed Sessions + 120 Daily Practice Questions.
           </p>
         </div>
 
         <div className="flex items-center gap-2 text-xs">
           <span className="px-3 py-1.5 rounded-xl bg-blue-500/10 text-blue-300 border border-blue-500/20 font-semibold">
-            Day {currentDay} Focus: {mockKeys.length} Mock Exams (8-10 AM, 11-1 PM, 2-4 PM, 8-10 PM, 11-1 AM)
+            Day {currentDay} Focus: {mockKeys.length} Mock Exams (8-10 AM, 11-1 PM, 2-4 PM, 8-10 PM, 10:30-12:30 AM, 1-3 AM)
           </span>
         </div>
       </div>
@@ -516,7 +516,7 @@ export const MockExamsPage: React.FC = () => {
         </div>
 
         {/* Responsive Grid: 1 col on mobile, 2 on tablet, 3 on laptop, 5 on wide monitors */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-3.5">
           {mockKeys.map((key, idx) => {
             const mock = currentDayData?.mockExams?.[key];
             const reviewId = `review0${idx + 1}`;
@@ -680,3 +680,4 @@ export const MockExamsPage: React.FC = () => {
     </div>
   );
 };
+

@@ -1,51 +1,59 @@
 import { QueueItem } from '../types/pte';
-import { QUESTION_TYPE_MAP, STUDY_GROUPS } from '../config/constants';
+import { QUESTION_TYPE_MAP, PHASE_DEFINITIONS } from '../config/constants';
 
 /**
- * Generates the structured 300-question daily study queue ordered by High Score Weight Priority:
- *   - Questions are ordered from Highest PTE Impact (15% Describe Image) down to 2% (Answer Short Questions)
- *   - Exactly 300 questions per day + 4 Full Mock Exams per day
+ * Generates the structured 120-question daily study queue ordered across the 6 Daily Phases:
+ *   - Exactly 6 distinct phases with 20 questions each = 120 questions daily
+ *   - Each question type is mapped to its exact instance index
  */
 export function generateGroupedStudyQueue(): QueueItem[] {
   const queue: QueueItem[] = [];
+  const typeInstanceCounter: Record<string, number> = {};
 
-  for (const group of STUDY_GROUPS) {
-    let groupIndex = 0;
-    for (const item of group.items) {
-      const meta = QUESTION_TYPE_MAP.get(item.questionTypeId);
+  for (const phase of PHASE_DEFINITIONS) {
+    let phaseQuestionIndex = 0;
+    for (const qt of phase.questionTypes) {
+      const meta = QUESTION_TYPE_MAP.get(qt.typeId);
       if (!meta) continue;
 
-      for (let i = 0; i < item.count; i++) {
-        const instanceIndex = item.startInstanceIndex + i;
+      const startIndex = typeInstanceCounter[qt.typeId] || 0;
+      for (let i = 0; i < qt.count; i++) {
+        const instanceIndex = startIndex + i;
         const currentOverallIndex = queue.length;
-        const phaseNumber = Math.min(5, Math.floor(currentOverallIndex / 20) + 1);
-        const phaseQuestionIndex = currentOverallIndex % 20;
 
         queue.push({
-          id: `${group.id}_${item.questionTypeId}_${i}`,
-          questionTypeId: item.questionTypeId,
+          id: `${phase.id}_${qt.typeId}_${instanceIndex}`,
+          questionTypeId: qt.typeId,
           questionTypeName: meta.name,
           skill: meta.skill,
           secondarySkill: meta.secondarySkill,
           instanceIndex,
-          isPrediction: item.priority === 'prediction' || meta.isPrediction,
-          scoreWeight: item.scoreWeight ?? meta.scoreWeight,
+          isPrediction: meta.isPrediction,
+          scoreWeight: qt.scoreWeight ?? meta.scoreWeight,
           overallQueueIndex: currentOverallIndex,
-          groupId: group.id,
-          groupNumber: group.groupNumber,
-          groupTitle: group.title,
-          groupIndex,
-          groupTotal: group.totalQuestions,
-          priority: item.priority,
-          priorityLabel: item.priorityLabel,
+          groupId: qt.typeId,
+          groupNumber: phase.phaseNumber,
+          groupTitle: `${phase.title} · ${meta.name}`,
+          groupIndex: phaseQuestionIndex,
+          groupTotal: phase.questionCount,
+          priority:
+            meta.scoreWeight >= 9
+              ? 'prediction'
+              : meta.scoreWeight >= 6
+              ? 'hard'
+              : meta.scoreWeight >= 4
+              ? 'medium'
+              : 'easy',
+          priorityLabel: qt.priorityLabel,
           typeIndexInGroup: i + 1,
-          typeTotalInGroup: item.count,
-          phaseNumber,
-          phaseTitle: `Phase ${phaseNumber}`,
+          typeTotalInGroup: qt.count,
+          phaseNumber: phase.phaseNumber,
+          phaseTitle: phase.title,
           phaseQuestionIndex
         });
-        groupIndex++;
+        phaseQuestionIndex++;
       }
+      typeInstanceCounter[qt.typeId] = startIndex + qt.count;
     }
   }
 
@@ -53,7 +61,7 @@ export function generateGroupedStudyQueue(): QueueItem[] {
 }
 
 /**
- * Standard queue generator function matching the 4-section, 193-question prioritized study plan.
+ * Standard queue generator function matching the 6-phase, 120-question study plan.
  * Retains signature for backward compatibility with studyPlan parameters.
  */
 export function generateInterleavedQueue(
@@ -65,27 +73,27 @@ export function generateInterleavedQueue(
 }
 
 /**
- * Returns questions filtered by Phase Number (1 to 5, exactly 20 questions each)
+ * Returns questions filtered by Phase Number (1 to 6, exactly 20 questions each)
  */
 export function getPhaseQuestions(phaseNumber: number, queue: QueueItem[]): QueueItem[] {
-  return queue.filter(q => q.phaseNumber === phaseNumber);
+  return queue.filter((q) => q.phaseNumber === phaseNumber);
 }
 
 /**
- * Returns questions filtered by group ID ('group_1', 'group_2', 'group_3', 'group_4')
+ * Returns questions filtered by group ID ('describe_image', 'repeat_sentence', etc.)
  */
 export function getGroupQuestions(groupId: string, queue: QueueItem[]): QueueItem[] {
-  return queue.filter(q => q.groupId === groupId);
+  return queue.filter((q) => q.groupId === groupId);
 }
 
 /**
- * Calculates phase groupings (up to 5 questions per phase) for a given target count
+ * Calculates phase groupings for a given target count
  */
 export function getPhaseRanges(targetCount: number): { phaseNumber: number; startIndex: number; endIndex: number }[] {
   const ranges = [];
   let phase = 1;
-  for (let st = 0; st < targetCount; st += 5) {
-    const en = Math.min(st + 5, targetCount);
+  for (let st = 0; st < targetCount; st += 20) {
+    const en = Math.min(st + 20, targetCount);
     ranges.push({
       phaseNumber: phase++,
       startIndex: st,

@@ -55,7 +55,7 @@ export const PracticePage: React.FC = () => {
   // Active Phase Filter: 'all' | 1 | 2 | 3 | 4 | 5
   const [selectedPhase, setSelectedPhase] = useState<number | 'all'>('all');
 
-  // Generate 100 questions ordered by High Score Weight Priority across 5 phases
+  // Generate 100 questions ordered by High Score Weight Priority across 6 phases
   const fullQueue: QueueItem[] = useMemo(() => {
     return generateInterleavedQueue(
       studyPlan.questionTargets,
@@ -272,7 +272,7 @@ export const PracticePage: React.FC = () => {
               </span>
             </div>
 
-            {/* 100 Qs Counter */}
+            {/* 120 Qs Counter */}
             <div className="bg-slate-950/60 border border-slate-800 rounded-2xl px-3 sm:px-4 py-2 text-center min-w-[85px]">
               <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400 block">Practice Qs</span>
               <span className={`text-base font-bold ${breakdown.totalCompleted >= breakdown.totalDailyTarget ? 'text-emerald-400' : 'text-slate-100'}`}>
@@ -314,9 +314,9 @@ export const PracticePage: React.FC = () => {
                 : 'bg-slate-950/80 text-slate-400 hover:text-slate-200 border border-slate-800 hover:border-slate-700'
             }`}
           >
-            <span>All 5 Phases</span>
+            <span>All 6 Phases</span>
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-900 font-mono">
-              100 Qs
+              120 Qs
             </span>
           </button>
 
@@ -938,3 +938,4 @@ export const PracticePage: React.FC = () => {
     </div>
   );
 };
+

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Target,
@@ -14,435 +14,495 @@ import {
   ChevronRight,
   Sparkles,
   BarChart3,
-  Mountain,
   Layers,
-  PenTool
+  PenTool,
+  Check,
+  Calendar,
+  X,
+  FileText
 } from 'lucide-react';
 import { usePteData } from '../context/PteDataContext';
-import { calculateDayBreakdown, calculateStreak, getWeaknessAnalysis } from '../utils/scoring';
-import { formatDateFriendly, isDatePast } from '../utils/dateUtils';
+import { calculateDayBreakdown, calculateStreak } from '../utils/scoring';
+import { formatDateFriendly } from '../utils/dateUtils';
 import {
   DAY_TARGET_SCORES,
-  DEFAULT_ADDITIONAL_EXERCISES,
   TOTAL_MOCK_TARGET,
-  TOTAL_PRACTICE_TARGET,
   TOTAL_STUDY_DAYS,
   getMockExamsForDay,
   getExamNumberForMock,
   PHASE_DEFINITIONS,
-  getAcademicCollocationsTarget
+  QUESTION_TYPES,
+  DAILY_MOCK_SCHEDULE
 } from '../config/constants';
 import { DailyDrillsCard } from '../components/drills/DailyDrillsCard';
 import { CompletionGate } from '../components/gate/CompletionGate';
-import { MasterTargetTrackerCard } from '../components/analytics/MasterTargetTrackerCard';
 
 export const DashboardPage: React.FC = () => {
-  const { studyPlan, currentDay, currentDayData, days, selectDay } = usePteData();
+  const { studyPlan, currentDay, currentDayData, days, selectDay, updateScore } = usePteData();
 
   // Metrics for current active day
   const breakdown = calculateDayBreakdown(currentDayData, studyPlan.questionTargets);
   const streak = calculateStreak(days);
-
   const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
 
-  // Overall journey calculation
-  let totalCompletedAcrossJourney = 0;
-  let completedDaysCount = 0;
-  let overdueDaysCount = 0;
-  let totalMocksCompleted = 0;
+  // Modal state for direct question-wise quick scoring from Dashboard
+  const [quickScoreModal, setQuickScoreModal] = useState<{
+    typeId: string;
+    typeName: string;
+    qIndex: number;
+    currentScore: number | null;
+  } | null>(null);
+  const [modalScoreVal, setModalScoreVal] = useState<string>('');
 
-  for (let d = 1; d <= totalDays; d++) {
-    const day = days[d];
-    if (day) {
-      if (day.status === 'completed') {
-        completedDaysCount++;
-      } else if (isDatePast(day.date) && day.gateStatus?.isUnlocked) {
-        overdueDaysCount++;
-      }
-      const b = calculateDayBreakdown(day, studyPlan.questionTargets);
-      totalCompletedAcrossJourney += b.totalCompleted;
-
-      // Count completed mocks
-      const mocks = day.mockExams || {};
-      for (const m of Object.values(mocks)) {
-        if (m && m.isCompleted) {
-          totalMocksCompleted++;
-        }
-      }
-    }
-  }
-
-  const journeyPercent = Math.round((completedDaysCount / totalDays) * 100);
-  const remainingQuestionsToday = Math.max(0, breakdown.totalDailyTarget - breakdown.totalCompleted);
-  const targetForToday = DAY_TARGET_SCORES[currentDay - 1] || studyPlan.targetScores.overall;
-
-  const weakness = getWeaknessAnalysis(
-    {
-      speaking: breakdown.speakingAverage,
-      writing: breakdown.writingAverage,
-      reading: breakdown.readingAverage,
-      listening: breakdown.listeningAverage
-    },
-    studyPlan.targetScores
-  );
-
-  // Mocks for currentDay (5 Mocks every day across the 5 phases)
+  // 6 Daily Mock Exams for currentDay
   const mockKeys = getMockExamsForDay(currentDay);
 
   const todayMocks = mockKeys.map((key, idx) => {
     const examNum = getExamNumberForMock(currentDay, idx);
     const mockRec = currentDayData?.mockExams?.[key];
     const revRec = currentDayData?.mockReviews?.[`review0${idx + 1}`];
+    const schedule = DAILY_MOCK_SCHEDULE[idx];
     return {
       key,
       examNum,
+      timeSlot: schedule?.timeSlot || '',
+      sessionName: schedule?.sessionName || `Mock ${idx + 1}`,
       isCompleted: !!mockRec?.isCompleted,
       score: mockRec?.overallScore,
+      speakingScore: mockRec?.speakingScore,
+      writingScore: mockRec?.writingScore,
+      readingScore: mockRec?.readingScore,
+      listeningScore: mockRec?.listeningScore,
       reviewCompleted: !!revRec?.isCompleted
     };
   });
 
-  // Determine next unfinished task based on the 5 phases
-  let nextTask = {
-    title: 'Start Phase 1: Mock Exam 1 & Fluency',
-    desc: 'Mock Exam 1 + 20 Daily Questions + Tongue Twisters 2x',
-    link: '/practice',
-    btnText: 'Open Phase 1'
-  };
+  const completedMocksCount = todayMocks.filter((m) => m.isCompleted).length;
+  const mockPercent = Math.round((completedMocksCount / mockKeys.length) * 100);
 
-  const pendingMock = todayMocks.find((m) => !m.isCompleted);
-  const pendingReview = todayMocks.find((m) => m.isCompleted && !m.reviewCompleted);
+  // 120 Daily Questions metrics
+  const totalPracticeTarget = breakdown.totalDailyTarget || 120;
+  const questionsCompleted = breakdown.totalCompleted;
+  const practicePercent = Math.min(100, Math.round((questionsCompleted / totalPracticeTarget) * 100));
 
-  if (pendingMock) {
-    const mockIdx = mockKeys.indexOf(pendingMock.key) + 1;
-    nextTask = {
-      title: `Complete Phase ${mockIdx}: Mock Exam #${pendingMock.examNum}`,
-      desc: `Simulation ${mockIdx} of 5 (60 Qs timed test) + 20 Practice Qs`,
-      link: '/mock-exams',
-      btnText: 'Take Mock Exam'
-    };
-  } else if (pendingReview) {
-    nextTask = {
-      title: `Mock Exam #${pendingReview.examNum} Deep Error Review`,
-      desc: 'Review mistakes, incorrect collocations, and oral fluency analysis',
-      link: '/mock-exams',
-      btnText: 'Review Mock Exam'
-    };
-  } else if (breakdown.totalCompleted < breakdown.totalDailyTarget) {
-    nextTask = {
-      title: 'Complete 20 Daily Practice Questions',
-      desc: `${remainingQuestionsToday} questions remaining across today's 5 phases`,
-      link: '/practice',
-      btnText: 'Open Practice Workspace'
-    };
-  } else if (!currentDayData?.gateStatus?.dailyPracticeReviewCompleted) {
-    nextTask = {
-      title: 'Confirm Daily Practice Review',
-      desc: 'Check low-scoring questions in the Review Center',
-      link: '/review',
-      btnText: 'Review Center'
-    };
-  } else {
-    nextTask = {
-      title: `Pass Day ${currentDay} Completion Gate`,
-      desc: `Unlock Day ${currentDay + 1} and roll forward`,
-      link: '#gate',
-      btnText: 'View Gate'
-    };
+  // Write Essay tracking: 6 Essays in Mocks + 4 in Practice
+  const mockEssaysDone = completedMocksCount; // Every mock includes 1 full essay
+  const weAttempts = currentDayData?.questionProgress?.['write_essay']?.attempts || {};
+  let practiceEssaysDone = 0;
+  for (let i = 0; i < 4; i++) {
+    if (weAttempts[i]?.score !== null && weAttempts[i]?.score !== undefined) {
+      practiceEssaysDone++;
+    }
   }
+  const totalEssaysDone = mockEssaysDone + practiceEssaysDone;
 
-  const mocksDoneCount = todayMocks.filter((m) => m.isCompleted).length;
+  // Handle direct score saving from dashboard
+  const handleSaveQuickScore = async () => {
+    if (!quickScoreModal) return;
+    const num = modalScoreVal.trim() === '' ? null : Number(modalScoreVal);
+    const finalScore = num !== null && !isNaN(num) ? Math.min(Math.max(0, num), 90) : null;
+    await updateScore(currentDay, quickScoreModal.typeId, quickScoreModal.qIndex, {
+      score: finalScore
+    });
+    setQuickScoreModal(null);
+  };
 
   return (
     <div className="space-y-6">
-      {/* Hero Welcome Header */}
-      <div className="rounded-3xl bg-gradient-to-r from-[#192746] via-[#151d32] to-[#11192d] border border-slate-800 p-6 lg:p-8 relative overflow-hidden shadow-xl">
-        <div className="relative z-10 max-w-3xl space-y-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-              Day {currentDay} of {totalDays} · {formatDateFriendly(currentDayData?.date || studyPlan.startDate)}
-            </span>
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
-              <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-              {streak} Days Active Streak
-            </span>
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30">
-              {totalMocksCompleted} / {TOTAL_MOCK_TARGET} Mocks Completed
-            </span>
-            {overdueDaysCount > 0 && (
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-300 border border-red-500/30 flex items-center gap-1">
-                <AlertTriangle className="w-3.5 h-3.5 text-red-400" />
-                {overdueDaysCount} Overdue Tasks Rolled Over
+      {/* Top Protocol Header */}
+      <div className="rounded-3xl bg-slate-900 border border-slate-800 p-6 lg:p-7 relative overflow-hidden">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">
+                PTE Superior 79+
               </span>
-            )}
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                10-Day Intensive Protocol
+              </span>
+              <span className="text-xs text-slate-400">
+                Started {formatDateFriendly(studyPlan?.startDate || '2026-11-01')}
+              </span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              6 Mock Exams · 120 Questions Daily Protocol
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
+              Strict 6-Session Daily Schedule: 6 Full Timed Simulations + 120 High-Yield Questions in Breaks + 10 Write Essays (6 Mock + 4 Practice).
+            </p>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#edf2ff] flex items-center gap-3">
-            <span>PTE - Daily Study Plan – Superior English</span>
-          </h1>
-          <p className="text-sm text-[#a9b5d0] leading-relaxed">
-            PTE Bridge · Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate || '2026-10-30')}</b> · Target: <b className="text-blue-400">{studyPlan.targetScores.overall}+ Overall</b> (Day {currentDay} Target: <b className="text-emerald-400">{targetForToday}+</b>).
-            {' '}Structure: <b>5 Daily Phases</b> · 5 Mocks/Day · 100 Practice Questions/Day (20 Qs per phase).
-          </p>
-
-          <div className="flex flex-wrap gap-3 pt-2">
-            <Link
-              to="/practice"
-              className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-sm flex items-center gap-2 transition-all hover:scale-105"
-            >
-              <Layers className="w-4 h-4 text-white" />
-              <span>Open 5-Phase Plan (Day {currentDay})</span>
-            </Link>
-            <Link
-              to="/mock-exams"
-              className="px-5 py-2.5 rounded-xl bg-[#243553] hover:bg-[#30476c] text-xs font-semibold text-[#edf2ff] border border-[#405477] flex items-center gap-2 transition-all"
-            >
-              <GraduationCap className="w-4 h-4 text-purple-400" />
-              <span>Mock Exam Center (5 Today)</span>
-            </Link>
+          {/* Active Day Switcher */}
+          <div className="flex items-center gap-3 self-start lg:self-center shrink-0">
+            <div className="bg-slate-950 border border-slate-800 rounded-2xl p-2.5 flex items-center gap-3">
+              <div>
+                <span className="text-[10px] text-slate-400 block font-semibold uppercase">Viewing Day:</span>
+                <select
+                  value={currentDay}
+                  onChange={(e) => selectDay(Number(e.target.value))}
+                  className="bg-slate-900 text-sm font-bold text-blue-400 rounded-lg px-2.5 py-1 border border-slate-700 focus:outline-none cursor-pointer"
+                >
+                  {Array.from({ length: totalDays }, (_, i) => i + 1).map((d) => (
+                    <option key={d} value={d}>
+                      Study Day {d}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="border-l border-slate-800 pl-3">
+                <span className="text-[10px] text-slate-400 block">Streak</span>
+                <span className="text-sm font-extrabold text-amber-300 flex items-center gap-1">
+                  <Flame className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                  {streak} Days
+                </span>
+              </div>
+            </div>
           </div>
-        </div>
-
-        {/* Decorative target emblem */}
-        <div className="hidden lg:block absolute right-8 top-1/2 -translate-y-1/2 opacity-15 pointer-events-none">
-          <Target className="w-64 h-64 text-blue-400" />
-        </div>
-      </div>
-
-      {/* Primary KPI Metrics Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Journey Completion */}
-        <div className="p-5 rounded-2xl bg-[#141c31] border border-slate-800 space-y-2">
-          <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
-            <span>{totalDays}-Day Summit Plan</span>
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-extrabold text-[#edf2ff]">{completedDaysCount} / {totalDays}</span>
-            <span className="text-xs text-[#a9b5d0]">Days ({journeyPercent}%)</span>
-          </div>
-          <div className="w-full h-2 rounded-full bg-[#0e1729] overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-blue-500 to-emerald-400 rounded-full transition-all duration-500"
-              style={{ width: `${journeyPercent}%` }}
-            />
-          </div>
-          <p className="text-[11px] text-[#a9b5d0]">{totalDays - completedDaysCount} days remaining until summit</p>
-        </div>
-
-        {/* Card 2: Today's Mock Exams (5/Day) */}
-        <div className="p-5 rounded-2xl bg-[#141c31] border border-purple-500/30 space-y-2">
-          <div className="flex items-center justify-between text-xs text-purple-300">
-            <span className="font-semibold">Today's Mock Exams (5/Day)</span>
-            <GraduationCap className="w-4 h-4 text-purple-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-extrabold text-[#edf2ff]">
-              {mocksDoneCount} / {todayMocks.length}
-            </span>
-            <span className="text-xs text-[#a9b5d0]">Done</span>
-          </div>
-          <div className="w-full h-2 rounded-full bg-[#0e1729] overflow-hidden">
-            <div
-              className="h-full bg-purple-500 rounded-full transition-all duration-500"
-              style={{ width: `${todayMocks.length > 0 ? (mocksDoneCount / todayMocks.length) * 100 : 0}%` }}
-            />
-          </div>
-          <p className="text-[11px] text-[#a9b5d0]">
-            {todayMocks.length} Mock {todayMocks.length === 1 ? 'Exam' : 'Exams'} (1 per phase)
-          </p>
-        </div>
-
-        {/* Card 3: Today's Practice Target (100 Qs across 5 phases) */}
-        <div className="p-5 rounded-2xl bg-[#141c31] border border-slate-800 space-y-2">
-          <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
-            <span>100 Practice Qs (5 Phases)</span>
-            <Shuffle className="w-4 h-4 text-blue-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-extrabold text-[#edf2ff]">
-              {breakdown.totalCompleted} / {breakdown.totalDailyTarget}
-            </span>
-            <span className="text-xs text-[#a9b5d0]">({breakdown.completionPercentage}%)</span>
-          </div>
-          <div className="w-full h-2 rounded-full bg-[#0e1729] overflow-hidden">
-            <div
-              className="h-full bg-blue-500 rounded-full transition-all duration-500"
-              style={{ width: `${breakdown.completionPercentage}%` }}
-            />
-          </div>
-          <p className="text-[11px] text-[#a9b5d0]">
-            {remainingQuestionsToday > 0
-              ? `${remainingQuestionsToday} questions left to score today`
-              : `Daily ${breakdown.totalDailyTarget} questions target met!`}
-          </p>
-        </div>
-
-        {/* Card 4: Daily Practice Avg */}
-        <div className="p-5 rounded-2xl bg-[#141c31] border border-slate-800 space-y-2">
-          <div className="flex items-center justify-between text-xs text-[#a9b5d0]">
-            <span>Daily Practice Avg</span>
-            <TrendingUp className="w-4 h-4 text-emerald-400" />
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-extrabold text-[#edf2ff]">
-              {breakdown.dailyAverage !== null ? breakdown.dailyAverage.toFixed(1) : '—'}
-            </span>
-            <span className="text-xs text-[#a9b5d0]">/ 90</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-xs text-blue-300">
-            <Target className="w-3.5 h-3.5" />
-            <span>Target: {targetForToday}+</span>
-          </div>
-          <p className="text-[11px] text-[#a9b5d0]">{breakdown.dailyCount} scored practice attempts</p>
         </div>
       </div>
 
-      {/* 5 Daily Phases Mission Grid */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Layers className="w-5 h-5 text-blue-400" />
-            <h2 className="text-base font-bold text-[#edf2ff]">
-              Today's 5 Study Phases (Mission Checklist)
-            </h2>
+      {/* Primary KPI Command Center (6 Mocks + 120 Questions + 10 Write Essays) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* KPI 1: 6 Mock Exams */}
+        <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <GraduationCap className="w-5 h-5 text-blue-400" />
+                <h2 className="text-sm font-bold text-white">6 Daily Mock Exams</h2>
+              </div>
+              <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                completedMocksCount === 6
+                  ? 'bg-emerald-500/20 text-emerald-300'
+                  : 'bg-blue-500/20 text-blue-300'
+              }`}>
+                {completedMocksCount} / 6 Done
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-400">
+              6 Timed Full Simulations (60 Qs each = 360 Exam Qs daily).
+            </p>
+
+            {/* Progress Bar */}
+            <div className="w-full bg-slate-950 rounded-full h-2 mt-3 overflow-hidden">
+              <div
+                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${mockPercent}%` }}
+              />
+            </div>
           </div>
+
+          {/* 6 Mock Status Chips with exact User Timings */}
+          <div className="grid grid-cols-2 gap-2 pt-1">
+            {todayMocks.map((m, idx) => (
+              <Link
+                key={m.key}
+                to="/mock-exams"
+                className={`p-2 rounded-xl border text-left transition-colors ${
+                  m.isCompleted
+                    ? 'bg-emerald-500/10 border-emerald-500/30 hover:border-emerald-500/50'
+                    : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="text-[10px] font-bold text-slate-300">Mock {idx + 1}</span>
+                  {m.isCompleted ? (
+                    <span className="text-[10px] font-bold text-emerald-400">{m.score}/90</span>
+                  ) : (
+                    <span className="text-[9px] text-amber-400">Pending</span>
+                  )}
+                </div>
+                <span className="text-[10px] text-slate-400 block font-mono truncate">{m.timeSlot}</span>
+              </Link>
+            ))}
+          </div>
+
           <Link
-            to="/practice"
-            className="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors"
+            to="/mock-exams"
+            className="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition-colors flex items-center justify-center gap-1.5"
           >
-            <span>Open Practice Workspace</span>
-            <ChevronRight className="w-3.5 h-3.5" />
+            <span>Enter & Review Mock Scores</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3.5">
-          {PHASE_DEFINITIONS.map((phase) => {
-            const mockKey = `mock0${phase.mockIndex + 1}`;
-            const mockRec = currentDayData?.mockExams?.[mockKey];
-            const examNum = getExamNumberForMock(currentDay, phase.mockIndex);
-            const isMockDone = !!mockRec?.isCompleted;
+        {/* KPI 2: 120 Practice Questions */}
+        <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Target className="w-5 h-5 text-indigo-400" />
+                <h2 className="text-sm font-bold text-white">120 Daily Questions</h2>
+              </div>
+              <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                questionsCompleted >= 120
+                  ? 'bg-emerald-500/20 text-emerald-300'
+                  : 'bg-indigo-500/20 text-indigo-300'
+              }`}>
+                {questionsCompleted} / 120 Scored
+              </span>
+            </div>
 
-            // Questions scored for this phase
-            let phaseQuestionsScored = 0;
-            phase.questionTypes.forEach((qt) => {
-              const attempts = currentDayData?.questionProgress?.[qt.typeId]?.attempts || {};
-              for (let i = 0; i < qt.count; i++) {
-                if (attempts[i]?.score !== null && attempts[i]?.score !== undefined) {
-                  phaseQuestionsScored++;
-                }
-              }
-            });
-            const isQuestionsDone = phaseQuestionsScored >= phase.questionCount;
+            <p className="text-xs text-slate-400">
+              6 Phases × 20 Questions in breaks between mocks.
+            </p>
 
-            // Check drills for this phase
-            let isDrillsDone = false;
-            if (phase.phaseNumber === 1) {
-              const twCount =
-                (currentDayData?.additionalExercises?.['tongue_twister']?.completedCount ?? 0) ||
-                (currentDayData?.additionalExercises?.['tongue_twisters']?.completedCount ?? 0);
-              isDrillsDone = twCount >= 2;
-            } else if (phase.phaseNumber === 2) {
-              const cFwd =
-                (currentDayData?.additionalExercises?.['collocations_fwd']?.completedCount ?? 0) ||
-                (currentDayData?.additionalExercises?.['academic_collocations']?.completedCount ?? 0);
-              isDrillsDone = cFwd >= getAcademicCollocationsTarget(currentDay);
-            } else if (phase.phaseNumber === 3) {
-              const cBwd = currentDayData?.additionalExercises?.['collocations_bwd']?.completedCount ?? 0;
-              isDrillsDone = cBwd >= getAcademicCollocationsTarget(currentDay);
-            } else if (phase.phaseNumber === 4) {
-              const e4 =
-                (currentDayData?.additionalExercises?.['essay_template_p4']?.completedCount ?? 0) ||
-                (currentDayData?.additionalExercises?.['essay_template']?.completedCount ? 1 : 0);
-              const s4 = currentDayData?.additionalExercises?.['sgd_template_p4']?.completedCount ?? 0;
-              isDrillsDone = e4 >= 1 && s4 >= 1;
-            } else if (phase.phaseNumber === 5) {
-              const e5 =
-                (currentDayData?.additionalExercises?.['essay_template_p5']?.completedCount ?? 0) ||
-                (currentDayData?.additionalExercises?.['essay_template']?.completedCount &&
-                currentDayData?.additionalExercises?.['essay_template']?.completedCount >= 2
-                  ? 1
-                  : 0);
-              const s5 = currentDayData?.additionalExercises?.['sgd_template_p5']?.completedCount ?? 0;
-              isDrillsDone = e5 >= 1 && s5 >= 1;
-            }
-
-            const isPhaseDone = isMockDone && isQuestionsDone && isDrillsDone;
-
-            return (
+            {/* Progress Bar */}
+            <div className="w-full bg-slate-950 rounded-full h-2 mt-3 overflow-hidden">
               <div
-                key={phase.phaseNumber}
-                className={`p-4 rounded-2xl border transition-all flex flex-col justify-between space-y-3 ${
-                  isPhaseDone
-                    ? 'bg-[#10192c] border-emerald-500/40 shadow-sm'
-                    : 'bg-[#141c31] border-slate-800 hover:border-blue-500/40'
-                }`}
-              >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border ${phase.badgeBg} ${phase.badgeText} ${phase.badgeBorder}`}
-                    >
-                      Phase {phase.phaseNumber}
+                className="bg-indigo-500 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${practicePercent}%` }}
+              />
+            </div>
+          </div>
+
+          {/* 6 Phases mini progress badges */}
+          <div className="grid grid-cols-3 gap-2 pt-1">
+            {PHASE_DEFINITIONS.map((p) => {
+              const attempts = currentDayData?.questionProgress || {};
+              let pScored = 0;
+              p.questionTypes.forEach((qt) => {
+                const atts = attempts[qt.typeId]?.attempts || {};
+                const startIndex =
+                  p.phaseNumber === 6 && qt.typeId === 'repeat_sentence' ? 15
+                  : p.phaseNumber === 6 && qt.typeId === 'write_from_dictation' ? 10
+                  : p.phaseNumber === 6 && qt.typeId === 'read_aloud' ? 8
+                  : p.phaseNumber === 6 && qt.typeId === 'rw_fill_in_blanks' ? 10
+                  : p.phaseNumber === 6 && qt.typeId === 'write_essay' ? 2
+                  : 0;
+                for (let i = 0; i < qt.count; i++) {
+                  if (atts[startIndex + i]?.score !== null && atts[startIndex + i]?.score !== undefined) {
+                    pScored++;
+                  }
+                }
+              });
+
+              return (
+                <Link
+                  key={p.phaseNumber}
+                  to="/practice"
+                  className={`p-2 rounded-xl border text-center transition-colors ${
+                    pScored >= 20
+                      ? 'bg-emerald-500/10 border-emerald-500/30'
+                      : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <span className="text-[10px] font-bold text-slate-300 block">Phase {p.phaseNumber}</span>
+                  <span className={`text-[11px] font-extrabold ${pScored >= 20 ? 'text-emerald-400' : 'text-slate-400'}`}>
+                    {pScored} / 20
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+
+          <Link
+            to="/practice"
+            className="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition-colors flex items-center justify-center gap-1.5"
+          >
+            <span>Open Practice Workspace (120 Qs)</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {/* KPI 3: Write Essay Heavy Focus (10 Essays Daily) */}
+        <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <PenTool className="w-5 h-5 text-purple-400" />
+                <h2 className="text-sm font-bold text-white">Write Essay Heavy Focus</h2>
+              </div>
+              <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                totalEssaysDone >= 10
+                  ? 'bg-emerald-500/20 text-emerald-300'
+                  : 'bg-purple-500/20 text-purple-300'
+              }`}>
+                {totalEssaysDone} / 10 Essays
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-400">
+              6 Full Essays written in Mock Exams + 4 Individual Practice Essays.
+            </p>
+
+            <div className="w-full bg-slate-950 rounded-full h-2 mt-3 overflow-hidden">
+              <div
+                className="bg-purple-500 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${Math.min(100, Math.round((totalEssaysDone / 10) * 100))}%` }}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2 pt-1 text-xs">
+            <div className="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800">
+              <span className="text-slate-300 font-medium">6 Mock Exam Essays:</span>
+              <span className="font-bold text-purple-300">{mockEssaysDone} / 6 Completed</span>
+            </div>
+            <div className="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800">
+              <span className="text-slate-300 font-medium">4 Practice Essays:</span>
+              <span className="font-bold text-purple-300">{practiceEssaysDone} / 4 Scored</span>
+            </div>
+          </div>
+
+          <Link
+            to="/practice"
+            className="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition-colors flex items-center justify-center gap-1.5"
+          >
+            <span>Write Essay Templates & Prompts</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      </div>
+
+      {/* QUESTION-WISE MASTER MATRIX (Question by Question Tracking) */}
+      <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 sm:p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <div>
+            <h2 className="text-base font-bold text-white flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-blue-400" />
+              Question-Wise Daily Tracker (120 Individual Questions)
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Track question by question. Click any question chip below to enter or update its mark directly.
+            </p>
+          </div>
+          <span className="text-xs font-semibold px-2.5 py-1 rounded-xl bg-blue-500/10 text-blue-300 border border-blue-500/20">
+            Day {currentDay} Matrix
+          </span>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs text-left">
+            <thead>
+              <tr className="border-b border-slate-800 text-slate-400 font-semibold">
+                <th className="py-2.5 px-3">Question Type</th>
+                <th className="py-2.5 px-2 text-center">Score Weight</th>
+                <th className="py-2.5 px-2 text-center">Daily Target</th>
+                <th className="py-2.5 px-2 text-center">Scored</th>
+                <th className="py-2.5 px-3">Question-by-Question Progress Chips</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-800/60">
+              {QUESTION_TYPES.map((qt) => {
+                const target = studyPlan.questionTargets[qt.id] ?? qt.defaultTarget;
+                const attempts = currentDayData?.questionProgress?.[qt.id]?.attempts || {};
+
+                let scoredCount = 0;
+                for (let i = 0; i < target; i++) {
+                  if (attempts[i]?.score !== null && attempts[i]?.score !== undefined) {
+                    scoredCount++;
+                  }
+                }
+
+                return (
+                  <tr key={qt.id} className="hover:bg-slate-800/30 transition-colors">
+                    <td className="py-3 px-3">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-white">{qt.name}</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">
+                          {qt.shortName}
+                        </span>
+                      </div>
+                    </td>
+
+                    <td className="py-3 px-2 text-center">
+                      <span className="text-[11px] font-bold text-amber-300 font-mono">
+                        {qt.scoreWeight}%
+                      </span>
+                    </td>
+
+                    <td className="py-3 px-2 text-center font-bold text-slate-300 font-mono">
+                      {target} Qs
+                    </td>
+
+                    <td className="py-3 px-2 text-center font-bold font-mono">
+                      <span className={scoredCount >= target ? 'text-emerald-400' : 'text-blue-400'}>
+                        {scoredCount}/{target}
+                      </span>
+                    </td>
+
+                    {/* Question Chips */}
+                    <td className="py-3 px-3">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {Array.from({ length: target }, (_, qIdx) => {
+                          const att = attempts[qIdx];
+                          const hasScore = att?.score !== null && att?.score !== undefined;
+
+                          return (
+                            <button
+                              key={qIdx}
+                              onClick={() => {
+                                setQuickScoreModal({
+                                  typeId: qt.id,
+                                  typeName: qt.name,
+                                  qIndex: qIdx,
+                                  currentScore: hasScore ? att.score : null
+                                });
+                                setModalScoreVal(hasScore ? String(att.score) : '');
+                              }}
+                              className={`w-7 h-7 rounded-lg text-[10px] font-bold font-mono flex items-center justify-center transition-transform hover:scale-110 cursor-pointer border ${
+                                hasScore
+                                  ? att.score! >= 79
+                                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                                    : att.score! >= 65
+                                    ? 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                                    : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                                  : 'bg-slate-950 text-slate-500 border-slate-800 hover:border-slate-600'
+                              }`}
+                              title={`${qt.shortName} #${qIdx + 1}: ${hasScore ? `Score: ${att.score}/90` : 'Click to score'}`}
+                            >
+                              {hasScore ? att.score : qIdx + 1}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* 24-HOUR DAILY TIMETABLE (6 Mocks + Break Sessions) */}
+      <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 sm:p-6 space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="flex items-center gap-2">
+            <Clock className="w-5 h-5 text-blue-400" />
+            <h2 className="text-base font-bold text-white">Daily 6-Session Timetable & Break Schedule</h2>
+          </div>
+          <span className="text-xs text-slate-400">Strict PTE Bridge Schedule</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {PHASE_DEFINITIONS.map((p, idx) => {
+            const mock = todayMocks[idx];
+            return (
+              <div key={p.phaseNumber} className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-white">Phase {p.phaseNumber}</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                    {p.timeSlot}
+                  </span>
+                </div>
+
+                <div className="p-2 rounded-lg bg-slate-900 border border-slate-800/80">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-slate-200">{p.mockName}</span>
+                    <span className={mock?.isCompleted ? 'text-emerald-400 font-bold' : 'text-amber-400'}>
+                      {mock?.isCompleted ? `✓ ${mock.score}/90` : 'Pending'}
                     </span>
-                    <span className={`text-[11px] font-bold ${isPhaseDone ? 'text-emerald-400' : 'text-[#a9b5d0]'}`}>
-                      {isPhaseDone ? 'Done ✓' : isMockDone || phaseQuestionsScored > 0 ? 'In Progress' : 'Pending'}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xs font-bold text-[#edf2ff] line-clamp-1">{phase.title}</h3>
-                    <p className="text-[10px] text-[#a9b5d0] mt-0.5">{phase.timeSlot}</p>
-                  </div>
-
-                  <div className="space-y-1.5 pt-1 text-[11px]">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[#a9b5d0] flex items-center gap-1">
-                        <GraduationCap className="w-3 h-3 text-purple-400" />
-                        Mock #{examNum}
-                      </span>
-                      <span className={isMockDone ? 'text-emerald-400 font-semibold' : 'text-[#7182a6]'}>
-                        {isMockDone ? `${mockRec?.overallScore}/90` : 'Pending'}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <span className="text-[#a9b5d0] flex items-center gap-1">
-                        <Shuffle className="w-3 h-3 text-blue-400" />
-                        20 Questions
-                      </span>
-                      <span className={isQuestionsDone ? 'text-emerald-400 font-semibold' : 'text-[#edf2ff]'}>
-                        {phaseQuestionsScored}/{phase.questionCount}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <span className="text-[#a9b5d0] flex items-center gap-1">
-                        <PenTool className="w-3 h-3 text-amber-400" />
-                        Phase Drill
-                      </span>
-                      <span className={isDrillsDone ? 'text-emerald-400 font-semibold' : 'text-[#7182a6]'}>
-                        {isDrillsDone ? 'Done ✓' : 'Pending'}
-                      </span>
-                    </div>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-slate-800/60 flex items-center justify-between gap-1.5">
-                  <Link
-                    to="/practice"
-                    className="flex-1 py-1.5 rounded-lg bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 text-[11px] font-semibold text-center transition-colors"
-                  >
-                    Open Phase
-                  </Link>
-                  <Link
-                    to="/mock-exams"
-                    className="py-1.5 px-2 rounded-lg bg-[#1e2a47] hover:bg-[#28375c] text-[11px] text-[#a9b5d0] hover:text-white border border-slate-800 transition-colors"
-                    title="Go to Mock Exam"
-                  >
-                    Mock
-                  </Link>
+                <div className="text-[11px] text-slate-400 space-y-1">
+                  <p className="font-medium text-slate-300">Break Task: 20 Practice Questions</p>
+                  <p className="text-[10px] text-slate-500">
+                    {p.questionTypes.map((q) => `${q.shortName} (${q.count})`).join(' + ')}
+                  </p>
                 </div>
               </div>
             );
@@ -450,115 +510,85 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* November 16 Master Target Tracker (Question-Wise & Mock Simulation Overall Progress) */}
-      <MasterTargetTrackerCard />
+      {/* Mandatory Phase Drills & Templates Card */}
+      <DailyDrillsCard dayNumber={currentDay} />
 
-      {/* Next Task Card & Skills Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Next Task Action Box */}
-        <div className="lg:col-span-1 rounded-2xl bg-gradient-to-br from-[#19243d] to-[#141c31] border border-purple-500/30 p-6 flex flex-col justify-between space-y-4 shadow-lg">
-          <div>
-            <div className="flex items-center justify-between text-xs text-purple-400 font-semibold mb-2">
-              <span className="uppercase tracking-wider">Top Priority Task</span>
-              <Clock className="w-4 h-4" />
-            </div>
-            <h3 className="text-lg font-bold text-[#edf2ff]">{nextTask.title}</h3>
-            <p className="text-xs text-[#a9b5d0] mt-1 leading-relaxed">{nextTask.desc}</p>
-          </div>
-
-          <div className="pt-2">
-            {nextTask.link.startsWith('#') ? (
-              <a
-                href={nextTask.link}
-                className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors cursor-pointer"
-              >
-                <span>{nextTask.btnText}</span>
-                <ChevronRight className="w-4 h-4" />
-              </a>
-            ) : (
-              <Link
-                to={nextTask.link}
-                className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white flex items-center justify-center gap-2 transition-colors"
-              >
-                <span>{nextTask.btnText}</span>
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            )}
-          </div>
-        </div>
-
-        {/* 4 Skills Live Averages */}
-        <div className="lg:col-span-2 rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 className="text-base font-bold text-[#edf2ff] flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-blue-400" />
-              Four-Skill Performance & Weakness Diagnostics
-            </h3>
-            <span className="text-xs text-[#a9b5d0]">Target: {studyPlan.targetScores.overall}+</span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {/* Speaking */}
-            <div className="p-3.5 rounded-xl bg-blue-500/10 border border-blue-500/20 space-y-1">
-              <span className="text-xs font-semibold text-blue-300">Speaking</span>
-              <div className="text-xl font-bold text-[#edf2ff]">
-                {breakdown.speakingAverage !== null ? breakdown.speakingAverage.toFixed(1) : '—'}
-              </div>
-              <p className="text-[10px] text-[#a9b5d0]">{breakdown.speakingCount} scored items</p>
-            </div>
-
-            {/* Writing */}
-            <div className="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/20 space-y-1">
-              <span className="text-xs font-semibold text-purple-300">Writing</span>
-              <div className="text-xl font-bold text-[#edf2ff]">
-                {breakdown.writingAverage !== null ? breakdown.writingAverage.toFixed(1) : '—'}
-              </div>
-              <p className="text-[10px] text-[#a9b5d0]">{breakdown.writingCount} scored items</p>
-            </div>
-
-            {/* Reading */}
-            <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-1">
-              <span className="text-xs font-semibold text-emerald-300">Reading</span>
-              <div className="text-xl font-bold text-[#edf2ff]">
-                {breakdown.readingAverage !== null ? breakdown.readingAverage.toFixed(1) : '—'}
-              </div>
-              <p className="text-[10px] text-[#a9b5d0]">{breakdown.readingCount} scored items</p>
-            </div>
-
-            {/* Listening */}
-            <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-1">
-              <span className="text-xs font-semibold text-amber-300">Listening</span>
-              <div className="text-xl font-bold text-[#edf2ff]">
-                {breakdown.listeningAverage !== null ? breakdown.listeningAverage.toFixed(1) : '—'}
-              </div>
-              <p className="text-[10px] text-[#a9b5d0]">{breakdown.listeningCount} scored items</p>
-            </div>
-          </div>
-
-          {/* Actionable Weakness Warnings */}
-          {weakness.weakestSkill && weakness.gap > 0 && (
-            <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-2.5">
-              <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
-              <div>
-                <span className="text-xs font-bold text-red-300">Priority Intervention Required:</span>
-                <p className="text-xs text-[#a9b5d0] mt-0.5">
-                  Focus extra reps on {weakness.weakestSkill.toUpperCase()} ({weakness.gap.toFixed(1)} points below {studyPlan.targetScores.overall} target).
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Mandatory Daily Repeat Tasks (5 Phases) */}
-      <div id="daily-drills">
-        <DailyDrillsCard dayNumber={currentDay} />
-      </div>
-
-      {/* Completion Gate Checkpoint */}
+      {/* Day Completion Gate */}
       <div id="gate">
         <CompletionGate dayNumber={currentDay} />
       </div>
+
+      {/* Quick Score Modal */}
+      {quickScoreModal && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div>
+                <h3 className="text-sm font-bold text-white">{quickScoreModal.typeName}</h3>
+                <p className="text-xs text-slate-400">Question #{quickScoreModal.qIndex + 1} (Study Day {currentDay})</p>
+              </div>
+              <button
+                onClick={() => setQuickScoreModal(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Enter Score (0–90):
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="90"
+                  autoFocus
+                  placeholder="0–90"
+                  value={modalScoreVal}
+                  onChange={(e) => setModalScoreVal(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSaveQuickScore();
+                  }}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-lg py-2 px-3 text-lg font-bold text-white text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* Quick score pill buttons */}
+              <div className="flex items-center gap-1.5 justify-center">
+                {[90, 85, 79, 72, 65, 50].map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setModalScoreVal(String(s))}
+                    className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold font-mono text-slate-300 cursor-pointer"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => setQuickScoreModal(null)}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveQuickScore}
+                className="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white cursor-pointer"
+              >
+                Save Score
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

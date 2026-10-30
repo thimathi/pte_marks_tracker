@@ -199,10 +199,10 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
   checklistItems.push({
     id: 'practice',
     phaseBadge: 'All Phases',
-    label: `All 100 Practice Questions Completed (${breakdown.totalCompleted} / 100 Qs)`,
+    label: `All 120 Practice Questions Completed (${breakdown.totalCompleted} / 120 Qs)`,
     done: practiceDone,
     canAutoDetect: true,
-    hint: 'Complete and score all 100 questions across the 5 phases.'
+    hint: 'Complete and score all 100 questions across the 6 phases.'
   });
   checklistItems.push({
     id: 'dailyPracticeReviewCompleted',
