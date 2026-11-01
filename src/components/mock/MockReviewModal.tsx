@@ -16,7 +16,9 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
   onClose
 }) => {
   const [durationMinutes, setDurationMinutes] = useState(reviewRecord?.durationMinutes || 60);
-  const [incorrectSummary, setIncorrectSummary] = useState(reviewRecord?.incorrectQuestionsSummary || '');
+  const [incorrectSummary, setIncorrectSummary] = useState(
+    reviewRecord?.incorrectQuestionsSummary || mockExam.mainMistakes || ''
+  );
   const [repeatedMistakes, setRepeatedMistakes] = useState(reviewRecord?.repeatedMistakes || '');
   const [vocabIssues, setVocabIssues] = useState(reviewRecord?.vocabularyIssues || '');
   const [grammarIssues, setGrammarIssues] = useState(reviewRecord?.grammarIssues || '');
@@ -26,10 +28,32 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
   const [repeatQuestions, setRepeatQuestions] = useState(reviewRecord?.questionsToRepeat || '');
   const [reviewNotes, setReviewNotes] = useState(reviewRecord?.reviewNotes || '');
   const [isCompleted, setIsCompleted] = useState(reviewRecord?.isCompleted || false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  // Mandatory review check: Cannot be blank!
+  const hasSubstantialNotes =
+    (incorrectSummary && incorrectSummary.trim().length >= 5) ||
+    (repeatedMistakes && repeatedMistakes.trim().length >= 5) ||
+    (correctiveActions && correctiveActions.trim().length >= 5) ||
+    (reviewNotes && reviewNotes.trim().length >= 5);
+
+  const handleToggleComplete = (checked: boolean) => {
+    if (checked && !hasSubstantialNotes) {
+      setValidationError('Review cannot be blank! Document your mistakes and corrective action plan before marking as complete.');
+      return;
+    }
+    setValidationError(null);
+    setIsCompleted(checked);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isCompleted && !hasSubstantialNotes) {
+      setValidationError('Review cannot be blank! Document your mistakes and corrective action plan before marking as complete.');
+      return;
+    }
+
     setSaving(true);
     await onSave({
       durationMinutes: Number(durationMinutes) || 60,
@@ -170,21 +194,33 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
             />
           </div>
 
+          {/* Mandatory Review Validation Alert */}
+          {validationError && (
+            <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-2.5">
+              <AlertOctagon className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs font-bold text-red-300">Review Cannot Be Blank</p>
+                <p className="text-[11px] text-red-400/90 mt-0.5">{validationError}</p>
+              </div>
+            </div>
+          )}
+
           {/* Completion Toggle */}
           <div className="p-3.5 rounded-xl bg-[#10192c] border border-slate-800 flex items-center justify-between">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 checked={isCompleted}
-                onChange={(e) => setIsCompleted(e.target.checked)}
-                className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 accent-emerald-500"
+                onChange={(e) => handleToggleComplete(e.target.checked)}
+                className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 accent-emerald-500 cursor-pointer"
               />
               <div>
-                <span className="text-xs font-bold text-[#edf2ff]">
+                <span className="text-xs font-bold text-[#edf2ff] flex items-center gap-1.5">
                   Mark Review as 100% Completed
+                  <span className="text-[10px] text-amber-400 font-normal">(Cannot be blank)</span>
                 </span>
                 <p className="text-[11px] text-[#a9b5d0]">
-                  Required for Daily Completion Gate requirement #4 / #6.
+                  Required to unlock the next mock exam. Detailed error analysis mandatory.
                 </p>
               </div>
             </label>

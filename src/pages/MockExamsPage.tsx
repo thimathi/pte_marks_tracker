@@ -29,6 +29,7 @@ interface MockCardProps {
   currentDay: number;
   mock: MockExamRecord | undefined;
   rev: MockReviewRecord | undefined;
+  isLocked?: boolean;
   onSaveMock: (mockId: string, payload: Partial<MockExamRecord>) => Promise<void>;
   onOpenReview: () => void;
 }
@@ -40,12 +41,15 @@ const MockExamCard: React.FC<MockCardProps> = ({
   currentDay,
   mock,
   rev,
+  isLocked = false,
   onSaveMock,
   onOpenReview
 }) => {
   const examNumber = getExamNumberForMock(currentDay, idx);
   const examDetails = getMockExamDetails(examNumber);
   const schedule = DAILY_MOCK_SCHEDULE[idx];
+  const [bypassedLock, setBypassedLock] = useState(false);
+  const effectivelyLocked = isLocked && !bypassedLock;
 
   // Local state for smooth, un-throttled typing
   const [overall, setOverall] = useState<string>(
@@ -196,21 +200,34 @@ const MockExamCard: React.FC<MockCardProps> = ({
           </p>
         </div>
 
+        {effectivelyLocked && (
+          <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-300 flex items-center justify-between gap-1.5">
+            <span>🔒 Locked: Complete Mock #{examNumber - 1} & Review first.</span>
+            <button
+              type="button"
+              onClick={() => setBypassedLock(true)}
+              className="text-[10px] text-blue-400 hover:underline shrink-0"
+            >
+              Unlock
+            </button>
+          </div>
+        )}
+
         <div className="pt-1 flex items-center justify-between gap-2 flex-wrap">
           <span
             className={`text-[10px] font-semibold px-2 py-0.5 rounded border ${
               mock?.isCompleted && rev?.isCompleted
                 ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
                 : mock?.isCompleted
-                ? 'bg-blue-500/15 text-blue-300 border-blue-500/30'
+                ? 'bg-amber-500/15 text-amber-300 border-amber-500/30 animate-pulse'
                 : 'bg-slate-800 text-slate-400 border-slate-700'
             }`}
           >
             {mock?.isCompleted && rev?.isCompleted
-              ? 'Complete ✓'
+              ? 'Complete & Reviewed ✓'
               : mock?.isCompleted
-              ? 'Exam Scored'
-              : 'Pending'}
+              ? 'Review Pending ⚠️'
+              : 'Exam Pending'}
           </span>
 
           {examNumber === 1 && !mock?.isCompleted && (
@@ -433,10 +450,16 @@ const MockExamCard: React.FC<MockCardProps> = ({
         <button
           type="button"
           onClick={onOpenReview}
-          className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition-colors flex items-center gap-1.5 cursor-pointer"
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+            rev?.isCompleted
+              ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/25'
+              : mock?.isCompleted
+              ? 'bg-blue-600 text-white border-blue-500 hover:bg-blue-500 shadow-sm'
+              : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+          }`}
         >
-          <BookOpen className="w-3.5 h-3.5 text-blue-400" />
-          <span>{rev?.isCompleted ? 'Edit Review' : 'Start Review'}</span>
+          <BookOpen className="w-3.5 h-3.5" />
+          <span>{rev?.isCompleted ? 'Edit Review ✓' : 'Start Review (Mandatory)'}</span>
         </button>
       </div>
     </div>
@@ -490,11 +513,11 @@ export const MockExamsPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <GraduationCap className="w-6 h-6 text-blue-400" />
             <h1 className="text-xl font-bold text-white">
-              Mock Exam Center · {totalMocks} Full Simulation Tests (Priority #1)
+              Do or Die · 90-Mock Exam Journey (Priority #1)
             </h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Daily Requirement: 6 Full Mock Exams per day across 6 Timed Sessions + 120 Daily Practice Questions.
+            Daily Requirement: 6 Full Mock Exams per day across 6 Timed Sessions (60 Qs each = 360 Qs daily) · 5,400 Total Questions · Zero Blank Reviews Allowed.
           </p>
         </div>
 
@@ -505,6 +528,19 @@ export const MockExamsPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Review Enforcement Banner */}
+      <div className="rounded-xl bg-blue-500/10 border border-blue-500/20 px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2 text-xs text-blue-200">
+          <span className="font-bold text-blue-400 uppercase tracking-wide text-[10px] px-2 py-0.5 rounded bg-blue-500/20 border border-blue-500/30">
+            Mandatory Review Policy
+          </span>
+          <span>Each mock requires a non-blank error review with mistakes documented & corrective actions before advancing.</span>
+        </div>
+        <div className="text-[11px] text-slate-400">
+          6 Timed Sessions · 360 Questions Today · 5,400 Total
+        </div>
+      </div>
+
       {/* Active Day's Mock Exam Cards */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
@@ -512,10 +548,10 @@ export const MockExamsPage: React.FC = () => {
             <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
             Today's Scheduled Mock Exams ({mockKeys.length} Timed Simulations Daily)
           </h2>
-          <span className="text-xs text-blue-400 font-medium">Study Day {currentDay}</span>
+          <span className="text-xs text-blue-400 font-medium">Study Day {currentDay} of {totalDays}</span>
         </div>
 
-        {/* Responsive Grid: 1 col on mobile, 2 on tablet, 3 on laptop, 5 on wide monitors */}
+        {/* Responsive Grid: 1 col on mobile, 2 on tablet, 3 on laptop, 6 on wide monitors */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-3.5">
           {mockKeys.map((key, idx) => {
             const mock = currentDayData?.mockExams?.[key];
@@ -530,6 +566,14 @@ export const MockExamsPage: React.FC = () => {
               isCompleted: false
             };
 
+            // Sequential lock: Mock N requires Mock N-1 completed & reviewed
+            const isLocked = idx > 0 && (() => {
+              const prevKey = mockKeys[idx - 1];
+              const prevMock = currentDayData?.mockExams?.[prevKey];
+              const prevRev = currentDayData?.mockReviews?.[`review0${idx}`];
+              return !(prevMock?.isCompleted && prevRev?.isCompleted);
+            })();
+
             return (
               <MockExamCard
                 key={`${currentDay}-${key}`}
@@ -539,6 +583,7 @@ export const MockExamsPage: React.FC = () => {
                 currentDay={currentDay}
                 mock={mock}
                 rev={rev}
+                isLocked={isLocked}
                 onSaveMock={handleSaveMock}
                 onOpenReview={() =>
                   setActiveReviewModal({
@@ -562,7 +607,7 @@ export const MockExamsPage: React.FC = () => {
             </h3>
           </div>
           <span className="text-xs text-slate-400">
-            35 Unique Papers × 2 Shuffled Rounds (+ Day 15 Summit) = {totalMocks} Total Mocks (5 Mocks / Day)
+            Round 1 (35 Tests) + Round 2 (35 Tests) + Round 3 Summit (20 Tests) = {totalMocks} Total Mocks (6 Mocks / Day · 5,400 Questions)
           </span>
         </div>
 

@@ -32,16 +32,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/practice', label: '6-Phase Daily Plan', icon: Layers, badge: '6 Phases · 120 Qs', highlight: true },
-    { to: '/mock-exams', label: `Mock Exam Center`, icon: GraduationCap, badge: '6 Mocks/Day', highlight: false },
+    { to: '/mock-exams', label: '90-Mock Journey', icon: GraduationCap, badge: '6 Mocks/Day', highlight: true },
+    { to: '/practice', label: 'Daily Drills & Templates', icon: Layers, badge: 'Core Drills' },
+    { to: '/review', label: 'Review & Error Center', icon: CheckSquare, badge: 'Mandatory' },
     { to: '/roadmap', label: `${totalDays}-Day Roadmap`, icon: Map, badge: `${totalDays} Days` },
-    { to: '/review', label: 'Review & Error Center', icon: CheckSquare },
     { to: '/analytics/questions', label: 'Question Analytics', icon: BarChart3 },
     { to: '/analytics', label: 'Trends & Stats', icon: LineChart },
     { to: '/calendar', label: 'Study Calendar', icon: CalendarDays },
     { to: '/report/final', label: `Final ${totalDays}-Day Report`, icon: FileText },
     { to: '/settings', label: 'Settings & Import', icon: Settings },
   ];
+
+  const mockKeys = ['mock01', 'mock02', 'mock03', 'mock04', 'mock05', 'mock06'];
 
   return (
     <>
@@ -81,36 +83,39 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-white leading-tight">Study Day {currentDay} of {totalDays}</p>
                 <p className="text-xs text-slate-400 truncate">
-                  6 Phases · 6 Mocks + 120 Qs
+                  6 Mocks/Day · 360 Qs · No Blanks
                 </p>
               </div>
             </div>
 
-            {/* Quick 6-Phase Progress Row */}
+            {/* Quick 6-Mock Progress Row */}
             <div className="pt-2 border-t border-slate-800">
               <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1">
-                <span>6 Daily Phases</span>
-                <Link to="/practice" onClick={onClose} className="text-blue-400 hover:underline flex items-center">
+                <span>Today's 6 Mocks</span>
+                <Link to="/mock-exams" onClick={onClose} className="text-blue-400 hover:underline flex items-center">
                   <span>Open</span>
                   <ChevronRight className="w-3 h-3" />
                 </Link>
               </div>
               <div className="grid grid-cols-6 gap-1">
-                {PHASE_DEFINITIONS.map((p) => {
-                  const mockDone = !!currentDayData?.mockExams?.[`mock0${p.mockIndex + 1}`]?.isCompleted;
+                {mockKeys.map((k, idx) => {
+                  const mockDone = !!currentDayData?.mockExams?.[k]?.isCompleted;
+                  const revDone = !!currentDayData?.mockReviews?.[`review0${idx + 1}`]?.isCompleted;
                   return (
                     <Link
-                      key={p.phaseNumber}
-                      to="/practice"
+                      key={k}
+                      to="/mock-exams"
                       onClick={onClose}
                       className={`text-center py-1 rounded text-[10px] font-bold border transition-colors ${
-                        mockDone
+                        mockDone && revDone
                           ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                          : mockDone
+                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                           : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-blue-400'
                       }`}
-                      title={`Phase ${p.phaseNumber}: ${p.mockName}`}
+                      title={`Mock ${idx + 1}: ${mockDone && revDone ? 'Done & Reviewed' : mockDone ? 'Review Pending!' : 'Pending'}`}
                     >
-                      P{p.phaseNumber}
+                      {mockDone && revDone ? '✓' : `M${idx + 1}`}
                     </Link>
                   );
                 })}

@@ -32,52 +32,31 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
   const { studyPlan, currentDay, currentDayData, days, selectDay } = usePteData();
   const streak = calculateStreak(days);
 
-  // Calculate completion status of each of the 6 phases for today
-  const breakdown = calculateDayBreakdown(currentDayData, studyPlan.questionTargets);
-  const phaseStatuses = PHASE_DEFINITIONS.map((phase) => {
-    const mockKey = `mock0${phase.mockIndex + 1}`;
-    const mockDone = !!currentDayData?.mockExams?.[mockKey]?.isCompleted;
-
-    // Check practice questions for this phase (20 questions)
-    let phaseQuestionsScored = 0;
-    phase.questionTypes.forEach((qt) => {
-      const attempts = currentDayData?.questionProgress?.[qt.typeId]?.attempts || {};
-      const startIndex =
-        phase.phaseNumber === 6 && qt.typeId === 'repeat_sentence'
-          ? 15
-          : phase.phaseNumber === 6 && qt.typeId === 'write_from_dictation'
-          ? 10
-          : phase.phaseNumber === 6 && qt.typeId === 'read_aloud'
-          ? 8
-          : phase.phaseNumber === 6 && qt.typeId === 'rw_fill_in_blanks'
-          ? 10
-          : phase.phaseNumber === 6 && qt.typeId === 'write_essay'
-          ? 2
-          : 0;
-      for (let i = 0; i < qt.count; i++) {
-        const attempt = attempts[startIndex + i];
-        if (attempt?.score !== null && attempt?.score !== undefined) {
-          phaseQuestionsScored++;
-        }
-      }
-    });
-
-    const isDone = mockDone && phaseQuestionsScored >= phase.questionCount;
+  // Calculate completion status of each of the 6 mocks for today
+  const mockKeys = ['mock01', 'mock02', 'mock03', 'mock04', 'mock05', 'mock06'];
+  const todayMockStatuses = mockKeys.map((key, idx) => {
+    const mockRec = currentDayData?.mockExams?.[key];
+    const revRec = currentDayData?.mockReviews?.[`review0${idx + 1}`];
+    const isMockDone = !!mockRec?.isCompleted;
+    const isRevDone = !!revRec?.isCompleted;
     return {
-      phaseNumber: phase.phaseNumber,
-      isDone,
-      mockDone,
-      questionsScored: phaseQuestionsScored,
-      totalQuestions: phase.questionCount
+      index: idx + 1,
+      key,
+      isMockDone,
+      isRevDone,
+      isFullyDone: isMockDone && isRevDone,
+      score: mockRec?.overallScore
     };
   });
 
+  const totalDays = studyPlan?.durationDays || TOTAL_STUDY_DAYS;
+
   const navLinks = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/practice', label: '6-Phase Plan', icon: Layers, badge: '6 Phases · 120 Qs' },
-    { to: '/mock-exams', label: 'Mock Exams', icon: GraduationCap, badge: '6/Day' },
+    { to: '/mock-exams', label: '90-Mock Journey', icon: GraduationCap, badge: '6/Day · 90 Tests' },
+    { to: '/practice', label: 'Daily Drills & Templates', icon: Layers, badge: 'Collocations · Twisters · Templates' },
+    { to: '/review', label: 'Review Center', icon: CheckSquare, badge: 'Mandatory' },
     { to: '/roadmap', label: 'Roadmap', icon: Map },
-    { to: '/review', label: 'Review', icon: CheckSquare },
     { to: '/analytics', label: 'Analytics', icon: BarChart3 }
   ];
 
@@ -108,11 +87,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                     PTE Marks Tracker
                   </span>
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 font-semibold border border-blue-500/30 whitespace-nowrap">
-                    6 Phases · 79+ Target
+                    Do or Die · 90 Mocks
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 leading-tight truncate">
-                  Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-01')} · {studyPlan?.durationDays || TOTAL_STUDY_DAYS} Days · 6 Mocks/Day · 120 Qs/Day
+                  Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-01')} · {totalDays} Days · 6 Mocks/Day · 5,400 Qs
                 </p>
               </div>
             </Link>
@@ -148,23 +127,23 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
 
           {/* Center-Right: Active View Day Switcher & Streak */}
           <div className="hidden md:flex items-center gap-2.5 shrink-0">
-            {/* 6-Phase Mini Status Indicator */}
-            <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-xl px-2 py-1" title="Daily 6 Phases Progress">
-              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mr-1">Phases:</span>
-              {phaseStatuses.map((p) => (
+            {/* Today's 6 Mock Exams Mini Status Indicator */}
+            <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-xl px-2 py-1" title="Today's 6 Mock Exams Status">
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mr-1">Mocks:</span>
+              {todayMockStatuses.map((m) => (
                 <Link
-                  key={p.phaseNumber}
-                  to="/practice"
-                  className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold transition-transform hover:scale-105 ${
-                    p.isDone
+                  key={m.key}
+                  to="/mock-exams"
+                  className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold transition-transform hover:scale-105 ${
+                    m.isFullyDone
                       ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                      : p.mockDone || p.questionsScored > 0
-                      ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                      : m.isMockDone
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                       : 'bg-slate-950 text-slate-500 border border-slate-800'
                   }`}
-                  title={`Phase ${p.phaseNumber}: ${p.isDone ? 'Completed' : `${p.questionsScored}/${p.totalQuestions} Qs scored`}`}
+                  title={`Mock ${m.index}: ${m.isFullyDone ? 'Completed & Reviewed' : m.isMockDone ? 'Review Pending!' : 'Pending'}`}
                 >
-                  {p.isDone ? '✓' : `P${p.phaseNumber}`}
+                  {m.isFullyDone ? '✓' : `M${m.index}`}
                 </Link>
               ))}
             </div>

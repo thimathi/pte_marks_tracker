@@ -1,17 +1,17 @@
 import { QuestionPriority, QuestionTypeMeta, StudyGroupDefinition, TargetScores } from '../types/pte';
 
-export const DEFAULT_START_DATE = '2026-11-01'; // 10 Intensive Study Days (Oct 30-31 shifted to Nov 1-10)
-export const FINAL_TARGET_DATE = '2026-11-10'; // Exactly 10 Intensive Days: Nov 1 to Nov 10, 2026
-export const APP_TITLE = 'PTE - Daily Study Plan – Superior English';
+export const DEFAULT_START_DATE = '2026-11-01'; // 15-Day Do or Die Protocol (Nov 1 to Nov 15, 2026)
+export const FINAL_TARGET_DATE = '2026-11-15'; // Exactly 15 Intensive Days: Nov 1 to Nov 15, 2026
+export const APP_TITLE = 'PTE - Do or Die 90-Mock Journey';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
-export const TOTAL_STUDY_DAYS = 10; // Exactly 10 Intensive Days (6 Mocks + 120 Qs daily)
-export const DAILY_PRACTICE_TARGET = 120; // 120 Daily Questions ordered across 6 phases (20 Qs per phase)
-export const TOTAL_PRACTICE_TARGET = 1200; // 10 intensive days * 120 = 1,200 Individual Questions
-export const DAILY_MOCK_TARGET = 6; // 6 Mock Exams every day (1 Mock per phase)
-export const TOTAL_MOCK_TARGET = 60; // 10 days * 6 = 60 Mocks total (Complete 35 VIP Tests + 2nd Pass Shuffled)
+export const TOTAL_STUDY_DAYS = 15; // Exactly 15 Days (6 Mocks Daily = 90 Tests)
+export const DAILY_PRACTICE_TARGET = 0; // Pure mock exam journey (no individual practice questions)
+export const TOTAL_PRACTICE_TARGET = 0; // All questions covered via 90 Full Mock Simulations
+export const DAILY_MOCK_TARGET = 6; // 6 Mock Exams every day across 6 Timed Sessions
+export const TOTAL_MOCK_TARGET = 90; // 15 days * 6 = 90 Mocks total
 export const MOCK_EXAM_QUESTIONS = 60;
-export const TOTAL_MOCK_EXAM_QUESTIONS = 3600; // 60 mocks * 60 questions = 3,600 Mock Exam Questions
-export const TOTAL_MISSION_QUESTIONS = 4800; // 1,200 Practice Questions + 3,600 Mock Questions = 4,800 Questions
+export const TOTAL_MOCK_EXAM_QUESTIONS = 5400; // 90 mocks * 60 questions = 5,400 Mock Exam Questions
+export const TOTAL_MISSION_QUESTIONS = 5400; // 5,400 Total Questions
 
 export interface MockScheduleSlot {
   mockIndex: number;
@@ -37,10 +37,11 @@ export const DEFAULT_TARGET_SCORES: TargetScores = {
   mockExam: 76,
 };
 
-// Target progression curve across 10 study days (from baseline 60 to summit 79)
+// Target progression curve across 15 study days (from baseline 60 to summit 79+)
 export const DAY_TARGET_SCORES: number[] = [
-  60, 62, 64, 66, 68, // Days 1–5: Baseline Stabilization & Rhythm
-  70, 72, 74, 76, 79  // Days 6–10: Reading & Writing Acceleration to Summit Peak 79+
+  60, 62, 63, 65, 66, // Days 1–5: Baseline Stabilization & Timing Control
+  68, 70, 71, 73, 74, // Days 6–10: Reading & Writing Accuracy Acceleration
+  75, 76, 77, 78, 79  // Days 11–15: Grand Summit 79+ Peak Performance
 ];
 
 export function getDailyMockTarget(_dayNumber: number): number {
@@ -48,7 +49,7 @@ export function getDailyMockTarget(_dayNumber: number): number {
 }
 
 export function getDailyPracticeTarget(_dayNumber: number): number {
-  return 120;
+  return 0;
 }
 
 export function getMockExamsForDay(_dayNumber: number): string[] {
@@ -114,15 +115,16 @@ function generateSeededPermutation(count: number, seed: number): number[] {
 }
 
 /**
- * 75 Planned Mock Exams Across 15 Days (5 Mocks / Day):
- * - Round 1 (Days 1–7, Mocks 1–35): All 35 papers shuffled (Complete 1st Pass)
- * - Round 2 (Days 8–14, Mocks 36–70): All 35 papers re-shuffled (Complete 2nd Pass Error Correction)
- * - Round 3 / Summit (Day 15, Mocks 71–75): Top 5 VIP Mock Tests (Mock 45C, 44C, 44B, 44A, 43B)
+ * 90 Planned Mock Exams Across 15 Days (6 Mocks / Day):
+ * - Round 1 (Days 1–6, Mocks 1–35): All 35 papers shuffled (Complete 1st Diagnostic Pass)
+ * - Round 2 (Days 6–12, Mocks 36–70): All 35 papers re-shuffled (Complete 2nd Error Correction Pass)
+ * - Round 3 / Summit (Days 12–15, Mocks 71–90): Top 20 VIP Mock Tests (Final Peak Simulation)
+ * Total: 35 + 35 + 20 = 90 Mock Exams
  */
 export const MOCK_EXAM_SCHEDULE_INDICES: number[] = [
   ...generateSeededPermutation(35, 777),   // Round 1: 35 tests
   ...generateSeededPermutation(35, 1492),  // Round 2: 35 tests
-  0, 1, 2, 3, 5                            // Day 15 Summit: 5 top tests (45C, 44C, 44B, 44A, 43B)
+  ...generateSeededPermutation(35, 2026).slice(0, 20) // Round 3 Summit: 20 top VIP tests
 ];
 
 export interface MockExamDetails {

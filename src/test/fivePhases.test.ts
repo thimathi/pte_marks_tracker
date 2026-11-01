@@ -15,10 +15,10 @@ import { generateGroupedStudyQueue, getPhaseQuestions } from '../utils/interleav
 import { PTE_BRIDGE_SGD_TEMPLATES, PTE_BRIDGE_ESSAY_TEMPLATES, getCollocationsForDay } from '../data/dailyTasksData';
 
 describe('6-Phase Daily Study Curriculum Verification', () => {
-  it('starts on 01-11-2026 and spans 10 intensive days until 10-11-2026', () => {
+  it('starts on 01-11-2026 and spans 15 days until 15-11-2026', () => {
     expect(DEFAULT_START_DATE).toBe('2026-11-01');
-    expect(FINAL_TARGET_DATE).toBe('2026-11-10');
-    expect(TOTAL_STUDY_DAYS).toBe(10);
+    expect(FINAL_TARGET_DATE).toBe('2026-11-15');
+    expect(TOTAL_STUDY_DAYS).toBe(15);
   });
 
   it('contains exactly 6 distinct phases with 20 questions each totaling 120 questions', () => {
@@ -32,7 +32,7 @@ describe('6-Phase Daily Study Curriculum Verification', () => {
       totalQs += phase.questionCount;
     }
     expect(totalQs).toBe(120);
-    expect(DAILY_PRACTICE_TARGET).toBe(120);
+    expect(DAILY_PRACTICE_TARGET).toBe(0);
     expect(DAILY_MOCK_TARGET).toBe(6);
   });
 

@@ -21,9 +21,9 @@ describe('35 Mock Exam Catalog & 6 Daily Mocks Progression Verification', () => 
     expect(APEUNI_VIP_MOCKS[34]).toBe('【VIP Full Test】PTE Mock Test 22B (7th Aug. new version)');
   });
 
-  it('configures 10 intensive study days and 60 total mocks (6 mocks/day)', () => {
-    expect(TOTAL_STUDY_DAYS).toBe(10);
-    expect(TOTAL_MOCK_TARGET).toBe(60);
+  it('configures 15 intensive study days and 90 total mocks (6 mocks/day)', () => {
+    expect(TOTAL_STUDY_DAYS).toBe(15);
+    expect(TOTAL_MOCK_TARGET).toBe(90);
     expect(DAILY_MOCK_SCHEDULE.length).toBe(6);
   });
 
@@ -73,10 +73,8 @@ describe('35 Mock Exam Catalog & 6 Daily Mocks Progression Verification', () => 
     expect(getExamNumberForMock(2, 0)).toBe(7);
   });
 
-  it('validates total question targets: 1200 practice + 3600 mock = 4800 total questions', () => {
-    expect(TOTAL_PRACTICE_TARGET).toBe(1200);
-    expect(TOTAL_MOCK_EXAM_QUESTIONS).toBe(3600);
-    expect(TOTAL_MISSION_QUESTIONS).toBe(4800);
-    expect(TOTAL_PRACTICE_TARGET + TOTAL_MOCK_EXAM_QUESTIONS).toBe(TOTAL_MISSION_QUESTIONS);
+  it('validates total question targets: 5,400 mock questions total (90 mocks * 60)', () => {
+    expect(TOTAL_MOCK_EXAM_QUESTIONS).toBe(5400);
+    expect(TOTAL_MISSION_QUESTIONS).toBe(5400);
   });
 });

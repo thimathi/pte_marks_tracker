@@ -47,7 +47,7 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
   const practiceDone = breakdown.totalCompleted >= breakdown.totalDailyTarget && breakdown.totalDailyTarget > 0;
   const practiceReviewDone = !!targetDayData?.gateStatus?.dailyPracticeReviewCompleted;
 
-  // Check additional exercises for the 5 phases
+  // Additional exercises
   const collocTarget = getAcademicCollocationsTarget(dayNumber);
   const twisterDone =
     (targetDayData?.additionalExercises?.['tongue_twister']?.completedCount ?? 0) >= 2 ||
@@ -57,25 +57,16 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     (targetDayData?.additionalExercises?.['academic_collocations']?.completedCount ?? 0) >= 100;
   const collocBwdDone =
     (targetDayData?.additionalExercises?.['collocations_bwd']?.completedCount ?? 0) >= collocTarget;
-  const essayP4Done =
+  const essayDone =
     (targetDayData?.additionalExercises?.['essay_template_p4']?.completedCount ?? 0) >= 1 ||
     (targetDayData?.additionalExercises?.['essay_template']?.completedCount ?? 0) >= 1;
-  const sgdP4Done = (targetDayData?.additionalExercises?.['sgd_template_p4']?.completedCount ?? 0) >= 1;
-  const essayP5Done =
-    (targetDayData?.additionalExercises?.['essay_template_p5']?.completedCount ?? 0) >= 1 ||
-    (targetDayData?.additionalExercises?.['essay_template']?.completedCount ?? 0) >= 2;
-  const sgdP5Done = (targetDayData?.additionalExercises?.['sgd_template_p5']?.completedCount ?? 0) >= 1;
+  const swtDone =
+    (targetDayData?.additionalExercises?.['swt_template']?.completedCount ?? 0) >= 1 ||
+    (targetDayData?.additionalExercises?.['sgd_template_p4']?.completedCount ?? 0) >= 1;
 
-  const additionalDone =
-    twisterDone &&
-    collocFwdDone &&
-    collocBwdDone &&
-    essayP4Done &&
-    sgdP4Done &&
-    essayP5Done &&
-    sgdP5Done;
+  const additionalDone = twisterDone && (collocFwdDone || collocBwdDone) && (essayDone || swtDone);
 
-  // Mock exams: 5 Mocks every day
+  // Mock exams: 6 Mocks every day across 6 Timed Sessions
   const mockKeys = getMockExamsForDay(dayNumber);
 
   const mockStatuses = mockKeys.map((key, idx) => {
@@ -87,14 +78,15 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
       examNum,
       isCompleted: !!mockRec?.isCompleted,
       score: mockRec?.overallScore,
-      reviewCompleted: !!revRec?.isCompleted
+      reviewCompleted: !!revRec?.isCompleted,
+      durationMinutes: revRec?.durationMinutes || 0
     };
   });
 
   const allMocksDone = mockStatuses.every((m) => m.isCompleted);
   const allReviewsDone = mockStatuses.every((m) => m.reviewCompleted);
 
-  // Grouped by 5 Phases
+  // Checklist for 6 Mocks & Core Drills
   const checklistItems: {
     id: string;
     label: string;
@@ -105,115 +97,55 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     phaseBadge?: string;
   }[] = [];
 
-  // Phase 1
-  checklistItems.push({
-    id: `mock_${mockStatuses[0]?.key}`,
-    phaseBadge: 'Phase 1',
-    label: `Mock Exam #${mockStatuses[0]?.examNum} Completed (Score: ${mockStatuses[0]?.score ?? '—'}/90)`,
-    done: !!mockStatuses[0]?.isCompleted,
-    canAutoDetect: true,
-    hint: 'Complete Session 1 Simulation Mock in Mock Exam Center.'
+  mockStatuses.forEach((m, idx) => {
+    checklistItems.push({
+      id: `mock_${m.key}`,
+      phaseBadge: `Session ${idx + 1}`,
+      label: `Mock Exam #${m.examNum} Scored (${m.isCompleted ? `${m.score}/90` : 'Pending'})`,
+      done: m.isCompleted,
+      canAutoDetect: true,
+      hint: `Complete Session ${idx + 1} timed simulation in Mock Exam Center.`
+    });
+
+    checklistItems.push({
+      id: `review_${m.key}`,
+      phaseBadge: `Session ${idx + 1}`,
+      label: `Mock Exam #${m.examNum} Mandatory Review Logged (Cannot be blank)`,
+      done: m.reviewCompleted,
+      canAutoDetect: true,
+      hint: `Complete error analysis & corrective actions for Mock #${m.examNum}.`
+    });
   });
+
+  // Daily Drills
   checklistItems.push({
-    id: 'twister_p1',
-    phaseBadge: 'Phase 1',
-    label: 'Phase 1: Tongue Twisters 2 Reps Completed',
+    id: 'twister_drill',
+    phaseBadge: 'Drills',
+    label: 'Tongue Twisters Enunciation Drill (2 Reps Completed)',
     done: twisterDone,
     canAutoDetect: true,
-    hint: 'Complete 2 repetitions of 50 tongue twisters for oral fluency.'
+    hint: 'Complete 2 repetitions of tongue twisters for oral fluency.'
   });
 
-  // Phase 2
   checklistItems.push({
-    id: `mock_${mockStatuses[1]?.key}`,
-    phaseBadge: 'Phase 2',
-    label: `Mock Exam #${mockStatuses[1]?.examNum} Completed (Score: ${mockStatuses[1]?.score ?? '—'}/90)`,
-    done: !!mockStatuses[1]?.isCompleted,
+    id: 'colloc_drill',
+    phaseBadge: 'Drills',
+    label: `Academic Collocations (${collocTarget} Pairs Target)`,
+    done: collocFwdDone || collocBwdDone,
     canAutoDetect: true,
-    hint: 'Complete Session 2 Simulation Mock in Mock Exam Center.'
-  });
-  checklistItems.push({
-    id: 'colloc_fwd_p2',
-    phaseBadge: 'Phase 2',
-    label: `Phase 2: Academic Collocations Forward (${collocTarget} Pairs)`,
-    done: collocFwdDone,
-    canAutoDetect: true,
-    hint: `Day ${dayNumber}: Master ${collocTarget} Pearson collocations forward.`
+    hint: `Master ${collocTarget} Pearson collocations forward or backward.`
   });
 
-  // Phase 3
   checklistItems.push({
-    id: `mock_${mockStatuses[2]?.key}`,
-    phaseBadge: 'Phase 3',
-    label: `Mock Exam #${mockStatuses[2]?.examNum} Completed (Score: ${mockStatuses[2]?.score ?? '—'}/90)`,
-    done: !!mockStatuses[2]?.isCompleted,
+    id: 'templates_drill',
+    phaseBadge: 'Drills',
+    label: 'Summarize Written Text (SWT) & Essay Templates Practiced',
+    done: essayDone || swtDone,
     canAutoDetect: true,
-    hint: 'Complete Session 3 Simulation Mock in Mock Exam Center.'
-  });
-  checklistItems.push({
-    id: 'colloc_bwd_p3',
-    phaseBadge: 'Phase 3',
-    label: `Phase 3: Academic Collocations Backward (${collocTarget} Pairs)`,
-    done: collocBwdDone,
-    canAutoDetect: true,
-    hint: `Day ${dayNumber}: Master ${collocTarget} Pearson collocations in reverse.`
+    hint: 'Practice official PTE Bridge SWT and Essay templates.'
   });
 
-  // Phase 4
-  checklistItems.push({
-    id: `mock_${mockStatuses[3]?.key}`,
-    phaseBadge: 'Phase 4',
-    label: `Mock Exam #${mockStatuses[3]?.examNum} Completed (Score: ${mockStatuses[3]?.score ?? '—'}/90)`,
-    done: !!mockStatuses[3]?.isCompleted,
-    canAutoDetect: true,
-    hint: 'Complete Session 4 Simulation Mock in Mock Exam Center.'
-  });
-  checklistItems.push({
-    id: 'templates_p4',
-    phaseBadge: 'Phase 4',
-    label: 'Phase 4: Write Essay Template (1) & SGD Template (1)',
-    done: essayP4Done && sgdP4Done,
-    canAutoDetect: true,
-    hint: 'Practice writing 1 Essay template & 1 SGD template.'
-  });
-
-  // Phase 5
-  checklistItems.push({
-    id: `mock_${mockStatuses[4]?.key}`,
-    phaseBadge: 'Phase 5',
-    label: `Mock Exam #${mockStatuses[4]?.examNum} Completed (Score: ${mockStatuses[4]?.score ?? '—'}/90)`,
-    done: !!mockStatuses[4]?.isCompleted,
-    canAutoDetect: true,
-    hint: 'Complete Session 5 Simulation Mock in Mock Exam Center.'
-  });
-  checklistItems.push({
-    id: 'templates_p5',
-    phaseBadge: 'Phase 5',
-    label: 'Phase 5: Write Essay Template (1) & SGD Template (1)',
-    done: essayP5Done && sgdP5Done,
-    canAutoDetect: true,
-    hint: 'Practice writing 1 Essay template & 1 SGD template.'
-  });
-
-  // All 100 Questions & Review
-  checklistItems.push({
-    id: 'practice',
-    phaseBadge: 'All Phases',
-    label: `All 120 Practice Questions Completed (${breakdown.totalCompleted} / 120 Qs)`,
-    done: practiceDone,
-    canAutoDetect: true,
-    hint: 'Complete and score all 100 questions across the 6 phases.'
-  });
-  checklistItems.push({
-    id: 'dailyPracticeReviewCompleted',
-    phaseBadge: 'Review',
-    label: 'Daily Practice Error & Review Center Analysis Done',
-    done: practiceReviewDone,
-    canToggle: true,
-    hint: 'Confirm review of mistaken questions in Review Center.'
-  });
-
-  const allReady = allMocksDone && allReviewsDone && practiceDone && practiceReviewDone && additionalDone;
+  const allReady = allMocksDone && allReviewsDone && additionalDone;
 
   const handleToggleCheck = async (id: string, currentVal: boolean) => {
     await updateGateItem(dayNumber, id, !currentVal);
@@ -223,12 +155,12 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     setCompleting(true);
     setStatusMessage(null);
 
-    // Sync computed gate states first
-    await updateGateItem(dayNumber, 'practiceCompleted', practiceDone);
-    await updateGateItem(dayNumber, 'dailyPracticeReviewCompleted', practiceReviewDone);
+    // Sync computed gate states
+    await updateGateItem(dayNumber, 'practiceCompleted', true);
+    await updateGateItem(dayNumber, 'dailyPracticeReviewCompleted', true);
     for (let i = 0; i < mockStatuses.length; i++) {
-      await updateGateItem(dayNumber, `mock${i + 1}Completed`, mockStatuses[i]?.isCompleted ?? true);
-      await updateGateItem(dayNumber, `mock${i + 1}ReviewCompleted`, mockStatuses[i]?.reviewCompleted ?? true);
+      await updateGateItem(dayNumber, `mock${i + 1}Completed`, mockStatuses[i]?.isCompleted ?? false);
+      await updateGateItem(dayNumber, `mock${i + 1}ReviewCompleted`, mockStatuses[i]?.reviewCompleted ?? false);
     }
     await updateGateItem(dayNumber, 'additionalExercisesCompleted', additionalDone);
 

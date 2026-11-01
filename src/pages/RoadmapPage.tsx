@@ -43,11 +43,11 @@ export const RoadmapPage: React.FC = () => {
       <div className="rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-2">
         <div className="flex items-center gap-2">
           <Map className="w-6 h-6 text-blue-400" />
-          <h1 className="text-2xl font-bold text-[#edf2ff]">PTE - Daily Study Plan – Superior English Roadmap</h1>
+          <h1 className="text-2xl font-bold text-[#edf2ff]">Do or Die · 90-Mock Exam Journey Roadmap</h1>
         </div>
         <p className="text-xs text-[#a9b5d0] leading-relaxed max-w-3xl">
-          Started: <b className="text-blue-300">{formatDateFriendly(studyPlan?.startDate || '2026-10-30')}</b> · {totalDays}-Day Summit Plan (Target 59+ ➔ 79+).
-          {' '}Structured into <b>5 Daily Phases</b>: {TOTAL_MOCK_TARGET} Mock Exams (5 Mocks/Day) & {TOTAL_PRACTICE_TARGET.toLocaleString()} Practice Questions (100 Qs/Day · 20 Qs per phase).
+          Started: <b className="text-blue-300">{formatDateFriendly(studyPlan?.startDate || '2026-11-01')}</b> · {totalDays}-Day Do or Die Plan (Target Baseline ➔ 79+ Superior).
+          {' '}Structured into <b>{TOTAL_MOCK_TARGET} Mock Exams (6 Mocks/Day · 5,400 Questions)</b> with Mandatory Deep Error Reviews and Daily Core Drills.
         </p>
       </div>
 
@@ -116,7 +116,7 @@ export const RoadmapPage: React.FC = () => {
                       ? 'bg-amber-500/20 text-amber-300'
                       : 'bg-blue-500/20 text-blue-400'
                   }`}>
-                    {isCompleted ? 'Completed ✓' : isOverdue ? 'Catchup' : '5 Phases'}
+                    {isCompleted ? 'Completed ✓' : isOverdue ? 'Catchup' : '6 Mocks/Day'}
                   </span>
                 </div>
               </div>
@@ -125,13 +125,13 @@ export const RoadmapPage: React.FC = () => {
               <div className="space-y-2 text-xs">
                 <div>
                   <div className="flex justify-between text-[11px] text-[#a9b5d0] mb-1">
-                    <span>Practice (100 Qs across 5 phases)</span>
-                    <span>{breakdown.totalCompleted} / 100 ({breakdown.completionPercentage}%)</span>
+                    <span>Mock Simulations (6 Daily)</span>
+                    <span>{completedMocksCount} / 6 ({Math.round((completedMocksCount / 6) * 100)}%)</span>
                   </div>
                   <div className="w-full h-1.5 rounded-full bg-[#0e1729] overflow-hidden">
                     <div
                       className={`h-full rounded-full ${isCompleted ? 'bg-emerald-400' : 'bg-blue-500'}`}
-                      style={{ width: `${breakdown.completionPercentage}%` }}
+                      style={{ width: `${Math.round((completedMocksCount / 6) * 100)}%` }}
                     />
                   </div>
                 </div>
@@ -139,16 +139,16 @@ export const RoadmapPage: React.FC = () => {
                 {/* Score and Mocks */}
                 <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
                   <div className="p-2 rounded-lg bg-[#0e1729] border border-slate-800">
-                    <span className="text-[#a9b5d0] block text-[10px]">Practice Avg:</span>
+                    <span className="text-[#a9b5d0] block text-[10px]">Mock Questions:</span>
                     <span className="font-bold text-[#edf2ff]">
-                      {breakdown.dailyAverage !== null ? `${breakdown.dailyAverage.toFixed(1)}/90` : '—'}
+                      {completedMocksCount * 60} / 360 Qs
                     </span>
                   </div>
 
                   <div className="p-2 rounded-lg bg-[#0e1729] border border-slate-800">
-                    <span className="text-[#a9b5d0] block text-[10px]">Mocks (5 Target):</span>
-                    <span className="font-bold text-[#edf2ff]">
-                      {completedMocksCount} / 5 Done
+                    <span className="text-[#a9b5d0] block text-[10px]">6 Mocks Status:</span>
+                    <span className={`font-bold ${completedMocksCount === 6 ? 'text-emerald-400' : 'text-[#edf2ff]'}`}>
+                      {completedMocksCount} / 6 Done
                     </span>
                   </div>
                 </div>
@@ -161,7 +161,7 @@ export const RoadmapPage: React.FC = () => {
                     ? 'Day gate passed'
                     : isOverdue
                     ? 'Missed day · Catch up anytime'
-                    : '5 Phases · 5 Mocks + 100 Qs'}
+                    : '6 Mocks · 360 Qs · Reviews Required'}
                 </span>
                 <span className="text-blue-400 font-semibold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
                   Open Day <ChevronRight className="w-3.5 h-3.5" />
