@@ -49,22 +49,22 @@ export const MasterTargetTrackerCard: React.FC = () => {
           <div className="flex items-center gap-2.5 flex-wrap">
             <span className="px-3 py-1 rounded-xl bg-purple-500/20 text-purple-300 font-bold text-xs border border-purple-500/30 flex items-center gap-1.5">
               <Target className="w-3.5 h-3.5 text-purple-400" />
-              15-Day Summit Mission (Target 79+ Superior)
+              14-Day 50+ Mock Mission (Target 79+ Superior)
             </span>
             <span className="px-3 py-1 rounded-xl bg-blue-500/15 text-blue-300 text-xs font-semibold border border-blue-500/30 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-blue-400" />
               Deadline: {formatDateFriendly(FINAL_TARGET_DATE)} ({daysRemaining} Days Left)
             </span>
             <span className="px-3 py-1 rounded-xl bg-emerald-500/15 text-emerald-300 text-xs font-semibold border border-emerald-500/30">
-              6,000 Total Questions Tracking
+              3,500+ Total Questions Tracking
             </span>
           </div>
 
           <h2 className="text-2xl font-extrabold text-[#edf2ff] mt-2 flex items-center gap-2">
-            <span>Mission: 6,000 Questions (1,500 Practice + 4,500 Mock Questions across {cumulative.totalMocksGoal} Mocks)</span>
+            <span>Mission: 50+ Mock Exams ({TOTAL_MOCK_TARGET} Tests) + 12 Section Tests</span>
           </h2>
           <p className="text-xs text-[#a9b5d0] mt-1 max-w-2xl leading-relaxed">
-            Target tracking across 15 days: 35 unique mock exams covered 2 times (5 timed slots daily) + 100 high-priority daily practice questions.
+            Target tracking across 14 days: 4 timed mock simulation sessions daily (12-2 AM, 9-11 AM, 1-3 PM, 4-6 PM) + 12 section tests + Read Aloud error analysis.
           </p>
         </div>
 

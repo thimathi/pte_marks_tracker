@@ -17,7 +17,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { usePteData } from '../../context/PteDataContext';
-import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS, PHASE_DEFINITIONS } from '../../config/constants';
+import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS, getMockExamsForDay } from '../../config/constants';
 import { formatDateFriendly } from '../../utils/dateUtils';
 
 interface SidebarProps {
@@ -32,9 +32,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/mock-exams', label: '90-Mock Journey', icon: GraduationCap, badge: '6 Mocks/Day', highlight: true },
+    { to: '/mock-exams', label: '50+ Mock Journey', icon: GraduationCap, badge: '4 Mocks/Day', highlight: true },
     { to: '/practice', label: 'Daily Drills & Templates', icon: Layers, badge: 'Core Drills' },
-    { to: '/review', label: 'Review & Error Center', icon: CheckSquare, badge: 'Mandatory' },
+    { to: '/review', label: 'RA & Review Center', icon: CheckSquare, badge: 'Mandatory' },
     { to: '/roadmap', label: `${totalDays}-Day Roadmap`, icon: Map, badge: `${totalDays} Days` },
     { to: '/analytics/questions', label: 'Question Analytics', icon: BarChart3 },
     { to: '/analytics', label: 'Trends & Stats', icon: LineChart },
@@ -43,7 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { to: '/settings', label: 'Settings & Import', icon: Settings },
   ];
 
-  const mockKeys = ['mock01', 'mock02', 'mock03', 'mock04', 'mock05', 'mock06'];
+  const mockKeys = getMockExamsForDay(currentDay);
 
   return (
     <>
@@ -83,21 +83,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-white leading-tight">Study Day {currentDay} of {totalDays}</p>
                 <p className="text-xs text-slate-400 truncate">
-                  6 Mocks/Day · 360 Qs · No Blanks
+                  4 Mocks/Day · 240 Qs + Section Test
                 </p>
               </div>
             </div>
 
-            {/* Quick 6-Mock Progress Row */}
+            {/* Quick 4-Mock Progress Row */}
             <div className="pt-2 border-t border-slate-800">
               <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1">
-                <span>Today's 6 Mocks</span>
+                <span>Today's 4 Mocks</span>
                 <Link to="/mock-exams" onClick={onClose} className="text-blue-400 hover:underline flex items-center">
                   <span>Open</span>
                   <ChevronRight className="w-3 h-3" />
                 </Link>
               </div>
-              <div className="grid grid-cols-6 gap-1">
+              <div className="grid grid-cols-4 gap-1">
                 {mockKeys.map((k, idx) => {
                   const mockDone = !!currentDayData?.mockExams?.[k]?.isCompleted;
                   const revDone = !!currentDayData?.mockReviews?.[`review0${idx + 1}`]?.isCompleted;
@@ -166,7 +166,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <span className="text-xs font-semibold text-slate-200">{totalDays}-Day Intensive Protocol</span>
             </div>
             <p className="text-[10px] text-slate-400">
-              Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-01')} · 6 Mocks/Day · 120 Qs/Day
+              Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-01')} · 4 Mocks/Day + Section Tests
             </p>
           </div>
         </div>

@@ -8,7 +8,7 @@ describe('Date Calculations & Formatting', () => {
     expect(dates.length).toBe(TOTAL_STUDY_DAYS);
     expect(dates[0]).toBe('2026-11-01'); // Day 1
     expect(dates[1]).toBe('2026-11-02'); // Day 2
-    expect(dates[14]).toBe('2026-11-15'); // Day 15
+    expect(dates[13]).toBe('2026-11-14'); // Day 14
   });
 
   it('supports custom duration when requested (e.g. 15 days)', () => {

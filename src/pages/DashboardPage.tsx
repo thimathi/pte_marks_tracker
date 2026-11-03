@@ -13,7 +13,10 @@ import {
   Calendar,
   Sparkles,
   ShieldCheck,
-  Check
+  Check,
+  Layers,
+  AlertTriangle,
+  Mic
 } from 'lucide-react';
 import { usePteData } from '../context/PteDataContext';
 import { calculateStreak } from '../utils/scoring';
@@ -23,9 +26,12 @@ import {
   TOTAL_MOCK_TARGET,
   TOTAL_STUDY_DAYS,
   TOTAL_MOCK_EXAM_QUESTIONS,
+  TOTAL_MISSION_QUESTIONS,
+  TOTAL_SECTION_TESTS,
   getMockExamsForDay,
   getExamNumberForMock,
   DAILY_MOCK_SCHEDULE,
+  getSectionTestForDay,
   getAcademicCollocationsTarget
 } from '../config/constants';
 import { DailyDrillsCard } from '../components/drills/DailyDrillsCard';
@@ -37,7 +43,7 @@ export const DashboardPage: React.FC = () => {
   const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
   const streak = calculateStreak(days);
 
-  // 6 Daily Mock Exams for currentDay
+  // 4 Daily Mock Exams for currentDay
   const mockKeys = getMockExamsForDay(currentDay);
 
   const todayMocks = mockKeys.map((key, idx) => {
@@ -58,7 +64,9 @@ export const DashboardPage: React.FC = () => {
       listeningScore: mockRec?.listeningScore,
       mistakes: mockRec?.mainMistakes || '',
       reviewCompleted: !!revRec?.isCompleted,
-      reviewMinutes: revRec?.durationMinutes || 0
+      reviewMinutes: revRec?.durationMinutes || 0,
+      raAverage: revRec?.raAverageScore,
+      raScores: revRec?.raScores
     };
   });
 
@@ -67,17 +75,30 @@ export const DashboardPage: React.FC = () => {
   const mockPercent = Math.round((completedMocksCount / mockKeys.length) * 100);
   const reviewPercent = Math.round((completedReviewsCount / mockKeys.length) * 100);
 
-  // Mission-Wide 90-Mock Journey Statistics across all 15 study days
+  // Daily Section Test
+  const sectionTestDef = getSectionTestForDay(currentDay);
+  const sectionTestRecord = currentDayData?.sectionTest;
+
+  // Mission-Wide 50+ Mock Journey Statistics across all 14 study days
   let totalMocksCompletedAllDays = 0;
   let totalReviewsCompletedAllDays = 0;
+  let missedMocksCount = 0;
+
   for (let d = 1; d <= totalDays; d++) {
     const dayData = days[d];
     const mKeys = getMockExamsForDay(d);
     mKeys.forEach((k, idx) => {
-      if (dayData?.mockExams?.[k]?.isCompleted) totalMocksCompletedAllDays++;
-      if (dayData?.mockReviews?.[`review0${idx + 1}`]?.isCompleted) totalReviewsCompletedAllDays++;
+      const isDone = !!dayData?.mockExams?.[k]?.isCompleted;
+      const isRev = !!dayData?.mockReviews?.[`review0${idx + 1}`]?.isCompleted;
+      if (isDone) totalMocksCompletedAllDays++;
+      if (isRev) totalReviewsCompletedAllDays++;
+
+      if (d <= currentDay && (!isDone || !isRev)) {
+        missedMocksCount++;
+      }
     });
   }
+
   const totalQuestionsDoneAllDays = totalMocksCompletedAllDays * 60;
   const overallMockPercent = Math.round((totalMocksCompletedAllDays / TOTAL_MOCK_TARGET) * 100);
 
@@ -102,20 +123,23 @@ export const DashboardPage: React.FC = () => {
           <div>
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">
-                PTE Superior 79+ Target
+                PTE Target 50+ Mock Exams
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30">
+                12 Section Tests
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                15-Day Do or Die Protocol
+                14-Day Mission
               </span>
               <span className="text-xs text-slate-400">
                 Started {formatDateFriendly(studyPlan?.startDate || '2026-11-01')}
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-              Do or Die · 90-Mock Exam Journey
+              50+ Mock Exams & 12 Section Tests Mission
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
-              Strict 6-Session Daily Schedule: 6 Full Timed Simulations (360 Qs Daily · 5,400 Total) + Mandatory Non-Blank Reviews + Daily Core Drills.
+              Daily 4 Timed Sessions (12-2 AM, 9-11 AM, 1-3 PM, 4-6 PM) + 1 Daily Section Test + Mandatory Read Aloud & Error Reviews · 3,500+ Total Questions.
             </p>
           </div>
 
@@ -147,18 +171,18 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Overall 90-Mock Journey Progress Tracker Bar */}
+        {/* Overall 50+ Mock Target Tracker Bar */}
         <div className="mt-5 pt-4 border-t border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-white">
-                Grand 90-Mock Ladder Progress:
+                50+ Mock Exam Target:
               </span>
               <span className="text-xs font-mono font-bold text-blue-400">
-                {totalMocksCompletedAllDays} / {TOTAL_MOCK_TARGET} Tests
+                {totalMocksCompletedAllDays} / {TOTAL_MOCK_TARGET} Tests Completed
               </span>
               <span className="text-xs text-slate-400">
-                ({totalQuestionsDoneAllDays.toLocaleString()} / {TOTAL_MOCK_EXAM_QUESTIONS.toLocaleString()} Questions Done)
+                ({totalQuestionsDoneAllDays.toLocaleString()} / {TOTAL_MOCK_EXAM_QUESTIONS.toLocaleString()} Mock Questions Done)
               </span>
             </div>
             <div className="w-full md:w-96 bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
@@ -171,39 +195,60 @@ export const DashboardPage: React.FC = () => {
 
           <div className="flex items-center gap-2 text-xs">
             <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20 font-mono">
-              Round 1 (M1-35)
-            </span>
-            <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono">
-              Round 2 (M36-70)
+              Week 1: 28 Mocks + 6 Section Tests (~1,800 Qs)
             </span>
             <span className="px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 font-mono">
-              Summit (M71-90)
+              Week 2: 28 Mocks + 6 Section Tests (~1,800 Qs)
             </span>
           </div>
         </div>
       </div>
 
-      {/* Primary KPI Command Center (6 Mocks + Mandatory Reviews + Core Drills) */}
+      {/* Missed Sessions / Catch-Up Support Banner */}
+      {missedMocksCount > 0 && (
+        <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
+            <div>
+              <p className="text-xs font-bold text-amber-200">
+                Missed Session Catch-Up: {missedMocksCount} Mock Session{missedMocksCount > 1 ? 's' : ''} Pending
+              </p>
+              <p className="text-[11px] text-amber-300/80">
+                Missed an earlier time slot? Don't stress — open the Mock Center to catch up anytime without falling behind.
+              </p>
+            </div>
+          </div>
+
+          <Link
+            to="/mock-exams"
+            className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-semibold whitespace-nowrap self-start sm:self-center transition-colors"
+          >
+            Catch Up Now ➔
+          </Link>
+        </div>
+      )}
+
+      {/* Primary KPI Command Center (4 Mocks + Read Aloud Reviews + Section Test) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* KPI 1: 6 Daily Mock Exams */}
+        {/* KPI 1: 4 Daily Mock Exams */}
         <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <GraduationCap className="w-5 h-5 text-blue-400" />
-                <h2 className="text-sm font-bold text-white">6 Daily Mock Exams</h2>
+                <h2 className="text-sm font-bold text-white">4 Daily Mock Exams</h2>
               </div>
               <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                completedMocksCount === 6
+                completedMocksCount === 4
                   ? 'bg-emerald-500/20 text-emerald-300'
                   : 'bg-blue-500/20 text-blue-300'
               }`}>
-                {completedMocksCount} / 6 Done
+                {completedMocksCount} / 4 Done
               </span>
             </div>
 
             <p className="text-xs text-slate-400">
-              6 Timed Full Simulations (60 Qs each = 360 Exam Questions daily). Target: <b>{currentDayTarget}+</b>
+              4 Timed Full Simulations (60 Qs each = 240 Qs daily). Target: <b>{currentDayTarget}+</b>
             </p>
 
             {/* Progress Bar */}
@@ -215,9 +260,9 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          {/* 6 Mock Status Chips with exact User Timings */}
+          {/* 4 Mock Status Chips with User Timings */}
           <div className="grid grid-cols-2 gap-2 pt-1">
-            {todayMocks.map((m, idx) => (
+            {todayMocks.map((m) => (
               <Link
                 key={m.key}
                 to="/mock-exams"
@@ -244,30 +289,30 @@ export const DashboardPage: React.FC = () => {
             to="/mock-exams"
             className="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
           >
-            <span>Open Mock Exam Center (6 Tests)</span>
+            <span>Open Mock Exam Center (4 Tests)</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        {/* KPI 2: Mandatory Deep Review Center (No Blanks Allowed) */}
+        {/* KPI 2: Read Aloud & Deep Review Center */}
         <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-indigo-400" />
-                <h2 className="text-sm font-bold text-white">Mandatory Deep Reviews</h2>
+                <Mic className="w-5 h-5 text-indigo-400" />
+                <h2 className="text-sm font-bold text-white">RA & Deep Error Reviews</h2>
               </div>
               <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                completedReviewsCount === 6
+                completedReviewsCount === 4
                   ? 'bg-emerald-500/20 text-emerald-300'
                   : 'bg-indigo-500/20 text-indigo-300'
               }`}>
-                {completedReviewsCount} / 6 Reviewed
+                {completedReviewsCount} / 4 Reviewed
               </span>
             </div>
 
             <p className="text-xs text-slate-400">
-              Zero Blank Reviews Allowed. Detailed mistake analysis & corrective plan required.
+              Read Aloud (RA) scores with comma separation, deficiencies (අඩුපාඩු), and corrective actions.
             </p>
 
             {/* Progress Bar */}
@@ -279,7 +324,7 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          {/* 6 Mock Review Chips */}
+          {/* 4 Mock Review Chips */}
           <div className="grid grid-cols-2 gap-2 pt-1">
             {todayMocks.map((m, idx) => (
               <Link
@@ -306,87 +351,89 @@ export const DashboardPage: React.FC = () => {
                   </span>
                 </div>
                 <span className="text-[10px] text-slate-400 block truncate">
-                  {m.reviewCompleted ? `${m.reviewMinutes}m logged` : 'Review required'}
+                  {m.raAverage ? `RA: ${m.raAverage}/90` : m.reviewCompleted ? `${m.reviewMinutes}m logged` : 'Review required'}
                 </span>
               </Link>
             ))}
           </div>
 
           <Link
-            to="/mock-exams"
+            to="/review"
             className="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition-colors flex items-center justify-center gap-1.5"
           >
-            <span>Log & Review Mock Errors</span>
+            <span>Read Aloud Review Center</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        {/* KPI 3: Daily Essential Drills & Templates */}
+        {/* KPI 3: Daily Section Test (12 Total across 14 Days) */}
         <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <PenTool className="w-5 h-5 text-purple-400" />
-                <h2 className="text-sm font-bold text-white">Daily Core Drills</h2>
+                <Layers className="w-5 h-5 text-purple-400" />
+                <h2 className="text-sm font-bold text-white">Daily Section Test</h2>
               </div>
-              <span className="text-xs font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300">
-                4 Key Drills
+              <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                sectionTestRecord?.isCompleted
+                  ? 'bg-emerald-500/20 text-emerald-300'
+                  : 'bg-purple-500/20 text-purple-300'
+              }`}>
+                {sectionTestRecord?.isCompleted ? 'Completed ✓' : sectionTestDef ? 'Scheduled' : 'Buffer Day'}
               </span>
             </div>
 
             <p className="text-xs text-slate-400">
-              Essential drills alongside mocks: Collocations, Tongue Twisters, SWT, Essay Template.
+              {sectionTestDef
+                ? `${sectionTestDef.title} (${sectionTestDef.targetQuestions} Qs · ${sectionTestDef.estMinutes})`
+                : 'Day 7 & 14: Weekly Buffer Day for Error Reviews and Missed Mocks'}
             </p>
           </div>
 
-          <div className="space-y-1.5 pt-1 text-xs">
-            <div className="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800">
-              <span className="text-slate-300 font-medium">Tongue Twisters (2x):</span>
-              <span className={`font-bold ${twisterDone ? 'text-emerald-400' : 'text-slate-400'}`}>
-                {twisterDone ? '✓ Completed' : 'Pending'}
+          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-400">Assigned Test:</span>
+              <span className="font-semibold text-white truncate">
+                {sectionTestDef?.title || 'Weekly Catch-Up Day'}
               </span>
             </div>
-            <div className="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800">
-              <span className="text-slate-300 font-medium">Collocations ({collocTarget} Qs):</span>
-              <span className={`font-bold ${collocFwdDone || collocBwdDone ? 'text-emerald-400' : 'text-slate-400'}`}>
-                {collocFwdDone || collocBwdDone ? '✓ Completed' : 'Pending'}
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-400">Time Slot:</span>
+              <span className="font-mono text-amber-300">
+                {sectionTestDef?.recommendedSlot || 'Free / Catch-Up'}
               </span>
             </div>
-            <div className="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800">
-              <span className="text-slate-300 font-medium">SWT Template (2x):</span>
-              <span className={`font-bold ${swtDone ? 'text-emerald-400' : 'text-slate-400'}`}>
-                {swtDone ? '✓ Completed' : 'Pending'}
-              </span>
-            </div>
-            <div className="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800">
-              <span className="text-slate-300 font-medium">Write Essay Template (1-2x):</span>
-              <span className={`font-bold ${essayDone ? 'text-emerald-400' : 'text-slate-400'}`}>
-                {essayDone ? '✓ Completed' : 'Pending'}
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-400">Score:</span>
+              <span className="font-bold text-emerald-400">
+                {sectionTestRecord?.score !== null && sectionTestRecord?.score !== undefined
+                  ? `${sectionTestRecord.score} / 90`
+                  : 'Pending'}
               </span>
             </div>
           </div>
 
-          <a
-            href="#drills"
-            className="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition-colors flex items-center justify-center gap-1.5"
+          <Link
+            to="/mock-exams"
+            className="w-full py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
           >
-            <span>Practice Drills & Templates</span>
+            <span>Log Section Test</span>
             <ArrowRight className="w-3.5 h-3.5" />
-          </a>
+          </Link>
         </div>
       </div>
 
-      {/* 24-HOUR DAILY TIMETABLE (6 Mocks + Mandatory Review Slots) */}
+      {/* 24-HOUR DAILY TIMETABLE (4 Mocks + Section Test Slot) */}
       <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 sm:p-6 space-y-4">
         <div className="flex items-center justify-between border-b border-slate-800 pb-3">
           <div className="flex items-center gap-2">
             <Clock className="w-5 h-5 text-blue-400" />
-            <h2 className="text-base font-bold text-white">Daily 6-Session Mock & Review Timetable</h2>
+            <h2 className="text-base font-bold text-white">Daily 4-Mock + Section Test Timetable</h2>
           </div>
-          <span className="text-xs text-slate-400">PTE Bridge Superior Timetable</span>
+          <span className="text-xs text-slate-400">PTE Bridge Structured Schedule</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {DAILY_MOCK_SCHEDULE.map((s, idx) => {
             const mock = todayMocks[idx];
             return (

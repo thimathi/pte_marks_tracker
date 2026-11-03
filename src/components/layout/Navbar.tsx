@@ -20,7 +20,7 @@ import { usePteData } from '../../context/PteDataContext';
 import { SyncIndicator } from '../common/SyncIndicator';
 import { formatDateFriendly } from '../../utils/dateUtils';
 import { calculateStreak, calculateDayBreakdown } from '../../utils/scoring';
-import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS, PHASE_DEFINITIONS } from '../../config/constants';
+import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS, getMockExamsForDay } from '../../config/constants';
 
 interface NavbarProps {
   onToggleSidebar?: () => void;
@@ -32,8 +32,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
   const { studyPlan, currentDay, currentDayData, days, selectDay } = usePteData();
   const streak = calculateStreak(days);
 
-  // Calculate completion status of each of the 6 mocks for today
-  const mockKeys = ['mock01', 'mock02', 'mock03', 'mock04', 'mock05', 'mock06'];
+  // Calculate completion status of each of the 4 mocks for today
+  const mockKeys = getMockExamsForDay(currentDay);
   const todayMockStatuses = mockKeys.map((key, idx) => {
     const mockRec = currentDayData?.mockExams?.[key];
     const revRec = currentDayData?.mockReviews?.[`review0${idx + 1}`];
@@ -53,9 +53,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
 
   const navLinks = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/mock-exams', label: '90-Mock Journey', icon: GraduationCap, badge: '6/Day · 90 Tests' },
+    { to: '/mock-exams', label: '50+ Mock Journey', icon: GraduationCap, badge: '4/Day · 56 Tests' },
     { to: '/practice', label: 'Daily Drills & Templates', icon: Layers, badge: 'Collocations · Twisters · Templates' },
-    { to: '/review', label: 'Review Center', icon: CheckSquare, badge: 'Mandatory' },
+    { to: '/review', label: 'RA & Review Center', icon: CheckSquare, badge: 'Mandatory' },
     { to: '/roadmap', label: 'Roadmap', icon: Map },
     { to: '/analytics', label: 'Analytics', icon: BarChart3 }
   ];
@@ -87,11 +87,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                     PTE Marks Tracker
                   </span>
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 font-semibold border border-blue-500/30 whitespace-nowrap">
-                    Do or Die · 90 Mocks
+                    50+ Mock Mission
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 leading-tight truncate">
-                  Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-01')} · {totalDays} Days · 6 Mocks/Day · 5,400 Qs
+                  Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-01')} · {totalDays} Days · 4 Mocks/Day + 12 Section Tests · 3,500+ Qs
                 </p>
               </div>
             </Link>

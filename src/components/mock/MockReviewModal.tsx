@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, CheckCircle, Clock, BookOpen, AlertOctagon } from 'lucide-react';
+import { X, CheckCircle, Clock, BookOpen, AlertOctagon, Mic, Sparkles } from 'lucide-react';
 import { MockExamRecord, MockReviewRecord } from '../../types/pte';
 
 interface MockReviewModalProps {
@@ -27,16 +27,47 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
   const [correctiveActions, setCorrectiveActions] = useState(reviewRecord?.correctiveActions || '');
   const [repeatQuestions, setRepeatQuestions] = useState(reviewRecord?.questionsToRepeat || '');
   const [reviewNotes, setReviewNotes] = useState(reviewRecord?.reviewNotes || '');
+
+  // Read Aloud (RA) Specific Breakdown State
+  const [raQuestionCount, setRaQuestionCount] = useState<number>(reviewRecord?.raQuestionCount || 6);
+  const [raScores, setRaScores] = useState<string>(reviewRecord?.raScores || '');
+  const [raDeficiencies, setRaDeficiencies] = useState<string>(reviewRecord?.raDeficiencies || '');
+
   const [isCompleted, setIsCompleted] = useState(reviewRecord?.isCompleted || false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  // Parse comma-separated RA scores
+  const parsedRaScores = raScores
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s !== '')
+    .map(Number)
+    .filter((n) => !isNaN(n));
+
+  const raAverage =
+    parsedRaScores.length > 0
+      ? Math.round(parsedRaScores.reduce((a, b) => a + b, 0) / parsedRaScores.length)
+      : null;
+
+  // Quick tag helper for RA Deficiencies
+  const addRaDeficiencyTag = (tag: string) => {
+    setRaDeficiencies((prev) => {
+      const trimmed = prev.trim();
+      if (!trimmed) return tag;
+      if (trimmed.includes(tag)) return prev;
+      return `${trimmed}; ${tag}`;
+    });
+  };
 
   // Mandatory review check: Cannot be blank!
   const hasSubstantialNotes =
     (incorrectSummary && incorrectSummary.trim().length >= 5) ||
     (repeatedMistakes && repeatedMistakes.trim().length >= 5) ||
     (correctiveActions && correctiveActions.trim().length >= 5) ||
-    (reviewNotes && reviewNotes.trim().length >= 5);
+    (reviewNotes && reviewNotes.trim().length >= 5) ||
+    (raDeficiencies && raDeficiencies.trim().length >= 5) ||
+    parsedRaScores.length > 0;
 
   const handleToggleComplete = (checked: boolean) => {
     if (checked && !hasSubstantialNotes) {
@@ -66,6 +97,10 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
       correctiveActions,
       questionsToRepeat: repeatQuestions,
       reviewNotes,
+      raQuestionCount: Number(raQuestionCount) || 6,
+      raScores,
+      raAverageScore: raAverage,
+      raDeficiencies,
       isCompleted,
       completedAt: isCompleted ? new Date().toISOString() : undefined
     });
@@ -126,6 +161,119 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
                 value={repeatedMistakes}
                 onChange={(e) => setRepeatedMistakes(e.target.value)}
                 className="w-full bg-[#0e1729] border border-slate-800 rounded-xl px-3 py-2 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400"
+              />
+            </div>
+          </div>
+
+          {/* Read Aloud (RA) Deep Question-by-Question Review Section */}
+          <div className="p-4 rounded-xl bg-[#0e1729] border border-blue-500/30 space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="flex items-center gap-2">
+                <Mic className="w-4 h-4 text-blue-400" />
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                  Read Aloud (RA) Detailed Question Breakdown
+                </h4>
+              </div>
+              {raAverage !== null && (
+                <span className={`text-xs font-bold px-2 py-0.5 rounded border ${
+                  raAverage >= 79
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                    : raAverage >= 65
+                    ? 'bg-blue-500/20 text-blue-300 border-blue-500/30'
+                    : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                }`}>
+                  RA Avg: {raAverage}/90
+                </span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-300 mb-1">
+                  RA Questions Count:
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="15"
+                  value={raQuestionCount}
+                  onChange={(e) => setRaQuestionCount(Number(e.target.value))}
+                  placeholder="e.g. 6 or 7"
+                  className="w-full bg-[#141c31] border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-400 font-bold"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-[11px] font-semibold text-slate-300 mb-1">
+                  Individual RA Question Scores (Separated by Commas):
+                </label>
+                <input
+                  type="text"
+                  value={raScores}
+                  onChange={(e) => setRaScores(e.target.value)}
+                  placeholder="e.g. 78, 82, 65, 88, 70, 75"
+                  className="w-full bg-[#141c31] border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-400 font-mono font-medium"
+                />
+              </div>
+            </div>
+
+            {/* Live parsed score pills */}
+            {parsedRaScores.length > 0 && (
+              <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                <span className="text-[10px] text-slate-400 font-semibold mr-1">Parsed Scores:</span>
+                {parsedRaScores.map((score, i) => (
+                  <span
+                    key={i}
+                    className={`text-[11px] font-bold px-2 py-0.5 rounded ${
+                      score >= 79
+                        ? 'bg-emerald-500/20 text-emerald-300'
+                        : score >= 65
+                        ? 'bg-blue-500/20 text-blue-300'
+                        : 'bg-rose-500/20 text-rose-300'
+                    }`}
+                  >
+                    Q{i + 1}: {score}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* RA Deficiencies / Weaknesses & Adupadu */}
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-[11px] font-semibold text-slate-300">
+                  RA Deficiencies, Errors & Weaknesses (අඩුපාඩු):
+                </label>
+                <span className="text-[10px] text-slate-500">Click tag to insert</span>
+              </div>
+
+              {/* Quick tags */}
+              <div className="flex items-center gap-1.5 flex-wrap mb-1.5">
+                {[
+                  'Pausing on commas',
+                  'Oral fluency drop',
+                  'Pronunciation unclear',
+                  'Dropped word endings',
+                  'Rushed pacing',
+                  'Hesitation & repetition'
+                ].map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => addRaDeficiencyTag(tag)}
+                    className="text-[10px] px-2 py-0.5 rounded-md bg-slate-800 hover:bg-slate-700 text-blue-300 border border-slate-700 transition-colors"
+                  >
+                    + {tag}
+                  </button>
+                ))}
+              </div>
+
+              <textarea
+                rows={2}
+                placeholder="Describe specific weaknesses in RA questions (e.g. Q3 had long pause before commas, skipped ending 's' in 'demonstrates', flat intonation)"
+                value={raDeficiencies}
+                onChange={(e) => setRaDeficiencies(e.target.value)}
+                className="w-full bg-[#141c31] border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-blue-400 resize-none"
               />
             </div>
           </div>

@@ -38,7 +38,7 @@ export const CalendarPage: React.FC = () => {
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · {totalDays}-Day Do or Die Journey ({TOTAL_MOCK_TARGET} Mock Exams · 6 Mocks Daily · 5,400 Questions Total).
+            Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · {totalDays}-Day Mission ({TOTAL_MOCK_TARGET} Mock Exams · 4 Mocks Daily + 12 Section Tests · 3,500+ Questions Total).
           </p>
         </div>
 

@@ -5,6 +5,7 @@ import {
   MockExamRecord,
   MockReviewRecord,
   QuestionAttempt,
+  SectionTestRecord,
   StudyPlan
 } from '../types/pte';
 import {
@@ -16,6 +17,7 @@ import {
   saveAdditionalExercise,
   saveMockExamRecord,
   saveMockReviewRecord,
+  saveSectionTestRecord,
   saveQuestionAttempt,
   saveStudyPlan,
   subscribeConnectionStatus,
@@ -42,6 +44,7 @@ interface PteDataContextType {
   updateScore: (dayNumber: number, typeId: string, qIndex: number, attempt: Partial<QuestionAttempt>) => Promise<void>;
   updateMockExam: (dayNumber: number, mockId: string, data: Partial<MockExamRecord>) => Promise<void>;
   updateMockReview: (dayNumber: number, reviewId: string, data: Partial<MockReviewRecord>) => Promise<void>;
+  updateSectionTest: (dayNumber: number, data: Partial<SectionTestRecord>) => Promise<void>;
   updateExerciseCount: (dayNumber: number, exerciseId: string, count: number, notes?: string) => Promise<void>;
   updateGateItem: (dayNumber: number, key: string, val: boolean) => Promise<void>;
   completeCurrentDay: (dayNumber: number) => Promise<{ success: boolean; message: string }>;
@@ -281,6 +284,45 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setLastSavedAt(new Date().toLocaleTimeString());
       } catch (err) {
         console.error('Error saving mock review:', err);
+        setSyncStatus('error');
+      }
+    },
+    [user]
+  );
+
+  // Update Section Test
+  const updateSectionTest = useCallback(
+    async (dayNumber: number, data: Partial<SectionTestRecord>) => {
+      if (!user) return;
+      setSyncStatus('syncing');
+
+      setDays((prev) => {
+        const curDay = prev[dayNumber] || createDefaultDayData(dayNumber, '', false);
+        const curSec = curDay.sectionTest || {
+          id: `section_day_${String(dayNumber).padStart(2, '0')}`,
+          studyDay: dayNumber,
+          title: `Section Test Day ${dayNumber}`,
+          skill: 'speaking',
+          targetQuestions: 30,
+          isCompleted: false,
+          score: null
+        };
+
+        return {
+          ...prev,
+          [dayNumber]: {
+            ...curDay,
+            sectionTest: { ...curSec, ...data }
+          }
+        };
+      });
+
+      try {
+        await saveSectionTestRecord(user.uid, dayNumber, data);
+        setSyncStatus('saved');
+        setLastSavedAt(new Date().toLocaleTimeString());
+      } catch (err) {
+        console.error('Error saving section test:', err);
         setSyncStatus('error');
       }
     },
@@ -595,6 +637,7 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updateScore,
         updateMockExam,
         updateMockReview,
+        updateSectionTest,
         updateExerciseCount,
         updateGateItem,
         completeCurrentDay,

@@ -7,11 +7,18 @@ import {
   Award,
   ChevronRight,
   TrendingUp,
-  FileCheck
+  FileCheck,
+  Mic,
+  AlertTriangle,
+  RefreshCw,
+  Sparkles,
+  Layers,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { usePteData } from '../context/PteDataContext';
 import { MockReviewModal } from '../components/mock/MockReviewModal';
-import { MockExamRecord, MockReviewRecord } from '../types/pte';
+import { MockExamRecord, MockReviewRecord, SectionTestRecord } from '../types/pte';
 import { formatDateFriendly } from '../utils/dateUtils';
 import {
   TOTAL_MOCK_TARGET,
@@ -19,7 +26,8 @@ import {
   getMockExamDetails,
   getMockExamsForDay,
   getExamNumberForMock,
-  DAILY_MOCK_SCHEDULE
+  DAILY_MOCK_SCHEDULE,
+  getSectionTestForDay
 } from '../config/constants';
 
 interface MockCardProps {
@@ -51,7 +59,7 @@ const MockExamCard: React.FC<MockCardProps> = ({
   const [bypassedLock, setBypassedLock] = useState(false);
   const effectivelyLocked = isLocked && !bypassedLock;
 
-  // Local state for smooth, un-throttled typing
+  // Local state for smooth typing
   const [overall, setOverall] = useState<string>(
     mock?.overallScore !== null && mock?.overallScore !== undefined ? String(mock.overallScore) : ''
   );
@@ -75,7 +83,6 @@ const MockExamCard: React.FC<MockCardProps> = ({
   const [mistakes, setMistakes] = useState<string>(mock?.mainMistakes || '');
   const [saveStatus, setSaveStatus] = useState<'idle' | 'dirty' | 'saving' | 'saved'>('idle');
 
-  // Sync state if external mock record changes (e.g. day switched or remote reload)
   useEffect(() => {
     setOverall(
       mock?.overallScore !== null && mock?.overallScore !== undefined ? String(mock.overallScore) : ''
@@ -206,9 +213,9 @@ const MockExamCard: React.FC<MockCardProps> = ({
             <button
               type="button"
               onClick={() => setBypassedLock(true)}
-              className="text-[10px] text-blue-400 hover:underline shrink-0"
+              className="text-[10px] px-2 py-0.5 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-200 border border-blue-500/30 font-semibold shrink-0 cursor-pointer"
             >
-              Unlock
+              Catch Up / Unlock
             </button>
           </div>
         )}
@@ -394,6 +401,31 @@ const MockExamCard: React.FC<MockCardProps> = ({
         </div>
       </div>
 
+      {/* Read Aloud (RA) Summary Snapshot if Reviewed */}
+      {rev?.raScores && (
+        <div className="p-2.5 rounded-xl bg-blue-950/30 border border-blue-500/20 space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-blue-300 flex items-center gap-1.5">
+              <Mic className="w-3 h-3 text-blue-400" />
+              Read Aloud (RA) Breakdown:
+            </span>
+            {rev.raAverageScore !== undefined && rev.raAverageScore !== null && (
+              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300">
+                Avg: {rev.raAverageScore}/90
+              </span>
+            )}
+          </div>
+          <div className="text-[10px] text-slate-300 font-mono">
+            Scores: [{rev.raScores}]
+          </div>
+          {rev.raDeficiencies && (
+            <div className="text-[10px] text-amber-300/90 truncate italic">
+              Deficiencies: {rev.raDeficiencies}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Questions Attempted */}
       <div className="flex items-center justify-between bg-slate-950/50 rounded-lg px-2.5 py-1.5 border border-slate-800">
         <label className="text-xs text-slate-400 font-medium">Questions Done:</label>
@@ -459,7 +491,7 @@ const MockExamCard: React.FC<MockCardProps> = ({
           }`}
         >
           <BookOpen className="w-3.5 h-3.5" />
-          <span>{rev?.isCompleted ? 'Edit Review ✓' : 'Start Review (Mandatory)'}</span>
+          <span>{rev?.isCompleted ? 'Edit Review ✓' : 'Start Review (RA & Errors)'}</span>
         </button>
       </div>
     </div>
@@ -467,7 +499,16 @@ const MockExamCard: React.FC<MockCardProps> = ({
 };
 
 export const MockExamsPage: React.FC = () => {
-  const { currentDay, currentDayData, days, studyPlan, updateMockExam, updateMockReview, selectDay } = usePteData();
+  const {
+    currentDay,
+    currentDayData,
+    days,
+    studyPlan,
+    updateMockExam,
+    updateMockReview,
+    updateSectionTest,
+    selectDay
+  } = usePteData();
   const totalDays = studyPlan?.durationDays || TOTAL_STUDY_DAYS;
   const totalMocks = TOTAL_MOCK_TARGET;
 
@@ -476,7 +517,11 @@ export const MockExamsPage: React.FC = () => {
     review: MockReviewRecord | undefined;
   } | null>(null);
 
+  const [isCatchUpExpanded, setIsCatchUpExpanded] = useState<boolean>(false);
+
   const mockKeys = getMockExamsForDay(currentDay);
+  const sectionTestDef = getSectionTestForDay(currentDay);
+  const currentSectionTest = currentDayData?.sectionTest;
 
   const handleSaveMock = useCallback(
     async (mockId: string, payload: Partial<MockExamRecord>) => {
@@ -485,7 +530,46 @@ export const MockExamsPage: React.FC = () => {
     [currentDay, updateMockExam]
   );
 
-  // Build the complete list of all 51 planned mock exams across 17 days
+  // Section Test Local State for Current Day
+  const [secScore, setSecScore] = useState<string>(
+    currentSectionTest?.score !== null && currentSectionTest?.score !== undefined
+      ? String(currentSectionTest.score)
+      : ''
+  );
+  const [secMistakes, setSecMistakes] = useState<string>(currentSectionTest?.mainMistakes || '');
+  const [secQuestions, setSecQuestions] = useState<string>(
+    currentSectionTest?.questionsAttempted !== undefined && currentSectionTest?.questionsAttempted !== null
+      ? String(currentSectionTest.questionsAttempted)
+      : String(sectionTestDef?.targetQuestions || 25)
+  );
+
+  useEffect(() => {
+    setSecScore(
+      currentSectionTest?.score !== null && currentSectionTest?.score !== undefined
+        ? String(currentSectionTest.score)
+        : ''
+    );
+    setSecMistakes(currentSectionTest?.mainMistakes || '');
+    setSecQuestions(
+      currentSectionTest?.questionsAttempted !== undefined && currentSectionTest?.questionsAttempted !== null
+        ? String(currentSectionTest.questionsAttempted)
+        : String(sectionTestDef?.targetQuestions || 25)
+    );
+  }, [currentDay, currentSectionTest?.score, currentSectionTest?.mainMistakes, currentSectionTest?.questionsAttempted, sectionTestDef?.targetQuestions]);
+
+  const handleSaveSectionTest = async (overrideCompleted?: boolean) => {
+    const scoreNum = secScore.trim() === '' ? null : Number(secScore);
+    const isDone = overrideCompleted !== undefined ? overrideCompleted : (scoreNum !== null && scoreNum > 0);
+    await updateSectionTest(currentDay, {
+      score: scoreNum,
+      questionsAttempted: Number(secQuestions) || sectionTestDef?.targetQuestions || 25,
+      mainMistakes: secMistakes,
+      isCompleted: isDone,
+      completedAt: isDone ? new Date().toISOString() : undefined
+    });
+  };
+
+  // Build the complete list of all 56 planned mock exams across 14 days
   const allMocksSchedule: {
     examNumber: number;
     dayNumber: number;
@@ -505,6 +589,36 @@ export const MockExamsPage: React.FC = () => {
     });
   }
 
+  // Detect any missed / pending mock exams up to currentDay
+  const missedMocks: {
+    examNumber: number;
+    dayNumber: number;
+    mockId: string;
+    reviewId: string;
+    mockRec: MockExamRecord | undefined;
+    revRec: MockReviewRecord | undefined;
+  }[] = [];
+
+  for (let d = 1; d <= currentDay; d++) {
+    const dRec = days[d];
+    const dMocks = getMockExamsForDay(d);
+    dMocks.forEach((mId, idx) => {
+      const examNum = getExamNumberForMock(d, idx);
+      const mRec = dRec?.mockExams?.[mId];
+      const rRec = dRec?.mockReviews?.[`review0${idx + 1}`];
+      if (!mRec?.isCompleted || !rRec?.isCompleted) {
+        missedMocks.push({
+          examNumber: examNum,
+          dayNumber: d,
+          mockId: mId,
+          reviewId: `review0${idx + 1}`,
+          mockRec: mRec,
+          revRec: rRec
+        });
+      }
+    });
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -513,35 +627,181 @@ export const MockExamsPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <GraduationCap className="w-6 h-6 text-blue-400" />
             <h1 className="text-xl font-bold text-white">
-              Do or Die · 90-Mock Exam Journey (Priority #1)
+              50+ Mock Exams & 12 Section Tests Mission
             </h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Daily Requirement: 6 Full Mock Exams per day across 6 Timed Sessions (60 Qs each = 360 Qs daily) · 5,400 Total Questions · Zero Blank Reviews Allowed.
+            Daily 4 Mock Exam Timetable: 12-2 AM, 9-11 AM, 1-3 PM, 4-6 PM · 14-Day Plan (56 Total Mocks + 12 Section Tests) · 3,500+ Questions.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 text-xs">
+        <div className="flex items-center gap-2 text-xs flex-wrap">
           <span className="px-3 py-1.5 rounded-xl bg-blue-500/10 text-blue-300 border border-blue-500/20 font-semibold">
-            Day {currentDay} Focus: {mockKeys.length} Mock Exams (8-10 AM, 11-1 PM, 2-4 PM, 8-10 PM, 10:30-12:30 AM, 1-3 AM)
+            Day {currentDay} Focus: 4 Mock Exams + Daily Section Test
           </span>
         </div>
       </div>
 
-      {/* Review Enforcement Banner */}
-      <div className="rounded-xl bg-blue-500/10 border border-blue-500/20 px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-2 text-xs text-blue-200">
-          <span className="font-bold text-blue-400 uppercase tracking-wide text-[10px] px-2 py-0.5 rounded bg-blue-500/20 border border-blue-500/30">
-            Mandatory Review Policy
-          </span>
-          <span>Each mock requires a non-blank error review with mistakes documented & corrective actions before advancing.</span>
+      {/* Missed / Flexible Catch-Up Support Banner */}
+      {missedMocks.length > 0 ? (
+        <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-4 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2.5">
+              <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
+              <div>
+                <h3 className="text-xs font-bold text-amber-200">
+                  Catch-Up & Missed Mock Buffer: {missedMocks.length} Session{missedMocks.length > 1 ? 's' : ''} Pending
+                </h3>
+                <p className="text-[11px] text-amber-300/80">
+                  Life happens! If you missed a 2-hour slot, don't worry. You can catch up anytime here or on the weekend buffer days without falling behind.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setIsCatchUpExpanded((prev) => !prev)}
+              className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-semibold flex items-center gap-1.5 transition-colors self-start sm:self-center"
+            >
+              <span>{isCatchUpExpanded ? 'Hide Missed Mocks' : `View ${missedMocks.length} Missed Mocks`}</span>
+              {isCatchUpExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            </button>
+          </div>
+
+          {/* Expandable list of missed mocks */}
+          {isCatchUpExpanded && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-2 border-t border-amber-500/20">
+              {missedMocks.map((m) => {
+                const details = getMockExamDetails(m.examNumber);
+                return (
+                  <div
+                    key={m.examNumber}
+                    className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between gap-2"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between text-[10px] text-slate-400">
+                        <span>Day {m.dayNumber}</span>
+                        <span className="text-amber-400 font-medium">{details.timeSlot}</span>
+                      </div>
+                      <p className="text-xs font-bold text-white truncate mt-0.5">
+                        Mock #{m.examNumber}: {details.testName}
+                      </p>
+                      <p className="text-[10px] text-slate-400">
+                        {!m.mockRec?.isCompleted ? 'Exam Not Logged' : 'Review Incomplete'}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => selectDay(m.dayNumber)}
+                        className="w-full py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-200 text-[10px] font-semibold text-center border border-blue-500/30"
+                      >
+                        Catch Up on Day {m.dayNumber} ➔
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-        <div className="text-[11px] text-slate-400">
-          6 Timed Sessions · 360 Questions Today · 5,400 Total
+      ) : (
+        <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 px-4 py-2.5 flex items-center gap-2 text-xs text-emerald-300">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span><b>All caught up!</b> No missed mock sessions or pending reviews through Day {currentDay}.</span>
         </div>
+      )}
+
+      {/* Daily Assigned Section Test Card */}
+      <div className="rounded-2xl bg-gradient-to-r from-[#141b34] via-[#10182b] to-[#121f38] border border-blue-500/30 p-5 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-blue-600/20 text-blue-300 flex items-center justify-center font-bold">
+              <Layers className="w-5 h-5 text-blue-400" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 uppercase tracking-wider">
+                  Day {currentDay} Section Test
+                </span>
+                {sectionTestDef ? (
+                  <span className="text-xs text-slate-400">
+                    Recommended: {sectionTestDef.recommendedSlot} ({sectionTestDef.estMinutes})
+                  </span>
+                ) : (
+                  <span className="text-xs text-emerald-400 font-medium">
+                    Weekly Buffer & Error Review Day
+                  </span>
+                )}
+              </div>
+              <h3 className="text-base font-bold text-white mt-0.5">
+                {sectionTestDef ? sectionTestDef.title : 'Day 7 / 14: Rest & Error Deep-Dive Buffer'}
+              </h3>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span
+              className={`text-xs font-bold px-2.5 py-1 rounded-xl border ${
+                currentSectionTest?.isCompleted
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                  : 'bg-slate-800 text-slate-400 border-slate-700'
+              }`}
+            >
+              {currentSectionTest?.isCompleted ? 'Completed ✓' : 'Pending'}
+            </span>
+          </div>
+        </div>
+
+        {sectionTestDef ? (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+            <div className="md:col-span-2 space-y-1">
+              <p className="text-xs text-slate-300 leading-relaxed">
+                {sectionTestDef.description}
+              </p>
+              <p className="text-[11px] text-slate-400">
+                Target: <b>{sectionTestDef.targetQuestions} Questions</b> · Focus on speed, accuracy, and minimum errors.
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-slate-300 block">
+                Score (/90):
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="90"
+                placeholder="Score / 90"
+                value={secScore}
+                onChange={(e) => setSecScore(e.target.value)}
+                onBlur={() => handleSaveSectionTest()}
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg py-1.5 px-3 text-sm font-bold text-white focus:outline-none focus:border-blue-400 text-center"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 pt-4 md:pt-0">
+              <button
+                type="button"
+                onClick={() => handleSaveSectionTest(!currentSectionTest?.isCompleted)}
+                className={`w-full py-2 px-3 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 ${
+                  currentSectionTest?.isCompleted
+                    ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                    : 'bg-blue-600 hover:bg-blue-500 text-white'
+                }`}
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>{currentSectionTest?.isCompleted ? 'Mark Pending' : 'Mark Completed'}</span>
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="text-xs text-slate-400 leading-relaxed">
+            No mandatory section test scheduled for Day {currentDay}. Use this dedicated buffer to review all Read Aloud & mock exam mistakes from the past 6 days, or catch up on any missed mock simulations.
+          </div>
+        )}
       </div>
 
-      {/* Active Day's Mock Exam Cards */}
+      {/* Active Day's Mock Exam Cards (4 Mocks / Day) */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-bold text-white flex items-center gap-2">
@@ -551,8 +811,8 @@ export const MockExamsPage: React.FC = () => {
           <span className="text-xs text-blue-400 font-medium">Study Day {currentDay} of {totalDays}</span>
         </div>
 
-        {/* Responsive Grid: 1 col on mobile, 2 on tablet, 3 on laptop, 6 on wide monitors */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-3.5">
+        {/* Responsive Grid: 1 col on mobile, 2 on tablet, 4 on desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {mockKeys.map((key, idx) => {
             const mock = currentDayData?.mockExams?.[key];
             const reviewId = `review0${idx + 1}`;
@@ -566,7 +826,7 @@ export const MockExamsPage: React.FC = () => {
               isCompleted: false
             };
 
-            // Sequential lock: Mock N requires Mock N-1 completed & reviewed
+            // Non-blocking sequential lock with easy catch up
             const isLocked = idx > 0 && (() => {
               const prevKey = mockKeys[idx - 1];
               const prevMock = currentDayData?.mockExams?.[prevKey];
@@ -603,11 +863,11 @@ export const MockExamsPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <Award className="w-5 h-5 text-blue-400" />
             <h3 className="text-base font-bold text-white">
-              All {totalMocks} Planned Mock Exams Schedule & Score Register
+              All {totalMocks} Planned Mock Exams Schedule & Score Register (Target: 50+)
             </h3>
           </div>
           <span className="text-xs text-slate-400">
-            Round 1 (35 Tests) + Round 2 (35 Tests) + Round 3 Summit (20 Tests) = {totalMocks} Total Mocks (6 Mocks / Day · 5,400 Questions)
+            Round 1 (35 Tests) + Round 2 (21 Tests) = {totalMocks} Total Mocks (4 Mocks / Day across 14 Days · 3,360+ Questions)
           </span>
         </div>
 
@@ -620,12 +880,13 @@ export const MockExamsPage: React.FC = () => {
                 <th className="py-2.5 px-3">Round</th>
                 <th className="py-2.5 px-3">Study Day</th>
                 <th className="py-2.5 px-3">Date</th>
-                <th className="py-2.5 px-3">Target</th>
+                <th className="py-2.5 px-3">Time Slot</th>
                 <th className="py-2.5 px-3">Overall / 90</th>
                 <th className="py-2.5 px-3">Speaking</th>
                 <th className="py-2.5 px-3">Writing</th>
                 <th className="py-2.5 px-3">Reading</th>
                 <th className="py-2.5 px-3">Listening</th>
+                <th className="py-2.5 px-3">RA Avg</th>
                 <th className="py-2.5 px-3">Exam Status</th>
                 <th className="py-2.5 px-3">Review Status</th>
                 <th className="py-2.5 px-3 text-right">Action</th>
@@ -662,7 +923,9 @@ export const MockExamsPage: React.FC = () => {
                     <td className="py-2.5 px-3 text-slate-400">
                       {dayRec ? formatDateFriendly(dayRec.date) : '—'}
                     </td>
-                    <td className="py-2.5 px-3 text-slate-400">60 Qs</td>
+                    <td className="py-2.5 px-3 text-amber-300/90 font-medium">
+                      {details.timeSlot}
+                    </td>
                     <td className="py-2.5 px-3 font-bold text-white">
                       {mockRec?.overallScore !== null && mockRec?.overallScore !== undefined
                         ? `${mockRec.overallScore}/90`
@@ -672,6 +935,11 @@ export const MockExamsPage: React.FC = () => {
                     <td className="py-2.5 px-3 text-purple-300">{mockRec?.writingScore ?? '—'}</td>
                     <td className="py-2.5 px-3 text-emerald-300">{mockRec?.readingScore ?? '—'}</td>
                     <td className="py-2.5 px-3 text-amber-300">{mockRec?.listeningScore ?? '—'}</td>
+                    <td className="py-2.5 px-3 text-slate-300 font-mono">
+                      {revRec?.raAverageScore !== undefined && revRec?.raAverageScore !== null
+                        ? `${revRec.raAverageScore}/90`
+                        : '—'}
+                    </td>
                     <td className="py-2.5 px-3">
                       <span
                         className={`px-2 py-0.5 rounded text-[10px] font-semibold ${

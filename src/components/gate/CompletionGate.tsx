@@ -16,7 +16,8 @@ import {
   DEFAULT_ADDITIONAL_EXERCISES,
   getMockExamsForDay,
   getExamNumberForMock,
-  getAcademicCollocationsTarget
+  getAcademicCollocationsTarget,
+  getSectionTestForDay
 } from '../../config/constants';
 
 interface CompletionGateProps {
@@ -145,7 +146,22 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     hint: 'Practice official PTE Bridge SWT and Essay templates.'
   });
 
-  const allReady = allMocksDone && allReviewsDone && additionalDone;
+  const secDef = getSectionTestForDay(dayNumber);
+  const secRec = targetDayData?.sectionTest;
+  const isSectionTestDone = secDef ? !!secRec?.isCompleted : true;
+
+  if (secDef) {
+    checklistItems.push({
+      id: 'section_test',
+      phaseBadge: 'Section Test',
+      label: `${secDef.title} (${secRec?.isCompleted ? `${secRec.score ?? 0}/90` : 'Pending'})`,
+      done: !!secRec?.isCompleted,
+      canAutoDetect: true,
+      hint: `Complete daily section test: ${secDef.title} in Mock Exam Center.`
+    });
+  }
+
+  const allReady = allMocksDone && allReviewsDone && additionalDone && isSectionTestDone;
 
   const handleToggleCheck = async (id: string, currentVal: boolean) => {
     await updateGateItem(dayNumber, id, !currentVal);

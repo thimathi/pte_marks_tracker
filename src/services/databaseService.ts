@@ -14,6 +14,7 @@ import {
   MockExamRecord,
   MockReviewRecord,
   QuestionAttempt,
+  SectionTestRecord,
   StudyPlan,
   UserProfile
 } from '../types/pte';
@@ -27,7 +28,8 @@ import {
   QUESTION_TYPE_MAP,
   TOTAL_STUDY_DAYS,
   getMockExamsForDay,
-  getExamNumberForMock
+  getExamNumberForMock,
+  getSectionTestForDay
 } from '../config/constants';
 import { calculate21StudyDates, getCalendarDayNumber, getTodayIso } from '../utils/dateUtils';
 
@@ -87,6 +89,22 @@ export function createDefaultDayData(dayNumber: number, dateStr: string, isUnloc
     };
   });
 
+  const secDef = getSectionTestForDay(dayNumber);
+  const sectionTest: SectionTestRecord | undefined = secDef
+    ? {
+        id: `section_day_${String(dayNumber).padStart(2, '0')}`,
+        studyDay: dayNumber,
+        title: secDef.title,
+        skill: secDef.skill,
+        targetQuestions: secDef.targetQuestions,
+        questionsAttempted: 0,
+        score: null,
+        mainMistakes: '',
+        timeSlot: secDef.recommendedSlot,
+        isCompleted: false
+      }
+    : undefined;
+
   return {
     dayNumber,
     date: dateStr,
@@ -94,6 +112,7 @@ export function createDefaultDayData(dayNumber: number, dateStr: string, isUnloc
     questionProgress,
     mockExams,
     mockReviews,
+    sectionTest,
     additionalExercises,
     gateStatus: {
       practiceCompleted: false,
@@ -104,6 +123,9 @@ export function createDefaultDayData(dayNumber: number, dateStr: string, isUnloc
       mock2ReviewCompleted: false,
       mock3Completed: false,
       mock3ReviewCompleted: false,
+      mock4Completed: false,
+      mock4ReviewCompleted: false,
+      sectionTestCompleted: false,
       additionalExercisesCompleted: false,
       isUnlocked,
     },
@@ -266,6 +288,22 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
             };
           }
         });
+
+        const secDef = getSectionTestForDay(d);
+        if (secDef && !existingDays[key].sectionTest) {
+          updates[`users/${uid}/days/${key}/sectionTest`] = {
+            id: `section_day_${String(d).padStart(2, '0')}`,
+            studyDay: d,
+            title: secDef.title,
+            skill: secDef.skill,
+            targetQuestions: secDef.targetQuestions,
+            questionsAttempted: 0,
+            score: null,
+            mainMistakes: '',
+            timeSlot: secDef.recommendedSlot,
+            isCompleted: false
+          };
+        }
       }
     }
 
@@ -489,6 +527,23 @@ export async function saveMockReviewRecord(
     updatedAt: new Date().toISOString()
   });
   await update(revRef, payload);
+}
+
+/**
+ * Saves daily section test record
+ */
+export async function saveSectionTestRecord(
+  uid: string,
+  dayNumber: number,
+  data: Partial<SectionTestRecord>
+): Promise<void> {
+  const dayKey = formatDayKey(dayNumber);
+  const testRef = ref(db, `users/${uid}/days/${dayKey}/sectionTest`);
+  const payload = deepCleanUndefined({
+    ...data,
+    updatedAt: new Date().toISOString()
+  });
+  await update(testRef, payload);
 }
 
 /**

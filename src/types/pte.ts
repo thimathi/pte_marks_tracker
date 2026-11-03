@@ -48,10 +48,10 @@ export interface MockExamRecord {
 }
 
 export interface MockReviewRecord {
-  id: string; // 'review01' | 'review02' | 'review03' | 'review04' | 'review05'
+  id: string; // 'review01' | 'review02' | 'review03' | 'review04'
   mockId: string;
   studyDay: number;
-  examNumber: number; // 1 to 47
+  examNumber: number; // 1 to 56
   durationMinutes: number;
   incorrectQuestionsSummary?: string;
   repeatedMistakes?: string;
@@ -62,6 +62,26 @@ export interface MockReviewRecord {
   correctiveActions?: string;
   questionsToRepeat?: string;
   reviewNotes?: string;
+  // Read Aloud (RA) Deep Breakdown
+  raQuestionCount?: number;
+  raScores?: string; // Comma-separated scores, e.g. "78, 85, 62, 70, 80, 83"
+  raAverageScore?: number | null;
+  raDeficiencies?: string; // RA weaknesses, pauses, intonation, pronunciation issues
+  isCompleted: boolean;
+  completedAt?: string;
+}
+
+export interface SectionTestRecord {
+  id: string; // e.g. 'section_day_01'
+  studyDay: number;
+  title: string;
+  skill: SkillType | 'all';
+  targetQuestions: number;
+  questionsAttempted?: number;
+  score: number | null; // 0-90
+  mainMistakes?: string;
+  timeSlot?: string;
+  notes?: string;
   isCompleted: boolean;
   completedAt?: string;
 }
@@ -86,6 +106,7 @@ export interface DailyGateStatus {
   mock3ReviewCompleted?: boolean;
   mock4Completed?: boolean;
   mock4ReviewCompleted?: boolean;
+  sectionTestCompleted?: boolean;
   additionalExercisesCompleted: boolean;
   isUnlocked: boolean;
   completedAt?: string;
@@ -99,6 +120,7 @@ export interface DayData {
   questionProgress: Record<string, QuestionTypeProgress>;
   mockExams: Record<string, MockExamRecord>;
   mockReviews: Record<string, MockReviewRecord>;
+  sectionTest?: SectionTestRecord;
   additionalExercises: Record<string, AdditionalExerciseRecord>;
   gateStatus: DailyGateStatus;
   notes?: string;
