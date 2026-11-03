@@ -43,11 +43,11 @@ export const RoadmapPage: React.FC = () => {
       <div className="rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-2">
         <div className="flex items-center gap-2">
           <Map className="w-6 h-6 text-blue-400" />
-          <h1 className="text-2xl font-bold text-[#edf2ff]">50+ Mock Exam & 12 Section Tests Mission Roadmap</h1>
+          <h1 className="text-2xl font-bold text-[#edf2ff]">80-Mock Exam Mastery Roadmap (28 Days)</h1>
         </div>
         <p className="text-xs text-[#a9b5d0] leading-relaxed max-w-3xl">
-          Started: <b className="text-blue-300">{formatDateFriendly(studyPlan?.startDate || '2026-11-01')}</b> · {totalDays}-Day Mission (Target Baseline ➔ 79+ Superior).
-          {' '}Structured into <b>{TOTAL_MOCK_TARGET} Mock Exams (4 Mocks/Day) + 12 Section Tests (~3,600 Questions Total)</b> with Mandatory Read Aloud & Deep Error Reviews.
+          Started: <b className="text-blue-300">{formatDateFriendly(studyPlan?.startDate || '2026-11-03')}</b> · Exam: <b className="text-emerald-300">Nov 30, 2026</b> · {totalDays}-Day Mission (Target Baseline ➔ 79+ Superior).
+          {' '}Structured into <b>{TOTAL_MOCK_TARGET} Mock Exams (20 Unique Papers × 4 Passes · 4,800 Questions Total)</b> with Mandatory Read Aloud & Deep Error Reviews.
         </p>
       </div>
 

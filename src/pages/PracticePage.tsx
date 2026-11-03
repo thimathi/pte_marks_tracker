@@ -48,7 +48,7 @@ export const PracticePage: React.FC = () => {
               className="px-4 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-xs font-bold text-white shadow-sm flex items-center gap-2 transition-all cursor-pointer"
             >
               <GraduationCap className="w-4 h-4" />
-              <span>Go to 50+ Mock Journey (4 Mocks/Day)</span>
+              <span>Go to 80-Mock Journey (28 Days)</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -59,7 +59,7 @@ export const PracticePage: React.FC = () => {
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-blue-400 shrink-0" />
             <span>
-              <b>50+ Mock Exams & 12 Section Tests:</b> Full timed mock exams and daily section tests cover 3,500+ questions across 14 intensive days with mandatory Read Aloud & error reviews!
+              <b>80 Mock Exams Mission:</b> 20 unique papers repeated 4 times across 28 days cover 4,800 questions with deep Read Aloud & error reviews!
             </span>
           </div>
           <span className="text-blue-300 font-mono text-[11px] font-semibold">

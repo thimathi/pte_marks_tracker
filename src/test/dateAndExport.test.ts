@@ -6,29 +6,29 @@ describe('Date Calculations & Formatting', () => {
   it('calculates consecutive ISO dates for the intensive protocol', () => {
     const dates = calculate21StudyDates(DEFAULT_START_DATE, TOTAL_STUDY_DAYS);
     expect(dates.length).toBe(TOTAL_STUDY_DAYS);
-    expect(dates[0]).toBe('2026-11-01'); // Day 1
-    expect(dates[1]).toBe('2026-11-02'); // Day 2
-    expect(dates[13]).toBe('2026-11-14'); // Day 14
+    expect(dates[0]).toBe('2026-11-03'); // Day 1
+    expect(dates[1]).toBe('2026-11-04'); // Day 2
+    expect(dates[27]).toBe('2026-11-30'); // Day 28 (Exam Day)
   });
 
   it('supports custom duration when requested (e.g. 15 days)', () => {
-    const dates = calculate21StudyDates('2026-11-01', 15);
+    const dates = calculate21StudyDates('2026-11-03', 15);
     expect(dates.length).toBe(15);
-    expect(dates[0]).toBe('2026-11-01');
-    expect(dates[14]).toBe('2026-11-15');
+    expect(dates[0]).toBe('2026-11-03');
+    expect(dates[14]).toBe('2026-11-17');
   });
 
   it('correctly retrieves date for any specific study day', () => {
-    const startDate = '2026-11-01';
-    expect(getDateForDay(startDate, 1)).toBe('2026-11-01');
-    expect(getDateForDay(startDate, 5)).toBe('2026-11-05');
-    expect(getDateForDay(startDate, 10)).toBe('2026-11-10');
+    const startDate = '2026-11-03';
+    expect(getDateForDay(startDate, 1)).toBe('2026-11-03');
+    expect(getDateForDay(startDate, 5)).toBe('2026-11-07');
+    expect(getDateForDay(startDate, 28)).toBe('2026-11-30');
   });
 
   it('formats friendly date correctly', () => {
-    const formatted = formatDateFriendly('2026-11-01');
+    const formatted = formatDateFriendly('2026-11-03');
     expect(formatted).toContain('2026');
     expect(formatted).toContain('Nov');
-    expect(formatted).toContain('1');
+    expect(formatted).toContain('3');
   });
 });

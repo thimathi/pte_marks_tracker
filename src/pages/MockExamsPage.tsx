@@ -23,9 +23,14 @@ import { formatDateFriendly } from '../utils/dateUtils';
 import {
   TOTAL_MOCK_TARGET,
   TOTAL_STUDY_DAYS,
+  TOTAL_UNIQUE_PAPERS,
+  REPETITIONS_PER_PAPER,
+  APEUNI_VIP_MOCKS,
   getMockExamDetails,
   getMockExamsForDay,
   getExamNumberForMock,
+  getDayAndSlotForExam,
+  getExamNumbersForPaper,
   DAILY_MOCK_SCHEDULE,
   getSectionTestForDay
 } from '../config/constants';
@@ -182,12 +187,12 @@ const MockExamCard: React.FC<MockCardProps> = ({
     <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-4 space-y-3.5 flex flex-col justify-between transition-colors hover:border-slate-700">
       {/* Top Header */}
       <div className="space-y-2 pb-2 border-b border-slate-800">
-        <div className="flex items-center justify-between gap-1.5">
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">
-            Sim {idx + 1} of {totalMocksToday}
+        <div className="flex items-center justify-between gap-1.5 flex-wrap">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
+            Pass {examDetails.roundNumber} · Attempt {examDetails.attemptOfPaper}/4
           </span>
           <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${examDetails.roundBadgeColor}`}>
-            {examDetails.roundTitle.split(':')[0]}
+            Paper #{examDetails.paperNumber}
           </span>
         </div>
 
@@ -569,7 +574,7 @@ export const MockExamsPage: React.FC = () => {
     });
   };
 
-  // Build the complete list of all 56 planned mock exams across 14 days
+  // Build the complete list of all 80 planned mock exams across 28 days
   const allMocksSchedule: {
     examNumber: number;
     dayNumber: number;
@@ -588,6 +593,31 @@ export const MockExamsPage: React.FC = () => {
       });
     });
   }
+
+  const [selectedRoundFilter, setSelectedRoundFilter] = useState<'all' | '1' | '2' | '3' | '4'>('all');
+
+  // Overall statistics across all 80 mock exams
+  let completedCountAll80 = 0;
+  let reviewedCountAll80 = 0;
+  let totalScoreSum = 0;
+
+  for (let d = 1; d <= totalDays; d++) {
+    const dRec = days[d];
+    const dMocks = getMockExamsForDay(d);
+    dMocks.forEach((mId, idx) => {
+      const mRec = dRec?.mockExams?.[mId];
+      const rRec = dRec?.mockReviews?.[`review0${idx + 1}`];
+      if (mRec?.isCompleted) {
+        completedCountAll80++;
+        if (mRec.overallScore) totalScoreSum += mRec.overallScore;
+      }
+      if (rRec?.isCompleted) {
+        reviewedCountAll80++;
+      }
+    });
+  }
+
+  const avgOverallScore = completedCountAll80 > 0 ? Math.round(totalScoreSum / completedCountAll80) : null;
 
   // Detect any missed / pending mock exams up to currentDay
   const missedMocks: {
@@ -627,18 +657,26 @@ export const MockExamsPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <GraduationCap className="w-6 h-6 text-blue-400" />
             <h1 className="text-xl font-bold text-white">
-              50+ Mock Exams & 12 Section Tests Mission
+              80-Mock Exam Mastery Mission (Nov 03 – Nov 30, 2026)
             </h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Daily 4 Mock Exam Timetable: 12-2 AM, 9-11 AM, 1-3 PM, 4-6 PM · 14-Day Plan (56 Total Mocks + 12 Section Tests) · 3,500+ Questions.
+            20 Unique VIP Papers × 4 Passes = 80 Total Mocks · Flexible Daily Pace (~3 Mocks/Day) · Mandatory Read Aloud & Error Reviews · 4,800 Questions.
           </p>
         </div>
 
         <div className="flex items-center gap-2 text-xs flex-wrap">
           <span className="px-3 py-1.5 rounded-xl bg-blue-500/10 text-blue-300 border border-blue-500/20 font-semibold">
-            Day {currentDay} Focus: 4 Mock Exams + Daily Section Test
+            Study Day {currentDay} of {totalDays}
           </span>
+          <span className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-semibold">
+            {completedCountAll80} / 80 Done ({Math.round((completedCountAll80 / 80) * 100)}%)
+          </span>
+          {avgOverallScore !== null && (
+            <span className="px-3 py-1.5 rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/20 font-semibold">
+              Avg: {avgOverallScore}/90
+            </span>
+          )}
         </div>
       </div>
 
@@ -857,18 +895,147 @@ export const MockExamsPage: React.FC = () => {
         </div>
       </div>
 
+      {/* 20 Unique Papers × 4 Passes Progression Matrix */}
+      <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 sm:p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-amber-400" />
+            <h3 className="text-base font-bold text-white">
+              20 VIP Papers × 4 Passes Mastery Matrix
+            </h3>
+          </div>
+          <span className="text-xs text-slate-400">
+            Compare all 4 attempts of each paper side-by-side to track elevation to 79+ Superior
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3">
+          {APEUNI_VIP_MOCKS.slice(0, 20).map((paperTitle, pIdx) => {
+            const paperNum = pIdx + 1;
+            const examNumbers = getExamNumbersForPaper(pIdx);
+
+            const attempts = examNumbers.map((eNum, attIdx) => {
+              const { dayNumber, mockKey, reviewKey } = getDayAndSlotForExam(eNum);
+              const dayRec = days[dayNumber];
+              const mockRec = dayRec?.mockExams?.[mockKey];
+              const revRec = dayRec?.mockReviews?.[reviewKey];
+              return {
+                pass: attIdx + 1,
+                examNumber: eNum,
+                dayNumber,
+                mockRec,
+                revRec,
+                isCompleted: !!mockRec?.isCompleted,
+                overallScore: mockRec?.overallScore,
+                speaking: mockRec?.speakingScore,
+                writing: mockRec?.writingScore,
+                reading: mockRec?.readingScore,
+                listening: mockRec?.listeningScore,
+                raAvg: revRec?.raAverageScore,
+                isReviewed: !!revRec?.isCompleted
+              };
+            });
+
+            const completedAttempts = attempts.filter((a) => a.isCompleted && a.overallScore !== null && a.overallScore !== undefined);
+            const firstScore = completedAttempts[0]?.overallScore ?? null;
+            const latestScore = completedAttempts[completedAttempts.length - 1]?.overallScore ?? null;
+            const delta = firstScore !== null && latestScore !== null && completedAttempts.length > 1 ? latestScore - firstScore : null;
+
+            return (
+              <div
+                key={`paper-matrix-${pIdx}`}
+                className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800/80 hover:border-slate-700 transition-colors flex flex-col lg:flex-row lg:items-center justify-between gap-3"
+              >
+                <div className="lg:w-1/3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">
+                      Paper #{paperNum}
+                    </span>
+                    {delta !== null && (
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        delta >= 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'
+                      }`}>
+                        {delta >= 0 ? `+${delta} pts` : `${delta} pts`} Gain
+                      </span>
+                    )}
+                  </div>
+                  <h4 className="text-xs sm:text-sm font-bold text-white truncate" title={paperTitle}>
+                    {paperTitle}
+                  </h4>
+                </div>
+
+                {/* 4 Attempts Side-by-Side */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 flex-1">
+                  {attempts.map((att) => {
+                    const passColors = [
+                      'border-blue-500/30 bg-blue-950/30 text-blue-300',
+                      'border-purple-500/30 bg-purple-950/30 text-purple-300',
+                      'border-amber-500/30 bg-amber-950/30 text-amber-300',
+                      'border-emerald-500/30 bg-emerald-950/30 text-emerald-300'
+                    ];
+                    return (
+                      <div
+                        key={`att-${att.examNumber}`}
+                        onClick={() => selectDay(att.dayNumber)}
+                        className={`p-2 rounded-lg border text-left cursor-pointer transition-all hover:scale-[1.02] ${
+                          att.isCompleted
+                            ? `${passColors[att.pass - 1]} hover:border-blue-400`
+                            : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+                        }`}
+                        title={`Click to select Day ${att.dayNumber} for Mock #${att.examNumber}`}
+                      >
+                        <div className="flex items-center justify-between text-[10px]">
+                          <span className="font-bold">Pass {att.pass}</span>
+                          <span className="font-mono text-slate-400">Mock #{att.examNumber}</span>
+                        </div>
+                        <div className="mt-1 flex items-baseline justify-between">
+                          <span className="text-xs font-bold text-white">
+                            {att.isCompleted ? `${att.overallScore}/90` : '—'}
+                          </span>
+                          <span className="text-[10px] text-slate-400">
+                            {att.raAvg ? `RA: ${att.raAvg}` : att.isReviewed ? 'Rev ✓' : att.isCompleted ? 'Unrev' : `Day ${att.dayNumber}`}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Mock Exams Complete Progression Table */}
       <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 sm:p-6 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
           <div className="flex items-center gap-2">
             <Award className="w-5 h-5 text-blue-400" />
             <h3 className="text-base font-bold text-white">
-              All {totalMocks} Planned Mock Exams Schedule & Score Register (Target: 50+)
+              All {totalMocks} Planned Mock Exams Master Register
             </h3>
           </div>
           <span className="text-xs text-slate-400">
-            Round 1 (35 Tests) + Round 2 (21 Tests) = {totalMocks} Total Mocks (4 Mocks / Day across 14 Days · 3,360+ Questions)
+            20 Unique Papers × 4 Passes = {totalMocks} Total Mocks (Nov 03 – Nov 30 · 4,800 Questions)
           </span>
+        </div>
+
+        {/* Filter by Pass / Round */}
+        <div className="flex items-center gap-2 flex-wrap border-b border-slate-800 pb-3">
+          <span className="text-xs text-slate-400 mr-2">Filter Pass:</span>
+          {(['all', '1', '2', '3', '4'] as const).map((r) => (
+            <button
+              key={r}
+              onClick={() => setSelectedRoundFilter(r)}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                selectedRoundFilter === r
+                  ? 'bg-blue-600 text-white shadow'
+                  : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+              }`}
+            >
+              {r === 'all' ? 'All 80 Mocks' : `Pass ${r} (${(Number(r) - 1) * 20 + 1}–${Number(r) * 20})`}
+            </button>
+          ))}
         </div>
 
         <div className="overflow-x-auto">
@@ -877,7 +1044,7 @@ export const MockExamsPage: React.FC = () => {
               <tr className="border-b border-slate-800 text-slate-400">
                 <th className="py-2.5 px-3">Exam #</th>
                 <th className="py-2.5 px-3">APEUni Test Name</th>
-                <th className="py-2.5 px-3">Round</th>
+                <th className="py-2.5 px-3">Pass / Attempt</th>
                 <th className="py-2.5 px-3">Study Day</th>
                 <th className="py-2.5 px-3">Date</th>
                 <th className="py-2.5 px-3">Time Slot</th>
@@ -893,86 +1060,92 @@ export const MockExamsPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
-              {allMocksSchedule.map((item) => {
-                const dayRec = days[item.dayNumber];
-                const mockRec = dayRec?.mockExams?.[item.mockId];
-                const revRec = dayRec?.mockReviews?.[item.reviewId];
-                const details = getMockExamDetails(item.examNumber);
+              {allMocksSchedule
+                .filter((item) => {
+                  if (selectedRoundFilter === 'all') return true;
+                  const round = getMockExamDetails(item.examNumber).roundNumber;
+                  return String(round) === selectedRoundFilter;
+                })
+                .map((item) => {
+                  const dayRec = days[item.dayNumber];
+                  const mockRec = dayRec?.mockExams?.[item.mockId];
+                  const revRec = dayRec?.mockReviews?.[item.reviewId];
+                  const details = getMockExamDetails(item.examNumber);
 
-                return (
-                  <tr
-                    key={item.examNumber}
-                    className={`hover:bg-slate-800/40 transition-colors ${
-                      item.dayNumber === currentDay ? 'bg-blue-600/10' : ''
-                    }`}
-                  >
-                    <td className="py-2.5 px-3 font-bold font-mono text-blue-400">
-                      Mock #{item.examNumber}
-                    </td>
-                    <td className="py-2.5 px-3 font-medium text-slate-200 max-w-xs truncate" title={details.testName}>
-                      {details.testName}
-                    </td>
-                    <td className="py-2.5 px-3">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${details.roundBadgeColor}`}>
-                        Round {details.roundNumber}
-                      </span>
-                    </td>
-                    <td className="py-2.5 px-3 text-slate-200 font-medium">
-                      Day {item.dayNumber}
-                    </td>
-                    <td className="py-2.5 px-3 text-slate-400">
-                      {dayRec ? formatDateFriendly(dayRec.date) : '—'}
-                    </td>
-                    <td className="py-2.5 px-3 text-amber-300/90 font-medium">
-                      {details.timeSlot}
-                    </td>
-                    <td className="py-2.5 px-3 font-bold text-white">
-                      {mockRec?.overallScore !== null && mockRec?.overallScore !== undefined
-                        ? `${mockRec.overallScore}/90`
-                        : '—'}
-                    </td>
-                    <td className="py-2.5 px-3 text-blue-300">{mockRec?.speakingScore ?? '—'}</td>
-                    <td className="py-2.5 px-3 text-purple-300">{mockRec?.writingScore ?? '—'}</td>
-                    <td className="py-2.5 px-3 text-emerald-300">{mockRec?.readingScore ?? '—'}</td>
-                    <td className="py-2.5 px-3 text-amber-300">{mockRec?.listeningScore ?? '—'}</td>
-                    <td className="py-2.5 px-3 text-slate-300 font-mono">
-                      {revRec?.raAverageScore !== undefined && revRec?.raAverageScore !== null
-                        ? `${revRec.raAverageScore}/90`
-                        : '—'}
-                    </td>
-                    <td className="py-2.5 px-3">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
-                          mockRec?.isCompleted
-                            ? 'bg-emerald-500/20 text-emerald-400'
-                            : 'bg-slate-800 text-slate-400'
-                        }`}
-                      >
-                        {mockRec?.isCompleted ? 'Completed' : 'Pending'}
-                      </span>
-                    </td>
-                    <td className="py-2.5 px-3">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
-                          revRec?.isCompleted
-                            ? 'bg-emerald-500/20 text-emerald-400'
-                            : 'bg-amber-500/20 text-amber-400'
-                        }`}
-                      >
-                        {revRec?.isCompleted ? 'Reviewed ✓' : 'Unreviewed'}
-                      </span>
-                    </td>
-                    <td className="py-2.5 px-3 text-right">
-                      <button
-                        onClick={() => selectDay(item.dayNumber)}
-                        className="text-blue-400 hover:underline font-semibold cursor-pointer"
-                      >
-                        Select Day {item.dayNumber}
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+                  return (
+                    <tr
+                      key={item.examNumber}
+                      className={`hover:bg-slate-800/40 transition-colors ${
+                        item.dayNumber === currentDay ? 'bg-blue-600/10' : ''
+                      }`}
+                    >
+                      <td className="py-2.5 px-3 font-bold font-mono text-blue-400">
+                        Mock #{item.examNumber}
+                      </td>
+                      <td className="py-2.5 px-3 font-medium text-slate-200 max-w-xs truncate" title={details.testName}>
+                        {details.testName}
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${details.roundBadgeColor}`}>
+                          Pass {details.roundNumber} (Att {details.attemptOfPaper}/4)
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-200 font-medium">
+                        Day {item.dayNumber}
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-400">
+                        {dayRec ? formatDateFriendly(dayRec.date) : '—'}
+                      </td>
+                      <td className="py-2.5 px-3 text-amber-300/90 font-medium">
+                        {details.timeSlot}
+                      </td>
+                      <td className="py-2.5 px-3 font-bold text-white">
+                        {mockRec?.overallScore !== null && mockRec?.overallScore !== undefined
+                          ? `${mockRec.overallScore}/90`
+                          : '—'}
+                      </td>
+                      <td className="py-2.5 px-3 text-blue-300">{mockRec?.speakingScore ?? '—'}</td>
+                      <td className="py-2.5 px-3 text-purple-300">{mockRec?.writingScore ?? '—'}</td>
+                      <td className="py-2.5 px-3 text-emerald-300">{mockRec?.readingScore ?? '—'}</td>
+                      <td className="py-2.5 px-3 text-amber-300">{mockRec?.listeningScore ?? '—'}</td>
+                      <td className="py-2.5 px-3 text-slate-300 font-mono">
+                        {revRec?.raAverageScore !== undefined && revRec?.raAverageScore !== null
+                          ? `${revRec.raAverageScore}/90`
+                          : '—'}
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                            mockRec?.isCompleted
+                              ? 'bg-emerald-500/20 text-emerald-400'
+                              : 'bg-slate-800 text-slate-400'
+                          }`}
+                        >
+                          {mockRec?.isCompleted ? 'Completed' : 'Pending'}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                            revRec?.isCompleted
+                              ? 'bg-emerald-500/20 text-emerald-400'
+                              : 'bg-amber-500/20 text-amber-400'
+                          }`}
+                        >
+                          {revRec?.isCompleted ? 'Reviewed ✓' : 'Unreviewed'}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3 text-right">
+                        <button
+                          onClick={() => selectDay(item.dayNumber)}
+                          className="text-blue-400 hover:underline font-semibold cursor-pointer"
+                        >
+                          Select Day {item.dayNumber}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>

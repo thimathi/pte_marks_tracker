@@ -123,23 +123,23 @@ export const DashboardPage: React.FC = () => {
           <div>
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">
-                PTE Target 50+ Mock Exams
+                Target: 80 Mock Exams
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30">
-                12 Section Tests
+                20 Papers × 4 Passes
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                14-Day Mission
+                28-Day Mission (Nov 03 – Nov 30)
               </span>
               <span className="text-xs text-slate-400">
-                Started {formatDateFriendly(studyPlan?.startDate || '2026-11-01')}
+                Exam Day: Nov 30, 2026
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-              50+ Mock Exams & 12 Section Tests Mission
+              80-Mock Exam Mastery Mission (28 Days)
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
-              Daily 4 Timed Sessions (12-2 AM, 9-11 AM, 1-3 PM, 4-6 PM) + 1 Daily Section Test + Mandatory Read Aloud & Error Reviews · 3,500+ Total Questions.
+              20 Unique VIP Papers repeated 4 times across randomized passes · Flexible Daily Pace (~3 Mocks/Day) · Mandatory Read Aloud & Error Reviews · 4,800 Total Questions.
             </p>
           </div>
 
@@ -230,25 +230,25 @@ export const DashboardPage: React.FC = () => {
 
       {/* Primary KPI Command Center (4 Mocks + Read Aloud Reviews + Section Test) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* KPI 1: 4 Daily Mock Exams */}
+        {/* KPI 1: Daily Mock Exams */}
         <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <GraduationCap className="w-5 h-5 text-blue-400" />
-                <h2 className="text-sm font-bold text-white">4 Daily Mock Exams</h2>
+                <h2 className="text-sm font-bold text-white">Day {currentDay} Mock Exams</h2>
               </div>
               <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                completedMocksCount === 4
+                completedMocksCount === mockKeys.length && mockKeys.length > 0
                   ? 'bg-emerald-500/20 text-emerald-300'
                   : 'bg-blue-500/20 text-blue-300'
               }`}>
-                {completedMocksCount} / 4 Done
+                {completedMocksCount} / {mockKeys.length} Done
               </span>
             </div>
 
             <p className="text-xs text-slate-400">
-              4 Timed Full Simulations (60 Qs each = 240 Qs daily). Target: <b>{currentDayTarget}+</b>
+              {mockKeys.length} Timed Simulations ({mockKeys.length * 60} Qs today). Target: <b>{currentDayTarget}+</b>
             </p>
 
             {/* Progress Bar */}
@@ -303,11 +303,11 @@ export const DashboardPage: React.FC = () => {
                 <h2 className="text-sm font-bold text-white">RA & Deep Error Reviews</h2>
               </div>
               <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                completedReviewsCount === 4
+                completedReviewsCount === mockKeys.length && mockKeys.length > 0
                   ? 'bg-emerald-500/20 text-emerald-300'
                   : 'bg-indigo-500/20 text-indigo-300'
               }`}>
-                {completedReviewsCount} / 4 Reviewed
+                {completedReviewsCount} / {mockKeys.length} Reviewed
               </span>
             </div>
 

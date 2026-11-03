@@ -29,7 +29,7 @@ import {
 import { ref, update } from 'firebase/database';
 import { db } from '../config/firebase';
 import { calculate21StudyDates, getCalendarDayNumber, getTodayIso } from '../utils/dateUtils';
-import { QUESTION_TYPES, DEFAULT_ADDITIONAL_EXERCISES, TOTAL_STUDY_DAYS, getMockExamsForDay, getExamNumberForMock } from '../config/constants';
+import { QUESTION_TYPES, DEFAULT_ADDITIONAL_EXERCISES, TOTAL_STUDY_DAYS, getMockExamsForDay, getExamNumberForMock, getDayAndSlotForExam } from '../config/constants';
 
 interface PteDataContextType {
   studyPlan: StudyPlan;
@@ -43,7 +43,9 @@ interface PteDataContextType {
   selectDay: (dayNumber: number) => void;
   updateScore: (dayNumber: number, typeId: string, qIndex: number, attempt: Partial<QuestionAttempt>) => Promise<void>;
   updateMockExam: (dayNumber: number, mockId: string, data: Partial<MockExamRecord>) => Promise<void>;
+  updateMockExamByNumber: (examNumber: number, data: Partial<MockExamRecord>) => Promise<void>;
   updateMockReview: (dayNumber: number, reviewId: string, data: Partial<MockReviewRecord>) => Promise<void>;
+  updateMockReviewByNumber: (examNumber: number, data: Partial<MockReviewRecord>) => Promise<void>;
   updateSectionTest: (dayNumber: number, data: Partial<SectionTestRecord>) => Promise<void>;
   updateExerciseCount: (dayNumber: number, exerciseId: string, count: number, notes?: string) => Promise<void>;
   updateGateItem: (dayNumber: number, key: string, val: boolean) => Promise<void>;
@@ -288,6 +290,24 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
     },
     [user]
+  );
+
+  // Update Mock Exam directly by global Exam Number (1..80)
+  const updateMockExamByNumber = useCallback(
+    async (examNumber: number, data: Partial<MockExamRecord>) => {
+      const { dayNumber, mockKey } = getDayAndSlotForExam(examNumber);
+      await updateMockExam(dayNumber, mockKey, { ...data, examNumber });
+    },
+    [updateMockExam]
+  );
+
+  // Update Mock Review directly by global Exam Number (1..80)
+  const updateMockReviewByNumber = useCallback(
+    async (examNumber: number, data: Partial<MockReviewRecord>) => {
+      const { dayNumber, reviewKey } = getDayAndSlotForExam(examNumber);
+      await updateMockReview(dayNumber, reviewKey, { ...data, examNumber });
+    },
+    [updateMockReview]
   );
 
   // Update Section Test
@@ -636,7 +656,9 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         selectDay,
         updateScore,
         updateMockExam,
+        updateMockExamByNumber,
         updateMockReview,
+        updateMockReviewByNumber,
         updateSectionTest,
         updateExerciseCount,
         updateGateItem,

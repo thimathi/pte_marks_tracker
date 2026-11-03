@@ -1,19 +1,20 @@
 import { QuestionPriority, QuestionTypeMeta, SkillType, StudyGroupDefinition, TargetScores } from '../types/pte';
 
-export const DEFAULT_START_DATE = '2026-11-01'; // 14-Day 50+ Mock & 12 Section Test Mission (Nov 1 to Nov 14, 2026)
-export const FINAL_TARGET_DATE = '2026-11-14'; // Exactly 14 Intensive Days: Nov 1 to Nov 14, 2026
-export const APP_TITLE = 'PTE - 50+ Mock Exam & 12 Section Test Mission';
+export const DEFAULT_START_DATE = '2026-11-03'; // Start: Nov 3, 2026
+export const FINAL_TARGET_DATE = '2026-11-30'; // Exam Day: Nov 30, 2026 (28 Days Total)
+export const APP_TITLE = 'PTE - 80-Mock Exam Mastery Mission';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
-export const TOTAL_STUDY_DAYS = 14; // Exactly 14 Days (4 Mocks Daily = 56 Tests Total)
-export const DAILY_PRACTICE_TARGET = 0; // Pure mock simulation & targeted section test journey
+export const TOTAL_STUDY_DAYS = 28; // Exactly 28 Days (Nov 3 to Nov 30, 2026)
+export const DAILY_PRACTICE_TARGET = 0; // Pure mock simulation journey
 export const TOTAL_PRACTICE_TARGET = 0; 
-export const DAILY_MOCK_TARGET = 4; // 4 Mock Exams every day across 4 Timed Sessions
-export const TOTAL_MOCK_TARGET = 56; // 14 days * 4 = 56 Mocks total (Target: 50+ Mocks)
-export const TOTAL_SECTION_TESTS = 12; // 12 Section Tests (6 per week, Day 7 & 14 are buffer/rest)
+export const DAILY_MOCK_TARGET = 3; // Recommended pace: ~3 Mock Exams daily (flexible)
+export const TOTAL_MOCK_TARGET = 80; // Exactly 80 Mock Exams (20 unique VIP papers × 4 passes)
+export const TOTAL_UNIQUE_PAPERS = 20; // 20 unique VIP papers
+export const REPETITIONS_PER_PAPER = 4; // Each paper repeated exactly 4 times in random order
+export const TOTAL_SECTION_TESTS = 0; 
 export const MOCK_EXAM_QUESTIONS = 60;
-export const TOTAL_MOCK_EXAM_QUESTIONS = 3360; // 56 mocks * 60 questions = 3,360
-export const TOTAL_SECTION_TEST_QUESTIONS = 268; // 12 section tests (~22 Qs avg)
-export const TOTAL_MISSION_QUESTIONS = 3628; // ~3,600+ Total Questions (~1,800 Qs/Week, 3,500+ over 2 weeks)
+export const TOTAL_MOCK_EXAM_QUESTIONS = 4800; // 80 mocks * 60 questions = 4,800
+export const TOTAL_MISSION_QUESTIONS = 4800; // 4,800 Total Questions
 
 export interface MockScheduleSlot {
   mockIndex: number;
@@ -22,10 +23,10 @@ export interface MockScheduleSlot {
 }
 
 export const DAILY_MOCK_SCHEDULE: MockScheduleSlot[] = [
-  { mockIndex: 0, timeSlot: '12:00 AM – 02:00 AM', sessionName: 'Mock 1: Midnight Simulation' },
-  { mockIndex: 1, timeSlot: '09:00 AM – 11:00 AM', sessionName: 'Mock 2: Morning Simulation' },
-  { mockIndex: 2, timeSlot: '01:00 PM – 03:00 PM', sessionName: 'Mock 3: Afternoon Simulation' },
-  { mockIndex: 3, timeSlot: '04:00 PM – 06:00 PM', sessionName: 'Mock 4: Evening Simulation' }
+  { mockIndex: 0, timeSlot: '12:00 AM – 02:00 AM', sessionName: 'Midnight Session' },
+  { mockIndex: 1, timeSlot: '09:00 AM – 11:00 AM', sessionName: 'Morning Session' },
+  { mockIndex: 2, timeSlot: '01:00 PM – 03:00 PM', sessionName: 'Afternoon Session' },
+  { mockIndex: 3, timeSlot: '04:00 PM – 06:00 PM', sessionName: 'Evening Session' }
 ];
 
 export interface SectionTestDef {
@@ -39,133 +40,10 @@ export interface SectionTestDef {
   recommendedSlot: string;
 }
 
-export const SECTION_TEST_SCHEDULE: Record<number, SectionTestDef> = {
-  1: {
-    dayNumber: 1,
-    testId: 'sec_speaking_01',
-    title: 'VIP Speaking Section Test 1',
-    skill: 'speaking',
-    targetQuestions: 35,
-    estMinutes: '35 min',
-    description: 'Read Aloud, Repeat Sentence, Describe Image & SGD speaking assessment.',
-    recommendedSlot: '07:00 PM – 08:00 PM'
-  },
-  2: {
-    dayNumber: 2,
-    testId: 'sec_reading_01',
-    title: 'VIP Reading Section Test 1',
-    skill: 'reading',
-    targetQuestions: 18,
-    estMinutes: '30 min',
-    description: 'Reading FIB (Drag & Drop), R/W FIB (Dropdown), Re-order Paragraphs.',
-    recommendedSlot: '07:00 PM – 08:00 PM'
-  },
-  3: {
-    dayNumber: 3,
-    testId: 'sec_listening_01',
-    title: 'VIP Listening Section Test 1',
-    skill: 'listening',
-    targetQuestions: 20,
-    estMinutes: '35 min',
-    description: 'Summarize Spoken Text, Write From Dictation, FIB, Multiple Choice.',
-    recommendedSlot: '07:00 PM – 08:00 PM'
-  },
-  4: {
-    dayNumber: 4,
-    testId: 'sec_writing_01',
-    title: 'VIP Writing Section Test 1',
-    skill: 'writing',
-    targetQuestions: 4,
-    estMinutes: '40 min',
-    description: '2 Summarize Written Text + 2 Write Essay (PTE Bridge Templates).',
-    recommendedSlot: '07:00 PM – 08:00 PM'
-  },
-  5: {
-    dayNumber: 5,
-    testId: 'sec_speaking_02',
-    title: 'VIP Speaking Section Test 2',
-    skill: 'speaking',
-    targetQuestions: 35,
-    estMinutes: '35 min',
-    description: 'Fluency & Pronunciation focus with Repeat Sentences and Describe Images.',
-    recommendedSlot: '07:00 PM – 08:00 PM'
-  },
-  6: {
-    dayNumber: 6,
-    testId: 'sec_rw_01',
-    title: 'VIP Reading & Writing Section Test',
-    skill: 'reading',
-    targetQuestions: 22,
-    estMinutes: '45 min',
-    description: 'Combined high-weight test: R/W FIB Dropdown + Summarize Written Text.',
-    recommendedSlot: '07:00 PM – 08:00 PM'
-  },
-  // Day 7 is Buffer & Catch-up Day (0 mandatory section tests, review all errors from week 1)
-  8: {
-    dayNumber: 8,
-    testId: 'sec_speaking_03',
-    title: 'VIP Speaking Section Test 3',
-    skill: 'speaking',
-    targetQuestions: 35,
-    estMinutes: '35 min',
-    description: 'Week 2 Oral Fluency speed drill & Read Aloud clarity test.',
-    recommendedSlot: '07:00 PM – 08:00 PM'
-  },
-  9: {
-    dayNumber: 9,
-    testId: 'sec_listening_02',
-    title: 'VIP Listening Section Test 2',
-    skill: 'listening',
-    targetQuestions: 20,
-    estMinutes: '35 min',
-    description: 'High-speed audio Write From Dictation & Summarize Spoken Text.',
-    recommendedSlot: '07:00 PM – 08:00 PM'
-  },
-  10: {
-    dayNumber: 10,
-    testId: 'sec_reading_02',
-    title: 'VIP Reading Section Test 2',
-    skill: 'reading',
-    targetQuestions: 18,
-    estMinutes: '30 min',
-    description: 'Advanced Academic Collocations & Reading FIB passage test.',
-    recommendedSlot: '07:00 PM – 08:00 PM'
-  },
-  11: {
-    dayNumber: 11,
-    testId: 'sec_writing_02',
-    title: 'VIP Writing Section Test 2',
-    skill: 'writing',
-    targetQuestions: 4,
-    estMinutes: '40 min',
-    description: 'Strict 20-minute Essay template execution & error check.',
-    recommendedSlot: '07:00 PM – 08:00 PM'
-  },
-  12: {
-    dayNumber: 12,
-    testId: 'sec_speaking_04',
-    title: 'VIP Speaking Section Test 4',
-    skill: 'speaking',
-    targetQuestions: 35,
-    estMinutes: '35 min',
-    description: 'Summit 79+ Speaking speed test: zero hesitation, consistent pitch.',
-    recommendedSlot: '07:00 PM – 08:00 PM'
-  },
-  13: {
-    dayNumber: 13,
-    testId: 'sec_lr_02',
-    title: 'VIP Listening & Reading Section Test',
-    skill: 'listening',
-    targetQuestions: 25,
-    estMinutes: '45 min',
-    description: 'Integrated skills drill: WFD, SST, and R/W FIB dropdown.',
-    recommendedSlot: '07:00 PM – 08:00 PM'
-  }
-  // Day 14 is Grand Summit Buffer & Final Review Day
-};
+export const SECTION_TEST_SCHEDULE: Record<number, SectionTestDef> = {};
 
-export function getSectionTestForDay(dayNumber: number): SectionTestDef | null {
-  return SECTION_TEST_SCHEDULE[dayNumber] || null;
+export function getSectionTestForDay(_dayNumber: number): SectionTestDef | null {
+  return null;
 }
 
 export const DEFAULT_TARGET_SCORES: TargetScores = {
@@ -177,26 +55,60 @@ export const DEFAULT_TARGET_SCORES: TargetScores = {
   mockExam: 76,
 };
 
-// Target progression curve across 14 study days (from baseline 60 to summit 79+)
+// Target progression curve across 28 study days (Nov 3 to Nov 30)
 export const DAY_TARGET_SCORES: number[] = [
-  60, 62, 64, 66, 68, 70, 71, // Week 1 (Days 1–7): Baseline to 71+
-  72, 73, 74, 75, 76, 77, 79  // Week 2 (Days 8–14): 72 to Summit 79+ Superior
+  60, 61, 62, 63, 64, 65, 66, // Week 1 (Days 1–7): Nov 03–09 (Baseline Stabilization)
+  67, 68, 69, 70, 71, 72, 73, // Week 2 (Days 8–14): Nov 10–16 (Fluency Acceleration)
+  74, 74, 75, 75, 76, 76, 77, // Week 3 (Days 15–21): Nov 17–23 (Accuracy & Time Control)
+  77, 78, 78, 79, 79, 79, 79  // Week 4 (Days 22–28): Nov 24–30 (Superior 79+ Summit Ready)
 ];
 
 export function getDailyMockTarget(_dayNumber: number): number {
-  return 4;
+  return 3;
 }
 
 export function getDailyPracticeTarget(_dayNumber: number): number {
   return 0;
 }
 
-export function getMockExamsForDay(_dayNumber: number): string[] {
-  return ['mock01', 'mock02', 'mock03', 'mock04'];
+export function getMockExamsForDay(dayNumber: number): string[] {
+  if (dayNumber >= 1 && dayNumber <= 26) {
+    return ['mock01', 'mock02', 'mock03'];
+  }
+  if (dayNumber === 27) {
+    return ['mock01', 'mock02'];
+  }
+  return []; // Day 28: Final Exam Day & Summit
 }
 
 export function getExamNumberForMock(dayNumber: number, mockIndex: number): number {
-  return (dayNumber - 1) * 4 + (mockIndex + 1);
+  if (dayNumber <= 26) {
+    return (dayNumber - 1) * 3 + (mockIndex + 1);
+  }
+  if (dayNumber === 27) {
+    return 78 + (mockIndex + 1);
+  }
+  return 80;
+}
+
+export function getDayAndSlotForExam(examNumber: number): { dayNumber: number; mockKey: string; reviewKey: string } {
+  const safe = Math.min(Math.max(1, examNumber), 80);
+  if (safe <= 78) {
+    const dayNumber = Math.floor((safe - 1) / 3) + 1;
+    const mockIndex = (safe - 1) % 3;
+    return {
+      dayNumber,
+      mockKey: `mock0${mockIndex + 1}`,
+      reviewKey: `review0${mockIndex + 1}`
+    };
+  } else {
+    const mockIndex = safe - 79;
+    return {
+      dayNumber: 27,
+      mockKey: `mock0${mockIndex + 1}`,
+      reviewKey: `review0${mockIndex + 1}`
+    };
+  }
 }
 
 // 35 Available APEUni VIP Mock Exam Papers (User-Provided Exact Catalog)
@@ -254,14 +166,18 @@ function generateSeededPermutation(count: number, seed: number): number[] {
 }
 
 /**
- * 56 Planned Mock Exams Across 14 Days (4 Mocks / Day):
- * - Round 1 (Days 1–9, Mocks 1–35): All 35 papers shuffled (Complete 1st Diagnostic Pass)
- * - Round 2 (Days 9–14, Mocks 36–56): 21 Top VIP papers re-shuffled (High-Yield Error Correction Pass)
- * Total: 35 + 21 = 56 Mock Exams (Target: 50+ Mock Exams)
+ * 80 Planned Mock Exams Across 28 Days (20 Unique Papers × 4 Passes):
+ * - Round 1 (Exams 1–20): Pass 1 (Initial Diagnostic & Baseline)
+ * - Round 2 (Exams 21–40): Pass 2 (Error Rectification & Correction)
+ * - Round 3 (Exams 41–60): Pass 3 (Speed, Fluency & Consistency)
+ * - Round 4 (Exams 61–80): Pass 4 (79+ Summit Readiness & Perfection)
+ * Total: 20 * 4 = 80 Mock Exams (Each unique paper repeated 4 times in random order)
  */
 export const MOCK_EXAM_SCHEDULE_INDICES: number[] = [
-  ...generateSeededPermutation(35, 777),   // Round 1: 35 tests
-  ...generateSeededPermutation(35, 1492).slice(0, 21)  // Round 2: 21 tests (Total: 56)
+  ...generateSeededPermutation(20, 777),   // Round 1: 20 tests (Pass 1)
+  ...generateSeededPermutation(20, 1492),  // Round 2: 20 tests (Pass 2)
+  ...generateSeededPermutation(20, 2026),  // Round 3: 20 tests (Pass 3)
+  ...generateSeededPermutation(20, 3141)   // Round 4: 20 tests (Pass 4)
 ];
 
 export interface MockExamDetails {
@@ -271,25 +187,44 @@ export interface MockExamDetails {
   roundTitle: string;
   roundBadgeColor: string;
   paperNumber: number;
+  paperUniqueIndex: number;
+  attemptOfPaper: number;
   timeSlot: string;
   sessionName: string;
 }
 
 export function getMockExamDetails(examNumber: number): MockExamDetails {
-  const safeNumber = Math.max(1, examNumber);
+  const safeNumber = Math.min(Math.max(1, examNumber), 80);
   const scheduleIndex = (safeNumber - 1) % MOCK_EXAM_SCHEDULE_INDICES.length;
   const paperIndex = MOCK_EXAM_SCHEDULE_INDICES[scheduleIndex] ?? 0;
   const testName = APEUNI_VIP_MOCKS[paperIndex] || `PTE Mock Test #${safeNumber}`;
 
   let roundNumber = 1;
-  let roundTitle = 'Round 1: Shuffled Diagnostic Simulation';
+  let roundTitle = 'Pass 1: Diagnostic Baseline';
   let roundBadgeColor = 'bg-blue-500/20 text-blue-300 border-blue-500/30';
 
-  if (safeNumber > 35) {
+  if (safeNumber > 60) {
+    roundNumber = 4;
+    roundTitle = 'Pass 4: 79+ Peak Perfection';
+    roundBadgeColor = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+  } else if (safeNumber > 40) {
+    roundNumber = 3;
+    roundTitle = 'Pass 3: Fluency & Speed Mastery';
+    roundBadgeColor = 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+  } else if (safeNumber > 20) {
     roundNumber = 2;
-    roundTitle = 'Round 2: Shuffled Error Correction & 2nd Pass';
+    roundTitle = 'Pass 2: Error Rectification';
     roundBadgeColor = 'bg-purple-500/20 text-purple-300 border-purple-500/30';
   }
+
+  // Count how many times this paper appeared up to this exam
+  let attemptOfPaper = 0;
+  for (let i = 0; i < safeNumber; i++) {
+    if (MOCK_EXAM_SCHEDULE_INDICES[i] === paperIndex) {
+      attemptOfPaper++;
+    }
+  }
+  if (attemptOfPaper === 0) attemptOfPaper = roundNumber;
 
   const slotIndex = (safeNumber - 1) % DAILY_MOCK_SCHEDULE.length;
   const scheduleSlot = DAILY_MOCK_SCHEDULE[slotIndex] || DAILY_MOCK_SCHEDULE[0];
@@ -301,9 +236,21 @@ export function getMockExamDetails(examNumber: number): MockExamDetails {
     roundTitle,
     roundBadgeColor,
     paperNumber: paperIndex + 1,
+    paperUniqueIndex: paperIndex,
+    attemptOfPaper,
     timeSlot: scheduleSlot.timeSlot,
     sessionName: scheduleSlot.sessionName
   };
+}
+
+export function getExamNumbersForPaper(paperIndex: number): number[] {
+  const result: number[] = [];
+  MOCK_EXAM_SCHEDULE_INDICES.forEach((pIdx, idx) => {
+    if (pIdx === paperIndex) {
+      result.push(idx + 1);
+    }
+  });
+  return result;
 }
 
 export function getMockExamTitle(examNumber: number): string {

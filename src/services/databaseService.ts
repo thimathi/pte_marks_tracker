@@ -29,6 +29,7 @@ import {
   TOTAL_STUDY_DAYS,
   getMockExamsForDay,
   getExamNumberForMock,
+  getDayAndSlotForExam,
   getSectionTestForDay
 } from '../config/constants';
 import { calculate21StudyDates, getCalendarDayNumber, getTodayIso } from '../utils/dateUtils';
@@ -527,6 +528,36 @@ export async function saveMockReviewRecord(
     updatedAt: new Date().toISOString()
   });
   await update(revRef, payload);
+}
+
+/**
+ * Saves mock exam record directly by its global exam number (1..80)
+ */
+export async function saveMockExamByExamNumber(
+  uid: string,
+  examNumber: number,
+  data: Partial<MockExamRecord>
+): Promise<void> {
+  const { dayNumber, mockKey } = getDayAndSlotForExam(examNumber);
+  await saveMockExamRecord(uid, dayNumber, mockKey, {
+    ...data,
+    examNumber
+  });
+}
+
+/**
+ * Saves mock review record directly by its global exam number (1..80)
+ */
+export async function saveMockReviewByExamNumber(
+  uid: string,
+  examNumber: number,
+  data: Partial<MockReviewRecord>
+): Promise<void> {
+  const { dayNumber, reviewKey } = getDayAndSlotForExam(examNumber);
+  await saveMockReviewRecord(uid, dayNumber, reviewKey, {
+    ...data,
+    examNumber
+  });
 }
 
 /**

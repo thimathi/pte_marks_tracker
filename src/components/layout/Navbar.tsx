@@ -53,7 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
 
   const navLinks = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/mock-exams', label: '50+ Mock Journey', icon: GraduationCap, badge: '4/Day · 56 Tests' },
+    { to: '/mock-exams', label: '80-Mock Journey', icon: GraduationCap, badge: '80 Tests · 4 Passes' },
     { to: '/practice', label: 'Daily Drills & Templates', icon: Layers, badge: 'Collocations · Twisters · Templates' },
     { to: '/review', label: 'RA & Review Center', icon: CheckSquare, badge: 'Mandatory' },
     { to: '/roadmap', label: 'Roadmap', icon: Map },
