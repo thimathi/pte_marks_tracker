@@ -49,14 +49,14 @@ export const MasterTargetTrackerCard: React.FC = () => {
           <div className="flex items-center gap-2.5 flex-wrap">
             <span className="px-3 py-1 rounded-xl bg-purple-500/20 text-purple-300 font-bold text-xs border border-purple-500/30 flex items-center gap-1.5">
               <Target className="w-3.5 h-3.5 text-purple-400" />
-              14-Day 50+ Mock Mission (Target 79+ Superior)
+              28-Day 80-Mock Exam Mission (Target 79+ Superior)
             </span>
             <span className="px-3 py-1 rounded-xl bg-blue-500/15 text-blue-300 text-xs font-semibold border border-blue-500/30 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-blue-400" />
               Deadline: {formatDateFriendly(FINAL_TARGET_DATE)} ({daysRemaining} Days Left)
             </span>
             <span className="px-3 py-1 rounded-xl bg-emerald-500/15 text-emerald-300 text-xs font-semibold border border-emerald-500/30">
-              3,500+ Total Questions Tracking
+              4,800 Total Questions Tracking
             </span>
           </div>
 
@@ -236,7 +236,7 @@ export const MasterTargetTrackerCard: React.FC = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <span className="text-xs font-bold text-[#edf2ff] uppercase tracking-wider flex items-center gap-1.5">
               <Filter className="w-3.5 h-3.5 text-blue-400" />
-              Question Types Progress toward Nov 13:
+              Question Types Progress toward Nov 30:
             </span>
 
             <div className="flex items-center gap-1 bg-[#10192c] p-1 rounded-xl border border-slate-800">

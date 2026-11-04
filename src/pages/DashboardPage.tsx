@@ -171,12 +171,12 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Overall 50+ Mock Target Tracker Bar */}
+        {/* Overall 80 Mock Target Tracker Bar */}
         <div className="mt-5 pt-4 border-t border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-white">
-                50+ Mock Exam Target:
+                80-Mock Exam Mission:
               </span>
               <span className="text-xs font-mono font-bold text-blue-400">
                 {totalMocksCompletedAllDays} / {TOTAL_MOCK_TARGET} Tests Completed
@@ -193,12 +193,18 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-2 text-xs flex-wrap">
             <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20 font-mono">
-              Week 1: 28 Mocks + 6 Section Tests (~1,800 Qs)
+              Pass 1: Exams 1–20 (First Attempt)
             </span>
             <span className="px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 font-mono">
-              Week 2: 28 Mocks + 6 Section Tests (~1,800 Qs)
+              Pass 2: Exams 21–40 (Correction)
+            </span>
+            <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono">
+              Pass 3: Exams 41–60 (Fluency)
+            </span>
+            <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-mono">
+              Pass 4: Exams 61–80 (79+ Summit)
             </span>
           </div>
         </div>

@@ -87,11 +87,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                     PTE Marks Tracker
                   </span>
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 font-semibold border border-blue-500/30 whitespace-nowrap">
-                    50+ Mock Mission
+                    80-Mock Mission
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 leading-tight truncate">
-                  Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-01')} · {totalDays} Days · 4 Mocks/Day + 12 Section Tests · 3,500+ Qs
+                  Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-03')} · {totalDays} Days · 80 Mocks (20 Papers × 4 Passes) · 4,800 Qs
                 </p>
               </div>
             </Link>
@@ -127,8 +127,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
 
           {/* Center-Right: Active View Day Switcher & Streak */}
           <div className="hidden md:flex items-center gap-2.5 shrink-0">
-            {/* Today's 6 Mock Exams Mini Status Indicator */}
-            <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-xl px-2 py-1" title="Today's 6 Mock Exams Status">
+            {/* Today's Mock Exams Mini Status Indicator */}
+            <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-xl px-2 py-1" title="Today's Mock Exams Status">
               <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mr-1">Mocks:</span>
               {todayMockStatuses.map((m) => (
                 <Link
