@@ -113,6 +113,20 @@ export interface DailyGateStatus {
   unlockedAt?: string;
 }
 
+export interface FirstAttemptEntry {
+  testId: string;        // e.g. 'fa_01'
+  testName: string;      // Full APEUni test name
+  testType: 'free' | 'vip';
+  overallScore: number | null;
+  speakingScore: number | null;
+  writingScore: number | null;
+  readingScore: number | null;
+  listeningScore: number | null;
+  notes?: string;
+  isCompleted: boolean;
+  completedAt?: string;
+}
+
 export interface DayData {
   dayNumber: number;
   date: string; // YYYY-MM-DD
@@ -123,6 +137,7 @@ export interface DayData {
   sectionTest?: SectionTestRecord;
   additionalExercises: Record<string, AdditionalExerciseRecord>;
   gateStatus: DailyGateStatus;
+  firstAttempt?: Record<string, FirstAttemptEntry>; // Day 1 pre-plan baseline scores
   notes?: string;
   lastQueueIndex?: number;
   updatedAt?: string;

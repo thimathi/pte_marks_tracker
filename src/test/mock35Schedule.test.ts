@@ -64,7 +64,7 @@ describe('80 Mock Exam Mastery Plan & 20 Papers × 4 Passes Verification', () =>
       const { dayNumber, mockKey } = getDayAndSlotForExam(eNum);
       expect(dayNumber).toBeGreaterThanOrEqual(1);
       expect(dayNumber).toBeLessThanOrEqual(28);
-      expect(mockKey).toMatch(/^mock0[1-3]$/);
+      expect(mockKey).toMatch(/^mock0[1-4]$/);
 
       const dayMocks = getMockExamsForDay(dayNumber);
       const slotIndex = dayMocks.indexOf(mockKey);
@@ -72,6 +72,27 @@ describe('80 Mock Exam Mastery Plan & 20 Papers × 4 Passes Verification', () =>
       const mappedExamNumber = getExamNumberForMock(dayNumber, slotIndex);
       expect(mappedExamNumber).toBe(eNum);
     }
+  });
+
+  it('correctly maps Day 1 to the 4 specific tests in user-requested order', () => {
+    const day1Mocks = getMockExamsForDay(1);
+    expect(day1Mocks).toEqual(['mock01', 'mock02', 'mock03', 'mock04']);
+
+    const mock1 = getMockExamDetails(1);
+    expect(mock1.testName).toBe('【Free Full Test】Mock Test A (note: VIP required for scoring)');
+    expect(mock1.timeSlot).toBe('12:00 AM – 02:00 AM');
+
+    const mock2 = getMockExamDetails(2);
+    expect(mock2.testName).toBe('【VIP Full Test】PTE Mock Test 37B (7th Aug. new version)');
+    expect(mock2.timeSlot).toBe('09:00 AM – 11:00 AM');
+
+    const mock3 = getMockExamDetails(3);
+    expect(mock3.testName).toBe('【VIP Full Test】PTE Mock Test 40B (7th Aug. new version)');
+    expect(mock3.timeSlot).toBe('01:00 PM – 03:00 PM');
+
+    const mock4 = getMockExamDetails(4);
+    expect(mock4.testName).toBe('【VIP Full Test】PTE Mock Test 45C');
+    expect(mock4.timeSlot).toBe('04:00 PM – 06:00 PM');
   });
 
   it('returns mock exam details with correct pass, attempt number, and badges', () => {

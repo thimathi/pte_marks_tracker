@@ -14,11 +14,13 @@ import {
   Sparkles,
   Layers,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Target,
+  Zap
 } from 'lucide-react';
 import { usePteData } from '../context/PteDataContext';
 import { MockReviewModal } from '../components/mock/MockReviewModal';
-import { MockExamRecord, MockReviewRecord, SectionTestRecord } from '../types/pte';
+import { MockExamRecord, MockReviewRecord, SectionTestRecord, FirstAttemptEntry } from '../types/pte';
 import { formatDateFriendly } from '../utils/dateUtils';
 import {
   TOTAL_MOCK_TARGET,
@@ -32,8 +34,284 @@ import {
   getDayAndSlotForExam,
   getExamNumbersForPaper,
   DAILY_MOCK_SCHEDULE,
-  getSectionTestForDay
+  getSectionTestForDay,
+  DAY1_FIRST_ATTEMPT_TESTS
 } from '../config/constants';
+
+// ─── First Attempt Entry Card ────────────────────────────────────────────────
+interface FirstAttemptCardProps {
+  test: (typeof DAY1_FIRST_ATTEMPT_TESTS)[number];
+  entry: FirstAttemptEntry | undefined;
+  onSave: (testId: string, data: Partial<FirstAttemptEntry>) => Promise<void>;
+}
+
+const FirstAttemptEntryCard: React.FC<FirstAttemptCardProps> = ({ test, entry, onSave }) => {
+  const [overall, setOverall] = useState<string>(
+    entry?.overallScore !== null && entry?.overallScore !== undefined ? String(entry.overallScore) : ''
+  );
+  const [speaking, setSpeaking] = useState<string>(
+    entry?.speakingScore !== null && entry?.speakingScore !== undefined ? String(entry.speakingScore) : ''
+  );
+  const [writing, setWriting] = useState<string>(
+    entry?.writingScore !== null && entry?.writingScore !== undefined ? String(entry.writingScore) : ''
+  );
+  const [reading, setReading] = useState<string>(
+    entry?.readingScore !== null && entry?.readingScore !== undefined ? String(entry.readingScore) : ''
+  );
+  const [listening, setListening] = useState<string>(
+    entry?.listeningScore !== null && entry?.listeningScore !== undefined ? String(entry.listeningScore) : ''
+  );
+  const [notes, setNotes] = useState<string>(entry?.notes || '');
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'dirty' | 'saving' | 'saved'>('idle');
+
+  useEffect(() => {
+    setOverall(entry?.overallScore !== null && entry?.overallScore !== undefined ? String(entry.overallScore) : '');
+    setSpeaking(entry?.speakingScore !== null && entry?.speakingScore !== undefined ? String(entry.speakingScore) : '');
+    setWriting(entry?.writingScore !== null && entry?.writingScore !== undefined ? String(entry.writingScore) : '');
+    setReading(entry?.readingScore !== null && entry?.readingScore !== undefined ? String(entry.readingScore) : '');
+    setListening(entry?.listeningScore !== null && entry?.listeningScore !== undefined ? String(entry.listeningScore) : '');
+    setNotes(entry?.notes || '');
+    setSaveStatus('idle');
+  }, [entry?.overallScore, entry?.speakingScore, entry?.writingScore, entry?.readingScore, entry?.listeningScore, entry?.notes]);
+
+  const parseScore = (val: string) => {
+    const t = val.trim();
+    if (t === '') return null;
+    const n = Number(t);
+    return isNaN(n) ? null : Math.min(Math.max(0, n), 90);
+  };
+
+  const handleSave = useCallback(async () => {
+    setSaveStatus('saving');
+    const finalOverall = parseScore(overall);
+    const payload: Partial<FirstAttemptEntry> = {
+      testId: test.id,
+      testName: test.testName,
+      testType: test.testType,
+      overallScore: finalOverall,
+      speakingScore: parseScore(speaking),
+      writingScore: parseScore(writing),
+      readingScore: parseScore(reading),
+      listeningScore: parseScore(listening),
+      notes,
+      isCompleted: finalOverall !== null && finalOverall > 0,
+      completedAt: finalOverall !== null && finalOverall > 0 ? new Date().toISOString() : undefined
+    };
+    await onSave(test.id, payload);
+    setSaveStatus('saved');
+    setTimeout(() => setSaveStatus((p) => (p === 'saved' ? 'idle' : p)), 2500);
+  }, [test, overall, speaking, writing, reading, listening, notes, onSave]);
+
+  const isVip = test.testType === 'vip';
+  const isCompleted = entry?.isCompleted;
+
+  return (
+    <div className={`rounded-xl border p-3.5 space-y-3 transition-colors ${
+      isCompleted
+        ? 'bg-emerald-950/30 border-emerald-500/30'
+        : 'bg-slate-900/80 border-slate-800 hover:border-slate-700'
+    }`}>
+      {/* Header */}
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between gap-1.5 flex-wrap">
+          <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
+            isVip
+              ? 'bg-purple-500/20 text-purple-300 border-purple-500/30'
+              : 'bg-blue-500/20 text-blue-300 border-blue-500/30'
+          }`}>
+            {isVip ? '👑 VIP Test' : '🆓 Free Test'}
+          </span>
+          <span className="text-[10px] text-amber-300 font-medium">{test.timeSlot}</span>
+        </div>
+        <div>
+          <p className="text-[10px] text-slate-400">{test.sessionLabel}</p>
+          <h4 className="text-xs font-bold text-white leading-snug mt-0.5 line-clamp-2" title={test.testName}>
+            {test.testName}
+          </h4>
+        </div>
+        {!isVip && (
+          <div className="text-[10px] text-amber-400/90 bg-amber-500/10 border border-amber-500/20 rounded px-2 py-1">
+            ⚠️ Free test — VIP subscription required to view official scores
+          </div>
+        )}
+        <span className={`inline-flex text-[10px] font-semibold px-2 py-0.5 rounded border ${
+          isCompleted
+            ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+            : 'bg-slate-800 text-slate-400 border-slate-700'
+        }`}>
+          {isCompleted ? '✓ Logged' : 'Pending'}
+        </span>
+      </div>
+
+      {/* Overall Score */}
+      <div className="bg-slate-950/80 rounded-lg p-2 border border-slate-800">
+        <label className="block text-[10px] font-bold text-slate-300 mb-1 flex items-center gap-1">
+          <Award className="w-3 h-3 text-blue-400" /> Overall /90
+        </label>
+        <input
+          type="number" min="0" max="90" placeholder="0–90"
+          value={overall}
+          onChange={(e) => { setOverall(e.target.value); setSaveStatus('dirty'); }}
+          onBlur={handleSave}
+          className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded py-1.5 px-2 text-base font-bold text-white text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
+        />
+      </div>
+
+      {/* Section Scores */}
+      <div className="grid grid-cols-2 gap-1.5">
+        {([
+          { label: 'Speaking', val: speaking, set: setSpeaking, color: 'text-blue-300' },
+          { label: 'Writing', val: writing, set: setWriting, color: 'text-purple-300' },
+          { label: 'Reading', val: reading, set: setReading, color: 'text-emerald-300' },
+          { label: 'Listening', val: listening, set: setListening, color: 'text-amber-300' }
+        ] as const).map(({ label, val, set, color }) => (
+          <div key={label} className="bg-slate-950/60 rounded p-1.5 border border-slate-800">
+            <div className="flex items-center justify-between mb-0.5">
+              <label className={`text-[10px] font-semibold ${color}`}>{label}</label>
+              <span className="text-[9px] text-slate-500">/90</span>
+            </div>
+            <input
+              type="number" min="0" max="90" placeholder="—"
+              value={val}
+              onChange={(e) => { set(e.target.value); setSaveStatus('dirty'); }}
+              onBlur={handleSave}
+              className="w-full bg-slate-900 border border-slate-700/80 rounded py-0.5 px-1.5 text-xs font-bold text-white text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Notes */}
+      <textarea
+        rows={2}
+        placeholder="Observations, weak areas..."
+        value={notes}
+        onChange={(e) => { setNotes(e.target.value); setSaveStatus('dirty'); }}
+        onBlur={handleSave}
+        className="w-full bg-slate-950 border border-slate-800 rounded p-1.5 text-[11px] text-slate-200 focus:outline-none focus:border-slate-600 placeholder-slate-600 resize-none"
+      />
+
+      {/* Save status */}
+      <div className="flex items-center justify-between pt-1 border-t border-slate-800/60">
+        <div className="text-[10px] text-slate-500">Auto-saves on blur</div>
+        {saveStatus === 'dirty' ? (
+          <button onClick={handleSave} className="text-[10px] px-2 py-0.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold cursor-pointer">Save</button>
+        ) : saveStatus === 'saving' ? (
+          <span className="text-[10px] text-amber-400">Saving...</span>
+        ) : saveStatus === 'saved' ? (
+          <span className="text-[10px] text-emerald-400 font-medium">✓ Saved</span>
+        ) : null}
+      </div>
+    </div>
+  );
+};
+
+// ─── Day 1 First Attempt Baseline Section ────────────────────────────────────
+interface FirstAttemptSectionProps {
+  firstAttempt: Record<string, FirstAttemptEntry> | undefined;
+  onSave: (testId: string, data: Partial<FirstAttemptEntry>) => Promise<void>;
+}
+
+const FirstAttemptSection: React.FC<FirstAttemptSectionProps> = ({ firstAttempt, onSave }) => {
+  const completedCount = DAY1_FIRST_ATTEMPT_TESTS.filter(t => firstAttempt?.[t.id]?.isCompleted).length;
+  const allDone = completedCount === DAY1_FIRST_ATTEMPT_TESTS.length;
+
+  const scores = DAY1_FIRST_ATTEMPT_TESTS
+    .map(t => firstAttempt?.[t.id]?.overallScore)
+    .filter((s): s is number => s !== null && s !== undefined);
+  const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null;
+
+  return (
+    <div className={`rounded-2xl border p-5 space-y-4 ${
+      allDone
+        ? 'bg-gradient-to-r from-emerald-950/40 via-slate-900/90 to-emerald-950/40 border-emerald-500/40'
+        : 'bg-gradient-to-r from-[#1a1030] via-[#101830] to-[#101830] border-purple-500/30'
+    }`}>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/60 pb-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-purple-600/20 flex items-center justify-center shrink-0">
+            <Sparkles className="w-5 h-5 text-purple-400" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase tracking-wider">
+                Day 1 · First Attempt Baseline
+              </span>
+              <span className="text-[10px] text-slate-400">Nov 03, 2026</span>
+            </div>
+            <h3 className="text-base font-bold text-white mt-0.5">
+              Pre-Plan Diagnostic — 4 APEUni Mock Tests
+            </h3>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Initial baseline scores before the 80-Mock Mastery Mission begins. These results track your true starting point and are stored separately from the main mock schedule.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className={`text-xs font-bold px-3 py-1.5 rounded-xl border ${
+            allDone
+              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+              : 'bg-slate-800 text-slate-300 border-slate-700'
+          }`}>
+            {completedCount} / {DAY1_FIRST_ATTEMPT_TESTS.length} Logged
+          </span>
+          {avgScore !== null && (
+            <span className="text-xs font-bold px-3 py-1.5 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/30">
+              Avg: {avgScore}/90
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* 4 Test Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {DAY1_FIRST_ATTEMPT_TESTS.map((test) => (
+          <FirstAttemptEntryCard
+            key={test.id}
+            test={test}
+            entry={firstAttempt?.[test.id]}
+            onSave={onSave}
+          />
+        ))}
+      </div>
+
+      {/* Summary strip */}
+      {scores.length > 0 && (
+        <div className="rounded-xl bg-slate-950/60 border border-slate-800 p-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {DAY1_FIRST_ATTEMPT_TESTS.map((test) => {
+            const e = firstAttempt?.[test.id];
+            const hasScore = e?.overallScore !== null && e?.overallScore !== undefined;
+            return (
+              <div key={test.id} className="text-center">
+                <p className="text-[10px] text-slate-400 truncate font-medium" title={test.shortName}>{test.shortName}</p>
+                <p className={`text-sm font-bold mt-0.5 ${
+                  hasScore && e!.overallScore! >= 65 ? 'text-emerald-300'
+                  : hasScore ? 'text-amber-300'
+                  : 'text-slate-500'
+                }`}>
+                  {hasScore ? `${e!.overallScore}/90` : '—'}
+                </p>
+                {hasScore && (
+                  <p className="text-[9px] text-slate-500 mt-0.5">
+                    S:{e?.speakingScore ?? '—'} W:{e?.writingScore ?? '—'} R:{e?.readingScore ?? '—'} L:{e?.listeningScore ?? '—'}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {allDone && (
+        <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 px-4 py-2.5 flex items-center gap-2 text-xs text-emerald-300">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span><b>All 4 baseline tests logged!</b> Scroll down to begin your first scheduled mock exams for the 80-Mock Mission.</span>
+        </div>
+      )}
+    </div>
+  );
+};
 
 interface MockCardProps {
   mockKey: string;
@@ -242,7 +520,13 @@ const MockExamCard: React.FC<MockCardProps> = ({
               : 'Exam Pending'}
           </span>
 
-          {examNumber === 1 && !mock?.isCompleted && (
+          {examDetails.testName.includes('Free Full Test') && (
+            <span className="text-[10px] px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/30 font-medium">
+              Free Test · VIP scoring
+            </span>
+          )}
+
+          {examNumber === 4 && !mock?.isCompleted && (
             <button
               type="button"
               onClick={() => {
@@ -512,7 +796,8 @@ export const MockExamsPage: React.FC = () => {
     updateMockExam,
     updateMockReview,
     updateSectionTest,
-    selectDay
+    selectDay,
+    updateFirstAttempt
   } = usePteData();
   const totalDays = studyPlan?.durationDays || TOTAL_STUDY_DAYS;
   const totalMocks = TOTAL_MOCK_TARGET;
@@ -679,6 +964,14 @@ export const MockExamsPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Day 1 First Attempt Baseline Section */}
+      {currentDay === 1 && (
+        <FirstAttemptSection
+          firstAttempt={currentDayData?.firstAttempt}
+          onSave={updateFirstAttempt}
+        />
+      )}
 
       {/* Missed / Flexible Catch-Up Support Banner */}
       {missedMocks.length > 0 ? (
@@ -985,7 +1278,7 @@ export const MockExamsPage: React.FC = () => {
                         title={`Click to select Day ${att.dayNumber} for Mock #${att.examNumber}`}
                       >
                         <div className="flex items-center justify-between text-[10px]">
-                          <span className="font-bold">Pass {att.pass}</span>
+                          <span className="font-bold">{att.pass === 1 ? '1st Attempt' : `Pass ${att.pass}`}</span>
                           <span className="font-mono text-slate-400">Mock #{att.examNumber}</span>
                         </div>
                         <div className="mt-1 flex items-baseline justify-between">
@@ -1033,7 +1326,11 @@ export const MockExamsPage: React.FC = () => {
                   : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
               }`}
             >
-              {r === 'all' ? 'All 80 Mocks' : `Pass ${r} (${(Number(r) - 1) * 20 + 1}–${Number(r) * 20})`}
+              {r === 'all'
+                ? 'All 80 Mocks'
+                : r === '1'
+                ? 'Pass 1 (First Attempt) (1–20)'
+                : `Pass ${r} (${(Number(r) - 1) * 20 + 1}–${Number(r) * 20})`}
             </button>
           ))}
         </div>

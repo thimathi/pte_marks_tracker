@@ -72,43 +72,55 @@ export function getDailyPracticeTarget(_dayNumber: number): number {
 }
 
 export function getMockExamsForDay(dayNumber: number): string[] {
-  if (dayNumber >= 1 && dayNumber <= 26) {
+  if (dayNumber === 1) {
+    return ['mock01', 'mock02', 'mock03', 'mock04'];
+  }
+  if (dayNumber >= 2 && dayNumber <= 26) {
     return ['mock01', 'mock02', 'mock03'];
   }
   if (dayNumber === 27) {
-    return ['mock01', 'mock02'];
+    return ['mock01'];
   }
   return []; // Day 28: Final Exam Day & Summit
 }
 
 export function getExamNumberForMock(dayNumber: number, mockIndex: number): number {
-  if (dayNumber <= 26) {
-    return (dayNumber - 1) * 3 + (mockIndex + 1);
+  if (dayNumber === 1) {
+    return mockIndex + 1; // 1, 2, 3, 4
+  }
+  if (dayNumber >= 2 && dayNumber <= 26) {
+    return 4 + (dayNumber - 2) * 3 + (mockIndex + 1); // Day 2: 5, 6, 7 ... Day 26: 77, 78, 79
   }
   if (dayNumber === 27) {
-    return 78 + (mockIndex + 1);
+    return 80;
   }
   return 80;
 }
 
 export function getDayAndSlotForExam(examNumber: number): { dayNumber: number; mockKey: string; reviewKey: string } {
   const safe = Math.min(Math.max(1, examNumber), 80);
-  if (safe <= 78) {
-    const dayNumber = Math.floor((safe - 1) / 3) + 1;
-    const mockIndex = (safe - 1) % 3;
+  if (safe <= 4) {
+    return {
+      dayNumber: 1,
+      mockKey: `mock0${safe}`,
+      reviewKey: `review0${safe}`
+    };
+  }
+  if (safe <= 79) {
+    const diff = safe - 5;
+    const dayNumber = 2 + Math.floor(diff / 3);
+    const mockIndex = diff % 3;
     return {
       dayNumber,
       mockKey: `mock0${mockIndex + 1}`,
       reviewKey: `review0${mockIndex + 1}`
     };
-  } else {
-    const mockIndex = safe - 79;
-    return {
-      dayNumber: 27,
-      mockKey: `mock0${mockIndex + 1}`,
-      reviewKey: `review0${mockIndex + 1}`
-    };
   }
+  return {
+    dayNumber: 27,
+    mockKey: 'mock01',
+    reviewKey: 'review01'
+  };
 }
 
 // 35 Available APEUni VIP Mock Exam Papers (User-Provided Exact Catalog)
@@ -167,14 +179,27 @@ function generateSeededPermutation(count: number, seed: number): number[] {
 
 /**
  * 80 Planned Mock Exams Across 28 Days (20 Unique Papers × 4 Passes):
- * - Round 1 (Exams 1–20): Pass 1 (Initial Diagnostic & Baseline)
+ * - Round 1 (Exams 1–20): Pass 1 (First Attempt: Initial Diagnostic & Baseline)
  * - Round 2 (Exams 21–40): Pass 2 (Error Rectification & Correction)
  * - Round 3 (Exams 41–60): Pass 3 (Speed, Fluency & Consistency)
  * - Round 4 (Exams 61–80): Pass 4 (79+ Summit Readiness & Perfection)
  * Total: 20 * 4 = 80 Mock Exams (Each unique paper repeated 4 times in random order)
  */
+function generateRound1Indices(): number[] {
+  // Day 1 exact 4 tests as confirmed by user:
+  // Mock 1: Mock Test A (Index 4)
+  // Mock 2: Mock Test 37B (Index 18)
+  // Mock 3: Mock Test 40B (Index 12)
+  // Mock 4: Mock Test 45C (Index 0)
+  const day1Papers = [4, 18, 12, 0];
+  const remaining = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 19];
+  const perm = generateSeededPermutation(remaining.length, 777);
+  const shuffledRemaining = perm.map((i) => remaining[i]);
+  return [...day1Papers, ...shuffledRemaining];
+}
+
 export const MOCK_EXAM_SCHEDULE_INDICES: number[] = [
-  ...generateSeededPermutation(20, 777),   // Round 1: 20 tests (Pass 1)
+  ...generateRound1Indices(),              // Round 1: 20 tests (Pass 1: First Attempt)
   ...generateSeededPermutation(20, 1492),  // Round 2: 20 tests (Pass 2)
   ...generateSeededPermutation(20, 2026),  // Round 3: 20 tests (Pass 3)
   ...generateSeededPermutation(20, 3141)   // Round 4: 20 tests (Pass 4)
@@ -200,7 +225,7 @@ export function getMockExamDetails(examNumber: number): MockExamDetails {
   const testName = APEUNI_VIP_MOCKS[paperIndex] || `PTE Mock Test #${safeNumber}`;
 
   let roundNumber = 1;
-  let roundTitle = 'Pass 1: Diagnostic Baseline';
+  let roundTitle = 'Pass 1 (First Attempt): Diagnostic Baseline';
   let roundBadgeColor = 'bg-blue-500/20 text-blue-300 border-blue-500/30';
 
   if (safeNumber > 60) {
@@ -226,7 +251,8 @@ export function getMockExamDetails(examNumber: number): MockExamDetails {
   }
   if (attemptOfPaper === 0) attemptOfPaper = roundNumber;
 
-  const slotIndex = (safeNumber - 1) % DAILY_MOCK_SCHEDULE.length;
+  const { mockKey } = getDayAndSlotForExam(safeNumber);
+  const slotIndex = parseInt(mockKey.replace('mock0', ''), 10) - 1;
   const scheduleSlot = DAILY_MOCK_SCHEDULE[slotIndex] || DAILY_MOCK_SCHEDULE[0];
 
   return {
@@ -257,6 +283,46 @@ export function getMockExamTitle(examNumber: number): string {
   const details = getMockExamDetails(examNumber);
   return `${details.testName} (${details.roundTitle.split(':')[0]})`;
 }
+
+/**
+ * Day 1 First Attempt – Pre-Plan Diagnostic Baseline Tests
+ * These 4 specific APEUni tests are done on Day 1 (Nov 3, 2026) BEFORE the main
+ * 80-mock plan begins. Scores are stored separately to track initial baseline.
+ */
+export const DAY1_FIRST_ATTEMPT_TESTS = [
+  {
+    id: 'fa_01',
+    testName: '【Free Full Test】Mock Test A (note: VIP required for scoring)',
+    shortName: 'Mock Test A',
+    testType: 'free' as const,
+    timeSlot: '12:00 AM – 02:00 AM',
+    sessionLabel: 'Session 1 · Midnight'
+  },
+  {
+    id: 'fa_02',
+    testName: '【VIP Full Test】PTE Mock Test 37B (7th Aug. new version)',
+    shortName: 'Mock Test 37B',
+    testType: 'vip' as const,
+    timeSlot: '09:00 AM – 11:00 AM',
+    sessionLabel: 'Session 2 · Morning'
+  },
+  {
+    id: 'fa_03',
+    testName: '【VIP Full Test】PTE Mock Test 40B (7th Aug. new version)',
+    shortName: 'Mock Test 40B',
+    testType: 'vip' as const,
+    timeSlot: '01:00 PM – 03:00 PM',
+    sessionLabel: 'Session 3 · Afternoon'
+  },
+  {
+    id: 'fa_04',
+    testName: '【VIP Full Test】PTE Mock Test 45C',
+    shortName: 'Mock Test 45C',
+    testType: 'vip' as const,
+    timeSlot: '04:00 PM – 06:00 PM',
+    sessionLabel: 'Session 4 · Evening'
+  }
+];
 
 export const BASELINE_MOCK_45C_SCORES = {
   overall: 59,

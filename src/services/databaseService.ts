@@ -11,6 +11,7 @@ import {
 import { db } from '../config/firebase';
 import {
   DayData,
+  FirstAttemptEntry,
   MockExamRecord,
   MockReviewRecord,
   QuestionAttempt,
@@ -703,6 +704,20 @@ export async function emergencyUnlockDay(uid: string, targetDayNumber: number, r
 }
 
 /**
+ * Saves a single First Attempt entry for Day 1 baseline tracking
+ */
+export async function saveFirstAttemptRecord(
+  uid: string,
+  testId: string,
+  data: Partial<FirstAttemptEntry>
+): Promise<void> {
+  const path = `users/${uid}/days/day01/firstAttempt/${testId}`;
+  const existing = await get(ref(db, path));
+  const current = existing.exists() ? existing.val() : {};
+  await update(ref(db, path), deepCleanUndefined({ ...current, ...data }));
+}
+
+/**
  * Subscribes to full user study data (plan and days)
  */
 export function subscribeToUserData(
@@ -751,7 +766,8 @@ export function subscribeToUserData(
               ...defaultDay.gateStatus,
               ...(raw.gateStatus || {}),
               isUnlocked: isCalendarActive || !!raw.gateStatus?.isUnlocked
-            }
+            },
+            ...(raw.firstAttempt ? { firstAttempt: raw.firstAttempt } : {})
           };
         } else {
           days[d] = defaultDay;

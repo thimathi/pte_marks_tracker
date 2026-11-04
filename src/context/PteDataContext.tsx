@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { useAuth } from './AuthContext';
 import {
   DayData,
+  FirstAttemptEntry,
   MockExamRecord,
   MockReviewRecord,
   QuestionAttempt,
@@ -24,7 +25,8 @@ import {
   subscribeToUserData,
   formatDayKey,
   batchSaveScores,
-  batchSaveMockExams
+  batchSaveMockExams,
+  saveFirstAttemptRecord
 } from '../services/databaseService';
 import { ref, update } from 'firebase/database';
 import { db } from '../config/firebase';
@@ -55,6 +57,7 @@ interface PteDataContextType {
   importLegacyData: (migratedDays: DayData[]) => Promise<void>;
   completeAllQuestionsForDay: (dayNumber: number, defaultScore?: number) => Promise<void>;
   completeAllMocksForDay: (dayNumber: number, defaultScore?: number) => Promise<void>;
+  updateFirstAttempt: (testId: string, data: Partial<FirstAttemptEntry>) => Promise<void>;
 }
 
 const PteDataContext = createContext<PteDataContextType | undefined>(undefined);
@@ -642,6 +645,37 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const fallbackDates = calculate21StudyDates(studyPlan.startDate);
   const currentDayData: DayData = days[currentDay] || createDefaultDayData(currentDay, fallbackDates[currentDay - 1] || studyPlan.startDate, currentDay === 1);
 
+  // Update a First Attempt entry for Day 1 baseline tracking
+  const updateFirstAttempt = useCallback(
+    async (testId: string, data: Partial<FirstAttemptEntry>) => {
+      if (!user) return;
+      setSyncStatus('syncing');
+      setDays((prev) => {
+        const day1 = prev[1] || createDefaultDayData(1, fallbackDates[0] || studyPlan.startDate, true);
+        const existing = day1.firstAttempt?.[testId] || {};
+        return {
+          ...prev,
+          [1]: {
+            ...day1,
+            firstAttempt: {
+              ...(day1.firstAttempt || {}),
+              [testId]: { ...existing, ...data }
+            }
+          }
+        };
+      });
+      try {
+        await saveFirstAttemptRecord(user.uid, testId, data);
+        setSyncStatus('saved');
+        setLastSavedAt(new Date().toLocaleTimeString());
+      } catch (err) {
+        console.error('Error saving first attempt:', err);
+        setSyncStatus('error');
+      }
+    },
+    [user, fallbackDates, studyPlan.startDate]
+  );
+
   return (
     <PteDataContext.Provider
       value={{
@@ -667,7 +701,8 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updatePlan,
         importLegacyData,
         completeAllQuestionsForDay,
-        completeAllMocksForDay
+        completeAllMocksForDay,
+        updateFirstAttempt
       }}
     >
       {children}
