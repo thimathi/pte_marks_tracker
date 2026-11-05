@@ -36,7 +36,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { to: '/practice', label: 'Daily Drills & Templates', icon: Layers, badge: 'Core Drills' },
     { to: '/review', label: 'RA & Review Center', icon: CheckSquare, badge: 'Mandatory' },
     { to: '/roadmap', label: `${totalDays}-Day Roadmap`, icon: Map, badge: `${totalDays} Days` },
-    { to: '/analytics/questions', label: 'Question Analytics', icon: BarChart3 },
     { to: '/analytics', label: 'Trends & Stats', icon: LineChart },
     { to: '/calendar', label: 'Study Calendar', icon: CalendarDays },
     { to: '/report/final', label: `Final ${totalDays}-Day Report`, icon: FileText },

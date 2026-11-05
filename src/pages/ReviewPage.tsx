@@ -2,22 +2,17 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   CheckSquare,
-  AlertTriangle,
   Flag,
   CheckCircle2,
-  Filter,
-  MessageSquare,
   Check,
-  Sparkles,
   GraduationCap,
-  ArrowRight,
   Mic,
   Clock,
   BookOpen
 } from 'lucide-react';
 import { usePteData } from '../context/PteDataContext';
-import { QUESTION_TYPE_MAP, QUESTION_TYPES, SKILL_COLORS, getMockExamsForDay, getExamNumberForMock, getMockExamDetails } from '../config/constants';
-import { QuestionAttempt, MockExamRecord, MockReviewRecord } from '../types/pte';
+import { QUESTION_TYPES, SKILL_COLORS, getMockExamsForDay, getExamNumberForMock, getMockExamDetails } from '../config/constants';
+import { MockExamRecord, MockReviewRecord } from '../types/pte';
 import { MockReviewModal } from '../components/mock/MockReviewModal';
 
 interface ReviewItem {
@@ -57,58 +52,6 @@ export const ReviewPage: React.FC = () => {
       revRec
     };
   });
-
-  // Gather review items from currentDayData
-  const reviewItems: ReviewItem[] = [];
-
-  for (const meta of QUESTION_TYPES) {
-    const target = studyPlan.questionTargets[meta.id] ?? meta.defaultTarget;
-    const attempts = currentDayData?.questionProgress?.[meta.id]?.attempts || {};
-
-    for (let i = 0; i < target; i++) {
-      const a = attempts[i];
-      if (a) {
-        const isLowScore = a.score !== null && a.score < 65;
-        const isFlagged = !!a.isFlaggedForReview;
-
-        if (isFlagged || isLowScore || (a.notes && a.notes.trim() !== '')) {
-          reviewItems.push({
-            typeId: meta.id,
-            typeName: meta.name,
-            skill: meta.skill,
-            qIndex: i,
-            score: a.score,
-            notes: a.notes || '',
-            reviewNotes: a.reviewNotes || '',
-            isFlagged,
-            reviewed: !!a.reviewed
-          });
-        }
-      }
-    }
-  }
-
-  const unresolvedCount = reviewItems.filter((item) => !item.reviewed).length;
-  const isPracticeReviewDone = !!currentDayData?.gateStatus?.dailyPracticeReviewCompleted;
-
-  const filteredItems = reviewItems.filter((item) => {
-    if (filter === 'flagged') return item.isFlagged;
-    if (filter === 'lowScore') return item.score !== null && item.score < 65;
-    if (filter === 'unresolved') return !item.reviewed;
-    return true;
-  });
-
-  const handleMarkItemReviewed = async (item: ReviewItem) => {
-    const rNote = editingNotes[`${item.typeId}_${item.qIndex}`] ?? item.reviewNotes;
-    await updateScore(currentDay, item.typeId, item.qIndex, {
-      reviewed: !item.reviewed,
-      reviewNotes: rNote
-    });
-  };
-
-  const handleConfirmDailyReview = async () => {
-    await updateGateItem(currentDay, 'dailyPracticeReviewCompleted', true);
-  };
 
   return (
     <div className="space-y-6">
@@ -327,118 +270,12 @@ export const ReviewPage: React.FC = () => {
 
       {/* Tab 2: Practice Question Review Items */}
       {activeTab === 'practice' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              {(['all', 'unresolved', 'flagged', 'lowScore'] as const).map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-colors ${
-                    filter === f
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-[#141c31] text-[#a9b5d0] hover:text-[#edf2ff] border border-slate-800'
-                  }`}
-                >
-                  {f === 'lowScore' ? 'Low Score (<65)' : f}
-                </button>
-              ))}
-            </div>
-
-            <button
-              onClick={handleConfirmDailyReview}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                isPracticeReviewDone
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                  : 'bg-[#243553] text-[#a9b5d0] border border-[#3a4b70] hover:bg-[#30476c]'
-              }`}
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>{isPracticeReviewDone ? 'Daily Review Confirmed ✓' : 'Confirm Practice Review Done'}</span>
-            </button>
-          </div>
-
-          {filteredItems.length === 0 ? (
-            <div className="p-8 rounded-2xl bg-[#141c31] border border-slate-800 text-center space-y-3">
-              <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
-              <h3 className="text-base font-bold text-[#edf2ff]">No Practice Items in this Review Filter</h3>
-              <p className="text-xs text-[#a9b5d0] max-w-md mx-auto">
-                All mock exam and practice reviews in this category are satisfied.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {filteredItems.map((item) => {
-                const key = `${item.typeId}_${item.qIndex}`;
-                const skillStyle = SKILL_COLORS[item.skill] || SKILL_COLORS.speaking;
-
-                return (
-                  <div
-                    key={key}
-                    className={`rounded-2xl border p-5 transition-all space-y-3 ${
-                      item.reviewed
-                        ? 'bg-[#10192c]/50 border-emerald-500/30'
-                        : 'bg-[#141c31] border-slate-800'
-                    }`}
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div className="flex items-center gap-2.5">
-                        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-lg border ${skillStyle.badge} uppercase`}>
-                          {item.skill}
-                        </span>
-                        <h3 className="text-sm font-bold text-[#edf2ff]">
-                          {item.typeName} · Q{item.qIndex + 1}
-                        </h3>
-                        {item.isFlagged && (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1">
-                            <Flag className="w-3 h-3" /> FLAGGED
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs text-[#a9b5d0]">
-                          Score: <b className="text-white">{item.score !== null ? `${item.score}/90` : '—'}</b>
-                        </span>
-                        <button
-                          onClick={() => handleMarkItemReviewed(item)}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
-                            item.reviewed
-                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                              : 'bg-blue-600 hover:bg-blue-500 text-white shadow-sm'
-                          }`}
-                        >
-                          <Check className="w-3.5 h-3.5" />
-                          <span>{item.reviewed ? 'Resolved ✓' : 'Mark Reviewed'}</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    {item.notes && (
-                      <p className="text-xs text-[#a9b5d0] bg-[#0e1729] p-2.5 rounded-xl border border-slate-800">
-                        <b className="text-[#edf2ff]">Original Note:</b> {item.notes}
-                      </p>
-                    )}
-
-                    <div>
-                      <label className="block text-[11px] font-semibold text-[#a9b5d0] mb-1">
-                        Corrective Action / Solution Note:
-                      </label>
-                      <input
-                        type="text"
-                        defaultValue={item.reviewNotes}
-                        placeholder="Enter what you learned, vocabulary fixes, or repeat action plan"
-                        onChange={(e) =>
-                          setEditingNotes((prev) => ({ ...prev, [key]: e.target.value }))
-                        }
-                        className="w-full bg-[#0e1729] border border-slate-800 rounded-xl px-3 py-2 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400"
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+        <div className="p-8 rounded-2xl bg-[#141c31] border border-slate-800 text-center space-y-3">
+          <CheckCircle2 className="w-12 h-12 text-blue-400 mx-auto" />
+          <h3 className="text-base font-bold text-[#edf2ff]">Practice Question Tracking Removed</h3>
+          <p className="text-xs text-[#a9b5d0] max-w-md mx-auto">
+            This app now tracks 80 Mock Exams only. Use the Mock Exam Center for all practice.
+          </p>
         </div>
       )}
 

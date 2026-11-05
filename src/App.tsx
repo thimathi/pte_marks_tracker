@@ -9,7 +9,6 @@ import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { RoadmapPage } from './pages/RoadmapPage';
 import { PracticePage } from './pages/PracticePage';
-import { QuestionAnalyticsPage } from './pages/QuestionAnalyticsPage';
 import { MockExamsPage } from './pages/MockExamsPage';
 import { ReviewPage } from './pages/ReviewPage';
 import { ReportsPage } from './pages/ReportsPage';
@@ -62,7 +61,6 @@ export const App: React.FC = () => {
               <Route path="/" element={<DashboardPage />} />
               <Route path="/roadmap" element={<RoadmapPage />} />
               <Route path="/practice" element={<PracticePage />} />
-              <Route path="/analytics/questions" element={<QuestionAnalyticsPage />} />
               <Route path="/mock-exams" element={<MockExamsPage />} />
               <Route path="/review" element={<ReviewPage />} />
               <Route path="/analytics" element={<ReportsPage />} />

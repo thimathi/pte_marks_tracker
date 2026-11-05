@@ -652,17 +652,17 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setSyncStatus('syncing');
       setDays((prev) => {
         const day1 = prev[1] || createDefaultDayData(1, fallbackDates[0] || studyPlan.startDate, true);
-        const existing = day1.firstAttempt?.[testId] || {};
+        const existing = (day1.firstAttempt?.[testId] ?? {}) as Partial<FirstAttemptEntry>;
         return {
           ...prev,
           [1]: {
             ...day1,
             firstAttempt: {
               ...(day1.firstAttempt || {}),
-              [testId]: { ...existing, ...data }
+              [testId]: { ...existing, ...data } as FirstAttemptEntry
             }
           }
-        };
+        } as Record<number, DayData>;
       });
       try {
         await saveFirstAttemptRecord(user.uid, testId, data);
