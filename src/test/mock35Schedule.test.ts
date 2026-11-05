@@ -13,26 +13,28 @@ import {
   getMockExamsForDay,
   getExamNumberForMock,
   getDayAndSlotForExam,
-  getExamNumbersForPaper
+  getExamNumbersForPaper,
+  isReviewDay,
+  getReviewDayDefinition
 } from '../config/constants';
 
-describe('80 Mock Exam Mastery Plan & 20 Papers × 4 Passes Verification', () => {
+describe('60 Mock Exam Mastery Plan & 20 Papers × 3 Passes + 9 Review Days Verification', () => {
   it('contains available user-specified mock exam catalog', () => {
     expect(APEUNI_VIP_MOCKS.length).toBeGreaterThanOrEqual(20);
     expect(APEUNI_VIP_MOCKS[0]).toBe('【VIP Full Test】PTE Mock Test 45C');
     expect(APEUNI_VIP_MOCKS[1]).toBe('【VIP Full Test】PTE Mock Test 44C');
   });
 
-  it('configures 28 study days and 80 total mocks (20 unique papers × 4 passes)', () => {
+  it('configures 28 study days and 60 total mocks (20 unique papers × 3 passes)', () => {
     expect(TOTAL_STUDY_DAYS).toBe(28);
-    expect(TOTAL_MOCK_TARGET).toBe(80);
+    expect(TOTAL_MOCK_TARGET).toBe(60);
     expect(TOTAL_UNIQUE_PAPERS).toBe(20);
-    expect(REPETITIONS_PER_PAPER).toBe(4);
-    expect(MOCK_EXAM_SCHEDULE_INDICES.length).toBe(80);
+    expect(REPETITIONS_PER_PAPER).toBe(3);
+    expect(MOCK_EXAM_SCHEDULE_INDICES.length).toBe(60);
   });
 
-  it('guarantees each of the 4 passes covers all 20 unique papers without duplicate', () => {
-    for (let pass = 0; pass < 4; pass++) {
+  it('guarantees each of the 3 passes covers all 20 unique papers without duplicate', () => {
+    for (let pass = 0; pass < 3; pass++) {
       const passIndices = MOCK_EXAM_SCHEDULE_INDICES.slice(pass * 20, (pass + 1) * 20);
       expect(passIndices.length).toBe(20);
       const uniquePapers = new Set(passIndices);
@@ -43,10 +45,10 @@ describe('80 Mock Exam Mastery Plan & 20 Papers × 4 Passes Verification', () =>
     }
   });
 
-  it('guarantees every unique paper appears exactly 4 times in random order', () => {
+  it('guarantees every unique paper appears exactly 3 times in random order', () => {
     for (let pIdx = 0; pIdx < 20; pIdx++) {
       const examNumbers = getExamNumbersForPaper(pIdx);
-      expect(examNumbers.length).toBe(4);
+      expect(examNumbers.length).toBe(3);
 
       // Verify that each appearance falls into a different pass
       expect(examNumbers[0]).toBeLessThanOrEqual(20);
@@ -54,13 +56,11 @@ describe('80 Mock Exam Mastery Plan & 20 Papers × 4 Passes Verification', () =>
       expect(examNumbers[1]).toBeLessThanOrEqual(40);
       expect(examNumbers[2]).toBeGreaterThan(40);
       expect(examNumbers[2]).toBeLessThanOrEqual(60);
-      expect(examNumbers[3]).toBeGreaterThan(60);
-      expect(examNumbers[3]).toBeLessThanOrEqual(80);
     }
   });
 
-  it('maps every mock exam number (1..80) to study days and slots bi-directionally', () => {
-    for (let eNum = 1; eNum <= 80; eNum++) {
+  it('maps every mock exam number (1..60) to study days and slots bi-directionally', () => {
+    for (let eNum = 1; eNum <= 60; eNum++) {
       const { dayNumber, mockKey } = getDayAndSlotForExam(eNum);
       expect(dayNumber).toBeGreaterThanOrEqual(1);
       expect(dayNumber).toBeLessThanOrEqual(28);
@@ -107,14 +107,26 @@ describe('80 Mock Exam Mastery Plan & 20 Papers × 4 Passes Verification', () =>
     const mock50 = getMockExamDetails(50);
     expect(mock50.roundNumber).toBe(3);
     expect(mock50.attemptOfPaper).toBe(3);
-
-    const mock75 = getMockExamDetails(75);
-    expect(mock75.roundNumber).toBe(4);
-    expect(mock75.attemptOfPaper).toBe(4);
   });
 
-  it('validates total question targets: 4,800 mock exam questions', () => {
-    expect(TOTAL_MOCK_EXAM_QUESTIONS).toBe(4800);
-    expect(TOTAL_MISSION_QUESTIONS).toBe(4800);
+  it('validates total question targets: 3,600 mock exam questions', () => {
+    expect(TOTAL_MOCK_EXAM_QUESTIONS).toBe(3600);
+    expect(TOTAL_MISSION_QUESTIONS).toBe(3600);
+  });
+
+  it('validates the 9 dedicated Deep Review Days (Days 3, 6, 9, 12, 15, 18, 21, 24, 27)', () => {
+    const reviewDays = [3, 6, 9, 12, 15, 18, 21, 24, 27];
+    reviewDays.forEach((d) => {
+      expect(isReviewDay(d)).toBe(true);
+      expect(getMockExamsForDay(d)).toEqual([]); // 0 new mocks scheduled
+      const def = getReviewDayDefinition(d);
+      expect(def).not.toBeNull();
+      expect(def?.examNumbers.length).toBeGreaterThanOrEqual(6);
+    });
+
+    // Specifically verify Day 3 reviews all 7 mocks of Day 1 & Day 2:
+    const day3Def = getReviewDayDefinition(3);
+    expect(day3Def?.examNumbers).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(day3Def?.coveredDays).toEqual([1, 2]);
   });
 });

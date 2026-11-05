@@ -32,7 +32,7 @@ export const MasterTargetTrackerCard: React.FC = () => {
           <div className="flex items-center gap-2.5 flex-wrap">
             <span className="px-3 py-1 rounded-xl bg-purple-500/20 text-purple-300 font-bold text-xs border border-purple-500/30 flex items-center gap-1.5">
               <Target className="w-3.5 h-3.5 text-purple-400" />
-              28-Day 80-Mock Exam Mission (Target 79+ Superior)
+              28-Day 60-Mock Exam Mission (Target 79+ Superior)
             </span>
             <span className="px-3 py-1 rounded-xl bg-blue-500/15 text-blue-300 text-xs font-semibold border border-blue-500/30 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-blue-400" />
@@ -41,10 +41,10 @@ export const MasterTargetTrackerCard: React.FC = () => {
           </div>
 
           <h2 className="text-2xl font-extrabold text-[#edf2ff] mt-2 flex items-center gap-2">
-            <span>Mission: {TOTAL_MOCK_TARGET} Mock Exams (20 Papers × 4 Passes)</span>
+            <span>Mission: {TOTAL_MOCK_TARGET} Mock Exams (20 Papers × 3 Passes) + 9 Review Days</span>
           </h2>
           <p className="text-xs text-[#a9b5d0] mt-1 max-w-2xl leading-relaxed">
-            Target tracking across {totalDays} days: 3–4 timed mock simulation sessions daily + Read Aloud error analysis.
+            Target tracking across {totalDays} days: 2 mock simulation days followed by 1 dedicated Deep Review day (40+ hours saved for error analysis).
           </p>
         </div>
       </div>

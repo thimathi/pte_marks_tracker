@@ -35,7 +35,9 @@ import {
   getExamNumbersForPaper,
   DAILY_MOCK_SCHEDULE,
   getSectionTestForDay,
-  DAY1_FIRST_ATTEMPT_TESTS
+  DAY1_FIRST_ATTEMPT_TESTS,
+  isReviewDay,
+  getReviewDayDefinition
 } from '../config/constants';
 
 // ─── First Attempt Entry Card ────────────────────────────────────────────────
@@ -809,6 +811,8 @@ export const MockExamsPage: React.FC = () => {
 
   const [isCatchUpExpanded, setIsCatchUpExpanded] = useState<boolean>(false);
 
+  const isRevDay = isReviewDay(currentDay);
+  const revDayDef = getReviewDayDefinition(currentDay);
   const mockKeys = getMockExamsForDay(currentDay);
   const sectionTestDef = getSectionTestForDay(currentDay);
   const currentSectionTest = currentDayData?.sectionTest;
@@ -942,11 +946,11 @@ export const MockExamsPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <GraduationCap className="w-6 h-6 text-blue-400" />
             <h1 className="text-xl font-bold text-white">
-              80-Mock Exam Mastery Mission (Nov 03 – Nov 30, 2026)
+              60-Mock Exam Mastery Mission (Nov 03 – Nov 30, 2026)
             </h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            20 Unique VIP Papers × 4 Passes = 80 Total Mocks · Flexible Daily Pace (~3 Mocks/Day) · Mandatory Read Aloud & Error Reviews · 4,800 Questions.
+            20 Unique VIP Papers × 3 Passes = 60 Total Mocks · 2 Mock Days + 1 Dedicated Deep Review Day Cycle · 3,600 Questions · 40h saved for reviews.
           </p>
         </div>
 
@@ -955,7 +959,7 @@ export const MockExamsPage: React.FC = () => {
             Study Day {currentDay} of {totalDays}
           </span>
           <span className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-semibold">
-            {completedCountAll80} / 80 Done ({Math.round((completedCountAll80 / 80) * 100)}%)
+            {completedCountAll80} / 60 Done ({Math.round((completedCountAll80 / 60) * 100)}%)
           </span>
           {avgOverallScore !== null && (
             <span className="px-3 py-1.5 rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/20 font-semibold">
@@ -1132,73 +1136,190 @@ export const MockExamsPage: React.FC = () => {
         )}
       </div>
 
-      {/* Active Day's Mock Exam Cards (4 Mocks / Day) */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-            Today's Scheduled Mock Exams ({mockKeys.length} Timed Simulations Daily)
-          </h2>
-          <span className="text-xs text-blue-400 font-medium">Study Day {currentDay} of {totalDays}</span>
+      {/* Active Day's Mock Exam Cards or Dedicated Review Day Hub */}
+      {isRevDay && revDayDef ? (
+        <div className="rounded-2xl bg-gradient-to-r from-purple-950/40 via-slate-900 to-purple-950/40 border border-purple-500/40 p-5 sm:p-6 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-500/20 pb-4">
+            <div>
+              <div className="flex items-center gap-2 flex-wrap mb-1">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 uppercase tracking-wide">
+                  Dedicated Deep Review Day
+                </span>
+                <span className="text-xs text-slate-400">
+                  Focus: Question-by-Question Error Analysis (1–2 hrs/mock)
+                </span>
+              </div>
+              <h2 className="text-lg font-bold text-white">
+                {revDayDef.title}
+              </h2>
+              <p className="text-xs text-slate-300 mt-1 max-w-3xl leading-relaxed">
+                Take dedicated time today to review every mistake from Days {revDayDef.coveredDays.join(' & ')} ({revDayDef.examNumbers.length} tests). Listen to your Read Aloud recordings, check where fluency broke down, and record comma-separated scores and deficiencies (අඩුපාඩු).
+              </p>
+            </div>
+
+            <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-right shrink-0">
+              <span className="text-[10px] text-slate-400 block font-semibold uppercase">Cycle Progress</span>
+              <span className="text-base font-extrabold text-emerald-400">
+                {revDayDef.examNumbers.filter((eNum) => {
+                  const { dayNumber, reviewKey } = getDayAndSlotForExam(eNum);
+                  return !!days[dayNumber]?.mockReviews?.[reviewKey]?.isCompleted;
+                }).length} / {revDayDef.examNumbers.length} Reviewed
+              </span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            {revDayDef.examNumbers.map((examNumber) => {
+              const { dayNumber, mockKey, reviewKey } = getDayAndSlotForExam(examNumber);
+              const dayRec = days[dayNumber];
+              const mock = dayRec?.mockExams?.[mockKey];
+              const rev = dayRec?.mockReviews?.[reviewKey];
+              const details = getMockExamDetails(examNumber);
+              const fallbackMock: MockExamRecord = mock || {
+                id: mockKey,
+                examNumber,
+                testName: details.testName,
+                studyDay: dayNumber,
+                isCompleted: false
+              };
+
+              return (
+                <div
+                  key={`rev-hub-${examNumber}`}
+                  className={`p-4 rounded-2xl border flex flex-col justify-between space-y-3 transition-colors ${
+                    rev?.isCompleted
+                      ? 'bg-slate-950/80 border-emerald-500/30'
+                      : mock?.isCompleted
+                      ? 'bg-slate-950 border-amber-500/40'
+                      : 'bg-slate-950/60 border-slate-800'
+                  }`}
+                >
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-blue-400 font-mono">
+                        Mock #{examNumber}
+                      </span>
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800">
+                        Day {dayNumber}
+                      </span>
+                    </div>
+
+                    <h4 className="text-xs font-bold text-white line-clamp-1" title={details.testName}>
+                      {details.testName}
+                    </h4>
+
+                    <div className="flex items-center justify-between text-xs pt-1">
+                      <span className="text-slate-400">Score:</span>
+                      <span className="font-bold text-white">
+                        {mock?.overallScore !== null && mock?.overallScore !== undefined ? `${mock.overallScore} / 90` : 'Not Scored'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="text-slate-400">RA Average:</span>
+                      <span className={rev?.raAverageScore ? 'text-emerald-400 font-bold' : 'text-slate-500'}>
+                        {rev?.raAverageScore ? `${rev.raAverageScore} / 90` : '—'}
+                      </span>
+                    </div>
+
+                    {rev?.raDeficiencies && (
+                      <p className="text-[11px] text-amber-200/80 bg-slate-900 p-2 rounded-lg border border-slate-800 line-clamp-2">
+                        {rev.raDeficiencies}
+                      </p>
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setActiveReviewModal({
+                        mock: fallbackMock,
+                        review: rev
+                      })
+                    }
+                    className={`w-full py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                      rev?.isCompleted
+                        ? 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/40'
+                        : 'bg-blue-600 hover:bg-blue-500 text-white'
+                    }`}
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>{rev?.isCompleted ? 'Edit RA & Review' : 'Log Deep Review'}</span>
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         </div>
+      ) : (
+        /* Active Day's Mock Exam Cards (when not a review day) */
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-bold text-white flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+              Today's Scheduled Mock Exams ({mockKeys.length} Timed Simulations Daily)
+            </h2>
+            <span className="text-xs text-blue-400 font-medium">Study Day {currentDay} of {totalDays}</span>
+          </div>
 
-        {/* Responsive Grid: 1 col on mobile, 2 on tablet, 4 on desktop */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
-          {mockKeys.map((key, idx) => {
-            const mock = currentDayData?.mockExams?.[key];
-            const reviewId = `review0${idx + 1}`;
-            const rev = currentDayData?.mockReviews?.[reviewId];
-            const examNumber = getExamNumberForMock(currentDay, idx);
-            const fallbackMock: MockExamRecord = mock || {
-              id: key,
-              examNumber,
-              testName: getMockExamDetails(examNumber).testName,
-              studyDay: currentDay,
-              isCompleted: false
-            };
+          {/* Responsive Grid: 1 col on mobile, 2 on tablet, 4 on desktop */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            {mockKeys.map((key, idx) => {
+              const mock = currentDayData?.mockExams?.[key];
+              const reviewId = `review0${idx + 1}`;
+              const rev = currentDayData?.mockReviews?.[reviewId];
+              const examNumber = getExamNumberForMock(currentDay, idx);
+              const fallbackMock: MockExamRecord = mock || {
+                id: key,
+                examNumber,
+                testName: getMockExamDetails(examNumber).testName,
+                studyDay: currentDay,
+                isCompleted: false
+              };
 
-            // Non-blocking sequential lock with easy catch up
-            const isLocked = idx > 0 && (() => {
-              const prevKey = mockKeys[idx - 1];
-              const prevMock = currentDayData?.mockExams?.[prevKey];
-              const prevRev = currentDayData?.mockReviews?.[`review0${idx}`];
-              return !(prevMock?.isCompleted && prevRev?.isCompleted);
-            })();
+              // Non-blocking sequential lock with easy catch up
+              const isLocked = idx > 0 && (() => {
+                const prevKey = mockKeys[idx - 1];
+                const prevMock = currentDayData?.mockExams?.[prevKey];
+                const prevRev = currentDayData?.mockReviews?.[`review0${idx}`];
+                return !(prevMock?.isCompleted && prevRev?.isCompleted);
+              })();
 
-            return (
-              <MockExamCard
-                key={`${currentDay}-${key}`}
-                mockKey={key}
-                idx={idx}
-                totalMocksToday={mockKeys.length}
-                currentDay={currentDay}
-                mock={mock}
-                rev={rev}
-                isLocked={isLocked}
-                onSaveMock={handleSaveMock}
-                onOpenReview={() =>
-                  setActiveReviewModal({
-                    mock: fallbackMock,
-                    review: rev
-                  })
-                }
-              />
-            );
-          })}
+              return (
+                <MockExamCard
+                  key={`${currentDay}-${key}`}
+                  mockKey={key}
+                  idx={idx}
+                  totalMocksToday={mockKeys.length}
+                  currentDay={currentDay}
+                  mock={mock}
+                  rev={rev}
+                  isLocked={isLocked}
+                  onSaveMock={handleSaveMock}
+                  onOpenReview={() =>
+                    setActiveReviewModal({
+                      mock: fallbackMock,
+                      review: rev
+                    })
+                  }
+                />
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* 20 Unique Papers × 4 Passes Progression Matrix */}
+      {/* 20 Unique Papers × 3 Passes Progression Matrix */}
       <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 sm:p-6 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-amber-400" />
             <h3 className="text-base font-bold text-white">
-              20 VIP Papers × 4 Passes Mastery Matrix
+              20 VIP Papers × 3 Passes Mastery Matrix
             </h3>
           </div>
           <span className="text-xs text-slate-400">
-            Compare all 4 attempts of each paper side-by-side to track elevation to 79+ Superior
+            Compare all 3 attempts of each paper side-by-side to track elevation to 79+ Superior
           </span>
         </div>
 

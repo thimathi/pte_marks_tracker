@@ -17,7 +17,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { usePteData } from '../../context/PteDataContext';
-import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS, getMockExamsForDay } from '../../config/constants';
+import { TOTAL_MOCK_TARGET, TOTAL_STUDY_DAYS, getMockExamsForDay, isReviewDay } from '../../config/constants';
 import { formatDateFriendly } from '../../utils/dateUtils';
 
 interface SidebarProps {
@@ -29,12 +29,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { currentDay, currentDayData, days, studyPlan } = usePteData();
   const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
   const currentDayLocked = !days[currentDay]?.gateStatus?.isUnlocked && currentDay > 1;
+  const isRevDay = isReviewDay(currentDay);
 
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/mock-exams', label: '80-Mock Journey', icon: GraduationCap, badge: '80 Mocks · 4 Passes', highlight: true },
+    { to: '/mock-exams', label: '60-Mock Journey', icon: GraduationCap, badge: '60 Mocks · 3 Passes', highlight: true },
+    { to: '/review', label: 'RA & Review Center', icon: CheckSquare, badge: isRevDay ? 'Today!' : 'Mandatory' },
     { to: '/practice', label: 'Daily Drills & Templates', icon: Layers, badge: 'Core Drills' },
-    { to: '/review', label: 'RA & Review Center', icon: CheckSquare, badge: 'Mandatory' },
     { to: '/roadmap', label: `${totalDays}-Day Roadmap`, icon: Map, badge: `${totalDays} Days` },
     { to: '/analytics', label: 'Trends & Stats', icon: LineChart },
     { to: '/calendar', label: 'Study Calendar', icon: CalendarDays },
@@ -82,43 +83,53 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-white leading-tight">Study Day {currentDay} of {totalDays}</p>
                 <p className="text-xs text-slate-400 truncate">
-                  4 Mocks/Day · 240 Qs + Section Test
+                  {isRevDay ? '🔍 Dedicated Deep Review Day' : `${mockKeys.length} Mocks/Day · ${mockKeys.length * 60} Qs`}
                 </p>
               </div>
             </div>
 
-            {/* Quick 4-Mock Progress Row */}
+            {/* Quick Mock or Review Progress Row */}
             <div className="pt-2 border-t border-slate-800">
               <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1">
-                <span>Today's 4 Mocks</span>
-                <Link to="/mock-exams" onClick={onClose} className="text-blue-400 hover:underline flex items-center">
+                <span>{isRevDay ? 'Deep Review Mode' : `Today's ${mockKeys.length} Mocks`}</span>
+                <Link to={isRevDay ? '/review' : '/mock-exams'} onClick={onClose} className="text-blue-400 hover:underline flex items-center">
                   <span>Open</span>
                   <ChevronRight className="w-3 h-3" />
                 </Link>
               </div>
-              <div className="grid grid-cols-4 gap-1">
-                {mockKeys.map((k, idx) => {
-                  const mockDone = !!currentDayData?.mockExams?.[k]?.isCompleted;
-                  const revDone = !!currentDayData?.mockReviews?.[`review0${idx + 1}`]?.isCompleted;
-                  return (
-                    <Link
-                      key={k}
-                      to="/mock-exams"
-                      onClick={onClose}
-                      className={`text-center py-1 rounded text-[10px] font-bold border transition-colors ${
-                        mockDone && revDone
-                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                          : mockDone
-                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                          : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-blue-400'
-                      }`}
-                      title={`Mock ${idx + 1}: ${mockDone && revDone ? 'Done & Reviewed' : mockDone ? 'Review Pending!' : 'Pending'}`}
-                    >
-                      {mockDone && revDone ? '✓' : `M${idx + 1}`}
-                    </Link>
-                  );
-                })}
-              </div>
+              {isRevDay ? (
+                <Link
+                  to="/review"
+                  onClick={onClose}
+                  className="block text-center py-1.5 px-2 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-semibold hover:bg-purple-500/30 transition-colors"
+                >
+                  Open Cycle Review Hub ➔
+                </Link>
+              ) : (
+                <div className={`grid grid-cols-${mockKeys.length || 1} gap-1`}>
+                  {mockKeys.map((k, idx) => {
+                    const mockDone = !!currentDayData?.mockExams?.[k]?.isCompleted;
+                    const revDone = !!currentDayData?.mockReviews?.[`review0${idx + 1}`]?.isCompleted;
+                    return (
+                      <Link
+                        key={k}
+                        to="/mock-exams"
+                        onClick={onClose}
+                        className={`text-center py-1 rounded text-[10px] font-bold border transition-colors ${
+                          mockDone && revDone
+                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                            : mockDone
+                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                            : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-blue-400'
+                        }`}
+                        title={`Mock ${idx + 1}: ${mockDone && revDone ? 'Done & Reviewed' : mockDone ? 'Review Pending!' : 'Pending'}`}
+                      >
+                        {mockDone && revDone ? '✓' : `M${idx + 1}`}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 

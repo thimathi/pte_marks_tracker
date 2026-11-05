@@ -11,47 +11,61 @@ import {
   BookOpen
 } from 'lucide-react';
 import { usePteData } from '../context/PteDataContext';
-import { QUESTION_TYPES, SKILL_COLORS, getMockExamsForDay, getExamNumberForMock, getMockExamDetails } from '../config/constants';
+import {
+  QUESTION_TYPES,
+  SKILL_COLORS,
+  getMockExamsForDay,
+  getExamNumberForMock,
+  getMockExamDetails,
+  isReviewDay,
+  getReviewDayDefinition,
+  getDayAndSlotForExam
+} from '../config/constants';
 import { MockExamRecord, MockReviewRecord } from '../types/pte';
 import { MockReviewModal } from '../components/mock/MockReviewModal';
 
-interface ReviewItem {
-  typeId: string;
-  typeName: string;
-  skill: string;
-  qIndex: number;
-  score: number | null;
-  notes: string;
-  reviewNotes: string;
-  isFlagged: boolean;
-  reviewed: boolean;
-}
-
 export const ReviewPage: React.FC = () => {
-  const { currentDay, currentDayData, days, studyPlan, updateScore, updateGateItem, updateMockReview } = usePteData();
-  const [activeTab, setActiveTab] = useState<'mock_ra' | 'practice'>('mock_ra');
-  const [filter, setFilter] = useState<'all' | 'flagged' | 'lowScore' | 'unresolved'>('all');
-  const [editingNotes, setEditingNotes] = useState<Record<string, string>>({});
+  const { currentDay, currentDayData, days, studyPlan, updateMockReview } = usePteData();
   const [activeModal, setActiveModal] = useState<{
     mock: MockExamRecord;
     review: MockReviewRecord | undefined;
   } | null>(null);
 
-  // Today's Mock Exams & Reviews
-  const mockKeys = getMockExamsForDay(currentDay);
-  const todayMocks = mockKeys.map((key, idx) => {
-    const examNum = getExamNumberForMock(currentDay, idx);
-    const mockRec = currentDayData?.mockExams?.[key];
-    const revRec = currentDayData?.mockReviews?.[`review0${idx + 1}`];
-    const details = getMockExamDetails(examNum);
-    return {
-      key,
-      examNum,
-      details,
-      mockRec,
-      revRec
-    };
-  });
+  const isRevDay = isReviewDay(currentDay);
+  const revDayDef = getReviewDayDefinition(currentDay);
+
+  // If today is a dedicated review day, list the mock exams from the completed block
+  // (e.g. Day 3: Mocks 1–7 from Days 1 & 2)
+  const displayMocks = isRevDay && revDayDef
+    ? revDayDef.examNumbers.map((examNum) => {
+        const { dayNumber, mockKey, reviewKey } = getDayAndSlotForExam(examNum);
+        const dayData = days[dayNumber];
+        const mockRec = dayData?.mockExams?.[mockKey];
+        const revRec = dayData?.mockReviews?.[reviewKey];
+        const details = getMockExamDetails(examNum);
+        return {
+          key: mockKey,
+          dayNumber,
+          examNum,
+          details,
+          mockRec,
+          revRec
+        };
+      })
+    : getMockExamsForDay(currentDay).map((key, idx) => {
+        const examNum = getExamNumberForMock(currentDay, idx);
+        const mockRec = currentDayData?.mockExams?.[key];
+        const revRec = currentDayData?.mockReviews?.[`review0${idx + 1}`];
+        const details = getMockExamDetails(examNum);
+        return {
+          key,
+          dayNumber: currentDay,
+          examNum,
+          details,
+          mockRec,
+          revRec
+        };
+      });
 
   return (
     <div className="space-y-6">
@@ -60,12 +74,23 @@ export const ReviewPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <CheckSquare className="w-6 h-6 text-amber-400" />
-            <h1 className="text-xl font-bold text-[#edf2ff]">
-              Day {currentDay} Deep Review & Error Center
+            <h1 className="text-xl font-bold text-[#edf2ff] flex items-center gap-2 flex-wrap">
+              <span>
+                {isRevDay && revDayDef
+                  ? `Day ${currentDay} Deep Review Day · ${revDayDef.title}`
+                  : `Day ${currentDay} Deep Review & Error Center`}
+              </span>
+              {isRevDay && (
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40">
+                  {displayMocks.length} Papers Focus
+                </span>
+              )}
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            Analyze Mock Exam performance, Read Aloud (RA) scores with comma separation, deficiencies (අඩුපාඩු), and corrective actions.
+            {isRevDay
+              ? `Dedicated deep review day: analyze all ${displayMocks.length} mock simulations from Days ${revDayDef?.coveredDays.join(' & ')} A-to-Z. Record comma-separated Read Aloud scores, deficiencies (අඩුපාඩු), and action plans.`
+              : 'Analyze Mock Exam performance, Read Aloud (RA) scores with comma separation, deficiencies (අඩුපාඩු), and corrective actions.'}
           </p>
         </div>
 
@@ -83,35 +108,28 @@ export const ReviewPage: React.FC = () => {
       {/* Main Tab Switcher */}
       <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
         <button
-          onClick={() => setActiveTab('mock_ra')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
-            activeTab === 'mock_ra'
-              ? 'bg-blue-600 text-white shadow-sm'
-              : 'bg-[#141c31] text-[#a9b5d0] hover:text-[#edf2ff] border border-slate-800'
-          }`}
+          className="px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 bg-blue-600 text-white shadow-sm"
         >
           <Mic className="w-4 h-4 text-blue-300" />
-          <span>Mock Exam & Read Aloud (RA) Reviews</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('practice')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
-            activeTab === 'practice'
-              ? 'bg-blue-600 text-white shadow-sm'
-              : 'bg-[#141c31] text-[#a9b5d0] hover:text-[#edf2ff] border border-slate-800'
-          }`}
-        >
-          <CheckSquare className="w-4 h-4" />
-          <span>Practice Question Items ({reviewItems.length})</span>
+          <span>
+            {isRevDay
+              ? `Cycle Papers to Review (${displayMocks.length} Tests)`
+              : "Today's Mock Exam & Read Aloud (RA) Reviews"}
+          </span>
         </button>
       </div>
 
-      {/* Tab 1: Mock Exam & Read Aloud (RA) Deep Breakdown */}
-      {activeTab === 'mock_ra' && (
-        <div className="space-y-4">
+      {/* Mock Exam & Read Aloud (RA) Deep Breakdown */}
+      <div className="space-y-4">
+        {displayMocks.length === 0 ? (
+          <div className="p-8 rounded-2xl bg-[#141c31] border border-slate-800 text-center space-y-2">
+            <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
+            <h3 className="text-base font-bold text-white">No Mock Exams to Review Today</h3>
+            <p className="text-xs text-slate-400">Use the calendar or roadmap to select an active study day.</p>
+          </div>
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {todayMocks.map(({ key, examNum, details, mockRec, revRec }) => {
+            {displayMocks.map(({ key, dayNumber, examNum, details, mockRec, revRec }) => {
               const raScoreList = (revRec?.raScores || '')
                 .split(',')
                 .map((s) => s.trim())
@@ -121,7 +139,7 @@ export const ReviewPage: React.FC = () => {
 
               return (
                 <div
-                  key={key}
+                  key={`${dayNumber}_${key}`}
                   className="rounded-2xl bg-[#141c31] border border-slate-800 p-5 space-y-4 flex flex-col justify-between"
                 >
                   <div className="space-y-3">
@@ -132,10 +150,10 @@ export const ReviewPage: React.FC = () => {
                             Mock #{examNum}
                           </span>
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${details.roundBadgeColor}`}>
-                            {details.timeSlot}
+                            Day {dayNumber} · {details.timeSlot}
                           </span>
                         </div>
-                        <h3 className="text-sm font-bold text-white mt-1 line-clamp-1">
+                        <h3 className="text-sm font-bold text-white mt-1 line-clamp-1" title={details.testName}>
                           {details.testName}
                         </h3>
                       </div>
@@ -249,7 +267,7 @@ export const ReviewPage: React.FC = () => {
                           mock: mockRec || {
                             id: key,
                             examNumber: examNum,
-                            studyDay: currentDay,
+                            studyDay: dayNumber,
                             isCompleted: false
                           },
                           review: revRec
@@ -265,19 +283,8 @@ export const ReviewPage: React.FC = () => {
               );
             })}
           </div>
-        </div>
-      )}
-
-      {/* Tab 2: Practice Question Review Items */}
-      {activeTab === 'practice' && (
-        <div className="p-8 rounded-2xl bg-[#141c31] border border-slate-800 text-center space-y-3">
-          <CheckCircle2 className="w-12 h-12 text-blue-400 mx-auto" />
-          <h3 className="text-base font-bold text-[#edf2ff]">Practice Question Tracking Removed</h3>
-          <p className="text-xs text-[#a9b5d0] max-w-md mx-auto">
-            This app now tracks 80 Mock Exams only. Use the Mock Exam Center for all practice.
-          </p>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Modal Popup */}
       {activeModal && (

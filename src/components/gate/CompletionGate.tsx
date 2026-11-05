@@ -17,7 +17,10 @@ import {
   getMockExamsForDay,
   getExamNumberForMock,
   getAcademicCollocationsTarget,
-  getSectionTestForDay
+  getSectionTestForDay,
+  isReviewDay,
+  getReviewDayDefinition,
+  getDayAndSlotForExam
 } from '../../config/constants';
 
 interface CompletionGateProps {
@@ -98,25 +101,45 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     phaseBadge?: string;
   }[] = [];
 
-  mockStatuses.forEach((m, idx) => {
-    checklistItems.push({
-      id: `mock_${m.key}`,
-      phaseBadge: `Session ${idx + 1}`,
-      label: `Mock Exam #${m.examNum} Scored (${m.isCompleted ? `${m.score}/90` : 'Pending'})`,
-      done: m.isCompleted,
-      canAutoDetect: true,
-      hint: `Complete Session ${idx + 1} timed simulation in Mock Exam Center.`
-    });
+  const isRevDay = isReviewDay(dayNumber);
+  const revDayDef = getReviewDayDefinition(dayNumber);
 
-    checklistItems.push({
-      id: `review_${m.key}`,
-      phaseBadge: `Session ${idx + 1}`,
-      label: `Mock Exam #${m.examNum} Mandatory Review Logged (Cannot be blank)`,
-      done: m.reviewCompleted,
-      canAutoDetect: true,
-      hint: `Complete error analysis & corrective actions for Mock #${m.examNum}.`
+  if (isRevDay && revDayDef) {
+    const cycleExams = revDayDef.examNumbers.map((eNum) => {
+      const { dayNumber: dNum, reviewKey } = getDayAndSlotForExam(eNum);
+      const isRevDone = !!days[dNum]?.mockReviews?.[reviewKey]?.isCompleted;
+      return { examNum: eNum, isRevDone };
     });
-  });
+    const doneCount = cycleExams.filter((e) => e.isRevDone).length;
+    checklistItems.push({
+      id: 'deep_review_cycle',
+      phaseBadge: 'Deep Review',
+      label: `${revDayDef.title} (${doneCount} / ${cycleExams.length} Reviewed)`,
+      done: doneCount === cycleExams.length && cycleExams.length > 0,
+      canAutoDetect: true,
+      hint: `Complete A-to-Z review of all ${cycleExams.length} papers in Review Center.`
+    });
+  } else {
+    mockStatuses.forEach((m, idx) => {
+      checklistItems.push({
+        id: `mock_${m.key}`,
+        phaseBadge: `Session ${idx + 1}`,
+        label: `Mock Exam #${m.examNum} Scored (${m.isCompleted ? `${m.score}/90` : 'Pending'})`,
+        done: m.isCompleted,
+        canAutoDetect: true,
+        hint: `Complete Session ${idx + 1} timed simulation in Mock Exam Center.`
+      });
+
+      checklistItems.push({
+        id: `review_${m.key}`,
+        phaseBadge: `Session ${idx + 1}`,
+        label: `Mock Exam #${m.examNum} Mandatory Review Logged (Cannot be blank)`,
+        done: m.reviewCompleted,
+        canAutoDetect: true,
+        hint: `Complete error analysis & corrective actions for Mock #${m.examNum}.`
+      });
+    });
+  }
 
   // Daily Drills
   checklistItems.push({
@@ -161,7 +184,9 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
     });
   }
 
-  const allReady = allMocksDone && allReviewsDone && additionalDone && isSectionTestDone;
+  const allReady = isRevDay
+    ? (checklistItems.find((i) => i.id === 'deep_review_cycle')?.done ?? false) && additionalDone && isSectionTestDone
+    : allMocksDone && allReviewsDone && additionalDone && isSectionTestDone;
 
   const handleToggleCheck = async (id: string, currentVal: boolean) => {
     await updateGateItem(dayNumber, id, !currentVal);

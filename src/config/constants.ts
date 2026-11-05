@@ -2,19 +2,19 @@ import { QuestionPriority, QuestionTypeMeta, SkillType, StudyGroupDefinition, Ta
 
 export const DEFAULT_START_DATE = '2026-11-03'; // Start: Nov 3, 2026
 export const FINAL_TARGET_DATE = '2026-11-30'; // Exam Day: Nov 30, 2026 (28 Days Total)
-export const APP_TITLE = 'PTE - 80-Mock Exam Mastery Mission';
+export const APP_TITLE = 'PTE - 60-Mock Exam Mastery Mission';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
 export const TOTAL_STUDY_DAYS = 28; // Exactly 28 Days (Nov 3 to Nov 30, 2026)
 export const DAILY_PRACTICE_TARGET = 0; // Pure mock simulation journey
 export const TOTAL_PRACTICE_TARGET = 0; 
-export const DAILY_MOCK_TARGET = 3; // Recommended pace: ~3 Mock Exams daily (flexible)
-export const TOTAL_MOCK_TARGET = 80; // Exactly 80 Mock Exams (20 unique VIP papers × 4 passes)
+export const DAILY_MOCK_TARGET = 3; // Flexible pace: 3-4 Mocks on Mock Days, 0 on Review Days
+export const TOTAL_MOCK_TARGET = 60; // Exactly 60 Mock Exams (20 unique VIP papers × 3 passes)
 export const TOTAL_UNIQUE_PAPERS = 20; // 20 unique VIP papers
-export const REPETITIONS_PER_PAPER = 4; // Each paper repeated exactly 4 times in random order
+export const REPETITIONS_PER_PAPER = 3; // Each paper repeated exactly 3 times in random order
 export const TOTAL_SECTION_TESTS = 0; 
 export const MOCK_EXAM_QUESTIONS = 60;
-export const TOTAL_MOCK_EXAM_QUESTIONS = 4800; // 80 mocks * 60 questions = 4,800
-export const TOTAL_MISSION_QUESTIONS = 4800; // 4,800 Total Questions
+export const TOTAL_MOCK_EXAM_QUESTIONS = 3600; // 60 mocks * 60 questions = 3,600
+export const TOTAL_MISSION_QUESTIONS = 3600; // 3,600 Total Questions
 
 export interface MockScheduleSlot {
   mockIndex: number;
@@ -63,7 +63,115 @@ export const DAY_TARGET_SCORES: number[] = [
   77, 78, 78, 79, 79, 79, 79  // Week 4 (Days 22–28): Nov 24–30 (Superior 79+ Summit Ready)
 ];
 
-export function getDailyMockTarget(_dayNumber: number): number {
+export interface ReviewScheduleSlot {
+  slotIndex: number;
+  timeSlot: string;
+  sessionName: string;
+  focus: string;
+}
+
+export const DAILY_REVIEW_SCHEDULE: ReviewScheduleSlot[] = [
+  { slotIndex: 0, timeSlot: '09:00 AM – 11:30 AM', sessionName: 'Morning Deep Review (2.5h)', focus: 'A-to-Z Speaking Error Analysis (RA, RS Fluency & Pauses)' },
+  { slotIndex: 1, timeSlot: '01:00 PM – 03:30 PM', sessionName: 'Afternoon Deep Review (2.5h)', focus: 'Reading Blanks (R/W FIB) & Writing Corrective Actions' },
+  { slotIndex: 2, timeSlot: '05:00 PM – 07:00 PM', sessionName: 'Evening Deep Review (2.0h)', focus: 'Listening (WFD, SST, HIW) & Vocab Error Log' },
+  { slotIndex: 3, timeSlot: '08:30 PM – 09:30 PM', sessionName: 'Night Summary (1.0h)', focus: 'Consolidation of Deficiencies (අඩුපාඩු) & Strategy Adjustments' }
+];
+
+export interface ReviewDayDefinition {
+  dayNumber: number;
+  startExam: number;
+  endExam: number;
+  examNumbers: number[];
+  coveredDays: number[];
+  title: string;
+}
+
+export const REVIEW_DAYS: Record<number, ReviewDayDefinition> = {
+  3: {
+    dayNumber: 3,
+    startExam: 1,
+    endExam: 7,
+    examNumbers: [1, 2, 3, 4, 5, 6, 7],
+    coveredDays: [1, 2],
+    title: 'Deep Review: Exams 1–7 (Day 1 & Day 2 Papers)'
+  },
+  6: {
+    dayNumber: 6,
+    startExam: 8,
+    endExam: 14,
+    examNumbers: [8, 9, 10, 11, 12, 13, 14],
+    coveredDays: [4, 5],
+    title: 'Deep Review: Exams 8–14 (Day 4 & Day 5 Papers)'
+  },
+  9: {
+    dayNumber: 9,
+    startExam: 15,
+    endExam: 21,
+    examNumbers: [15, 16, 17, 18, 19, 20, 21],
+    coveredDays: [7, 8],
+    title: 'Deep Review: Exams 15–21 (Day 7 & Day 8 Papers)'
+  },
+  12: {
+    dayNumber: 12,
+    startExam: 22,
+    endExam: 28,
+    examNumbers: [22, 23, 24, 25, 26, 27, 28],
+    coveredDays: [10, 11],
+    title: 'Deep Review: Exams 22–28 (Day 10 & Day 11 Papers)'
+  },
+  15: {
+    dayNumber: 15,
+    startExam: 29,
+    endExam: 35,
+    examNumbers: [29, 30, 31, 32, 33, 34, 35],
+    coveredDays: [13, 14],
+    title: 'Deep Review: Exams 29–35 (Day 13 & Day 14 Papers)'
+  },
+  18: {
+    dayNumber: 18,
+    startExam: 36,
+    endExam: 42,
+    examNumbers: [36, 37, 38, 39, 40, 41, 42],
+    coveredDays: [16, 17],
+    title: 'Deep Review: Exams 36–42 (Day 16 & Day 17 Papers)'
+  },
+  21: {
+    dayNumber: 21,
+    startExam: 43,
+    endExam: 48,
+    examNumbers: [43, 44, 45, 46, 47, 48],
+    coveredDays: [19, 20],
+    title: 'Deep Review: Exams 43–48 (Day 19 & Day 20 Papers)'
+  },
+  24: {
+    dayNumber: 24,
+    startExam: 49,
+    endExam: 54,
+    examNumbers: [49, 50, 51, 52, 53, 54],
+    coveredDays: [22, 23],
+    title: 'Deep Review: Exams 49–54 (Day 22 & Day 23 Papers)'
+  },
+  27: {
+    dayNumber: 27,
+    startExam: 55,
+    endExam: 60,
+    examNumbers: [55, 56, 57, 58, 59, 60],
+    coveredDays: [25, 26],
+    title: 'Grand Final Review: Exams 55–60 (Day 25 & Day 26 Papers + Final Summit Readiness)'
+  }
+};
+
+export function isReviewDay(dayNumber: number): boolean {
+  return dayNumber in REVIEW_DAYS;
+}
+
+export function getReviewDayDefinition(dayNumber: number): ReviewDayDefinition | null {
+  return REVIEW_DAYS[dayNumber] || null;
+}
+
+export function getDailyMockTarget(dayNumber: number): number {
+  if (isReviewDay(dayNumber) || dayNumber >= 28) return 0;
+  if ([1, 4, 7, 10, 13, 16].includes(dayNumber)) return 4;
   return 3;
 }
 
@@ -75,52 +183,71 @@ export function getMockExamsForDay(dayNumber: number): string[] {
   if (dayNumber === 1) {
     return ['mock01', 'mock02', 'mock03', 'mock04'];
   }
-  if (dayNumber >= 2 && dayNumber <= 26) {
+  if (dayNumber === 2) {
     return ['mock01', 'mock02', 'mock03'];
   }
-  if (dayNumber === 27) {
-    return ['mock01'];
+  // Dedicated Review Days & Final Exam Day have 0 new mocks scheduled
+  if (isReviewDay(dayNumber) || dayNumber >= 28) {
+    return [];
   }
-  return []; // Day 28: Final Exam Day & Summit
+  // 4-mock days:
+  if ([4, 7, 10, 13, 16].includes(dayNumber)) {
+    return ['mock01', 'mock02', 'mock03', 'mock04'];
+  }
+  // 3-mock days:
+  if ([5, 8, 11, 14, 17, 19, 20, 22, 23, 25, 26].includes(dayNumber)) {
+    return ['mock01', 'mock02', 'mock03'];
+  }
+  return [];
 }
+
+export const DAY_START_EXAM_NUMBER: Record<number, number> = {
+  1: 1,
+  2: 5,
+  4: 8,
+  5: 12,
+  7: 15,
+  8: 19,
+  10: 22,
+  11: 26,
+  13: 29,
+  14: 33,
+  16: 36,
+  17: 40,
+  19: 43,
+  20: 46,
+  22: 49,
+  23: 52,
+  25: 55,
+  26: 58
+};
 
 export function getExamNumberForMock(dayNumber: number, mockIndex: number): number {
-  if (dayNumber === 1) {
-    return mockIndex + 1; // 1, 2, 3, 4
+  const start = DAY_START_EXAM_NUMBER[dayNumber];
+  if (start !== undefined) {
+    return start + mockIndex;
   }
-  if (dayNumber >= 2 && dayNumber <= 26) {
-    return 4 + (dayNumber - 2) * 3 + (mockIndex + 1); // Day 2: 5, 6, 7 ... Day 26: 77, 78, 79
-  }
-  if (dayNumber === 27) {
-    return 80;
-  }
-  return 80;
+  return 60;
 }
 
+const EXAM_TO_DAY_SLOT_CACHE: Record<number, { dayNumber: number; mockKey: string; reviewKey: string }> = {};
+
+Object.entries(DAY_START_EXAM_NUMBER).forEach(([dayStr, startExam]) => {
+  const d = Number(dayStr);
+  const keys = getMockExamsForDay(d);
+  keys.forEach((key, idx) => {
+    const eNum = startExam + idx;
+    EXAM_TO_DAY_SLOT_CACHE[eNum] = {
+      dayNumber: d,
+      mockKey: key,
+      reviewKey: `review0${idx + 1}`
+    };
+  });
+});
+
 export function getDayAndSlotForExam(examNumber: number): { dayNumber: number; mockKey: string; reviewKey: string } {
-  const safe = Math.min(Math.max(1, examNumber), 80);
-  if (safe <= 4) {
-    return {
-      dayNumber: 1,
-      mockKey: `mock0${safe}`,
-      reviewKey: `review0${safe}`
-    };
-  }
-  if (safe <= 79) {
-    const diff = safe - 5;
-    const dayNumber = 2 + Math.floor(diff / 3);
-    const mockIndex = diff % 3;
-    return {
-      dayNumber,
-      mockKey: `mock0${mockIndex + 1}`,
-      reviewKey: `review0${mockIndex + 1}`
-    };
-  }
-  return {
-    dayNumber: 27,
-    mockKey: 'mock01',
-    reviewKey: 'review01'
-  };
+  const safe = Math.min(Math.max(1, examNumber), 60);
+  return EXAM_TO_DAY_SLOT_CACHE[safe] || { dayNumber: 1, mockKey: 'mock01', reviewKey: 'review01' };
 }
 
 // 35 Available APEUni VIP Mock Exam Papers (User-Provided Exact Catalog)
@@ -178,12 +305,12 @@ function generateSeededPermutation(count: number, seed: number): number[] {
 }
 
 /**
- * 80 Planned Mock Exams Across 28 Days (20 Unique Papers × 4 Passes):
+ * 60 Planned Mock Exams Across 28 Days (20 Unique Papers × 3 Passes):
  * - Round 1 (Exams 1–20): Pass 1 (First Attempt: Initial Diagnostic & Baseline)
  * - Round 2 (Exams 21–40): Pass 2 (Error Rectification & Correction)
- * - Round 3 (Exams 41–60): Pass 3 (Speed, Fluency & Consistency)
- * - Round 4 (Exams 61–80): Pass 4 (79+ Summit Readiness & Perfection)
- * Total: 20 * 4 = 80 Mock Exams (Each unique paper repeated 4 times in random order)
+ * - Round 3 (Exams 41–60): Pass 3 (79+ Superior Summit Readiness & Fluency Peak)
+ * Total: 20 * 3 = 60 Mock Exams (Each unique paper repeated 3 times in random order)
+ * Plus 9 dedicated Deep Review Days (Days 3, 6, 9, 12, 15, 18, 21, 24, 27) = 40+ hours saved for error analysis!
  */
 function generateRound1Indices(): number[] {
   // Day 1 exact 4 tests as confirmed by user:
@@ -200,9 +327,8 @@ function generateRound1Indices(): number[] {
 
 export const MOCK_EXAM_SCHEDULE_INDICES: number[] = [
   ...generateRound1Indices(),              // Round 1: 20 tests (Pass 1: First Attempt)
-  ...generateSeededPermutation(20, 1492),  // Round 2: 20 tests (Pass 2)
-  ...generateSeededPermutation(20, 2026),  // Round 3: 20 tests (Pass 3)
-  ...generateSeededPermutation(20, 3141)   // Round 4: 20 tests (Pass 4)
+  ...generateSeededPermutation(20, 1492),  // Round 2: 20 tests (Pass 2: Error Rectification)
+  ...generateSeededPermutation(20, 2026)   // Round 3: 20 tests (Pass 3: 79+ Peak Perfection)
 ];
 
 export interface MockExamDetails {
@@ -219,7 +345,7 @@ export interface MockExamDetails {
 }
 
 export function getMockExamDetails(examNumber: number): MockExamDetails {
-  const safeNumber = Math.min(Math.max(1, examNumber), 80);
+  const safeNumber = Math.min(Math.max(1, examNumber), 60);
   const scheduleIndex = (safeNumber - 1) % MOCK_EXAM_SCHEDULE_INDICES.length;
   const paperIndex = MOCK_EXAM_SCHEDULE_INDICES[scheduleIndex] ?? 0;
   const testName = APEUNI_VIP_MOCKS[paperIndex] || `PTE Mock Test #${safeNumber}`;
@@ -228,17 +354,13 @@ export function getMockExamDetails(examNumber: number): MockExamDetails {
   let roundTitle = 'Pass 1 (First Attempt): Diagnostic Baseline';
   let roundBadgeColor = 'bg-blue-500/20 text-blue-300 border-blue-500/30';
 
-  if (safeNumber > 60) {
-    roundNumber = 4;
-    roundTitle = 'Pass 4: 79+ Peak Perfection';
-    roundBadgeColor = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
-  } else if (safeNumber > 40) {
+  if (safeNumber > 40) {
     roundNumber = 3;
-    roundTitle = 'Pass 3: Fluency & Speed Mastery';
-    roundBadgeColor = 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+    roundTitle = 'Pass 3: 79+ Peak Perfection';
+    roundBadgeColor = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
   } else if (safeNumber > 20) {
     roundNumber = 2;
-    roundTitle = 'Pass 2: Error Rectification';
+    roundTitle = 'Pass 2: Error Rectification & Fluency';
     roundBadgeColor = 'bg-purple-500/20 text-purple-300 border-purple-500/30';
   }
 

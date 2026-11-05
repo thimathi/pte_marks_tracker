@@ -16,7 +16,8 @@ import {
   Check,
   Layers,
   AlertTriangle,
-  Mic
+  Mic,
+  Search
 } from 'lucide-react';
 import { usePteData } from '../context/PteDataContext';
 import { calculateStreak } from '../utils/scoring';
@@ -31,8 +32,13 @@ import {
   getMockExamsForDay,
   getExamNumberForMock,
   DAILY_MOCK_SCHEDULE,
+  DAILY_REVIEW_SCHEDULE,
   getSectionTestForDay,
-  getAcademicCollocationsTarget
+  getAcademicCollocationsTarget,
+  isReviewDay,
+  getReviewDayDefinition,
+  getDayAndSlotForExam,
+  getMockExamDetails
 } from '../config/constants';
 import { DailyDrillsCard } from '../components/drills/DailyDrillsCard';
 import { CompletionGate } from '../components/gate/CompletionGate';
@@ -43,7 +49,47 @@ export const DashboardPage: React.FC = () => {
   const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
   const streak = calculateStreak(days);
 
-  // 4 Daily Mock Exams for currentDay
+  // Check if today is a dedicated Deep Review Day
+  const isRevDay = isReviewDay(currentDay);
+  const revDayDef = getReviewDayDefinition(currentDay);
+
+  // On Review Days, gather the mock exams covered in this review cycle
+  const reviewCycleMocks = revDayDef
+    ? revDayDef.examNumbers.map((eNum) => {
+        const { dayNumber, mockKey, reviewKey } = getDayAndSlotForExam(eNum);
+        const dayRec = days[dayNumber];
+        const mockRec = dayRec?.mockExams?.[mockKey];
+        const revRec = dayRec?.mockReviews?.[reviewKey];
+        const details = getMockExamDetails(eNum);
+        return {
+          examNum: eNum,
+          dayNumber,
+          mockKey,
+          reviewKey,
+          details,
+          mockRec,
+          revRec,
+          isCompleted: !!mockRec?.isCompleted,
+          score: mockRec?.overallScore,
+          speakingScore: mockRec?.speakingScore,
+          writingScore: mockRec?.writingScore,
+          readingScore: mockRec?.readingScore,
+          listeningScore: mockRec?.listeningScore,
+          reviewCompleted: !!revRec?.isCompleted,
+          reviewMinutes: revRec?.durationMinutes || 0,
+          raAverage: revRec?.raAverageScore,
+          raScores: revRec?.raScores,
+          raDeficiencies: revRec?.raDeficiencies
+        };
+      })
+    : [];
+
+  const completedReviewsInCycle = reviewCycleMocks.filter((m) => m.reviewCompleted).length;
+  const reviewCyclePercent = reviewCycleMocks.length > 0
+    ? Math.round((completedReviewsInCycle / reviewCycleMocks.length) * 100)
+    : 0;
+
+  // Daily Mock Exams for currentDay (when not a review day)
   const mockKeys = getMockExamsForDay(currentDay);
 
   const todayMocks = mockKeys.map((key, idx) => {
@@ -72,14 +118,14 @@ export const DashboardPage: React.FC = () => {
 
   const completedMocksCount = todayMocks.filter((m) => m.isCompleted).length;
   const completedReviewsCount = todayMocks.filter((m) => m.reviewCompleted).length;
-  const mockPercent = Math.round((completedMocksCount / mockKeys.length) * 100);
-  const reviewPercent = Math.round((completedReviewsCount / mockKeys.length) * 100);
+  const mockPercent = mockKeys.length > 0 ? Math.round((completedMocksCount / mockKeys.length) * 100) : 0;
+  const reviewPercent = mockKeys.length > 0 ? Math.round((completedReviewsCount / mockKeys.length) * 100) : 0;
 
   // Daily Section Test
   const sectionTestDef = getSectionTestForDay(currentDay);
   const sectionTestRecord = currentDayData?.sectionTest;
 
-  // Mission-Wide 50+ Mock Journey Statistics across all 14 study days
+  // Mission-Wide 60 Mock Journey Statistics across all 28 study days
   let totalMocksCompletedAllDays = 0;
   let totalReviewsCompletedAllDays = 0;
   let missedMocksCount = 0;
@@ -123,10 +169,10 @@ export const DashboardPage: React.FC = () => {
           <div>
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">
-                Target: 80 Mock Exams
+                Target: 60 Mock Exams
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30">
-                20 Papers × 4 Passes
+                20 Papers × 3 Passes + 9 Review Days
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                 28-Day Mission (Nov 03 – Nov 30)
@@ -135,11 +181,16 @@ export const DashboardPage: React.FC = () => {
                 Exam Day: Nov 30, 2026
               </span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-              80-Mock Exam Mastery Mission (28 Days)
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+              <span>60-Mock Exam Mastery Mission (28 Days)</span>
+              {isRevDay && (
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 animate-pulse">
+                  🌟 Deep Review Day
+                </span>
+              )}
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
-              20 Unique VIP Papers repeated 4 times across randomized passes · Flexible Daily Pace (~3 Mocks/Day) · Mandatory Read Aloud & Error Reviews · 4,800 Total Questions.
+              20 Unique VIP Papers repeated 3 times · 2 Mock Days followed by 1 Dedicated Deep Review Day · 40+ saved hours for thorough question-by-question review & Read Aloud coaching · 3,600 Total Questions.
             </p>
           </div>
 
@@ -155,7 +206,7 @@ export const DashboardPage: React.FC = () => {
                 >
                   {Array.from({ length: totalDays }, (_, i) => i + 1).map((d) => (
                     <option key={d} value={d}>
-                      Study Day {d} (Target: {DAY_TARGET_SCORES[d - 1] ?? 79}+)
+                      Study Day {d} {isReviewDay(d) ? '🔍 (Deep Review Day)' : `(Target: ${DAY_TARGET_SCORES[d - 1] ?? 79}+)`}
                     </option>
                   ))}
                 </select>
@@ -171,12 +222,12 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Overall 80 Mock Target Tracker Bar */}
+        {/* Overall 60 Mock Target Tracker Bar */}
         <div className="mt-5 pt-4 border-t border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-white">
-                80-Mock Exam Mission:
+                60-Mock Exam Mission:
               </span>
               <span className="text-xs font-mono font-bold text-blue-400">
                 {totalMocksCompletedAllDays} / {TOTAL_MOCK_TARGET} Tests Completed
@@ -200,18 +251,114 @@ export const DashboardPage: React.FC = () => {
             <span className="px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 font-mono">
               Pass 2: Exams 21–40 (Correction)
             </span>
-            <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono">
-              Pass 3: Exams 41–60 (Fluency)
-            </span>
             <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-mono">
-              Pass 4: Exams 61–80 (79+ Summit)
+              Pass 3: Exams 41–60 (79+ Summit)
+            </span>
+            <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono">
+              9 Review Days (40h Coaching)
             </span>
           </div>
         </div>
       </div>
 
+      {/* SPECIAL REVIEW DAY BANNER IF VIEWING A REVIEW DAY */}
+      {isRevDay && revDayDef && (
+        <div className="rounded-2xl bg-gradient-to-r from-purple-950/40 via-blue-950/30 to-purple-950/40 border border-purple-500/40 p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-purple-500/20 pb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold">
+                <Search className="w-5 h-5 text-purple-400" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40 uppercase">
+                    Dedicated Review Day
+                  </span>
+                  <span className="text-sm font-bold text-white">
+                    {revDayDef.title}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-300 mt-0.5">
+                  No new mocks scheduled today. Spend 1–2 hours per paper reviewing every incorrect question, Read Aloud pauses, intonation, and documenting deficiencies (අඩුපාඩු).
+                </p>
+              </div>
+            </div>
+
+            <div className="text-right shrink-0">
+              <span className="text-xs text-slate-400 block">Cycle Review Progress:</span>
+              <span className="text-base font-extrabold text-emerald-400">
+                {completedReviewsInCycle} / {reviewCycleMocks.length} Reviewed
+              </span>
+            </div>
+          </div>
+
+          {/* Cards for all exams in this review cycle */}
+          <div>
+            <div className="text-xs font-semibold text-slate-300 mb-2.5 flex items-center justify-between">
+              <span>Mock Papers to Review in Detail ({reviewCycleMocks.length} Tests):</span>
+              <Link to="/review" className="text-blue-400 hover:underline text-xs flex items-center gap-1">
+                <span>Open Full Review Center</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+              {reviewCycleMocks.map((m) => (
+                <div
+                  key={m.examNum}
+                  className={`p-3 rounded-xl border space-y-2 transition-all ${
+                    m.reviewCompleted
+                      ? 'bg-emerald-500/10 border-emerald-500/30'
+                      : m.isCompleted
+                      ? 'bg-slate-950 border-amber-500/40'
+                      : 'bg-slate-950 border-slate-800'
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-white">Mock #{m.examNum}</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-800">
+                      Day {m.dayNumber}
+                    </span>
+                  </div>
+
+                  <p className="text-[11px] text-slate-300 line-clamp-1 font-medium" title={m.details.testName}>
+                    {m.details.testName}
+                  </p>
+
+                  <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-800/80">
+                    <span className="text-slate-400">Score:</span>
+                    <span className="font-bold text-white">
+                      {m.score !== null && m.score !== undefined ? `${m.score}/90` : 'Not Scored'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-slate-400">RA Average:</span>
+                    <span className={m.raAverage ? 'text-emerald-400 font-bold' : 'text-slate-500'}>
+                      {m.raAverage ? `${m.raAverage}/90` : '—'}
+                    </span>
+                  </div>
+
+                  <Link
+                    to="/review"
+                    className={`w-full py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-colors ${
+                      m.reviewCompleted
+                        ? 'bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
+                        : 'bg-blue-600 hover:bg-blue-500 text-white'
+                    }`}
+                  >
+                    <span>{m.reviewCompleted ? 'Edit Review ✓' : 'Start Review'}</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Missed Sessions / Catch-Up Support Banner */}
-      {missedMocksCount > 0 && (
+      {!isRevDay && missedMocksCount > 0 && (
         <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
@@ -234,242 +381,273 @@ export const DashboardPage: React.FC = () => {
         </div>
       )}
 
-      {/* Primary KPI Command Center (4 Mocks + Read Aloud Reviews + Section Test) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* KPI 1: Daily Mock Exams */}
-        <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-blue-400" />
-                <h2 className="text-sm font-bold text-white">Day {currentDay} Mock Exams</h2>
-              </div>
-              <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                completedMocksCount === mockKeys.length && mockKeys.length > 0
-                  ? 'bg-emerald-500/20 text-emerald-300'
-                  : 'bg-blue-500/20 text-blue-300'
-              }`}>
-                {completedMocksCount} / {mockKeys.length} Done
-              </span>
-            </div>
-
-            <p className="text-xs text-slate-400">
-              {mockKeys.length} Timed Simulations ({mockKeys.length * 60} Qs today). Target: <b>{currentDayTarget}+</b>
-            </p>
-
-            {/* Progress Bar */}
-            <div className="w-full bg-slate-950 rounded-full h-2 mt-3 overflow-hidden">
-              <div
-                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${mockPercent}%` }}
-              />
-            </div>
-          </div>
-
-          {/* 4 Mock Status Chips with User Timings */}
-          <div className="grid grid-cols-2 gap-2 pt-1">
-            {todayMocks.map((m) => (
-              <Link
-                key={m.key}
-                to="/mock-exams"
-                className={`p-2 rounded-xl border text-left transition-colors ${
-                  m.isCompleted
-                    ? 'bg-emerald-500/10 border-emerald-500/30 hover:border-emerald-500/50'
-                    : 'bg-slate-950 border-slate-800 hover:border-slate-700'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-[10px] font-bold text-slate-300">Mock #{m.examNum}</span>
-                  {m.isCompleted ? (
-                    <span className="text-[10px] font-bold text-emerald-400">{m.score}/90</span>
-                  ) : (
-                    <span className="text-[9px] text-amber-400">Pending</span>
-                  )}
+      {/* Primary KPI Command Center (Mock Exams + Read Aloud Reviews + Section Test) */}
+      {!isRevDay && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* KPI 1: Daily Mock Exams */}
+          <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="w-5 h-5 text-blue-400" />
+                  <h2 className="text-sm font-bold text-white">Day {currentDay} Mock Exams</h2>
                 </div>
-                <span className="text-[10px] text-slate-400 block font-mono truncate">{m.timeSlot}</span>
-              </Link>
-            ))}
-          </div>
-
-          <Link
-            to="/mock-exams"
-            className="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
-          >
-            <span>Open Mock Exam Center (4 Tests)</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        {/* KPI 2: Read Aloud & Deep Review Center */}
-        <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Mic className="w-5 h-5 text-indigo-400" />
-                <h2 className="text-sm font-bold text-white">RA & Deep Error Reviews</h2>
-              </div>
-              <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                completedReviewsCount === mockKeys.length && mockKeys.length > 0
-                  ? 'bg-emerald-500/20 text-emerald-300'
-                  : 'bg-indigo-500/20 text-indigo-300'
-              }`}>
-                {completedReviewsCount} / {mockKeys.length} Reviewed
-              </span>
-            </div>
-
-            <p className="text-xs text-slate-400">
-              Read Aloud (RA) scores with comma separation, deficiencies (අඩුපාඩු), and corrective actions.
-            </p>
-
-            {/* Progress Bar */}
-            <div className="w-full bg-slate-950 rounded-full h-2 mt-3 overflow-hidden">
-              <div
-                className="bg-indigo-500 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${reviewPercent}%` }}
-              />
-            </div>
-          </div>
-
-          {/* 4 Mock Review Chips */}
-          <div className="grid grid-cols-2 gap-2 pt-1">
-            {todayMocks.map((m, idx) => (
-              <Link
-                key={`rev-${m.key}`}
-                to="/mock-exams"
-                className={`p-2 rounded-xl border text-left transition-colors ${
-                  m.reviewCompleted
-                    ? 'bg-emerald-500/10 border-emerald-500/30'
-                    : m.isCompleted
-                    ? 'bg-amber-500/10 border-amber-500/30 animate-pulse'
-                    : 'bg-slate-950 border-slate-800'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-[10px] font-bold text-slate-300">Rev #{idx + 1}</span>
-                  <span className={`text-[9px] font-bold ${
-                    m.reviewCompleted
-                      ? 'text-emerald-400'
-                      : m.isCompleted
-                      ? 'text-amber-400'
-                      : 'text-slate-500'
-                  }`}>
-                    {m.reviewCompleted ? '✓ Done' : m.isCompleted ? 'Pending!' : 'Waiting'}
-                  </span>
-                </div>
-                <span className="text-[10px] text-slate-400 block truncate">
-                  {m.raAverage ? `RA: ${m.raAverage}/90` : m.reviewCompleted ? `${m.reviewMinutes}m logged` : 'Review required'}
+                <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                  completedMocksCount === mockKeys.length && mockKeys.length > 0
+                    ? 'bg-emerald-500/20 text-emerald-300'
+                    : 'bg-blue-500/20 text-blue-300'
+                }`}>
+                  {completedMocksCount} / {mockKeys.length} Done
                 </span>
-              </Link>
-            ))}
-          </div>
-
-          <Link
-            to="/review"
-            className="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition-colors flex items-center justify-center gap-1.5"
-          >
-            <span>Read Aloud Review Center</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        {/* KPI 3: Daily Section Test (12 Total across 14 Days) */}
-        <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Layers className="w-5 h-5 text-purple-400" />
-                <h2 className="text-sm font-bold text-white">Daily Section Test</h2>
               </div>
-              <span className={`text-xs font-bold px-2 py-0.5 rounded ${
-                sectionTestRecord?.isCompleted
-                  ? 'bg-emerald-500/20 text-emerald-300'
-                  : 'bg-purple-500/20 text-purple-300'
-              }`}>
-                {sectionTestRecord?.isCompleted ? 'Completed ✓' : sectionTestDef ? 'Scheduled' : 'Buffer Day'}
-              </span>
+
+              <p className="text-xs text-slate-400">
+                {mockKeys.length} Timed Simulations ({mockKeys.length * 60} Qs today). Target: <b>{currentDayTarget}+</b>
+              </p>
+
+              {/* Progress Bar */}
+              <div className="w-full bg-slate-950 rounded-full h-2 mt-3 overflow-hidden">
+                <div
+                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${mockPercent}%` }}
+                />
+              </div>
             </div>
 
-            <p className="text-xs text-slate-400">
-              {sectionTestDef
-                ? `${sectionTestDef.title} (${sectionTestDef.targetQuestions} Qs · ${sectionTestDef.estMinutes})`
-                : 'Day 7 & 14: Weekly Buffer Day for Error Reviews and Missed Mocks'}
-            </p>
+            {/* Mock Status Chips with User Timings */}
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              {todayMocks.map((m) => (
+                <Link
+                  key={m.key}
+                  to="/mock-exams"
+                  className={`p-2 rounded-xl border text-left transition-colors ${
+                    m.isCompleted
+                      ? 'bg-emerald-500/10 border-emerald-500/30 hover:border-emerald-500/50'
+                      : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-[10px] font-bold text-slate-300">Mock #{m.examNum}</span>
+                    {m.isCompleted ? (
+                      <span className="text-[10px] font-bold text-emerald-400">{m.score}/90</span>
+                    ) : (
+                      <span className="text-[9px] text-amber-400">Pending</span>
+                    )}
+                  </div>
+                  <span className="text-[10px] text-slate-400 block font-mono truncate">{m.timeSlot}</span>
+                </Link>
+              ))}
+            </div>
+
+            <Link
+              to="/mock-exams"
+              className="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
+            >
+              <span>Open Mock Exam Center ({mockKeys.length} Tests)</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
-          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400">Assigned Test:</span>
-              <span className="font-semibold text-white truncate">
-                {sectionTestDef?.title || 'Weekly Catch-Up Day'}
-              </span>
+          {/* KPI 2: Read Aloud & Deep Review Center */}
+          <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Mic className="w-5 h-5 text-indigo-400" />
+                  <h2 className="text-sm font-bold text-white">RA & Deep Error Reviews</h2>
+                </div>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                  completedReviewsCount === mockKeys.length && mockKeys.length > 0
+                    ? 'bg-emerald-500/20 text-emerald-300'
+                    : 'bg-indigo-500/20 text-indigo-300'
+                }`}>
+                  {completedReviewsCount} / {mockKeys.length} Reviewed
+                </span>
+              </div>
+
+              <p className="text-xs text-slate-400">
+                Read Aloud (RA) scores with comma separation, deficiencies (අඩුපාඩු), and corrective actions.
+              </p>
+
+              {/* Progress Bar */}
+              <div className="w-full bg-slate-950 rounded-full h-2 mt-3 overflow-hidden">
+                <div
+                  className="bg-indigo-500 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${reviewPercent}%` }}
+                />
+              </div>
             </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400">Time Slot:</span>
-              <span className="font-mono text-amber-300">
-                {sectionTestDef?.recommendedSlot || 'Free / Catch-Up'}
-              </span>
+
+            {/* Mock Review Chips */}
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              {todayMocks.map((m, idx) => (
+                <Link
+                  key={`rev-${m.key}`}
+                  to="/mock-exams"
+                  className={`p-2 rounded-xl border text-left transition-colors ${
+                    m.reviewCompleted
+                      ? 'bg-emerald-500/10 border-emerald-500/30'
+                      : m.isCompleted
+                      ? 'bg-amber-500/10 border-amber-500/30 animate-pulse'
+                      : 'bg-slate-950 border-slate-800'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-[10px] font-bold text-slate-300">Rev #{idx + 1}</span>
+                    <span className={`text-[9px] font-bold ${
+                      m.reviewCompleted
+                        ? 'text-emerald-400'
+                        : m.isCompleted
+                        ? 'text-amber-400'
+                        : 'text-slate-500'
+                    }`}>
+                      {m.reviewCompleted ? '✓ Done' : m.isCompleted ? 'Pending!' : 'Waiting'}
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-slate-400 block truncate">
+                    {m.raAverage ? `RA: ${m.raAverage}/90` : m.reviewCompleted ? `${m.reviewMinutes}m logged` : 'Review required'}
+                  </span>
+                </Link>
+              ))}
             </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400">Score:</span>
-              <span className="font-bold text-emerald-400">
-                {sectionTestRecord?.score !== null && sectionTestRecord?.score !== undefined
-                  ? `${sectionTestRecord.score} / 90`
-                  : 'Pending'}
-              </span>
-            </div>
+
+            <Link
+              to="/review"
+              className="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition-colors flex items-center justify-center gap-1.5"
+            >
+              <span>Read Aloud Review Center</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
-          <Link
-            to="/mock-exams"
-            className="w-full py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
-          >
-            <span>Log Section Test</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
+          {/* KPI 3: Daily Section Test */}
+          <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Layers className="w-5 h-5 text-purple-400" />
+                  <h2 className="text-sm font-bold text-white">Daily Section Test</h2>
+                </div>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                  sectionTestRecord?.isCompleted
+                    ? 'bg-emerald-500/20 text-emerald-300'
+                    : 'bg-purple-500/20 text-purple-300'
+                }`}>
+                  {sectionTestRecord?.isCompleted ? 'Completed ✓' : sectionTestDef ? 'Scheduled' : 'Rest / Focus on Mocks'}
+                </span>
+              </div>
+
+              <p className="text-xs text-slate-400">
+                {sectionTestDef
+                  ? `${sectionTestDef.title} (${sectionTestDef.targetQuestions} Qs · ${sectionTestDef.estMinutes})`
+                  : 'Focus on your planned Mock Exams & Read Aloud reviews.'}
+              </p>
+            </div>
+
+            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400">Assigned Test:</span>
+                <span className="font-semibold text-white truncate">
+                  {sectionTestDef?.title || 'Mock Focus Day'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400">Time Slot:</span>
+                <span className="font-mono text-amber-300">
+                  {sectionTestDef?.recommendedSlot || 'Integrated with Mocks'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400">Score:</span>
+                <span className="font-bold text-emerald-400">
+                  {sectionTestRecord?.score !== null && sectionTestRecord?.score !== undefined
+                    ? `${sectionTestRecord.score} / 90`
+                    : 'Pending'}
+                </span>
+              </div>
+            </div>
+
+            <Link
+              to="/mock-exams"
+              className="w-full py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
+            >
+              <span>Log Section Test</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* 24-HOUR DAILY TIMETABLE (4 Mocks + Section Test Slot) */}
+      {/* DAILY TIMETABLE (Review Schedule or Mock Schedule) */}
       <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 sm:p-6 space-y-4">
         <div className="flex items-center justify-between border-b border-slate-800 pb-3">
           <div className="flex items-center gap-2">
             <Clock className="w-5 h-5 text-blue-400" />
-            <h2 className="text-base font-bold text-white">Daily 4-Mock + Section Test Timetable</h2>
+            <h2 className="text-base font-bold text-white">
+              {isRevDay ? 'Daily Deep Review Timetable (8 Hours Dedicated)' : 'Daily Mock Timetable'}
+            </h2>
           </div>
-          <span className="text-xs text-slate-400">PTE Bridge Structured Schedule</span>
+          <span className="text-xs text-slate-400">
+            {isRevDay ? 'PTE Bridge Error Correction Protocol' : 'PTE Bridge Structured Schedule'}
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {DAILY_MOCK_SCHEDULE.map((s, idx) => {
-            const mock = todayMocks[idx];
-            return (
-              <div key={s.mockIndex} className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+        {isRevDay ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {DAILY_REVIEW_SCHEDULE.map((s) => (
+              <div key={s.slotIndex} className="p-3.5 rounded-xl bg-slate-950 border border-purple-500/30 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-white">Session {idx + 1}</span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                  <span className="text-xs font-bold text-purple-300">Block {s.slotIndex + 1}</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20">
                     {s.timeSlot}
                   </span>
                 </div>
 
                 <div className="p-2 rounded-lg bg-slate-900 border border-slate-800/80">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-slate-200 truncate">{s.sessionName}</span>
-                    <span className={mock?.isCompleted ? 'text-emerald-400 font-bold' : 'text-amber-400'}>
-                      {mock?.isCompleted ? `✓ ${mock.score}/90` : 'Pending'}
+                  <p className="text-xs font-semibold text-slate-200">
+                    {s.sessionName}
+                  </p>
+                </div>
+
+                <p className="text-[11px] text-slate-400 leading-snug">
+                  {s.focus}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {DAILY_MOCK_SCHEDULE.slice(0, mockKeys.length).map((s, idx) => {
+              const mock = todayMocks[idx];
+              return (
+                <div key={s.mockIndex} className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-white">Session {idx + 1}</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                      {s.timeSlot}
+                    </span>
+                  </div>
+
+                  <div className="p-2 rounded-lg bg-slate-900 border border-slate-800/80">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-semibold text-slate-200 truncate">{s.sessionName}</span>
+                      <span className={mock?.isCompleted ? 'text-emerald-400 font-bold' : 'text-amber-400'}>
+                        {mock?.isCompleted ? `✓ ${mock.score}/90` : 'Pending'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-900">
+                    <span>Mandatory Review:</span>
+                    <span className={mock?.reviewCompleted ? 'text-emerald-400 font-bold' : mock?.isCompleted ? 'text-amber-400 font-bold' : 'text-slate-500'}>
+                      {mock?.reviewCompleted ? '✓ Completed' : mock?.isCompleted ? '⚠️ Review Required' : 'Waiting on Mock'}
                     </span>
                   </div>
                 </div>
-
-                <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-900">
-                  <span>Mandatory Review:</span>
-                  <span className={mock?.reviewCompleted ? 'text-emerald-400 font-bold' : mock?.isCompleted ? 'text-amber-400 font-bold' : 'text-slate-500'}>
-                    {mock?.reviewCompleted ? '✓ Completed' : mock?.isCompleted ? '⚠️ Review Required' : 'Waiting on Mock'}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Mandatory Daily Drills & Templates Section */}
