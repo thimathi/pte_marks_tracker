@@ -292,19 +292,26 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
         });
 
         const secDef = getSectionTestForDay(d);
-        if (secDef && !existingDays[key].sectionTest) {
-          updates[`users/${uid}/days/${key}/sectionTest`] = {
-            id: `section_day_${String(d).padStart(2, '0')}`,
-            studyDay: d,
-            title: secDef.title,
-            skill: secDef.skill,
-            targetQuestions: secDef.targetQuestions,
-            questionsAttempted: 0,
-            score: null,
-            mainMistakes: '',
-            timeSlot: secDef.recommendedSlot,
-            isCompleted: false
-          };
+        if (secDef) {
+          if (!existingDays[key].sectionTest) {
+            updates[`users/${uid}/days/${key}/sectionTest`] = {
+              id: `section_day_${String(d).padStart(2, '0')}`,
+              studyDay: d,
+              title: secDef.title,
+              skill: secDef.skill,
+              targetQuestions: secDef.targetQuestions,
+              questionsAttempted: 0,
+              score: null,
+              mainMistakes: '',
+              timeSlot: secDef.recommendedSlot,
+              isCompleted: false
+            };
+          } else if (existingDays[key].sectionTest.title !== secDef.title) {
+            updates[`users/${uid}/days/${key}/sectionTest/title`] = secDef.title;
+            updates[`users/${uid}/days/${key}/sectionTest/skill`] = secDef.skill;
+            updates[`users/${uid}/days/${key}/sectionTest/targetQuestions`] = secDef.targetQuestions;
+            updates[`users/${uid}/days/${key}/sectionTest/timeSlot`] = secDef.recommendedSlot;
+          }
         }
       }
     }

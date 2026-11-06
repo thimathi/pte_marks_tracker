@@ -1128,6 +1128,17 @@ export const MockExamsPage: React.FC = () => {
                 <span>{currentSectionTest?.isCompleted ? 'Mark Pending' : 'Mark Completed'}</span>
               </button>
             </div>
+
+            <div className="md:col-span-4 pt-1">
+              <input
+                type="text"
+                placeholder="Section test notes / key errors (e.g. lost 2 marks on R/W FIB collocations, SST word count 65 words)..."
+                value={secMistakes}
+                onChange={(e) => setSecMistakes(e.target.value)}
+                onBlur={() => handleSaveSectionTest()}
+                className="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg py-1.5 px-3 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-400"
+              />
+            </div>
           </div>
         ) : (
           <div className="text-xs text-slate-400 leading-relaxed">

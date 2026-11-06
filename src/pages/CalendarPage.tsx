@@ -8,12 +8,13 @@ import {
   ChevronRight,
   Flame,
   GraduationCap,
+  Layers,
   Calendar as CalendarIcon
 } from 'lucide-react';
 import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown } from '../utils/scoring';
 import { formatDateFriendly, isDatePast, getTodayIso } from '../utils/dateUtils';
-import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS, getMockExamsForDay, getExamNumberForMock, TOTAL_MOCK_TARGET, TOTAL_PRACTICE_TARGET } from '../config/constants';
+import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS, getMockExamsForDay, getExamNumberForMock, TOTAL_MOCK_TARGET, TOTAL_PRACTICE_TARGET, getSectionTestForDay } from '../config/constants';
 
 export const CalendarPage: React.FC = () => {
   const { studyPlan, days, currentDay, selectDay } = usePteData();
@@ -25,6 +26,8 @@ export const CalendarPage: React.FC = () => {
   const selectedTarget = DAY_TARGET_SCORES[selectedDayNum - 1];
   const todayIso = getTodayIso();
   const selectedMockKeys = getMockExamsForDay(selectedDayNum);
+  const selectedSectionTestDef = getSectionTestForDay(selectedDayNum);
+  const selectedSectionTestRecord = selectedDayData?.sectionTest;
 
   return (
     <div className="space-y-6">
@@ -193,6 +196,23 @@ export const CalendarPage: React.FC = () => {
                   })}
                 </div>
               </div>
+
+              {selectedSectionTestDef && (
+                <div className="pt-2 border-t border-slate-800/60">
+                  <span className="text-[11px] font-semibold text-purple-300 block mb-1.5 flex items-center gap-1">
+                    <Layers className="w-3.5 h-3.5" />
+                    Daily Section Test:
+                  </span>
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-[#0e1729] border border-slate-800 text-[11px]">
+                    <span className="font-semibold text-[#edf2ff] truncate mr-2">
+                      {selectedSectionTestDef.title}
+                    </span>
+                    <span className={selectedSectionTestRecord?.isCompleted ? 'text-emerald-400 font-bold shrink-0' : 'text-[#a9b5d0] shrink-0'}>
+                      {selectedSectionTestRecord?.isCompleted ? `${selectedSectionTestRecord.score ?? 0}/90 ✓` : 'Pending'}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

@@ -1,4 +1,5 @@
 // Vitest setup file — mock Firebase modules for Node environment
+import { vi } from 'vitest';
 
 vi.mock('../config/firebase', () => ({
   app: {},

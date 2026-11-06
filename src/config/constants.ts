@@ -11,7 +11,7 @@ export const DAILY_MOCK_TARGET = 3; // Flexible pace: 3-4 Mocks on Mock Days, 0 
 export const TOTAL_MOCK_TARGET = 60; // Exactly 60 Mock Exams (20 unique VIP papers × 3 passes)
 export const TOTAL_UNIQUE_PAPERS = 20; // 20 unique VIP papers
 export const REPETITIONS_PER_PAPER = 3; // Each paper repeated exactly 3 times in random order
-export const TOTAL_SECTION_TESTS = 0; 
+export const TOTAL_SECTION_TESTS = 24; // 24 Section Tests (1 test every day from Day 4 through Day 27) 
 export const MOCK_EXAM_QUESTIONS = 60;
 export const TOTAL_MOCK_EXAM_QUESTIONS = 3600; // 60 mocks * 60 questions = 3,600
 export const TOTAL_MISSION_QUESTIONS = 3600; // 3,600 Total Questions
@@ -40,10 +40,261 @@ export interface SectionTestDef {
   recommendedSlot: string;
 }
 
-export const SECTION_TEST_SCHEDULE: Record<number, SectionTestDef> = {};
+export const SECTION_TEST_SCHEDULE: Record<number, SectionTestDef> = {
+  4: {
+    dayNumber: 4,
+    testId: 'sec_reading_01',
+    title: 'VIP Reading Section Test 1',
+    skill: 'reading',
+    targetQuestions: 18,
+    estMinutes: '32 min',
+    description: 'APEUni VIP Reading Test 1: Reading & Writing Fill in Blanks (Dropdown), Re-order Paragraphs & Drag-and-Drop FIB timing drill.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  5: {
+    dayNumber: 5,
+    testId: 'sec_listening_01',
+    title: 'VIP Listening Section Test 1',
+    skill: 'listening',
+    targetQuestions: 20,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Listening Test 1: Summarize Spoken Text, Write From Dictation, Listening FIB & Highlight Incorrect Words.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  6: {
+    dayNumber: 6,
+    testId: 'sec_speaking_01',
+    title: 'VIP Speaking Section Test 1',
+    skill: 'speaking',
+    targetQuestions: 35,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Speaking Test 1: Full AI speaking battery — Read Aloud, Repeat Sentence, DI, RL & SGD oral fluency.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  7: {
+    dayNumber: 7,
+    testId: 'sec_reading_02',
+    title: 'VIP Reading Section Test 2',
+    skill: 'reading',
+    targetQuestions: 18,
+    estMinutes: '32 min',
+    description: 'APEUni VIP Reading Test 2: Academic collocations focus, R/W FIB dropdown precision & context clues.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  8: {
+    dayNumber: 8,
+    testId: 'sec_writing_01',
+    title: 'VIP Writing Section Test 1',
+    skill: 'writing',
+    targetQuestions: 4,
+    estMinutes: '40 min',
+    description: 'APEUni VIP Writing Test 1: Strict 10-min Summarize Written Text (2 passages) & 20-min Essay template speed drill.',
+    recommendedSlot: '07:15 PM – 07:55 PM'
+  },
+  9: {
+    dayNumber: 9,
+    testId: 'sec_listening_02',
+    title: 'VIP Listening Section Test 2',
+    skill: 'listening',
+    targetQuestions: 22,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Listening Test 2: Fast speaker accent adaptation, HIW clicking reflex & FIB spelling accuracy.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  10: {
+    dayNumber: 10,
+    testId: 'sec_reading_03',
+    title: 'VIP Reading Section Test 3',
+    skill: 'reading',
+    targetQuestions: 19,
+    estMinutes: '32 min',
+    description: 'APEUni VIP Reading Test 3: Fast-paced Re-order Paragraphs logical structure & drag-and-drop blanks.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  11: {
+    dayNumber: 11,
+    testId: 'sec_speaking_02',
+    title: 'VIP Speaking Section Test 2',
+    skill: 'speaking',
+    targetQuestions: 35,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Speaking Test 2: Read Aloud chunking, acoustic rhythm and pause-free oral fluency stabilization.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  12: {
+    dayNumber: 12,
+    testId: 'sec_listening_03',
+    title: 'VIP Listening Section Test 3',
+    skill: 'listening',
+    targetQuestions: 20,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Listening Test 3: Write From Dictation 100% exact match focus with plural -s and past tense -ed accuracy.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  13: {
+    dayNumber: 13,
+    testId: 'sec_reading_04',
+    title: 'VIP Reading Section Test 4',
+    skill: 'reading',
+    targetQuestions: 18,
+    estMinutes: '30 min',
+    description: 'APEUni VIP Reading Test 4: Time management drill — maximum 2 minutes per R/W FIB passage.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  14: {
+    dayNumber: 14,
+    testId: 'sec_writing_02',
+    title: 'VIP Writing Section Test 2',
+    skill: 'writing',
+    targetQuestions: 4,
+    estMinutes: '40 min',
+    description: 'APEUni VIP Writing Test 2: Strict 20-minute Essay template execution with zero spelling errors & perfect structure.',
+    recommendedSlot: '07:15 PM – 07:55 PM'
+  },
+  15: {
+    dayNumber: 15,
+    testId: 'sec_listening_04',
+    title: 'VIP Listening Section Test 4',
+    skill: 'listening',
+    targetQuestions: 21,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Listening Test 4: Summarize Spoken Text template integration + key noun phrase capture.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  16: {
+    dayNumber: 16,
+    testId: 'sec_speaking_03',
+    title: 'VIP Speaking Section Test 3',
+    skill: 'speaking',
+    targetQuestions: 35,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Speaking Test 3: Repeat Sentence memory retention & phrase-level pitch/intonation drill.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  17: {
+    dayNumber: 17,
+    testId: 'sec_reading_05',
+    title: 'VIP Reading Section Test 5',
+    skill: 'reading',
+    targetQuestions: 19,
+    estMinutes: '32 min',
+    description: 'APEUni VIP Reading Test 5: Advanced vocabulary & high-frequency PTE academic phrase matching.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  18: {
+    dayNumber: 18,
+    testId: 'sec_listening_05',
+    title: 'VIP Listening Section Test 5',
+    skill: 'listening',
+    targetQuestions: 20,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Listening Test 5: Multiple choice & Select Missing Word elimination precision.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  19: {
+    dayNumber: 19,
+    testId: 'sec_speaking_04',
+    title: 'VIP Speaking Section Test 4',
+    skill: 'speaking',
+    targetQuestions: 35,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Speaking Test 4: Describe Image & Retell Lecture template speed — 40-second smooth delivery.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  20: {
+    dayNumber: 20,
+    testId: 'sec_reading_06',
+    title: 'VIP Reading Section Test 6',
+    skill: 'reading',
+    targetQuestions: 18,
+    estMinutes: '30 min',
+    description: 'APEUni VIP Reading Test 6: Elimination strategies for tricky multi-choice & high-distractor FIB blanks.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  21: {
+    dayNumber: 21,
+    testId: 'sec_writing_03',
+    title: 'VIP Writing Section Test 3',
+    skill: 'writing',
+    targetQuestions: 4,
+    estMinutes: '40 min',
+    description: 'APEUni VIP Writing Test 3: Complex sentences for SWT (5–75 words single sentence) & Essay proofreading.',
+    recommendedSlot: '07:15 PM – 07:55 PM'
+  },
+  22: {
+    dayNumber: 22,
+    testId: 'sec_listening_06',
+    title: 'VIP Listening Section Test 6',
+    skill: 'listening',
+    targetQuestions: 22,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Listening Test 6: Advanced Write From Dictation drill under exam pressure & background noise.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  23: {
+    dayNumber: 23,
+    testId: 'sec_reading_07',
+    title: 'VIP Reading Section Test 7',
+    skill: 'reading',
+    targetQuestions: 18,
+    estMinutes: '30 min',
+    description: 'APEUni VIP Reading Test 7: High accuracy sprint under strict exam countdown conditions.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  24: {
+    dayNumber: 24,
+    testId: 'sec_speaking_05',
+    title: 'VIP Speaking Section Test 5',
+    skill: 'speaking',
+    targetQuestions: 35,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Speaking Test 5: Superior 79+ Speaking audit — zero hesitation, natural microphone projection.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  25: {
+    dayNumber: 25,
+    testId: 'sec_listening_07',
+    title: 'VIP Listening Section Test 7',
+    skill: 'listening',
+    targetQuestions: 20,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Listening Test 7: Speed review test — zero lost marks on HIW and listening blanks.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  26: {
+    dayNumber: 26,
+    testId: 'sec_writing_04',
+    title: 'VIP Writing Section Test 4',
+    skill: 'writing',
+    targetQuestions: 3,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Writing Test 4: High-scoring essay template speed run + SWT punctuation mastery.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  27: {
+    dayNumber: 27,
+    testId: 'sec_reading_08',
+    title: 'VIP Reading Section Test 8 (Final Readiness)',
+    skill: 'reading',
+    targetQuestions: 20,
+    estMinutes: '32 min',
+    description: 'APEUni VIP Reading Test 8: Final summit trial — target 85%+ accuracy on Reading & Writing FIB.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  28: {
+    dayNumber: 28,
+    testId: 'sec_listening_08',
+    title: 'VIP Listening Section Test 8 (Final Polish)',
+    skill: 'listening',
+    targetQuestions: 20,
+    estMinutes: '30 min',
+    description: 'APEUni VIP Listening Test 8: Final confidence booster on Write From Dictation and SST.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  }
+};
 
-export function getSectionTestForDay(_dayNumber: number): SectionTestDef | null {
-  return null;
+export function getSectionTestForDay(dayNumber: number): SectionTestDef | null {
+  return SECTION_TEST_SCHEDULE[dayNumber] || null;
 }
 
 export const DEFAULT_TARGET_SCORES: TargetScores = {

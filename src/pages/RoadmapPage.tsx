@@ -30,7 +30,8 @@ import {
   TOTAL_MOCK_TARGET,
   TOTAL_MOCK_EXAM_QUESTIONS,
   isReviewDay,
-  getReviewDayDefinition
+  getReviewDayDefinition,
+  getSectionTestForDay
 } from '../config/constants';
 
 export const RoadmapPage: React.FC = () => {
@@ -281,6 +282,8 @@ export const RoadmapPage: React.FC = () => {
             const dayMocksCount = mockKeys.length;
             const completedMocksCount = mockKeys.filter((k) => dayData?.mockExams?.[k]?.isCompleted).length;
             const completedReviewsCount = mockKeys.filter((_, idx) => dayData?.mockReviews?.[`review0${idx + 1}`]?.isCompleted).length;
+            const secDef = getSectionTestForDay(dayNum);
+            const secRec = dayData?.sectionTest;
 
             const dayExamNumbers = mockKeys.map((_, idx) => getExamNumberForMock(dayNum, idx));
             const firstExamNum = dayExamNumbers[0];
@@ -455,6 +458,25 @@ export const RoadmapPage: React.FC = () => {
                     <p className="text-[10px] text-slate-400">
                       Rest, mental priming, and execution of the 79+ Superior goal!
                     </p>
+                  </div>
+                )}
+
+                {/* Daily Assigned Section Test */}
+                {secDef && (
+                  <div className="flex items-center justify-between text-[11px] p-2 rounded-lg bg-purple-950/25 border border-purple-500/30">
+                    <div className="flex items-center gap-1.5 truncate max-w-[210px]">
+                      <Layers className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                      <span className="font-medium text-purple-200 truncate" title={secDef.title}>
+                        {secDef.title}
+                      </span>
+                    </div>
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
+                      secRec?.isCompleted
+                        ? 'bg-emerald-500/20 text-emerald-300'
+                        : 'bg-purple-500/20 text-purple-300'
+                    }`}>
+                      {secRec?.isCompleted ? `${secRec.score ?? 0}/90 ✓` : 'Section Test'}
+                    </span>
                   </div>
                 )}
 

@@ -357,6 +357,49 @@ export const DashboardPage: React.FC = () => {
         </div>
       )}
 
+      {/* Review Day Assigned Section Test Card */}
+      {isRevDay && sectionTestDef && (
+        <div className="rounded-2xl bg-gradient-to-r from-purple-950/40 via-blue-950/30 to-purple-950/40 border border-purple-500/40 p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold shrink-0">
+                <Layers className="w-5 h-5 text-purple-400" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40 uppercase">
+                    Daily Section Test
+                  </span>
+                  <span className="text-sm font-bold text-white">
+                    {sectionTestDef.title} ({sectionTestDef.targetQuestions} Qs · {sectionTestDef.estMinutes})
+                  </span>
+                </div>
+                <p className="text-xs text-slate-300 mt-0.5">
+                  {sectionTestDef.description} · Recommended slot: <span className="text-amber-300 font-mono">{sectionTestDef.recommendedSlot}</span>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
+              <span className={`text-xs font-bold px-2.5 py-1 rounded-xl border ${
+                sectionTestRecord?.isCompleted
+                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                  : 'bg-purple-500/20 text-purple-300 border-purple-500/40'
+              }`}>
+                {sectionTestRecord?.isCompleted ? `Score: ${sectionTestRecord.score ?? 0}/90 ✓` : 'Pending'}
+              </span>
+              <Link
+                to="/mock-exams"
+                className="py-1.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white transition-colors flex items-center gap-1.5"
+              >
+                <span>Log Test</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Missed Sessions / Catch-Up Support Banner */}
       {!isRevDay && missedMocksCount > 0 && (
         <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
