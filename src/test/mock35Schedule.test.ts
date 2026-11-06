@@ -25,8 +25,8 @@ describe('60 Mock Exam Mastery Plan & 20 Papers × 3 Passes + 9 Review Days Veri
     expect(APEUNI_VIP_MOCKS[1]).toBe('【VIP Full Test】PTE Mock Test 44C');
   });
 
-  it('configures 28 study days and 60 total mocks (20 unique papers × 3 passes)', () => {
-    expect(TOTAL_STUDY_DAYS).toBe(28);
+  it('configures 27 study days and 60 total mocks (20 unique papers × 3 passes)', () => {
+    expect(TOTAL_STUDY_DAYS).toBe(27);
     expect(TOTAL_MOCK_TARGET).toBe(60);
     expect(TOTAL_UNIQUE_PAPERS).toBe(20);
     expect(REPETITIONS_PER_PAPER).toBe(3);

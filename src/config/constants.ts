@@ -1,10 +1,10 @@
 import { QuestionPriority, QuestionTypeMeta, SkillType, StudyGroupDefinition, TargetScores } from '../types/pte';
 
-export const DEFAULT_START_DATE = '2026-11-03'; // Start: Nov 3, 2026
-export const FINAL_TARGET_DATE = '2026-11-30'; // Exam Day: Nov 30, 2026 (28 Days Total)
+export const DEFAULT_START_DATE = '2026-11-04'; // Start: Nov 4, 2026 (Day 3 = Nov 6, 2026)
+export const FINAL_TARGET_DATE = '2026-11-30'; // Exam Day: Nov 30, 2026 (27 Days Total)
 export const APP_TITLE = 'PTE - 60-Mock Exam Mastery Mission';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
-export const TOTAL_STUDY_DAYS = 28; // Exactly 28 Days (Nov 3 to Nov 30, 2026)
+export const TOTAL_STUDY_DAYS = 27; // Nov 4 to Nov 30, 2026
 export const DAILY_PRACTICE_TARGET = 0; // Pure mock simulation journey
 export const TOTAL_PRACTICE_TARGET = 0; 
 export const DAILY_MOCK_TARGET = 3; // Flexible pace: 3-4 Mocks on Mock Days, 0 on Review Days
