@@ -43,15 +43,15 @@ export const ReportsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-[#141c31] border border-slate-800 p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-white border border-slate-200 p-6 shadow-xs">
         <div>
           <div className="flex items-center gap-2">
-            <TrendingUp className="w-6 h-6 text-emerald-400" />
-            <h1 className="text-xl font-bold text-[#edf2ff]">
+            <TrendingUp className="w-6 h-6 text-emerald-600" />
+            <h1 className="text-xl font-bold text-slate-900">
               Analytics, Score Trends &amp; Data Export
             </h1>
           </div>
-          <p className="text-xs text-[#a9b5d0] mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             {totalDays}-Day trajectory, {totalMocks}-mock simulation score progression, and CSV export.
           </p>
         </div>
@@ -60,7 +60,7 @@ export const ReportsPage: React.FC = () => {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => exportMockExamsCsv(days)}
-            className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white shadow-sm flex items-center gap-2 cursor-pointer transition-colors"
+            className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white shadow-xs flex items-center gap-2 cursor-pointer transition-colors"
           >
             <Download className="w-4 h-4" />
             <span>Export {totalMocks} Mocks CSV</span>
@@ -69,35 +69,35 @@ export const ReportsPage: React.FC = () => {
       </div>
 
       {/* Chart: Mock Exams Progression */}
-      <div className="rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="rounded-2xl bg-white border border-slate-200 p-6 space-y-4 shadow-xs">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2">
-            <Award className="w-5 h-5 text-purple-400" />
-            <h3 className="text-base font-bold text-[#edf2ff]">
+            <Award className="w-5 h-5 text-purple-600" />
+            <h3 className="text-base font-bold text-slate-900">
               All {totalMocks} Mock Simulations Progression (Mock #1 to #{totalMocks})
             </h3>
           </div>
-          <span className="text-xs text-[#a9b5d0]">Target: {studyPlan.targetScores?.overall || 78}+ / 90</span>
+          <span className="text-xs text-slate-500">Target: {studyPlan.targetScores?.overall || 78}+ / 90</span>
         </div>
 
         <div className="h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={mockProgressionData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#2b3856" />
-              <XAxis dataKey="mock" stroke="#a9b5d0" interval={2} tick={{ fontSize: 9 }} />
-              <YAxis domain={[50, 90]} stroke="#a9b5d0" tick={{ fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <XAxis dataKey="mock" stroke="#64748b" interval={2} tick={{ fontSize: 9 }} />
+              <YAxis domain={[50, 90]} stroke="#64748b" tick={{ fontSize: 11 }} />
               <Tooltip
-                contentStyle={{ backgroundColor: '#141c31', borderColor: '#2b3856', borderRadius: '12px' }}
-                itemStyle={{ color: '#edf2ff', fontSize: '12px' }}
+                contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                itemStyle={{ color: '#0f172a', fontSize: '12px' }}
               />
               <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
               <Line
                 type="monotone"
                 dataKey="score"
                 name="Mock Exam Score"
-                stroke="#a855f7"
+                stroke="#9333ea"
                 strokeWidth={3}
-                dot={{ r: 3, fill: '#a855f7' }}
+                dot={{ r: 3, fill: '#9333ea' }}
                 connectNulls
               />
               <Line

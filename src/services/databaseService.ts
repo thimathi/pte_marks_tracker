@@ -750,10 +750,17 @@ export function subscribeToUserData(
   return onValue(userRef, (snap) => {
     if (snap.exists()) {
       const data = snap.val();
-      const plan: StudyPlan = data.studyPlan || createDefaultStudyPlan();
+      const rawPlan = data.studyPlan || {};
+      const plan: StudyPlan = {
+        ...createDefaultStudyPlan(DEFAULT_START_DATE),
+        ...rawPlan,
+        startDate: DEFAULT_START_DATE,
+        durationDays: TOTAL_STUDY_DAYS,
+        targetScores: { ...DEFAULT_TARGET_SCORES }
+      };
       const rawDays = data.days || {};
       const days: Record<number, DayData> = {};
-      const totalDays = plan.durationDays || TOTAL_STUDY_DAYS;
+      const totalDays = TOTAL_STUDY_DAYS;
       const dates = calculate21StudyDates(plan.startDate, totalDays);
 
       const calendarDay = getCalendarDayNumber(plan.startDate, getTodayIso(), totalDays);
@@ -767,6 +774,7 @@ export function subscribeToUserData(
           days[d] = {
             ...defaultDay,
             ...raw,
+            date: dates[d - 1],
             questionProgress: {
               ...defaultDay.questionProgress,
               ...(raw.questionProgress || {})

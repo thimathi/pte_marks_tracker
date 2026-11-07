@@ -230,38 +230,38 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
   const activeSgd = PTE_BRIDGE_SGD_TEMPLATES[selectedSgdType];
 
   return (
-    <div id="daily-drills" className="rounded-2xl bg-[#141c31] border border-slate-800 p-5 lg:p-6 space-y-6">
+    <div id="daily-drills" className="rounded-2xl bg-white border border-slate-200 p-5 lg:p-6 space-y-6 text-slate-900 shadow-sm">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Sparkles className="w-5 h-5 text-amber-400" />
-            <h2 className="text-lg font-bold text-[#edf2ff]">
+            <Sparkles className="w-5 h-5 text-amber-500" />
+            <h2 className="text-lg font-extrabold text-slate-900">
               6-Phase Daily Mandatory Drills
             </h2>
             {isAllTasksFulfilled ? (
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
                 All 6 Phases Completed ✓
               </span>
             ) : (
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
                 Day {dayNumber} · Collocations Target: {collocationsTarget}
               </span>
             )}
           </div>
-          <p className="text-xs text-[#a9b5d0] mt-1">
+          <p className="text-xs text-slate-600 mt-1">
             Exact drills structured across the 6 daily phases: Tongue Twisters 2x, Collocations Fwd & Bwd, and Essay & SGD templates.
           </p>
         </div>
 
         {/* Phase Filter Tabs */}
-        <div className="flex items-center gap-1 bg-[#0e1729] p-1 rounded-xl border border-slate-800 self-start sm:self-center overflow-x-auto max-w-full">
+        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 self-start sm:self-center overflow-x-auto max-w-full">
           <button
             onClick={() => setActivePhaseFilter('all')}
             className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
               activePhaseFilter === 'all'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-[#a9b5d0] hover:text-[#edf2ff] hover:bg-[#19243d]'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
             }`}
           >
             All Phases
@@ -272,8 +272,8 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
               onClick={() => setActivePhaseFilter(pNum)}
               className={`px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                 activePhaseFilter === pNum
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-[#a9b5d0] hover:text-[#edf2ff] hover:bg-[#19243d]'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
               }`}
             >
               Phase {pNum}

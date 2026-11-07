@@ -83,22 +83,22 @@ export const SettingsPage: React.FC = () => {
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-[#141c31] border border-slate-800 p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-white border border-slate-200 p-6 shadow-xs">
         <div>
           <div className="flex items-center gap-2">
-            <Settings className="w-6 h-6 text-blue-400" />
-            <h1 className="text-xl font-bold text-[#edf2ff]">
+            <Settings className="w-6 h-6 text-blue-600" />
+            <h1 className="text-xl font-bold text-slate-900">
               Application Settings & Data Management
             </h1>
           </div>
-          <p className="text-xs text-[#a9b5d0] mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Configure {totalDays}-day timeline, target benchmarks, and import previous localStorage tracker data.
           </p>
         </div>
 
         {savedNotice && (
-          <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/20 border border-emerald-500/30 px-3 py-1.5 rounded-xl flex items-center gap-1.5 animate-bounce">
-            <CheckCircle2 className="w-4 h-4" /> Settings Saved!
+          <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl flex items-center gap-1.5 animate-bounce">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Settings Saved!
           </span>
         )}
       </div>
@@ -106,32 +106,32 @@ export const SettingsPage: React.FC = () => {
       {/* Form: Start Date & Target Scores */}
       <form onSubmit={handleSaveSettings} className="space-y-6">
         {/* Start Date Configuration */}
-        <div className="rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-4">
-          <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-            <Calendar className="w-5 h-5 text-blue-400" />
-            <h3 className="text-base font-bold text-[#edf2ff]">{totalDays}-Day Study Start Date</h3>
+        <div className="rounded-2xl bg-white border border-slate-200 p-6 space-y-4 shadow-xs">
+          <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+            <Calendar className="w-5 h-5 text-blue-600" />
+            <h3 className="text-base font-bold text-slate-900">{totalDays}-Day Study Start Date</h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-[#edf2ff] mb-1">
+              <label className="block text-xs font-semibold text-slate-800 mb-1">
                 Study Journey Start Date (Day 1):
               </label>
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-[#edf2ff] focus:outline-none focus:border-blue-400"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500"
                 required
               />
-              <p className="text-[11px] text-[#a9b5d0] mt-1">
-                Default: 28 October 2026. Dates for Day 1 through Day {totalDays} update automatically.
+              <p className="text-[11px] text-slate-500 mt-1">
+                Timeline start: Day 1 through Day {totalDays} update automatically.
               </p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-[#0e1729] border border-slate-800 text-xs space-y-1">
-              <span className="font-semibold text-blue-300">Automatic Timeline Recalculation</span>
-              <p className="text-[#a9b5d0]">
+            <div className="p-3.5 rounded-xl bg-blue-50/60 border border-blue-200 text-xs space-y-1">
+              <span className="font-semibold text-blue-700">Automatic Timeline Recalculation</span>
+              <p className="text-slate-600">
                 Changing the start date recalculates the calendar timeline for all {totalDays} study days while preserving all existing scores and mock exam attempts.
               </p>
             </div>
@@ -139,82 +139,82 @@ export const SettingsPage: React.FC = () => {
         </div>
 
         {/* Target Scores Configuration */}
-        <div className="rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-4">
-          <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-            <Target className="w-5 h-5 text-purple-400" />
-            <h3 className="text-base font-bold text-[#edf2ff]">PTE Target Benchmarks (/ 90)</h3>
+        <div className="rounded-2xl bg-white border border-slate-200 p-6 space-y-4 shadow-xs">
+          <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+            <Target className="w-5 h-5 text-purple-600" />
+            <h3 className="text-base font-bold text-slate-900">PTE Target Benchmarks (/ 90)</h3>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             <div>
-              <label className="block text-[11px] font-semibold text-[#edf2ff] mb-1">Overall Target:</label>
+              <label className="block text-[11px] font-semibold text-slate-700 mb-1">Overall Target:</label>
               <input
                 type="number"
                 min="50"
                 max="90"
                 value={targetScores.overall}
                 onChange={(e) => setTargetScores({ ...targetScores, overall: Number(e.target.value) })}
-                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-bold text-center text-slate-900 focus:outline-none focus:border-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-[#a9b5d0] mb-1">Speaking:</label>
+              <label className="block text-[11px] font-semibold text-slate-500 mb-1">Speaking:</label>
               <input
                 type="number"
                 min="50"
                 max="90"
                 value={targetScores.speaking}
                 onChange={(e) => setTargetScores({ ...targetScores, speaking: Number(e.target.value) })}
-                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-bold text-center text-slate-900 focus:outline-none focus:border-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-[#a9b5d0] mb-1">Writing:</label>
+              <label className="block text-[11px] font-semibold text-slate-500 mb-1">Writing:</label>
               <input
                 type="number"
                 min="50"
                 max="90"
                 value={targetScores.writing}
                 onChange={(e) => setTargetScores({ ...targetScores, writing: Number(e.target.value) })}
-                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-bold text-center text-slate-900 focus:outline-none focus:border-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-[#a9b5d0] mb-1">Reading:</label>
+              <label className="block text-[11px] font-semibold text-slate-500 mb-1">Reading:</label>
               <input
                 type="number"
                 min="50"
                 max="90"
                 value={targetScores.reading}
                 onChange={(e) => setTargetScores({ ...targetScores, reading: Number(e.target.value) })}
-                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-bold text-center text-slate-900 focus:outline-none focus:border-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-[#a9b5d0] mb-1">Listening:</label>
+              <label className="block text-[11px] font-semibold text-slate-500 mb-1">Listening:</label>
               <input
                 type="number"
                 min="50"
                 max="90"
                 value={targetScores.listening}
                 onChange={(e) => setTargetScores({ ...targetScores, listening: Number(e.target.value) })}
-                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-bold text-center text-slate-900 focus:outline-none focus:border-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-[#a9b5d0] mb-1">Mock Exam:</label>
+              <label className="block text-[11px] font-semibold text-slate-500 mb-1">Mock Exam:</label>
               <input
                 type="number"
                 min="50"
                 max="90"
                 value={targetScores.mockExam}
                 onChange={(e) => setTargetScores({ ...targetScores, mockExam: Number(e.target.value) })}
-                className="w-full bg-[#0e1729] border border-slate-800 rounded-xl p-2 text-xs font-bold text-center text-white focus:outline-none focus:border-blue-400"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-bold text-center text-slate-900 focus:outline-none focus:border-blue-500"
               />
             </div>
           </div>
@@ -222,7 +222,7 @@ export const SettingsPage: React.FC = () => {
           <div className="pt-2 flex justify-end">
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-sm cursor-pointer transition-colors"
+              className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white shadow-xs cursor-pointer transition-colors"
             >
               Save Configuration
             </button>
@@ -231,25 +231,25 @@ export const SettingsPage: React.FC = () => {
       </form>
 
       {/* Legacy Data Migration Section */}
-      <div className="rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="rounded-2xl bg-white border border-slate-200 p-6 space-y-4 shadow-xs">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2">
-            <Database className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-base font-bold text-[#edf2ff]">
+            <Database className="w-5 h-5 text-emerald-600" />
+            <h3 className="text-base font-bold text-slate-900">
               Legacy HTML LocalStorage Data Importer
             </h3>
           </div>
-          <span className="text-xs text-[#a9b5d0]">Safe Migration Tool</span>
+          <span className="text-xs text-slate-500">Safe Migration Tool</span>
         </div>
 
-        <p className="text-xs text-[#a9b5d0] leading-relaxed">
-          If you used the previous single-file HTML tracker (<code className="text-blue-300">pte_academic_75plus_question_logger</code>), this tool scans your browser's local storage for existing practice scores and gate checklists, validates them, and migrates them safely to your Firebase account.
+        <p className="text-xs text-slate-600 leading-relaxed">
+          If you used the previous single-file HTML tracker (<code className="text-blue-700 bg-blue-50 px-1 py-0.5 rounded">pte_academic_75plus_question_logger</code>), this tool scans your browser's local storage for existing practice scores and gate checklists, validates them, and migrates them safely to your Firebase account.
         </p>
 
         <div className="flex items-center gap-3">
           <button
             onClick={handleScanLegacy}
-            className="px-4 py-2 rounded-xl bg-[#243553] hover:bg-[#30476c] text-xs font-semibold text-[#edf2ff] border border-[#3a4b70] flex items-center gap-2 cursor-pointer transition-colors"
+            className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-800 border border-slate-200 flex items-center gap-2 cursor-pointer transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             <span>Scan Browser Storage for Legacy Data</span>
@@ -257,24 +257,24 @@ export const SettingsPage: React.FC = () => {
         </div>
 
         {legacyScan && (
-          <div className="p-4 rounded-xl bg-[#0e1729] border border-slate-800 space-y-3 text-xs">
-            <h4 className="font-bold text-blue-300">Scan Results:</h4>
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3 text-xs">
+            <h4 className="font-bold text-blue-700">Scan Results:</h4>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <div className="p-2.5 rounded-lg bg-[#141c31]">
-                <span className="text-[#a9b5d0] block text-[10px]">Found Days:</span>
-                <span className="font-bold text-white text-sm">{legacyScan.foundDaysCount}</span>
+              <div className="p-2.5 rounded-lg bg-white border border-slate-200">
+                <span className="text-slate-500 block text-[10px]">Found Days:</span>
+                <span className="font-bold text-slate-900 text-sm">{legacyScan.foundDaysCount}</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#141c31]">
-                <span className="text-[#a9b5d0] block text-[10px]">Scored Questions:</span>
-                <span className="font-bold text-emerald-400 text-sm">{legacyScan.totalScoresCount}</span>
+              <div className="p-2.5 rounded-lg bg-white border border-slate-200">
+                <span className="text-slate-500 block text-[10px]">Scored Questions:</span>
+                <span className="font-bold text-emerald-600 text-sm">{legacyScan.totalScoresCount}</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#141c31]">
-                <span className="text-[#a9b5d0] block text-[10px]">Mock Exams:</span>
-                <span className="font-bold text-purple-400 text-sm">{legacyScan.hasMockExams ? 'Yes' : 'None'}</span>
+              <div className="p-2.5 rounded-lg bg-white border border-slate-200">
+                <span className="text-slate-500 block text-[10px]">Mock Exams:</span>
+                <span className="font-bold text-purple-600 text-sm">{legacyScan.hasMockExams ? 'Yes' : 'None'}</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-[#141c31]">
-                <span className="text-[#a9b5d0] block text-[10px]">Dates:</span>
-                <span className="font-semibold text-white truncate block">{legacyScan.foundDates.join(', ') || 'None'}</span>
+              <div className="p-2.5 rounded-lg bg-white border border-slate-200">
+                <span className="text-slate-500 block text-[10px]">Dates:</span>
+                <span className="font-semibold text-slate-900 truncate block">{legacyScan.foundDates.join(', ') || 'None'}</span>
               </div>
             </div>
 
@@ -283,20 +283,20 @@ export const SettingsPage: React.FC = () => {
                 <button
                   onClick={handleMigrateLegacy}
                   disabled={migrating}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white shadow-sm flex items-center gap-2 cursor-pointer transition-colors disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white shadow-xs flex items-center gap-2 cursor-pointer transition-colors disabled:opacity-50"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>{migrating ? 'Migrating...' : 'Migrate Found Records into Firebase'}</span>
                 </button>
               </div>
             ) : (
-              <p className="text-[11px] text-[#a9b5d0]">
-                No legacy keys (<code className="text-blue-300">pte_daily_tracker_v3_*</code>) were detected in this browser's local storage.
+              <p className="text-[11px] text-slate-500">
+                No legacy keys (<code className="text-blue-600">pte_daily_tracker_v3_*</code>) were detected in this browser's local storage.
               </p>
             )}
 
             {migrationStatus && (
-              <div className="p-3 rounded-lg bg-[#141c31] border border-blue-500/30 text-xs font-medium text-white">
+              <div className="p-3 rounded-lg bg-white border border-blue-300 text-xs font-medium text-slate-900">
                 {migrationStatus}
               </div>
             )}
@@ -305,25 +305,25 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {/* Account Details & Sign Out */}
-      <div className="rounded-2xl bg-[#141c31] border border-slate-800 p-6 space-y-4">
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-          <User className="w-5 h-5 text-blue-400" />
-          <h3 className="text-base font-bold text-[#edf2ff]">User Account & Security</h3>
+      <div className="rounded-2xl bg-white border border-slate-200 p-6 space-y-4 shadow-xs">
+        <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+          <User className="w-5 h-5 text-blue-600" />
+          <h3 className="text-base font-bold text-slate-900">User Account & Security</h3>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
           <div>
-            <p className="text-[#a9b5d0]">
-              Signed in as: <b className="text-white">{user?.email}</b>
+            <p className="text-slate-600">
+              Signed in as: <b className="text-slate-900">{user?.email}</b>
             </p>
-            <p className="text-[11px] text-[#a9b5d0] mt-0.5">
-              Firebase UID: <span className="font-mono text-blue-300">{user?.uid}</span>
+            <p className="text-[11px] text-slate-500 mt-0.5">
+              Firebase UID: <span className="font-mono text-blue-600">{user?.uid}</span>
             </p>
           </div>
 
           <button
             onClick={logout}
-            className="px-4 py-2 rounded-xl bg-red-600/20 hover:bg-red-600/30 text-red-300 border border-red-500/40 text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors self-start sm:self-auto"
+            className="px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors self-start sm:self-auto"
           >
             <LogOut className="w-4 h-4" />
             <span>Sign Out</span>

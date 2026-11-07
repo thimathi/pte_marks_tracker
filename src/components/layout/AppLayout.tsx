@@ -7,7 +7,7 @@ export const AppLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#0b1020] text-[#edf2ff] flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
       <Navbar
         onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
         isSidebarOpen={sidebarOpen}

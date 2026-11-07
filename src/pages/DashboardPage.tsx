@@ -167,57 +167,57 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Protocol Header */}
-      <div className="rounded-3xl bg-slate-900 border border-slate-800 p-6 lg:p-7 relative overflow-hidden">
+      <div className="rounded-3xl bg-white border border-slate-200/90 p-6 lg:p-7 shadow-sm text-slate-900 relative overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
           <div>
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
                 14–15h Daily Protocol
               </span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">
                 Target: S:{studyPlan.targetScores?.speaking || DEFAULT_TARGET_SCORES.speaking} · W:{studyPlan.targetScores?.writing || DEFAULT_TARGET_SCORES.writing}
               </span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                 {totalDays}-Day Protocol (Nov 04 – Dec 10)
               </span>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-slate-500 font-medium">
                 Exam Day: {formatDateFriendly(FINAL_TARGET_DATE)}
               </span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
               <span>PTE Master Command Center ({totalDays} Days · Overall {studyPlan.targetScores?.overall || DEFAULT_TARGET_SCORES.overall}+)</span>
               {isRevDay && (
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 animate-pulse">
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800 border border-purple-300 animate-pulse">
                   🌟 Deep Review Day
                 </span>
               )}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
+            <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl">
               15-hour high-yield daily curriculum · 1 Mock + 1 Section Test + 230 targeted practice questions per day · Tailored for Speaking {studyPlan.targetScores?.speaking || DEFAULT_TARGET_SCORES.speaking} &amp; Writing {studyPlan.targetScores?.writing || DEFAULT_TARGET_SCORES.writing} summit.
             </p>
           </div>
 
           {/* Active Day Switcher & Streak */}
           <div className="flex items-center gap-3 self-start lg:self-center shrink-0">
-            <div className="bg-slate-950 border border-slate-800 rounded-2xl p-2.5 flex items-center gap-3">
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-2.5 flex items-center gap-3 shadow-2xs">
               <div>
-                <span className="text-[10px] text-slate-400 block font-semibold uppercase">Viewing Day:</span>
+                <span className="text-[10px] text-slate-500 block font-bold uppercase">Viewing Day:</span>
                 <select
                   value={currentDay}
                   onChange={(e) => selectDay(Number(e.target.value))}
-                  className="bg-slate-900 text-sm font-bold text-blue-400 rounded-lg px-2.5 py-1 border border-slate-700 focus:outline-none cursor-pointer"
+                  className="bg-white text-sm font-bold text-blue-700 rounded-lg px-2.5 py-1 border border-slate-300 focus:outline-none cursor-pointer shadow-2xs"
                 >
                   {Array.from({ length: totalDays }, (_, i) => i + 1).map((d) => (
                     <option key={d} value={d}>
-                      Study Day {d} {isReviewDay(d) ? '🔍 (Deep Review Day)' : `(Target: ${DAY_TARGET_SCORES[d - 1] ?? 79}+)`}
+                      Study Day {d} {isReviewDay(d) ? '🔍 (Deep Review Day)' : `(Target: ${DAY_TARGET_SCORES[d - 1] ?? 78}+)`}
                     </option>
                   ))}
                 </select>
               </div>
-              <div className="border-l border-slate-800 pl-3">
-                <span className="text-[10px] text-slate-400 block">Streak</span>
-                <span className="text-sm font-extrabold text-amber-300 flex items-center gap-1">
-                  <Flame className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              <div className="border-l border-slate-200 pl-3">
+                <span className="text-[10px] text-slate-500 block font-semibold">Streak</span>
+                <span className="text-sm font-extrabold text-amber-700 flex items-center gap-1">
+                  <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
                   {streak} Days
                 </span>
               </div>
@@ -226,41 +226,41 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Overall 60 Mock Target Tracker Bar */}
-        <div className="mt-5 pt-4 border-t border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="mt-5 pt-4 border-t border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-white">
+              <span className="text-xs font-bold text-slate-900">
                 60-Mock Exam Mission:
               </span>
-              <span className="text-xs font-mono font-bold text-blue-400">
+              <span className="text-xs font-mono font-bold text-blue-700">
                 {totalMocksCompletedAllDays} / {TOTAL_MOCK_TARGET} Tests Completed
               </span>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-slate-500">
                 ({totalQuestionsDoneAllDays.toLocaleString()} / {TOTAL_MOCK_EXAM_QUESTIONS.toLocaleString()} Mock Questions Done)
               </span>
             </div>
-            <div className="w-full md:w-96 bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
+            <div className="w-full md:w-96 bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
               <div
-                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${overallMockPercent}%` }}
               />
             </div>
           </div>
 
           <div className="flex items-center gap-2 text-xs flex-wrap">
-            <span className="px-2 py-0.5 rounded bg-red-500/10 text-red-300 border border-red-500/20 font-mono">
+            <span className="px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 font-mono font-bold">
               Speaking: {studyPlan.targetScores?.speaking || DEFAULT_TARGET_SCORES.speaking} (Peak)
             </span>
-            <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-mono">
+            <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono font-bold">
               Writing: {studyPlan.targetScores?.writing || DEFAULT_TARGET_SCORES.writing} (Elite)
             </span>
-            <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono">
+            <span className="px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 font-mono font-bold">
               Reading: {studyPlan.targetScores?.reading || DEFAULT_TARGET_SCORES.reading}
             </span>
-            <span className="px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 font-mono">
+            <span className="px-2 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200 font-mono font-bold">
               Listening: {studyPlan.targetScores?.listening || DEFAULT_TARGET_SCORES.listening}
             </span>
-            <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20 font-mono">
+            <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-mono font-bold">
               Overall: {studyPlan.targetScores?.overall || DEFAULT_TARGET_SCORES.overall}+
             </span>
           </div>
@@ -437,30 +437,30 @@ export const DashboardPage: React.FC = () => {
       {!isRevDay && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* KPI 1: Daily Mock Exams */}
-          <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
+          <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5 space-y-4 flex flex-col justify-between text-slate-900">
             <div>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <GraduationCap className="w-5 h-5 text-blue-400" />
-                  <h2 className="text-sm font-bold text-white">Day {currentDay} Mock Exams</h2>
+                  <GraduationCap className="w-5 h-5 text-blue-600" />
+                  <h2 className="text-sm font-bold text-slate-900">Day {currentDay} Mock Exams</h2>
                 </div>
                 <span className={`text-xs font-bold px-2 py-0.5 rounded ${
                   completedMocksCount === mockKeys.length && mockKeys.length > 0
-                    ? 'bg-emerald-500/20 text-emerald-300'
-                    : 'bg-blue-500/20 text-blue-300'
+                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    : 'bg-blue-100 text-blue-800 border border-blue-300'
                 }`}>
                   {completedMocksCount} / {mockKeys.length} Done
                 </span>
               </div>
 
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 {mockKeys.length} Timed Simulations ({mockKeys.length * 60} Qs today). Target: <b>{currentDayTarget}+</b>
               </p>
 
               {/* Progress Bar */}
-              <div className="w-full bg-slate-950 rounded-full h-2 mt-3 overflow-hidden">
+              <div className="w-full bg-slate-100 rounded-full h-2 mt-3 overflow-hidden border border-slate-200">
                 <div
-                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${mockPercent}%` }}
                 />
               </div>
@@ -474,26 +474,26 @@ export const DashboardPage: React.FC = () => {
                   to="/mock-exams"
                   className={`p-2 rounded-xl border text-left transition-colors ${
                     m.isCompleted
-                      ? 'bg-emerald-500/10 border-emerald-500/30 hover:border-emerald-500/50'
-                      : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                      ? 'bg-emerald-50 border-emerald-300 hover:border-emerald-400'
+                      : 'bg-slate-50 border-slate-200 hover:border-slate-300'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-[10px] font-bold text-slate-300">Mock #{m.examNum}</span>
+                    <span className="text-[10px] font-bold text-slate-700">Mock #{m.examNum}</span>
                     {m.isCompleted ? (
-                      <span className="text-[10px] font-bold text-emerald-400">{m.score}/90</span>
+                      <span className="text-[10px] font-bold text-emerald-700">{m.score}/90</span>
                     ) : (
-                      <span className="text-[9px] text-amber-400">Pending</span>
+                      <span className="text-[9px] text-amber-700 font-semibold">Pending</span>
                     )}
                   </div>
-                  <span className="text-[10px] text-slate-400 block font-mono truncate">{m.timeSlot}</span>
+                  <span className="text-[10px] text-slate-500 block font-mono truncate">{m.timeSlot}</span>
                 </Link>
               ))}
             </div>
 
             <Link
               to="/mock-exams"
-              className="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
+              className="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
             >
               <span>Open Mock Exam Center ({mockKeys.length} Tests)</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -501,30 +501,30 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           {/* KPI 2: Read Aloud & Deep Review Center */}
-          <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
+          <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5 space-y-4 flex flex-col justify-between text-slate-900">
             <div>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <Mic className="w-5 h-5 text-indigo-400" />
-                  <h2 className="text-sm font-bold text-white">RA & Deep Error Reviews</h2>
+                  <Mic className="w-5 h-5 text-indigo-600" />
+                  <h2 className="text-sm font-bold text-slate-900">RA & Deep Error Reviews</h2>
                 </div>
                 <span className={`text-xs font-bold px-2 py-0.5 rounded ${
                   completedReviewsCount === mockKeys.length && mockKeys.length > 0
-                    ? 'bg-emerald-500/20 text-emerald-300'
-                    : 'bg-indigo-500/20 text-indigo-300'
+                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    : 'bg-indigo-100 text-indigo-800 border border-indigo-300'
                 }`}>
                   {completedReviewsCount} / {mockKeys.length} Reviewed
                 </span>
               </div>
 
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 Read Aloud (RA) scores with comma separation, deficiencies (අඩුපාඩු), and corrective actions.
               </p>
 
               {/* Progress Bar */}
-              <div className="w-full bg-slate-950 rounded-full h-2 mt-3 overflow-hidden">
+              <div className="w-full bg-slate-100 rounded-full h-2 mt-3 overflow-hidden border border-slate-200">
                 <div
-                  className="bg-indigo-500 h-2 rounded-full transition-all duration-300"
+                  className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${reviewPercent}%` }}
                 />
               </div>
@@ -538,25 +538,25 @@ export const DashboardPage: React.FC = () => {
                   to="/mock-exams"
                   className={`p-2 rounded-xl border text-left transition-colors ${
                     m.reviewCompleted
-                      ? 'bg-emerald-500/10 border-emerald-500/30'
+                      ? 'bg-emerald-50 border-emerald-300'
                       : m.isCompleted
-                      ? 'bg-amber-500/10 border-amber-500/30 animate-pulse'
-                      : 'bg-slate-950 border-slate-800'
+                      ? 'bg-amber-50 border-amber-300 animate-pulse'
+                      : 'bg-slate-50 border-slate-200'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-[10px] font-bold text-slate-300">Rev #{idx + 1}</span>
+                    <span className="text-[10px] font-bold text-slate-700">Rev #{idx + 1}</span>
                     <span className={`text-[9px] font-bold ${
                       m.reviewCompleted
-                        ? 'text-emerald-400'
+                        ? 'text-emerald-700'
                         : m.isCompleted
-                        ? 'text-amber-400'
+                        ? 'text-amber-700'
                         : 'text-slate-500'
                     }`}>
                       {m.reviewCompleted ? '✓ Done' : m.isCompleted ? 'Pending!' : 'Waiting'}
                     </span>
                   </div>
-                  <span className="text-[10px] text-slate-400 block truncate">
+                  <span className="text-[10px] text-slate-500 block truncate">
                     {m.raAverage ? `RA: ${m.raAverage}/90` : m.reviewCompleted ? `${m.reviewMinutes}m logged` : 'Review required'}
                   </span>
                 </Link>
@@ -565,7 +565,7 @@ export const DashboardPage: React.FC = () => {
 
             <Link
               to="/review"
-              className="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition-colors flex items-center justify-center gap-1.5"
+              className="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-800 border border-slate-300 transition-colors flex items-center justify-center gap-1.5"
             >
               <span>Read Aloud Review Center</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -573,45 +573,45 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           {/* KPI 3: Daily Section Test */}
-          <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 space-y-4 flex flex-col justify-between">
+          <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5 space-y-4 flex flex-col justify-between text-slate-900">
             <div>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <Layers className="w-5 h-5 text-purple-400" />
-                  <h2 className="text-sm font-bold text-white">Daily Section Test</h2>
+                  <Layers className="w-5 h-5 text-purple-600" />
+                  <h2 className="text-sm font-bold text-slate-900">Daily Section Test</h2>
                 </div>
                 <span className={`text-xs font-bold px-2 py-0.5 rounded ${
                   sectionTestRecord?.isCompleted
-                    ? 'bg-emerald-500/20 text-emerald-300'
-                    : 'bg-purple-500/20 text-purple-300'
+                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    : 'bg-purple-100 text-purple-800 border border-purple-300'
                 }`}>
                   {sectionTestRecord?.isCompleted ? 'Completed ✓' : sectionTestDef ? 'Scheduled' : 'Rest / Focus on Mocks'}
                 </span>
               </div>
 
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 {sectionTestDef
                   ? `${sectionTestDef.title} (${sectionTestDef.targetQuestions} Qs · ${sectionTestDef.estMinutes})`
                   : 'Focus on your planned Mock Exams & Read Aloud reviews.'}
               </p>
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400">Assigned Test:</span>
-                <span className="font-semibold text-white truncate">
+                <span className="text-slate-500">Assigned Test:</span>
+                <span className="font-semibold text-slate-800 truncate">
                   {sectionTestDef?.title || 'Mock Focus Day'}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400">Time Slot:</span>
-                <span className="font-mono text-amber-300">
+                <span className="text-slate-500">Time Slot:</span>
+                <span className="font-mono text-amber-700 font-bold">
                   {sectionTestDef?.recommendedSlot || 'Integrated with Mocks'}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400">Score:</span>
-                <span className="font-bold text-emerald-400">
+                <span className="text-slate-500">Score:</span>
+                <span className="font-bold text-emerald-700">
                   {sectionTestRecord?.score !== null && sectionTestRecord?.score !== undefined
                     ? `${sectionTestRecord.score} / 90`
                     : 'Pending'}
@@ -621,7 +621,7 @@ export const DashboardPage: React.FC = () => {
 
             <Link
               to="/mock-exams"
-              className="w-full py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5"
+              className="w-full py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
             >
               <span>Log Section Test</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -631,15 +631,15 @@ export const DashboardPage: React.FC = () => {
       )}
 
       {/* DAILY TIMETABLE (Review Schedule or Mock Schedule) */}
-      <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-5 sm:p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+      <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5 sm:p-6 space-y-4 text-slate-900">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
           <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5 text-blue-400" />
-            <h2 className="text-base font-bold text-white">
+            <Clock className="w-5 h-5 text-blue-600" />
+            <h2 className="text-base font-bold text-slate-900">
               {isRevDay ? 'Daily Deep Review Timetable (8 Hours Dedicated)' : 'Daily Mock Timetable'}
             </h2>
           </div>
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-slate-500">
             {isRevDay ? 'PTE Bridge Error Correction Protocol' : 'PTE Bridge Structured Schedule'}
           </span>
         </div>
@@ -647,21 +647,21 @@ export const DashboardPage: React.FC = () => {
         {isRevDay ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {DAILY_REVIEW_SCHEDULE.map((s) => (
-              <div key={s.slotIndex} className="p-3.5 rounded-xl bg-slate-950 border border-purple-500/30 space-y-2">
+              <div key={s.slotIndex} className="p-3.5 rounded-xl bg-slate-50 border border-purple-200 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-purple-300">Block {s.slotIndex + 1}</span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20">
+                  <span className="text-xs font-bold text-purple-800">Block {s.slotIndex + 1}</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-100 text-purple-800 border border-purple-200">
                     {s.timeSlot}
                   </span>
                 </div>
 
-                <div className="p-2 rounded-lg bg-slate-900 border border-slate-800/80">
-                  <p className="text-xs font-semibold text-slate-200">
+                <div className="p-2 rounded-lg bg-white border border-slate-200">
+                  <p className="text-xs font-semibold text-slate-800">
                     {s.sessionName}
                   </p>
                 </div>
 
-                <p className="text-[11px] text-slate-400 leading-snug">
+                <p className="text-[11px] text-slate-600 leading-snug">
                   {s.focus}
                 </p>
               </div>
@@ -672,26 +672,26 @@ export const DashboardPage: React.FC = () => {
             {DAILY_MOCK_SCHEDULE.slice(0, mockKeys.length).map((s, idx) => {
               const mock = todayMocks[idx];
               return (
-                <div key={s.mockIndex} className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <div key={s.mockIndex} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-white">Session {idx + 1}</span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                    <span className="text-xs font-bold text-slate-900">Session {idx + 1}</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200">
                       {s.timeSlot}
                     </span>
                   </div>
 
-                  <div className="p-2 rounded-lg bg-slate-900 border border-slate-800/80">
+                  <div className="p-2 rounded-lg bg-white border border-slate-200">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-slate-200 truncate">{s.sessionName}</span>
-                      <span className={mock?.isCompleted ? 'text-emerald-400 font-bold' : 'text-amber-400'}>
+                      <span className="font-semibold text-slate-800 truncate">{s.sessionName}</span>
+                      <span className={mock?.isCompleted ? 'text-emerald-700 font-bold' : 'text-amber-700 font-semibold'}>
                         {mock?.isCompleted ? `✓ ${mock.score}/90` : 'Pending'}
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-900">
+                  <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-200">
                     <span>Mandatory Review:</span>
-                    <span className={mock?.reviewCompleted ? 'text-emerald-400 font-bold' : mock?.isCompleted ? 'text-amber-400 font-bold' : 'text-slate-500'}>
+                    <span className={mock?.reviewCompleted ? 'text-emerald-700 font-bold' : mock?.isCompleted ? 'text-amber-700 font-bold' : 'text-slate-400'}>
                       {mock?.reviewCompleted ? '✓ Completed' : mock?.isCompleted ? '⚠️ Review Required' : 'Waiting on Mock'}
                     </span>
                   </div>

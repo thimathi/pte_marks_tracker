@@ -157,9 +157,9 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Flexible day selector: user can jump between days freely to catch up or skip
   const selectDay = useCallback((dayNumber: number) => {
-    if (dayNumber < 1 || dayNumber > 25) return;
+    if (dayNumber < 1 || dayNumber > (studyPlan.durationDays || TOTAL_STUDY_DAYS)) return;
     setCurrentDay(dayNumber);
-  }, []);
+  }, [studyPlan.durationDays]);
 
   // Update a question score
   const updateScore = useCallback(
@@ -470,7 +470,7 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const result = await completeDayAndUnlockNext(user.uid, dayNumber);
       if (result.success) {
         setSyncStatus('saved');
-        if (dayNumber < 21) {
+        if (dayNumber < (studyPlan.durationDays || TOTAL_STUDY_DAYS)) {
           setCurrentDay(dayNumber + 1);
         }
       } else {

@@ -464,11 +464,11 @@ const MockExamCard: React.FC<MockCardProps> = ({
   );
 
   return (
-    <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-4 space-y-3.5 flex flex-col justify-between transition-colors hover:border-slate-700">
+    <div className="rounded-2xl bg-white border border-slate-200 p-4 space-y-3.5 flex flex-col justify-between transition-colors hover:border-slate-300 shadow-2xs text-slate-900">
       {/* Top Header */}
-      <div className="space-y-2 pb-2 border-b border-slate-800">
+      <div className="space-y-2 pb-2 border-b border-slate-200">
         <div className="flex items-center justify-between gap-1.5 flex-wrap">
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
             Pass {examDetails.roundNumber} · Attempt {examDetails.attemptOfPaper}/4
           </span>
           <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${examDetails.roundBadgeColor}`}>
@@ -477,28 +477,28 @@ const MockExamCard: React.FC<MockCardProps> = ({
         </div>
 
         {schedule && (
-          <div className="px-2 py-1 rounded-lg bg-slate-950 border border-slate-800/80 text-[11px] text-amber-300 flex items-center gap-1.5 font-medium">
-            <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+          <div className="px-2 py-1 rounded-lg bg-slate-50 border border-slate-200 text-[11px] text-amber-800 flex items-center gap-1.5 font-bold">
+            <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
             <span className="truncate">{schedule.timeSlot}</span>
           </div>
         )}
 
         <div>
-          <h3 className="text-sm font-bold text-white leading-snug line-clamp-2">
+          <h3 className="text-sm font-bold text-slate-900 leading-snug line-clamp-2">
             Mock #{examNumber}: {examDetails.testName}
           </h3>
-          <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+          <p className="text-[11px] text-slate-500 mt-0.5 truncate">
             {schedule?.sessionName || examDetails.roundTitle}
           </p>
         </div>
 
         {effectivelyLocked && (
-          <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-300 flex items-center justify-between gap-1.5">
+          <div className="p-2 rounded-lg bg-amber-50 border border-amber-200 text-[11px] text-amber-800 flex items-center justify-between gap-1.5">
             <span>🔒 Locked: Complete Mock #{examNumber - 1} & Review first.</span>
             <button
               type="button"
               onClick={() => setBypassedLock(true)}
-              className="text-[10px] px-2 py-0.5 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-200 border border-blue-500/30 font-semibold shrink-0 cursor-pointer"
+              className="text-[10px] px-2 py-0.5 rounded bg-blue-100 hover:bg-blue-200 text-blue-800 border border-blue-300 font-semibold shrink-0 cursor-pointer"
             >
               Catch Up / Unlock
             </button>
@@ -509,10 +509,10 @@ const MockExamCard: React.FC<MockCardProps> = ({
           <span
             className={`text-[10px] font-semibold px-2 py-0.5 rounded border ${
               mock?.isCompleted && rev?.isCompleted
-                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
                 : mock?.isCompleted
-                ? 'bg-amber-500/15 text-amber-300 border-amber-500/30 animate-pulse'
-                : 'bg-slate-800 text-slate-400 border-slate-700'
+                ? 'bg-amber-100 text-amber-800 border-amber-300 animate-pulse'
+                : 'bg-slate-100 text-slate-600 border-slate-200'
             }`}
           >
             {mock?.isCompleted && rev?.isCompleted
@@ -559,25 +559,25 @@ const MockExamCard: React.FC<MockCardProps> = ({
       </div>
 
       {/* Primary Score Input: Overall Score / 90 */}
-      <div className="bg-slate-950/80 rounded-xl p-2.5 border border-slate-800">
+      <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-200">
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-            <Award className="w-3.5 h-3.5 text-blue-400" />
+          <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+            <Award className="w-3.5 h-3.5 text-blue-600" />
             Overall Score / 90:
           </label>
           <span
-            className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-              Number(overall) >= 79
-                ? 'bg-emerald-500/20 text-emerald-300'
+            className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+              Number(overall) >= 78
+                ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
                 : Number(overall) >= 65
-                ? 'bg-blue-500/20 text-blue-300'
+                ? 'bg-blue-100 text-blue-800 border-blue-300'
                 : Number(overall) > 0
-                ? 'bg-amber-500/20 text-amber-300'
-                : 'text-slate-500'
+                ? 'bg-amber-100 text-amber-800 border-amber-300'
+                : 'text-slate-400 border-transparent'
             }`}
           >
-            {Number(overall) >= 79
-              ? 'Superior (79+)'
+            {Number(overall) >= 78
+              ? 'Target Met (78+)'
               : Number(overall) >= 65
               ? 'Proficient (65+)'
               : Number(overall) > 0
@@ -596,21 +596,21 @@ const MockExamCard: React.FC<MockCardProps> = ({
             setSaveStatus('dirty');
           }}
           onBlur={() => saveScores()}
-          className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded-lg py-2 px-3 text-lg font-bold text-white text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500/30"
+          className="w-full bg-white border border-slate-300 focus:border-blue-500 rounded-lg py-2 px-3 text-lg font-extrabold text-slate-900 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500/30"
         />
       </div>
 
       {/* 4 Communicative Skills (2x2 Grid) */}
       <div className="space-y-1">
-        <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">
+        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
           Section Scores (/90)
         </span>
         <div className="grid grid-cols-2 gap-2">
           {/* Speaking */}
-          <div className="bg-slate-950/60 rounded-lg p-2 border border-slate-800">
+          <div className="bg-slate-50 rounded-lg p-2 border border-slate-200">
             <div className="flex items-center justify-between mb-1">
-              <label className="text-[11px] font-semibold text-blue-300">Speaking</label>
-              <span className="text-[9px] text-slate-500">/90</span>
+              <label className="text-[11px] font-bold text-blue-700">Speaking</label>
+              <span className="text-[9px] text-slate-400">/90</span>
             </div>
             <input
               type="number"
@@ -623,15 +623,15 @@ const MockExamCard: React.FC<MockCardProps> = ({
                 setSaveStatus('dirty');
               }}
               onBlur={() => saveScores()}
-              className="w-full bg-slate-900 border border-slate-700/80 focus:border-blue-400 rounded py-1 px-2 text-xs font-bold text-white text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
+              className="w-full bg-white border border-slate-300 focus:border-blue-500 rounded py-1 px-2 text-xs font-bold text-slate-900 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
             />
           </div>
 
           {/* Writing */}
-          <div className="bg-slate-950/60 rounded-lg p-2 border border-slate-800">
+          <div className="bg-slate-50 rounded-lg p-2 border border-slate-200">
             <div className="flex items-center justify-between mb-1">
-              <label className="text-[11px] font-semibold text-purple-300">Writing</label>
-              <span className="text-[9px] text-slate-500">/90</span>
+              <label className="text-[11px] font-bold text-purple-700">Writing</label>
+              <span className="text-[9px] text-slate-400">/90</span>
             </div>
             <input
               type="number"
@@ -644,15 +644,15 @@ const MockExamCard: React.FC<MockCardProps> = ({
                 setSaveStatus('dirty');
               }}
               onBlur={() => saveScores()}
-              className="w-full bg-slate-900 border border-slate-700/80 focus:border-purple-400 rounded py-1 px-2 text-xs font-bold text-white text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
+              className="w-full bg-white border border-slate-300 focus:border-purple-500 rounded py-1 px-2 text-xs font-bold text-slate-900 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
             />
           </div>
 
           {/* Reading */}
-          <div className="bg-slate-950/60 rounded-lg p-2 border border-slate-800">
+          <div className="bg-slate-50 rounded-lg p-2 border border-slate-200">
             <div className="flex items-center justify-between mb-1">
-              <label className="text-[11px] font-semibold text-emerald-300">Reading</label>
-              <span className="text-[9px] text-slate-500">/90</span>
+              <label className="text-[11px] font-bold text-emerald-700">Reading</label>
+              <span className="text-[9px] text-slate-400">/90</span>
             </div>
             <input
               type="number"
@@ -665,15 +665,15 @@ const MockExamCard: React.FC<MockCardProps> = ({
                 setSaveStatus('dirty');
               }}
               onBlur={() => saveScores()}
-              className="w-full bg-slate-900 border border-slate-700/80 focus:border-emerald-400 rounded py-1 px-2 text-xs font-bold text-white text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
+              className="w-full bg-white border border-slate-300 focus:border-emerald-500 rounded py-1 px-2 text-xs font-bold text-slate-900 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
             />
           </div>
 
           {/* Listening */}
-          <div className="bg-slate-950/60 rounded-lg p-2 border border-slate-800">
+          <div className="bg-slate-50 rounded-lg p-2 border border-slate-200">
             <div className="flex items-center justify-between mb-1">
-              <label className="text-[11px] font-semibold text-amber-300">Listening</label>
-              <span className="text-[9px] text-slate-500">/90</span>
+              <label className="text-[11px] font-bold text-amber-800">Listening</label>
+              <span className="text-[9px] text-slate-400">/90</span>
             </div>
             <input
               type="number"
@@ -686,7 +686,7 @@ const MockExamCard: React.FC<MockCardProps> = ({
                 setSaveStatus('dirty');
               }}
               onBlur={() => saveScores()}
-              className="w-full bg-slate-900 border border-slate-700/80 focus:border-amber-400 rounded py-1 px-2 text-xs font-bold text-white text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
+              className="w-full bg-white border border-slate-300 focus:border-amber-500 rounded py-1 px-2 text-xs font-bold text-slate-900 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
             />
           </div>
         </div>
@@ -694,23 +694,23 @@ const MockExamCard: React.FC<MockCardProps> = ({
 
       {/* Read Aloud (RA) Summary Snapshot if Reviewed */}
       {rev?.raScores && (
-        <div className="p-2.5 rounded-xl bg-blue-950/30 border border-blue-500/20 space-y-1">
+        <div className="p-2.5 rounded-xl bg-blue-50/70 border border-blue-200 space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-blue-300 flex items-center gap-1.5">
-              <Mic className="w-3 h-3 text-blue-400" />
+            <span className="text-[11px] font-bold text-blue-900 flex items-center gap-1.5">
+              <Mic className="w-3 h-3 text-blue-700" />
               Read Aloud (RA) Breakdown:
             </span>
             {rev.raAverageScore !== undefined && rev.raAverageScore !== null && (
-              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300">
+              <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800">
                 Avg: {rev.raAverageScore}/90
               </span>
             )}
           </div>
-          <div className="text-[10px] text-slate-300 font-mono">
+          <div className="text-[10px] text-slate-700 font-mono">
             Scores: [{rev.raScores}]
           </div>
           {rev.raDeficiencies && (
-            <div className="text-[10px] text-amber-300/90 truncate italic">
+            <div className="text-[10px] text-amber-900 truncate italic font-medium">
               Deficiencies: {rev.raDeficiencies}
             </div>
           )}
@@ -718,8 +718,8 @@ const MockExamCard: React.FC<MockCardProps> = ({
       )}
 
       {/* Questions Attempted */}
-      <div className="flex items-center justify-between bg-slate-950/50 rounded-lg px-2.5 py-1.5 border border-slate-800">
-        <label className="text-xs text-slate-400 font-medium">Questions Done:</label>
+      <div className="flex items-center justify-between bg-slate-50 rounded-lg px-2.5 py-1.5 border border-slate-200">
+        <label className="text-xs text-slate-600 font-medium">Questions Done:</label>
         <input
           type="number"
           value={questions}
@@ -728,13 +728,13 @@ const MockExamCard: React.FC<MockCardProps> = ({
             setSaveStatus('dirty');
           }}
           onBlur={() => saveScores()}
-          className="w-14 bg-slate-900 border border-slate-700 rounded px-2 py-0.5 text-xs text-white text-center font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
+          className="w-14 bg-white border border-slate-300 rounded px-2 py-0.5 text-xs text-slate-900 text-center font-bold [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
         />
       </div>
 
       {/* Main Mistakes & Observations */}
       <div>
-        <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+        <label className="block text-[11px] font-semibold text-slate-600 mb-1">
           Mistakes & Notes:
         </label>
         <textarea
@@ -746,14 +746,14 @@ const MockExamCard: React.FC<MockCardProps> = ({
             setSaveStatus('dirty');
           }}
           onBlur={() => saveScores()}
-          className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-200 focus:outline-none focus:border-slate-600 placeholder-slate-600 resize-none"
+          className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs text-slate-900 focus:outline-none focus:border-blue-500 placeholder-slate-400 resize-none"
         />
       </div>
 
       {/* Bottom Actions: Save status & Review Button */}
-      <div className="pt-2 border-t border-slate-800 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 text-xs text-slate-400">
-          <Clock className="w-3.5 h-3.5 text-blue-400" />
+      <div className="pt-2 border-t border-slate-200 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <Clock className="w-3.5 h-3.5 text-blue-600" />
           <span>{rev?.durationMinutes || 0}m</span>
           {saveStatus === 'dirty' ? (
             <button
@@ -764,21 +764,21 @@ const MockExamCard: React.FC<MockCardProps> = ({
               Save
             </button>
           ) : saveStatus === 'saving' ? (
-            <span className="text-[10px] text-amber-400">Saving...</span>
+            <span className="text-[10px] text-amber-600 font-medium">Saving...</span>
           ) : saveStatus === 'saved' ? (
-            <span className="text-[10px] text-emerald-400 font-medium">✓ Saved</span>
+            <span className="text-[10px] text-emerald-700 font-medium">✓ Saved</span>
           ) : null}
         </div>
 
         <button
           type="button"
           onClick={onOpenReview}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs ${
             rev?.isCompleted
-              ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/25'
+              ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
               : mock?.isCompleted
               ? 'bg-blue-600 text-white border-blue-500 hover:bg-blue-500 shadow-sm'
-              : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+              : 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200'
           }`}
         >
           <BookOpen className="w-3.5 h-3.5" />
@@ -941,28 +941,28 @@ export const MockExamsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-slate-900/90 border border-slate-800 p-5 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-white border border-slate-200 p-5 sm:p-6 shadow-sm text-slate-900">
         <div>
           <div className="flex items-center gap-2">
-            <GraduationCap className="w-6 h-6 text-blue-400" />
-            <h1 className="text-xl font-bold text-white">
+            <GraduationCap className="w-6 h-6 text-blue-600" />
+            <h1 className="text-xl font-extrabold text-slate-900">
               PTE Exam Mastery Mission (Nov 04 – Dec 10, 2026)
             </h1>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-600 mt-1">
             20 Unique VIP Papers · 1 Mock + 1 Section Test / Day · Tailored for Speaking 87 &amp; Writing 84 Summit.
           </p>
         </div>
 
         <div className="flex items-center gap-2 text-xs flex-wrap">
-          <span className="px-3 py-1.5 rounded-xl bg-blue-500/10 text-blue-300 border border-blue-500/20 font-semibold">
+          <span className="px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 font-bold">
             Study Day {currentDay} of {totalDays}
           </span>
-          <span className="px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-semibold">
+          <span className="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">
             {completedCountAll80} / 60 Done ({Math.round((completedCountAll80 / 60) * 100)}%)
           </span>
           {avgOverallScore !== null && (
-            <span className="px-3 py-1.5 rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/20 font-semibold">
+            <span className="px-3 py-1.5 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 font-bold">
               Avg: {avgOverallScore}/90
             </span>
           )}
@@ -979,23 +979,23 @@ export const MockExamsPage: React.FC = () => {
 
       {/* Missed / Flexible Catch-Up Support Banner */}
       {missedMocks.length > 0 ? (
-        <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-4 space-y-3">
+        <div className="rounded-2xl bg-amber-50 border border-amber-200 p-4 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2.5">
-              <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
+              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
               <div>
-                <h3 className="text-xs font-bold text-amber-200">
+                <h3 className="text-xs font-bold text-amber-900">
                   Catch-Up & Missed Mock Buffer: {missedMocks.length} Session{missedMocks.length > 1 ? 's' : ''} Pending
                 </h3>
-                <p className="text-[11px] text-amber-300/80">
-                  Life happens! If you missed a 2-hour slot, don't worry. You can catch up anytime here or on the weekend buffer days without falling behind.
+                <p className="text-[11px] text-amber-800/80">
+                  Life happens! If you missed a 2-hour slot, don't worry. You can catch up anytime here or on the buffer days without falling behind.
                 </p>
               </div>
             </div>
 
             <button
               onClick={() => setIsCatchUpExpanded((prev) => !prev)}
-              className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-semibold flex items-center gap-1.5 transition-colors self-start sm:self-center"
+              className="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-semibold flex items-center gap-1.5 transition-colors self-start sm:self-center cursor-pointer"
             >
               <span>{isCatchUpExpanded ? 'Hide Missed Mocks' : `View ${missedMocks.length} Missed Mocks`}</span>
               {isCatchUpExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -1004,23 +1004,23 @@ export const MockExamsPage: React.FC = () => {
 
           {/* Expandable list of missed mocks */}
           {isCatchUpExpanded && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-2 border-t border-amber-500/20">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-2 border-t border-amber-200">
               {missedMocks.map((m) => {
                 const details = getMockExamDetails(m.examNumber);
                 return (
                   <div
                     key={m.examNumber}
-                    className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col justify-between gap-2"
+                    className="p-2.5 rounded-xl bg-white border border-slate-200 flex flex-col justify-between gap-2 shadow-2xs"
                   >
                     <div>
-                      <div className="flex items-center justify-between text-[10px] text-slate-400">
+                      <div className="flex items-center justify-between text-[10px] text-slate-500">
                         <span>Day {m.dayNumber}</span>
-                        <span className="text-amber-400 font-medium">{details.timeSlot}</span>
+                        <span className="text-amber-800 font-bold">{details.timeSlot}</span>
                       </div>
-                      <p className="text-xs font-bold text-white truncate mt-0.5">
+                      <p className="text-xs font-bold text-slate-900 truncate mt-0.5">
                         Mock #{m.examNumber}: {details.testName}
                       </p>
-                      <p className="text-[10px] text-slate-400">
+                      <p className="text-[10px] text-slate-500">
                         {!m.mockRec?.isCompleted ? 'Exam Not Logged' : 'Review Incomplete'}
                       </p>
                     </div>
@@ -1028,7 +1028,7 @@ export const MockExamsPage: React.FC = () => {
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => selectDay(m.dayNumber)}
-                        className="w-full py-1 rounded bg-blue-600/30 hover:bg-blue-600/50 text-blue-200 text-[10px] font-semibold text-center border border-blue-500/30"
+                        className="w-full py-1 rounded bg-blue-50 hover:bg-blue-100 text-blue-700 text-[10px] font-semibold text-center border border-blue-200 cursor-pointer"
                       >
                         Catch Up on Day {m.dayNumber} ➔
                       </button>
@@ -1040,35 +1040,35 @@ export const MockExamsPage: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 px-4 py-2.5 flex items-center gap-2 text-xs text-emerald-300">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2.5 flex items-center gap-2 text-xs text-emerald-800 font-medium">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span><b>All caught up!</b> No missed mock sessions or pending reviews through Day {currentDay}.</span>
         </div>
       )}
 
       {/* Daily Assigned Section Test Card */}
-      <div className="rounded-2xl bg-gradient-to-r from-[#141b34] via-[#10182b] to-[#121f38] border border-blue-500/30 p-5 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+      <div className="rounded-2xl bg-white border border-blue-200 p-5 space-y-4 shadow-sm text-slate-900">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-blue-600/20 text-blue-300 flex items-center justify-center font-bold">
-              <Layers className="w-5 h-5 text-blue-400" />
+            <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-bold">
+              <Layers className="w-5 h-5 text-blue-600" />
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 uppercase tracking-wider">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 uppercase tracking-wider">
                   Day {currentDay} Section Test
                 </span>
                 {sectionTestDef ? (
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs text-slate-500">
                     Recommended: {sectionTestDef.recommendedSlot} ({sectionTestDef.estMinutes})
                   </span>
                 ) : (
-                  <span className="text-xs text-emerald-400 font-medium">
+                  <span className="text-xs text-emerald-700 font-medium">
                     Weekly Buffer & Error Review Day
                   </span>
                 )}
               </div>
-              <h3 className="text-base font-bold text-white mt-0.5">
+              <h3 className="text-base font-bold text-slate-900 mt-0.5">
                 {sectionTestDef ? sectionTestDef.title : 'Day 7 / 14: Rest & Error Deep-Dive Buffer'}
               </h3>
             </div>
@@ -1078,8 +1078,8 @@ export const MockExamsPage: React.FC = () => {
             <span
               className={`text-xs font-bold px-2.5 py-1 rounded-xl border ${
                 currentSectionTest?.isCompleted
-                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                  : 'bg-slate-800 text-slate-400 border-slate-700'
+                  ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                  : 'bg-slate-100 text-slate-600 border-slate-200'
               }`}
             >
               {currentSectionTest?.isCompleted ? 'Completed ✓' : 'Pending'}
@@ -1090,16 +1090,16 @@ export const MockExamsPage: React.FC = () => {
         {sectionTestDef ? (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
             <div className="md:col-span-2 space-y-1">
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-700 leading-relaxed">
                 {sectionTestDef.description}
               </p>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-500">
                 Target: <b>{sectionTestDef.targetQuestions} Questions</b> · Focus on speed, accuracy, and minimum errors.
               </p>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[11px] font-semibold text-slate-300 block">
+              <label className="text-[11px] font-semibold text-slate-700 block">
                 Score (/90):
               </label>
               <input
