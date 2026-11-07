@@ -167,7 +167,7 @@ export const FinalReportPage: React.FC = () => {
               PTE - Daily Study Plan – Superior English
             </h2>
             <p className="text-xs text-[#a9b5d0]">
-              Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · 4 Mocks & 300 Qs / Day · Target Benchmark: {studyPlan.targetScores.overall}+ Overall
+              Started: <b className="text-[#edf2ff]">{formatDateFriendly(studyPlan.startDate)}</b> · 15h Daily Protocol (~280 Qs / Day) · Target: S:{studyPlan.targetScores.speaking || 87} · W:{studyPlan.targetScores.writing || 84} · Overall {studyPlan.targetScores.overall}+
             </p>
           </div>
 
@@ -201,7 +201,7 @@ export const FinalReportPage: React.FC = () => {
             <span className="text-[11px] text-[#a9b5d0] block">Mock Simulations</span>
             <div className="text-2xl font-bold text-[#edf2ff]">{totalMocksDone} / {totalMocks}</div>
             <span className="text-[10px] text-purple-400 font-semibold">
-              4 Mocks / Day ({totalMocks} Total)
+              1 Mock / Day + Error Audit
             </span>
           </div>
 

@@ -108,14 +108,14 @@ export const RoadmapPage: React.FC = () => {
                 9 Dedicated Deep Review Days
               </span>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                28 Days · Nov 03 – Nov 30, 2026
+                {totalDays} Days · Nov 04 – Dec 10, 2026
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-              60-Mock Exam Mastery Journey (3,600 Questions)
+              PTE {totalDays}-Day Protocol Roadmap (Dec 10 Exam)
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-3xl leading-relaxed">
-              Balanced 3-day rhythm: <b>2 Mock Days</b> followed by <b>1 Dedicated Deep Review Day</b> (Days 3, 6, 9, 12, 15, 18, 21, 24, 27). Over 40 hours saved for question-by-question mistake rectifications, Read Aloud fluency refinement, and Pearson Summit readiness on Day 28.
+              14–15 Hours high-efficiency daily curriculum · Tailored for <b>Speaking {studyPlan.targetScores?.speaking || 87}</b>, <b>Writing {studyPlan.targetScores?.writing || 84}</b>, and <b>Overall {studyPlan.targetScores?.overall || 78}+</b> summit readiness on December 10.
             </p>
           </div>
 
@@ -235,10 +235,10 @@ export const RoadmapPage: React.FC = () => {
             Filter by Pass:
           </span>
           {[
-            { id: 'all', label: 'All 28 Days (60 Mocks + 9 Reviews)' },
+            { id: 'all', label: `All ${totalDays} Days (Dec 10 Summit)` },
             { id: '1', label: 'Pass 1 · Baseline (D1–D8)' },
             { id: '2', label: 'Pass 2 · Rectify (D10–D17)' },
-            { id: '3', label: 'Pass 3 · Summit (D19–D26)' }
+            { id: '3', label: 'Pass 3 · Summit (D19–D37)' }
           ].map((f) => (
             <button
               key={f.id}

@@ -14,7 +14,7 @@ import {
 import { usePteData } from '../context/PteDataContext';
 import { calculateDayBreakdown } from '../utils/scoring';
 import { formatDateFriendly, isDatePast, getTodayIso } from '../utils/dateUtils';
-import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS, getMockExamsForDay, getExamNumberForMock, TOTAL_MOCK_TARGET, TOTAL_PRACTICE_TARGET, getSectionTestForDay } from '../config/constants';
+import { DAY_TARGET_SCORES, TOTAL_STUDY_DAYS, getMockExamsForDay, getExamNumberForMock, TOTAL_MOCK_TARGET, TOTAL_PRACTICE_TARGET, getSectionTestForDay, FINAL_TARGET_DATE, DEFAULT_TARGET_SCORES } from '../config/constants';
 
 export const CalendarPage: React.FC = () => {
   const { studyPlan, days, currentDay, selectDay } = usePteData();
@@ -41,7 +41,7 @@ export const CalendarPage: React.FC = () => {
             </h1>
           </div>
           <p className="text-xs text-[#a9b5d0] mt-1">
-            Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · Exam: <b className="text-emerald-300">Nov 30, 2026</b> · {totalDays}-Day Mission ({TOTAL_MOCK_TARGET} Mock Exams · 20 Unique Papers × 4 Passes · 4,800 Questions Total).
+            Started: <b className="text-blue-300">{formatDateFriendly(studyPlan.startDate)}</b> · Exam: <b className="text-emerald-300">{formatDateFriendly(FINAL_TARGET_DATE)}</b> · {totalDays}-Day Protocol (Target: S:{studyPlan.targetScores?.speaking || DEFAULT_TARGET_SCORES.speaking} · W:{studyPlan.targetScores?.writing || DEFAULT_TARGET_SCORES.writing} · Overall {studyPlan.targetScores?.overall || DEFAULT_TARGET_SCORES.overall}+).
           </p>
         </div>
 

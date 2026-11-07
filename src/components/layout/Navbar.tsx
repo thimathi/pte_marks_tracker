@@ -53,8 +53,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
 
   const navLinks = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/mock-exams', label: '60-Mock Journey', icon: GraduationCap, badge: '60 Tests · 3 Passes' },
-    { to: '/practice', label: 'Daily Drills & Templates', icon: Layers, badge: 'Collocations · Twisters · Templates' },
+    { to: '/mock-exams', label: 'Mock Exam Center', icon: GraduationCap, badge: 'VIP Full Tests' },
+    { to: '/practice', label: 'Daily Drills & Templates', icon: Layers, badge: 'Collocations · Templates' },
     { to: '/review', label: 'RA & Review Center', icon: CheckSquare, badge: 'Mandatory' },
     { to: '/roadmap', label: 'Roadmap', icon: Map },
     { to: '/analytics', label: 'Analytics', icon: BarChart3 }
@@ -87,11 +87,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                     PTE Marks Tracker
                   </span>
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 font-semibold border border-blue-500/30 whitespace-nowrap">
-                    60-Mock Mission
+                    15h Master Protocol
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 leading-tight truncate">
-                  Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-03')} · {totalDays} Days · 60 Mocks (20 Papers × 3 Passes) + 9 Review Days · 3,600 Qs
+                  Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-04')} · {totalDays} Days · Target S:{studyPlan?.targetScores?.speaking || 87} · W:{studyPlan?.targetScores?.writing || 84} · Overall {studyPlan?.targetScores?.overall || 78}+
                 </p>
               </div>
             </Link>

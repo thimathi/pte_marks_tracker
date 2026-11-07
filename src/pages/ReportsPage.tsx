@@ -77,7 +77,7 @@ export const ReportsPage: React.FC = () => {
               All {totalMocks} Mock Simulations Progression (Mock #1 to #{totalMocks})
             </h3>
           </div>
-          <span className="text-xs text-[#a9b5d0]">Target: 79+ / 90</span>
+          <span className="text-xs text-[#a9b5d0]">Target: {studyPlan.targetScores?.overall || 78}+ / 90</span>
         </div>
 
         <div className="h-72 w-full">

@@ -38,7 +38,9 @@ import {
   isReviewDay,
   getReviewDayDefinition,
   getDayAndSlotForExam,
-  getMockExamDetails
+  getMockExamDetails,
+  FINAL_TARGET_DATE,
+  DEFAULT_TARGET_SCORES
 } from '../config/constants';
 import { DailyDrillsCard } from '../components/drills/DailyDrillsCard';
 import { CompletionGate } from '../components/gate/CompletionGate';
@@ -170,20 +172,20 @@ export const DashboardPage: React.FC = () => {
           <div>
             <div className="flex items-center gap-2 mb-1.5 flex-wrap">
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">
-                Target: 60 Mock Exams
+                14–15h Daily Protocol
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30">
-                20 Papers × 3 Passes + 9 Review Days
+                Target: S:{studyPlan.targetScores?.speaking || DEFAULT_TARGET_SCORES.speaking} · W:{studyPlan.targetScores?.writing || DEFAULT_TARGET_SCORES.writing}
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                28-Day Mission (Nov 03 – Nov 30)
+                {totalDays}-Day Protocol (Nov 04 – Dec 10)
               </span>
               <span className="text-xs text-slate-400">
-                Exam Day: Nov 30, 2026
+                Exam Day: {formatDateFriendly(FINAL_TARGET_DATE)}
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-              <span>60-Mock Exam Mastery Mission (28 Days)</span>
+              <span>PTE Master Command Center ({totalDays} Days · Overall {studyPlan.targetScores?.overall || DEFAULT_TARGET_SCORES.overall}+)</span>
               {isRevDay && (
                 <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 animate-pulse">
                   🌟 Deep Review Day
@@ -191,7 +193,7 @@ export const DashboardPage: React.FC = () => {
               )}
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
-              20 Unique VIP Papers repeated 3 times · 2 Mock Days followed by 1 Dedicated Deep Review Day · 40+ saved hours for thorough question-by-question review & Read Aloud coaching · 3,600 Total Questions.
+              15-hour high-yield daily curriculum · 1 Mock + 1 Section Test + 230 targeted practice questions per day · Tailored for Speaking {studyPlan.targetScores?.speaking || DEFAULT_TARGET_SCORES.speaking} &amp; Writing {studyPlan.targetScores?.writing || DEFAULT_TARGET_SCORES.writing} summit.
             </p>
           </div>
 
@@ -246,17 +248,20 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2 text-xs flex-wrap">
-            <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20 font-mono">
-              Pass 1: Exams 1–20 (First Attempt)
-            </span>
-            <span className="px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 font-mono">
-              Pass 2: Exams 21–40 (Correction)
+            <span className="px-2 py-0.5 rounded bg-red-500/10 text-red-300 border border-red-500/20 font-mono">
+              Speaking: {studyPlan.targetScores?.speaking || DEFAULT_TARGET_SCORES.speaking} (Peak)
             </span>
             <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-mono">
-              Pass 3: Exams 41–60 (79+ Summit)
+              Writing: {studyPlan.targetScores?.writing || DEFAULT_TARGET_SCORES.writing} (Elite)
             </span>
             <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono">
-              9 Review Days (40h Coaching)
+              Reading: {studyPlan.targetScores?.reading || DEFAULT_TARGET_SCORES.reading}
+            </span>
+            <span className="px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 font-mono">
+              Listening: {studyPlan.targetScores?.listening || DEFAULT_TARGET_SCORES.listening}
+            </span>
+            <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/20 font-mono">
+              Overall: {studyPlan.targetScores?.overall || DEFAULT_TARGET_SCORES.overall}+
             </span>
           </div>
         </div>

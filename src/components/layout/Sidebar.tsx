@@ -33,7 +33,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   const navItems = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/mock-exams', label: '60-Mock Journey', icon: GraduationCap, badge: '60 Mocks · 3 Passes', highlight: true },
+    { to: '/mock-exams', label: 'Mock Exam Center', icon: GraduationCap, badge: 'Full Tests & Drills', highlight: true },
     { to: '/review', label: 'RA & Review Center', icon: CheckSquare, badge: isRevDay ? 'Today!' : 'Mandatory' },
     { to: '/practice', label: 'Daily Drills & Templates', icon: Layers, badge: 'Core Drills' },
     { to: '/roadmap', label: `${totalDays}-Day Roadmap`, icon: Map, badge: `${totalDays} Days` },
@@ -176,7 +176,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <span className="text-xs font-semibold text-slate-200">{totalDays}-Day Intensive Protocol</span>
             </div>
             <p className="text-[10px] text-slate-400">
-              Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-01')} · 4 Mocks/Day + Section Tests
+              Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-04')} · 15h Daily Protocol · Dec 10 Exam
             </p>
           </div>
         </div>

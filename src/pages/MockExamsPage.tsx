@@ -946,11 +946,11 @@ export const MockExamsPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <GraduationCap className="w-6 h-6 text-blue-400" />
             <h1 className="text-xl font-bold text-white">
-              60-Mock Exam Mastery Mission (Nov 03 – Nov 30, 2026)
+              PTE Exam Mastery Mission (Nov 04 – Dec 10, 2026)
             </h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            20 Unique VIP Papers × 3 Passes = 60 Total Mocks · 2 Mock Days + 1 Dedicated Deep Review Day Cycle · 3,600 Questions · 40h saved for reviews.
+            20 Unique VIP Papers · 1 Mock + 1 Section Test / Day · Tailored for Speaking 87 &amp; Writing 84 Summit.
           </p>
         </div>
 
@@ -1441,7 +1441,7 @@ export const MockExamsPage: React.FC = () => {
             </h3>
           </div>
           <span className="text-xs text-slate-400">
-            20 Unique Papers × 4 Passes = {totalMocks} Total Mocks (Nov 03 – Nov 30 · 4,800 Questions)
+            20 Unique Papers × 3 Passes (Nov 04 – Dec 10 · 3,600+ Questions)
           </span>
         </div>
 
