@@ -3,18 +3,21 @@ import {
   SECTION_TEST_SCHEDULE,
   getSectionTestForDay,
   TOTAL_SECTION_TESTS,
-  TOTAL_STUDY_DAYS
+  TOTAL_STUDY_DAYS,
+  DEFAULT_TARGET_SCORES,
+  FINAL_TARGET_DATE,
+  DAILY_15H_MASTER_SCHEDULE
 } from '../config/constants';
 
-describe('Daily Section Test Schedule Verification (Starting Day 4)', () => {
+describe('Daily Section Test Schedule & 15-Hour Work Plan Verification (Through Dec 10)', () => {
   it('does not assign section tests to Days 1, 2, and 3', () => {
     expect(getSectionTestForDay(1)).toBeNull();
     expect(getSectionTestForDay(2)).toBeNull();
     expect(getSectionTestForDay(3)).toBeNull();
   });
 
-  it('assigns exactly 1 section test to every day starting from Day 4 through Day 27', () => {
-    expect(TOTAL_SECTION_TESTS).toBe(24);
+  it('assigns exactly 1 section test to every day starting from Day 4 through Day 37', () => {
+    expect(TOTAL_SECTION_TESTS).toBe(34);
     for (let day = 4; day <= TOTAL_STUDY_DAYS; day++) {
       const secDef = getSectionTestForDay(day);
       expect(secDef).not.toBeNull();
@@ -43,11 +46,11 @@ describe('Daily Section Test Schedule Verification (Starting Day 4)', () => {
       }
     }
 
-    // Verify individual counts
-    expect(counts.reading).toBe(8);
-    expect(counts.listening).toBe(7);
-    expect(counts.speaking).toBe(5);
-    expect(counts.writing).toBe(4);
+    // Verify individual counts for 34 tests across 37 days
+    expect(counts.reading).toBe(11);
+    expect(counts.listening).toBe(10);
+    expect(counts.speaking).toBe(7);
+    expect(counts.writing).toBe(6);
 
     // Verify priority: Reading > Listening > Speaking > Writing
     expect(counts.reading).toBeGreaterThan(counts.listening);
@@ -69,10 +72,28 @@ describe('Daily Section Test Schedule Verification (Starting Day 4)', () => {
     }
   });
 
-  it('provides Day 4 as the first active section test (VIP Reading Section Test 1)', () => {
-    const day4Sec = getSectionTestForDay(4);
-    expect(day4Sec?.skill).toBe('reading');
-    expect(day4Sec?.title).toBe('VIP Reading Section Test 1');
-    expect(day4Sec?.targetQuestions).toBe(18);
+  it('configures new target scores: S:87, W:84, R:69, L:68, Overall:78 and Dec 10 exam', () => {
+    expect(DEFAULT_TARGET_SCORES.speaking).toBe(87);
+    expect(DEFAULT_TARGET_SCORES.writing).toBe(84);
+    expect(DEFAULT_TARGET_SCORES.reading).toBe(69);
+    expect(DEFAULT_TARGET_SCORES.listening).toBe(68);
+    expect(DEFAULT_TARGET_SCORES.overall).toBe(78);
+    expect(FINAL_TARGET_DATE).toBe('2026-12-10');
+  });
+
+  it('configures the 14-15 Hour Master Daily Schedule (6 Strategic Power Blocks = 15.0h)', () => {
+    expect(DAILY_15H_MASTER_SCHEDULE.length).toBe(6);
+    const totalHours = DAILY_15H_MASTER_SCHEDULE.reduce((sum, b) => sum + b.durationHours, 0);
+    expect(totalHours).toBe(15.0);
+
+    // Block 1: Speaking 87 (3.5h)
+    expect(DAILY_15H_MASTER_SCHEDULE[0].durationHours).toBe(3.5);
+    expect(DAILY_15H_MASTER_SCHEDULE[0].targetSkill).toBe('speaking');
+    expect(DAILY_15H_MASTER_SCHEDULE[0].targetScoreBenchmark).toBe(87);
+
+    // Block 2: Writing 84 (3.0h)
+    expect(DAILY_15H_MASTER_SCHEDULE[1].durationHours).toBe(3.0);
+    expect(DAILY_15H_MASTER_SCHEDULE[1].targetSkill).toBe('writing');
+    expect(DAILY_15H_MASTER_SCHEDULE[1].targetScoreBenchmark).toBe(84);
   });
 });

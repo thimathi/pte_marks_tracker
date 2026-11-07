@@ -1,17 +1,17 @@
 import { QuestionPriority, QuestionTypeMeta, SkillType, StudyGroupDefinition, TargetScores } from '../types/pte';
 
-export const DEFAULT_START_DATE = '2026-11-04'; // Start: Nov 4, 2026 (Day 3 = Nov 6, 2026)
-export const FINAL_TARGET_DATE = '2026-11-30'; // Exam Day: Nov 30, 2026 (27 Days Total)
-export const APP_TITLE = 'PTE - 60-Mock Exam Mastery Mission';
+export const DEFAULT_START_DATE = '2026-11-04'; // Start: Nov 4, 2026 (Day 4 = Nov 7, 2026)
+export const FINAL_TARGET_DATE = '2026-12-10'; // Postponed Exam Day: Dec 10, 2026 (37 Days Total)
+export const APP_TITLE = 'PTE - 78+ Mastery & 15-Hour Daily Protocol (S:87 · W:84 · R:69 · L:68)';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
-export const TOTAL_STUDY_DAYS = 27; // Nov 4 to Nov 30, 2026
+export const TOTAL_STUDY_DAYS = 37; // Nov 4 to Dec 10, 2026 (37 Days Total)
 export const DAILY_PRACTICE_TARGET = 0; // Pure mock simulation journey
 export const TOTAL_PRACTICE_TARGET = 0; 
 export const DAILY_MOCK_TARGET = 3; // Flexible pace: 3-4 Mocks on Mock Days, 0 on Review Days
 export const TOTAL_MOCK_TARGET = 60; // Exactly 60 Mock Exams (20 unique VIP papers × 3 passes)
 export const TOTAL_UNIQUE_PAPERS = 20; // 20 unique VIP papers
 export const REPETITIONS_PER_PAPER = 3; // Each paper repeated exactly 3 times in random order
-export const TOTAL_SECTION_TESTS = 24; // 24 Section Tests (1 test every day from Day 4 through Day 27) 
+export const TOTAL_SECTION_TESTS = 34; // 34 Section Tests (1 test every day from Day 4 through Day 37) 
 export const MOCK_EXAM_QUESTIONS = 60;
 export const TOTAL_MOCK_EXAM_QUESTIONS = 3600; // 60 mocks * 60 questions = 3,600
 export const TOTAL_MISSION_QUESTIONS = 3600; // 3,600 Total Questions
@@ -284,12 +284,102 @@ export const SECTION_TEST_SCHEDULE: Record<number, SectionTestDef> = {
   28: {
     dayNumber: 28,
     testId: 'sec_listening_08',
-    title: 'VIP Listening Section Test 8 (Final Polish)',
+    title: 'VIP Listening Section Test 8 (Accent Adaptation)',
     skill: 'listening',
     targetQuestions: 20,
-    estMinutes: '30 min',
-    description: 'APEUni VIP Listening Test 8: Final confidence booster on Write From Dictation and SST.',
+    estMinutes: '35 min',
+    description: 'APEUni VIP Listening Test 8: Fast-paced diverse accents, HIW & FIB spelling accuracy under speed.',
     recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  29: {
+    dayNumber: 29,
+    testId: 'sec_reading_09',
+    title: 'VIP Reading Section Test 9 (Dropdown Precision)',
+    skill: 'reading',
+    targetQuestions: 18,
+    estMinutes: '30 min',
+    description: 'APEUni VIP Reading Test 9: Rapid R/W FIB dropdown contextual deduction and collocations.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  30: {
+    dayNumber: 30,
+    testId: 'sec_writing_05',
+    title: 'VIP Writing Section Test 5 (Score 84 Essay Sprint)',
+    skill: 'writing',
+    targetQuestions: 3,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Writing Test 5: Strict 20-min Essay with advanced vocabulary & 10-min SWT compound sentence.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  31: {
+    dayNumber: 31,
+    testId: 'sec_listening_09',
+    title: 'VIP Listening Section Test 9 (WFD 100% Match)',
+    skill: 'listening',
+    targetQuestions: 22,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Listening Test 9: Write From Dictation plural/tense drill + SST template cohesion.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  32: {
+    dayNumber: 32,
+    testId: 'sec_speaking_06',
+    title: 'VIP Speaking Section Test 6 (Score 87 Fluency Drill)',
+    skill: 'speaking',
+    targetQuestions: 35,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Speaking Test 6: Zero hesitation, steady pitch, continuous acoustic rhythm across RA & RS.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  33: {
+    dayNumber: 33,
+    testId: 'sec_reading_10',
+    title: 'VIP Reading Section Test 10 (Re-order & Blanks)',
+    skill: 'reading',
+    targetQuestions: 19,
+    estMinutes: '32 min',
+    description: 'APEUni VIP Reading Test 10: Topic sentence tracking, pronoun reference links & drag-and-drop FIB.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  34: {
+    dayNumber: 34,
+    testId: 'sec_listening_10',
+    title: 'VIP Listening Section Test 10 (High-Speed Reflex)',
+    skill: 'listening',
+    targetQuestions: 20,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Listening Test 10: HIW at 1.2x playback speed and Listening FIB instant spelling.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  35: {
+    dayNumber: 35,
+    testId: 'sec_writing_06',
+    title: 'VIP Writing Section Test 6 (Error-Free Grammar Audit)',
+    skill: 'writing',
+    targetQuestions: 4,
+    estMinutes: '40 min',
+    description: 'APEUni VIP Writing Test 6: 2 essays typed back-to-back with zero spelling errors & full paragraph structure.',
+    recommendedSlot: '07:15 PM – 07:55 PM'
+  },
+  36: {
+    dayNumber: 36,
+    testId: 'sec_speaking_07',
+    title: 'VIP Speaking Section Test 7 (Summit Confidence)',
+    skill: 'speaking',
+    targetQuestions: 35,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Speaking Test 7: Pearson exam simulation — 87+ target fluency, projection, and no hesitation.',
+    recommendedSlot: '07:15 PM – 07:50 PM'
+  },
+  37: {
+    dayNumber: 37,
+    testId: 'sec_reading_11',
+    title: 'VIP Reading Section Test 11 (Exam Day Readiness)',
+    skill: 'reading',
+    targetQuestions: 20,
+    estMinutes: '30 min',
+    description: 'APEUni VIP Reading Test 11: Final sharp focus on academic collocations and R/W blanks before summit.',
+    recommendedSlot: '07:15 PM – 07:45 PM'
   }
 };
 
@@ -298,20 +388,135 @@ export function getSectionTestForDay(dayNumber: number): SectionTestDef | null {
 }
 
 export const DEFAULT_TARGET_SCORES: TargetScores = {
-  overall: 79,
-  speaking: 79,
-  writing: 76,
-  reading: 72,
-  listening: 76,
-  mockExam: 76,
+  overall: 78,
+  speaking: 87,
+  writing: 84,
+  reading: 69,
+  listening: 68,
+  mockExam: 78,
 };
 
-// Target progression curve across 28 study days (Nov 3 to Nov 30)
+// Target progression curve across 37 study days (Nov 04 to Dec 10) targeting Overall 78+ (S:87, W:84, R:69, L:68)
 export const DAY_TARGET_SCORES: number[] = [
-  60, 61, 62, 63, 64, 65, 66, // Week 1 (Days 1–7): Nov 03–09 (Baseline Stabilization)
-  67, 68, 69, 70, 71, 72, 73, // Week 2 (Days 8–14): Nov 10–16 (Fluency Acceleration)
-  74, 74, 75, 75, 76, 76, 77, // Week 3 (Days 15–21): Nov 17–23 (Accuracy & Time Control)
-  77, 78, 78, 79, 79, 79, 79  // Week 4 (Days 22–28): Nov 24–30 (Superior 79+ Summit Ready)
+  60, 61, 62, 63, 64, 65, 66, // Week 1 (Days 1–7): Nov 04–10 (Baseline Stabilization & Speaking Fluency Reset)
+  67, 68, 69, 70, 71, 71, 72, // Week 2 (Days 8–14): Nov 11–17 (Writing Templates & Dictation Lockdown)
+  72, 73, 73, 74, 74, 75, 75, // Week 3 (Days 15–21): Nov 18–24 (Reading Blanks & Collocations Acceleration)
+  75, 76, 76, 77, 77, 77, 78, // Week 4 (Days 22–28): Nov 25–Dec 01 (Speed & Timed Stress Conditioning)
+  78, 78, 78, 78, 78, 78, 78, // Week 5 (Days 29–35): Dec 02–08 (Summit 87 Speaking & 84 Writing Precision)
+  78, 78                      // Final Summit (Days 36–37): Dec 09–10 (Peak Confidence & Pearson Exam Day)
+];
+
+export interface DailyMasterBlock {
+  blockNumber: number;
+  timeSlot: string;
+  durationHours: number;
+  title: string;
+  targetSkill: 'speaking' | 'writing' | 'reading' | 'listening' | 'mock' | 'review';
+  targetScoreBenchmark: number;
+  badge: string;
+  badgeColor: string;
+  coreTasks: string[];
+  efficiencyRule: string;
+}
+
+export const DAILY_15H_MASTER_SCHEDULE: DailyMasterBlock[] = [
+  {
+    blockNumber: 1,
+    timeSlot: '06:00 AM – 09:30 AM',
+    durationHours: 3.5,
+    title: 'Block 1: Speaking 87 Summit Mastery (Acoustic & Fluency Priming)',
+    targetSkill: 'speaking',
+    targetScoreBenchmark: 87,
+    badge: 'Speaking Target: 87',
+    badgeColor: 'bg-red-500/20 text-red-300 border-red-500/30',
+    coreTasks: [
+      'Tongue Twisters (10 min vocal warmup for natural articulation)',
+      'Read Aloud: 25-30 passages (Continuous rhythm, steady pitch, ZERO pauses at commas unless natural clause end)',
+      'Repeat Sentence: 40 audio drills (Focus on first 5-6 words chunking + acoustic shadow repeating)',
+      'Describe Image & Re-tell Lecture: 15 drills (Strict 40s automatic template flow without hesitation)'
+    ],
+    efficiencyRule: 'Never restart or pause during recording. Pearson AI penalizes hesitations harder than pronunciation slips.'
+  },
+  {
+    blockNumber: 2,
+    timeSlot: '09:45 AM – 12:45 PM',
+    durationHours: 3.0,
+    title: 'Block 2: Writing 84 Perfection & Cross-Module Dictation',
+    targetSkill: 'writing',
+    targetScoreBenchmark: 84,
+    badge: 'Writing Target: 84',
+    badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+    coreTasks: [
+      'Summarize Written Text (SWT): 5 passages (Single complex/compound sentence between 35–45 words)',
+      'Write Essay: 2 full essays typed in 20 min under exam conditions (Zero typos, perfect template coherence)',
+      'Write From Dictation (WFD) Spelling Drill: 35 sentences (Spelling audit: double letters, plurals -s, -ed)'
+    ],
+    efficiencyRule: 'Reserve 3 minutes at the end of every essay strictly for spelling and grammar proofreading.'
+  },
+  {
+    blockNumber: 3,
+    timeSlot: '01:30 PM – 04:00 PM',
+    durationHours: 2.5,
+    title: 'Block 3: Diagnostic VIP Mock Simulation & Performance Audit',
+    targetSkill: 'mock',
+    targetScoreBenchmark: 78,
+    badge: 'Overall Target: 78+',
+    badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+    coreTasks: [
+      'Full Timed Mock Exam or Intensive 2-Hour VIP Simulation',
+      'Instant Diagnostic Score Verification across Speaking, Writing, Reading, Listening',
+      'Time management stress-testing under Pearson timed conditions'
+    ],
+    efficiencyRule: 'Simulate with real headset microphone positioning (2 fingers distance below lower lip).'
+  },
+  {
+    blockNumber: 4,
+    timeSlot: '04:15 PM – 06:45 PM',
+    durationHours: 2.5,
+    title: 'Block 4: Reading 69 Accuracy & Collocations Engine',
+    targetSkill: 'reading',
+    targetScoreBenchmark: 69,
+    badge: 'Reading Target: 69',
+    badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+    coreTasks: [
+      'Reading & Writing FIB (Dropdown): 25 passages (Collocation recognition & grammatical context clue drills)',
+      'Reading FIB (Drag & Drop): 20 passages (Parts of speech deduction: noun, verb, adjective, adverb)',
+      'Re-order Paragraphs: 10 exercises (Independent topic sentence identification & paired pronoun tracking)'
+    ],
+    efficiencyRule: 'Never spend more than 2 minutes on a single reading passage; mark best educated guess and proceed.'
+  },
+  {
+    blockNumber: 5,
+    timeSlot: '07:30 PM – 10:00 PM',
+    durationHours: 2.5,
+    title: 'Block 5: Listening 68 High-Yield & Auditory Reflex Drills',
+    targetSkill: 'listening',
+    targetScoreBenchmark: 68,
+    badge: 'Listening Target: 68',
+    badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+    coreTasks: [
+      'Summarize Spoken Text (SST): 4 audios (Strict notes template: 55-65 words, correct noun phrase grammar)',
+      'Highlight Incorrect Words (HIW): 10 audios (Tested at 1.2x playback speed for reflex sharpening)',
+      'Listening Fill in the Blanks: 15 audios (Instant shorthand spelling on paper, then type with zero mistakes)'
+    ],
+    efficiencyRule: 'Never take negative-marking risks on MC Multiple Answers unless 100% confident.'
+  },
+  {
+    blockNumber: 6,
+    timeSlot: '10:15 PM – 11:15 PM',
+    durationHours: 1.0,
+    title: 'Block 6: Night Deficiencies Consolidation & Error Log Rectification',
+    targetSkill: 'review',
+    targetScoreBenchmark: 78,
+    badge: 'Consolidation: 1.0h',
+    badgeColor: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+    coreTasks: [
+      'Review daily mistake log: every missed WFD word, R/W FIB blank, and RA hesitation',
+      'Flashcard review of 30 Academic Collocations & Confusing Spellings (e.g., accommodation, questionnaire)',
+      'Next day mental priming and milestone checklist signoff'
+    ],
+    efficiencyRule: 'Close all screens by 11:15 PM. 6.5–7 hours of deep sleep is mandatory for acoustic voice restoration.'
+  }
 ];
 
 export interface ReviewScheduleSlot {

@@ -228,6 +228,20 @@ export async function initializeUserData(uid: string, email: string): Promise<{ 
         needsPlanUpdate = true;
       }
 
+      // Ensure targetScores match user's customized targets (S:87, W:84, R:69, L:68, Overall:78)
+      if (
+        !plan.targetScores ||
+        plan.targetScores.speaking !== DEFAULT_TARGET_SCORES.speaking ||
+        plan.targetScores.writing !== DEFAULT_TARGET_SCORES.writing ||
+        plan.targetScores.reading !== DEFAULT_TARGET_SCORES.reading ||
+        plan.targetScores.listening !== DEFAULT_TARGET_SCORES.listening ||
+        plan.targetScores.overall !== DEFAULT_TARGET_SCORES.overall
+      ) {
+        plan.targetScores = { ...DEFAULT_TARGET_SCORES };
+        planUpdates.targetScores = { ...DEFAULT_TARGET_SCORES };
+        needsPlanUpdate = true;
+      }
+
       // Check if targets need updating to 100 High-Yield Questions
       const totalTargets = Object.values(plan.questionTargets || {}).reduce((a, b) => a + b, 0);
       if (totalTargets !== 100) {

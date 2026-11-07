@@ -42,6 +42,7 @@ import {
 } from '../config/constants';
 import { DailyDrillsCard } from '../components/drills/DailyDrillsCard';
 import { CompletionGate } from '../components/gate/CompletionGate';
+import { DailyMaster15HourPlanCard } from '../components/analytics/DailyMaster15HourPlanCard';
 
 export const DashboardPage: React.FC = () => {
   const { studyPlan, currentDay, currentDayData, days, selectDay } = usePteData();
@@ -260,6 +261,9 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* 14–15 HOURS DAILY MASTER WORK PLAN */}
+      <DailyMaster15HourPlanCard dayNumber={currentDay} />
 
       {/* SPECIAL REVIEW DAY BANNER IF VIEWING A REVIEW DAY */}
       {isRevDay && revDayDef && (

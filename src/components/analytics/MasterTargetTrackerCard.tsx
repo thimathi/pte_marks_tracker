@@ -9,17 +9,24 @@ import {
 import { usePteData } from '../../context/PteDataContext';
 import { calculateCumulativeProgress } from '../../utils/scoring';
 import { getDaysRemainingUntilDeadline, formatDateFriendly } from '../../utils/dateUtils';
-import { FINAL_TARGET_DATE, TOTAL_STUDY_DAYS, BASELINE_MOCK_45C_SCORES, TOTAL_MOCK_TARGET } from '../../config/constants';
+import { FINAL_TARGET_DATE, TOTAL_STUDY_DAYS, BASELINE_MOCK_45C_SCORES, TOTAL_MOCK_TARGET, DEFAULT_TARGET_SCORES } from '../../config/constants';
 
 export const MasterTargetTrackerCard: React.FC = () => {
   const { days, studyPlan } = usePteData();
   const totalDays = studyPlan.durationDays || TOTAL_STUDY_DAYS;
+  const targets = studyPlan.targetScores || DEFAULT_TARGET_SCORES;
 
   const cumulative = useMemo(() => {
     return calculateCumulativeProgress(days, studyPlan.questionTargets, totalDays);
   }, [days, studyPlan.questionTargets, totalDays]);
 
   const daysRemaining = getDaysRemainingUntilDeadline(FINAL_TARGET_DATE);
+
+  const readingDiff = targets.reading - BASELINE_MOCK_45C_SCORES.reading;
+  const writingDiff = targets.writing - BASELINE_MOCK_45C_SCORES.writing;
+  const speakingDiff = targets.speaking - BASELINE_MOCK_45C_SCORES.speaking;
+  const listeningDiff = targets.listening - BASELINE_MOCK_45C_SCORES.listening;
+  const overallDiff = targets.overall - BASELINE_MOCK_45C_SCORES.overall;
 
   return (
     <div className="bg-[#141c31] border border-slate-800 rounded-3xl p-6 lg:p-8 space-y-6 shadow-2xl relative overflow-hidden">
@@ -32,19 +39,19 @@ export const MasterTargetTrackerCard: React.FC = () => {
           <div className="flex items-center gap-2.5 flex-wrap">
             <span className="px-3 py-1 rounded-xl bg-purple-500/20 text-purple-300 font-bold text-xs border border-purple-500/30 flex items-center gap-1.5">
               <Target className="w-3.5 h-3.5 text-purple-400" />
-              28-Day 60-Mock Exam Mission (Target 79+ Superior)
+              {totalDays}-Day Protocol (Target: Overall {targets.overall} · S:{targets.speaking} · W:{targets.writing})
             </span>
             <span className="px-3 py-1 rounded-xl bg-blue-500/15 text-blue-300 text-xs font-semibold border border-blue-500/30 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-blue-400" />
-              Deadline: {formatDateFriendly(FINAL_TARGET_DATE)} ({daysRemaining} Days Left)
+              Exam Day: {formatDateFriendly(FINAL_TARGET_DATE)} ({daysRemaining} Days Left)
             </span>
           </div>
 
           <h2 className="text-2xl font-extrabold text-[#edf2ff] mt-2 flex items-center gap-2">
-            <span>Mission: {TOTAL_MOCK_TARGET} Mock Exams (20 Papers × 3 Passes) + 9 Review Days</span>
+            <span>Mission: 14–15h Daily Protocol &amp; Precision Target Mastery</span>
           </h2>
           <p className="text-xs text-[#a9b5d0] mt-1 max-w-2xl leading-relaxed">
-            Target tracking across {totalDays} days: 2 mock simulation days followed by 1 dedicated Deep Review day (40+ hours saved for error analysis).
+            Personalized target tracking through {formatDateFriendly(FINAL_TARGET_DATE)}: Focused preparation tailored for <b>Speaking {targets.speaking}</b> and <b>Writing {targets.writing}</b> summits.
           </p>
         </div>
       </div>
@@ -55,11 +62,11 @@ export const MasterTargetTrackerCard: React.FC = () => {
           <div className="flex items-center gap-2">
             <Flame className="w-5 h-5 text-amber-400" />
             <h3 className="text-sm font-bold text-[#edf2ff]">
-              Diagnostic Baseline (Mock 45C) vs Target Summit (79+ Superior)
+              Diagnostic Baseline (Mock 45C) vs Target Scores (Overall {targets.overall})
             </h3>
           </div>
           <span className="text-[11px] font-semibold text-rose-300 bg-rose-500/10 px-2.5 py-1 rounded-lg border border-rose-500/30">
-            Emergency Focus: Reading (40 ➔ 72) &amp; Writing (61 ➔ 76)
+            Summit Targets: Speaking ({BASELINE_MOCK_45C_SCORES.speaking} ➔ {targets.speaking}) &amp; Writing ({BASELINE_MOCK_45C_SCORES.writing} ➔ {targets.writing})
           </span>
         </div>
 
@@ -69,49 +76,49 @@ export const MasterTargetTrackerCard: React.FC = () => {
             <div className="flex items-center justify-center gap-2 mt-1">
               <span className="text-lg font-extrabold text-rose-400">{BASELINE_MOCK_45C_SCORES.overall}</span>
               <span className="text-xs text-[#a9b5d0]">➔</span>
-              <span className="text-lg font-extrabold text-emerald-400">79</span>
+              <span className="text-lg font-extrabold text-emerald-400">{targets.overall}</span>
             </div>
-            <span className="text-[10px] text-emerald-400 font-semibold">+20 pts needed</span>
+            <span className="text-[10px] text-emerald-400 font-semibold">+{overallDiff} pts needed</span>
           </div>
 
-          <div className="p-3 rounded-xl bg-[#0e1729]/80 border border-emerald-500/40">
-            <span className="text-[10px] text-emerald-400 uppercase font-semibold block">Reading (Critical)</span>
-            <div className="flex items-center justify-center gap-2 mt-1">
-              <span className="text-lg font-extrabold text-rose-400">{BASELINE_MOCK_45C_SCORES.reading}</span>
-              <span className="text-xs text-[#a9b5d0]">➔</span>
-              <span className="text-lg font-extrabold text-emerald-400">72</span>
-            </div>
-            <span className="text-[10px] text-rose-400 font-semibold">+32 pts needed</span>
-          </div>
-
-          <div className="p-3 rounded-xl bg-[#0e1729]/80 border border-purple-500/40">
-            <span className="text-[10px] text-purple-400 uppercase font-semibold block">Writing</span>
-            <div className="flex items-center justify-center gap-2 mt-1">
-              <span className="text-lg font-extrabold text-amber-400">{BASELINE_MOCK_45C_SCORES.writing}</span>
-              <span className="text-xs text-[#a9b5d0]">➔</span>
-              <span className="text-lg font-extrabold text-emerald-400">76</span>
-            </div>
-            <span className="text-[10px] text-amber-300 font-semibold">+15 pts needed</span>
-          </div>
-
-          <div className="p-3 rounded-xl bg-[#0e1729]/80 border border-amber-500/40">
-            <span className="text-[10px] text-amber-400 uppercase font-semibold block">Listening</span>
-            <div className="flex items-center justify-center gap-2 mt-1">
-              <span className="text-lg font-extrabold text-amber-400">{BASELINE_MOCK_45C_SCORES.listening}</span>
-              <span className="text-xs text-[#a9b5d0]">➔</span>
-              <span className="text-lg font-extrabold text-emerald-400">76</span>
-            </div>
-            <span className="text-[10px] text-amber-300 font-semibold">+12 pts needed</span>
-          </div>
-
-          <div className="p-3 rounded-xl bg-[#0e1729]/80 border border-blue-500/40">
-            <span className="text-[10px] text-blue-400 uppercase font-semibold block">Speaking</span>
+          <div className="p-3 rounded-xl bg-[#0e1729]/80 border border-red-500/40">
+            <span className="text-[10px] text-red-400 uppercase font-semibold block">Speaking (Top Priority)</span>
             <div className="flex items-center justify-center gap-2 mt-1">
               <span className="text-lg font-extrabold text-blue-300">{BASELINE_MOCK_45C_SCORES.speaking}</span>
               <span className="text-xs text-[#a9b5d0]">➔</span>
-              <span className="text-lg font-extrabold text-emerald-400">79</span>
+              <span className="text-lg font-extrabold text-red-400">{targets.speaking}</span>
             </div>
-            <span className="text-[10px] text-blue-300 font-semibold">+7 pts needed</span>
+            <span className="text-[10px] text-red-300 font-semibold">+{speakingDiff} pts needed</span>
+          </div>
+
+          <div className="p-3 rounded-xl bg-[#0e1729]/80 border border-emerald-500/40">
+            <span className="text-[10px] text-emerald-400 uppercase font-semibold block">Writing (Elite)</span>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <span className="text-lg font-extrabold text-amber-400">{BASELINE_MOCK_45C_SCORES.writing}</span>
+              <span className="text-xs text-[#a9b5d0]">➔</span>
+              <span className="text-lg font-extrabold text-emerald-400">{targets.writing}</span>
+            </div>
+            <span className="text-[10px] text-emerald-300 font-semibold">+{writingDiff} pts needed</span>
+          </div>
+
+          <div className="p-3 rounded-xl bg-[#0e1729]/80 border border-amber-500/40">
+            <span className="text-[10px] text-amber-400 uppercase font-semibold block">Reading</span>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <span className="text-lg font-extrabold text-rose-400">{BASELINE_MOCK_45C_SCORES.reading}</span>
+              <span className="text-xs text-[#a9b5d0]">➔</span>
+              <span className="text-lg font-extrabold text-amber-300">{targets.reading}</span>
+            </div>
+            <span className="text-[10px] text-amber-300 font-semibold">+{readingDiff} pts needed</span>
+          </div>
+
+          <div className="p-3 rounded-xl bg-[#0e1729]/80 border border-purple-500/40">
+            <span className="text-[10px] text-purple-400 uppercase font-semibold block">Listening</span>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <span className="text-lg font-extrabold text-amber-400">{BASELINE_MOCK_45C_SCORES.listening}</span>
+              <span className="text-xs text-[#a9b5d0]">➔</span>
+              <span className="text-lg font-extrabold text-purple-300">{targets.listening}</span>
+            </div>
+            <span className="text-[10px] text-purple-300 font-semibold">+{listeningDiff} pts needed</span>
           </div>
         </div>
 
