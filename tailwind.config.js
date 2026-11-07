@@ -9,20 +9,20 @@ export default {
     extend: {
       colors: {
         pte: {
-          bg: '#f8fafc',
-          bgDark: '#f1f5f9',
-          panel: '#ffffff',
-          panel2: '#f8fafc',
-          border: '#e2e8f0',
-          borderLight: '#cbd5e1',
-          text: '#0f172a',
-          muted: '#64748b',
-          accent: '#2563eb',
-          accentHover: '#1d4ed8',
-          pred: '#db2777',
-          success: '#059669',
-          warning: '#d97706',
-          danger: '#dc2626'
+          bg: '#0b0f19',
+          bgDark: '#080c14',
+          panel: '#151d2e',
+          panel2: '#1c273c',
+          border: '#26334d',
+          borderLight: '#334155',
+          text: '#e2e8f0',
+          muted: '#94a3b8',
+          accent: '#3b82f6',
+          accentHover: '#2563eb',
+          pred: '#a855f7',
+          success: '#10b981',
+          warning: '#f59e0b',
+          danger: '#ef4444'
         }
       },
       fontFamily: {

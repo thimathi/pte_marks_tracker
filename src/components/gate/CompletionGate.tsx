@@ -240,22 +240,22 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
   };
 
   return (
-    <div className="rounded-2xl bg-white border border-slate-200 p-5 lg:p-6 space-y-5 text-slate-900 shadow-sm">
+    <div className="rounded-2xl bg-[#151d2e] border border-slate-800 p-5 lg:p-6 space-y-5 text-slate-200 shadow-sm">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <ShieldAlert className="w-5 h-5 text-blue-600" />
+            <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
+              <ShieldAlert className="w-5 h-5 text-blue-400" />
               Day {dayNumber} Completion Gate & Rollover Lock
             </h2>
             {isCompleted && (
-              <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+              <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-800/60">
                 Completed ✓
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-400 mt-1">
             Mandatory Completion Gate: Day {dayNumber + 1} remains locked until all criteria are fulfilled. Unfinished work rolls over.
           </p>
         </div>
@@ -263,10 +263,10 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
         {/* Status Pill */}
         <div className={`px-3 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-2 self-start ${
           isCompleted
-            ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+            ? 'bg-emerald-950/60 text-emerald-300 border-emerald-800/60'
             : allReady
-            ? 'bg-blue-50 text-blue-800 border-blue-300 animate-pulse'
-            : 'bg-amber-50 text-amber-800 border-amber-300'
+            ? 'bg-blue-950/60 text-blue-300 border-blue-800/60'
+            : 'bg-amber-950/60 text-amber-300 border border-amber-800/60'
         }`}>
           {isCompleted ? <CheckCircle2 className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
           <span>{isCompleted ? 'Day Gate Passed' : allReady ? 'Ready To Unlock Next Day' : 'Prerequisites Pending'}</span>
@@ -277,8 +277,8 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
       {statusMessage && (
         <div className={`p-4 rounded-xl text-xs font-medium border flex items-start gap-2.5 ${
           statusMessage.type === 'success'
-            ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
-            : 'bg-red-50 text-red-800 border-red-300 whitespace-pre-line'
+            ? 'bg-emerald-950/40 text-emerald-300 border-emerald-800/60'
+            : 'bg-red-950/40 text-red-300 border-red-800/60 whitespace-pre-line'
         }`}>
           <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
           <span>{statusMessage.text}</span>
@@ -292,8 +292,8 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
             key={item.id}
             className={`p-3 rounded-xl border flex items-center justify-between transition-colors ${
               item.done
-                ? 'bg-emerald-50/50 border-emerald-300 text-slate-800'
-                : 'bg-slate-50 border-slate-200 text-slate-700'
+                ? 'bg-emerald-950/20 border-emerald-800/50 text-slate-300'
+                : 'bg-[#0d131f] border-slate-800 text-slate-300'
             }`}
           >
             <div className="flex items-center gap-3">
@@ -305,17 +305,17 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
                   title="Click to toggle confirmation"
                 >
                   {item.done ? (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 fill-emerald-100" />
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                   ) : (
-                    <Circle className="w-5 h-5 text-slate-400 hover:text-blue-600" />
+                    <Circle className="w-5 h-5 text-slate-500 hover:text-blue-400" />
                   )}
                 </button>
               ) : (
                 <span className="flex-shrink-0">
                   {item.done ? (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 fill-emerald-100" />
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                   ) : (
-                    <Circle className="w-5 h-5 text-slate-400" />
+                    <Circle className="w-5 h-5 text-slate-500" />
                   )}
                 </span>
               )}
@@ -323,20 +323,20 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   {item.phaseBadge && (
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200">
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-950/50 text-blue-300 border border-blue-800/60">
                       {item.phaseBadge}
                     </span>
                   )}
-                  <span className={`text-xs font-semibold ${item.done ? 'text-emerald-800 line-through opacity-80' : 'text-slate-900'}`}>
+                  <span className={`text-xs font-semibold ${item.done ? 'text-emerald-400 line-through opacity-80' : 'text-slate-100'}`}>
                     {idx + 1}. {item.label}
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-500 mt-0.5">{item.hint}</p>
+                <p className="text-[11px] text-slate-400 mt-0.5">{item.hint}</p>
               </div>
             </div>
 
             <span className={`text-[11px] font-semibold px-2 py-0.5 rounded ${
-              item.done ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+              item.done ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/60' : 'bg-amber-950/60 text-amber-300 border border-amber-800/60'
             }`}>
               {item.done ? 'Fulfilled' : 'Required'}
             </span>
@@ -354,14 +354,14 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
               className={`px-5 py-2.5 rounded-xl font-semibold text-xs flex items-center gap-2 transition-all ${
                 allReady
                   ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm cursor-pointer'
-                  : 'bg-slate-100 text-slate-400 opacity-70 cursor-not-allowed border border-slate-200'
+                  : 'bg-slate-800 text-slate-500 opacity-70 cursor-not-allowed border border-slate-700'
               }`}
             >
               <Unlock className="w-4 h-4" />
               <span>{completing ? 'Validating & Unlocking...' : `Complete Day ${dayNumber} & Unlock Day ${dayNumber + 1}`}</span>
             </button>
           ) : (
-            <div className="flex items-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-4 py-2 rounded-xl">
+            <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400 bg-emerald-950/50 border border-emerald-800/60 px-4 py-2 rounded-xl">
               <Sparkles className="w-4 h-4" />
               <span>Day {dayNumber} is officially completed! Next day unlocked.</span>
             </div>
@@ -372,7 +372,7 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
         {dayNumber < TOTAL_STUDY_DAYS && !isCompleted && (
           <button
             onClick={() => setShowRecoveryModal(true)}
-            className="text-xs text-slate-500 hover:text-red-600 underline flex items-center gap-1 cursor-pointer"
+            className="text-xs text-slate-400 hover:text-red-400 underline flex items-center gap-1 cursor-pointer"
           >
             <AlertCircle className="w-3.5 h-3.5" />
             <span>Emergency Recovery Unlock (Data-Entry Fix)</span>
@@ -382,36 +382,36 @@ export const CompletionGate: React.FC<CompletionGateProps> = ({ dayNumber }) => 
 
       {/* Emergency Recovery Modal */}
       {showRecoveryModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-xl text-slate-900">
-            <div className="flex items-center gap-2 text-red-600">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+          <div className="bg-[#151d2e] border border-slate-800 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-xl text-slate-200">
+            <div className="flex items-center gap-2 text-red-400">
               <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <h3 className="text-base font-bold text-slate-900">Emergency Recovery Unlock</h3>
+              <h3 className="text-base font-bold text-slate-100">Emergency Recovery Unlock</h3>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-slate-400 leading-relaxed">
               This recovery mechanism exists for accidental data-entry errors or external scoring sync issues. All recovery unlocks are permanently recorded in your study audit log.
             </p>
             <div>
-              <label className="block text-xs font-semibold text-slate-800 mb-1">
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
                 Reason for Emergency Unlock (Required):
               </label>
               <textarea
                 value={recoveryReason}
                 onChange={(e) => setRecoveryReason(e.target.value)}
                 placeholder="e.g. Completed offline mock test with instructor; scores recorded in paper log"
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs text-slate-900 focus:outline-none focus:border-red-500 min-h-[80px]"
+                className="w-full bg-[#0d131f] border border-slate-700 rounded-xl p-3 text-xs text-slate-100 focus:outline-none focus:border-red-500 min-h-[80px]"
               />
             </div>
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
                 onClick={() => setShowRecoveryModal(false)}
-                className="px-4 py-2 rounded-xl bg-slate-100 text-xs font-semibold text-slate-700 hover:bg-slate-200 border border-slate-200"
+                className="px-4 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 hover:bg-slate-700 border border-slate-700 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleEmergencyUnlock}
-                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-xs font-semibold text-white shadow-sm"
+                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-xs font-semibold text-white shadow-sm cursor-pointer"
               >
                 Confirm Unlock Day {dayNumber + 1}
               </button>

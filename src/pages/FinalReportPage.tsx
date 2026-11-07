@@ -118,15 +118,15 @@ export const FinalReportPage: React.FC = () => {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Action Header (Hidden in Print) */}
-      <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-white border border-slate-200 p-6 shadow-xs">
+      <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-[#151d2e] border border-slate-800 p-6 shadow-xs text-slate-200">
         <div>
           <div className="flex items-center gap-2">
-            <Award className="w-6 h-6 text-blue-600" />
-            <h1 className="text-xl font-bold text-slate-900">
+            <Award className="w-6 h-6 text-blue-400" />
+            <h1 className="text-xl font-bold text-slate-100">
               Final Report — PTE - Daily Study Plan – Superior English
             </h1>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-400 mt-1">
             Complete executive performance audit across {totalPracticeTarget.toLocaleString()} practice questions and {totalMocks} mock exams. Print-friendly layout.
           </p>
         </div>
@@ -142,7 +142,7 @@ export const FinalReportPage: React.FC = () => {
 
           <button
             onClick={() => exportPracticeScoresCsv(days, studyPlan)}
-            className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700 border border-slate-200 flex items-center gap-2 cursor-pointer transition-colors"
+            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 border border-slate-700 flex items-center gap-2 cursor-pointer transition-colors"
           >
             <Download className="w-4 h-4" />
             <span>CSV Export</span>
@@ -151,64 +151,64 @@ export const FinalReportPage: React.FC = () => {
       </div>
 
       {/* Printable Report Document Card */}
-      <div className="card-print bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 space-y-8 shadow-xs">
+      <div className="card-print bg-[#151d2e] border border-slate-800 rounded-3xl p-6 sm:p-10 space-y-8 shadow-xs text-slate-200">
         {/* Document Header */}
-        <div className="border-b border-slate-200 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="border-b border-slate-800 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold px-2.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+              <span className="text-xs font-bold px-2.5 py-0.5 rounded bg-blue-950/60 text-blue-300 border border-blue-800/60">
                 PTE BRIDGE OFFICIAL AUDIT
               </span>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-slate-400">
                 {formatDateFriendly(new Date().toISOString().split('T')[0])}
               </span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-100 mt-2">
               PTE - Daily Study Plan – Superior English
             </h2>
-            <p className="text-xs text-slate-500">
-              Started: <b className="text-slate-800">{formatDateFriendly(studyPlan.startDate)}</b> · 15h Daily Protocol (~280 Qs / Day) · Target: S:{studyPlan.targetScores.speaking || 87} · W:{studyPlan.targetScores.writing || 84} · Overall {studyPlan.targetScores.overall}+
+            <p className="text-xs text-slate-400">
+              Started: <b className="text-slate-200">{formatDateFriendly(studyPlan.startDate)}</b> · 15h Daily Protocol (273 Qs / Day) · Target: S:{studyPlan.targetScores.speaking || 87} · W:{studyPlan.targetScores.writing || 84} · Overall {studyPlan.targetScores.overall}+
             </p>
           </div>
 
           <div className="text-left sm:text-right">
-            <div className="text-3xl font-extrabold text-blue-600">
+            <div className="text-3xl font-extrabold text-blue-400">
               {overallAvg !== null ? `${overallAvg}/90` : '—'}
             </div>
-            <span className="text-xs text-slate-500">Practice Average Across All Attempts</span>
+            <span className="text-xs text-slate-400">Practice Average Across All Attempts</span>
           </div>
         </div>
 
         {/* Executive Summary Key Metrics Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-            <span className="text-[11px] text-slate-500 block">Days Completed</span>
-            <div className="text-2xl font-bold text-slate-900">{completedDaysCount} / {totalDays}</div>
-            <span className="text-[10px] text-emerald-600 font-semibold">
+          <div className="p-4 rounded-xl bg-[#0d131f] border border-slate-800">
+            <span className="text-[11px] text-slate-400 block">Days Completed</span>
+            <div className="text-2xl font-bold text-slate-100">{completedDaysCount} / {totalDays}</div>
+            <span className="text-[10px] text-emerald-400 font-semibold">
               {Math.round((completedDaysCount / totalDays) * 100)}% Journey Progress
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-            <span className="text-[11px] text-slate-500 block">Practice Questions</span>
-            <div className="text-2xl font-bold text-slate-900">{totalPracticeQuestionsScored} / {totalPracticeTarget.toLocaleString()}</div>
-            <span className="text-[10px] text-blue-600 font-semibold">
-              Target: 300 Qs / Day (High Score Weight Priority)
+          <div className="p-4 rounded-xl bg-[#0d131f] border border-slate-800">
+            <span className="text-[11px] text-slate-400 block">Practice Questions</span>
+            <div className="text-2xl font-bold text-slate-100">{totalPracticeQuestionsScored} / {totalPracticeTarget.toLocaleString()}</div>
+            <span className="text-[10px] text-blue-400 font-semibold">
+              Target: 153 Practice Qs / Day
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-            <span className="text-[11px] text-slate-500 block">Mock Simulations</span>
-            <div className="text-2xl font-bold text-slate-900">{totalMocksDone} / {totalMocks}</div>
-            <span className="text-[10px] text-purple-600 font-semibold">
-              1 Mock / Day + Error Audit
+          <div className="p-4 rounded-xl bg-[#0d131f] border border-slate-800">
+            <span className="text-[11px] text-slate-400 block">Mock Simulations</span>
+            <div className="text-2xl font-bold text-slate-100">{totalMocksDone} / {totalMocks}</div>
+            <span className="text-[10px] text-purple-400 font-semibold">
+              2 Mocks / Day + Error Audit
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
-            <span className="text-[11px] text-slate-500 block">Mock Reviews</span>
-            <div className="text-2xl font-bold text-slate-900">{totalMockReviewsDone} / {totalMocks}</div>
-            <span className="text-[10px] text-amber-600 font-semibold">
+          <div className="p-4 rounded-xl bg-[#0d131f] border border-slate-800">
+            <span className="text-[11px] text-slate-400 block">Mock Reviews</span>
+            <div className="text-2xl font-bold text-slate-100">{totalMockReviewsDone} / {totalMocks}</div>
+            <span className="text-[10px] text-amber-400 font-semibold">
               Deep Error Analysis
             </span>
           </div>
@@ -216,56 +216,56 @@ export const FinalReportPage: React.FC = () => {
 
         {/* Skill Averages Matrix */}
         <div className="space-y-3">
-          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-blue-600" />
+          <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-blue-400" />
             Four Skills Competency Breakdown
           </h3>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-200">
-              <span className="text-xs font-semibold text-blue-700">Speaking</span>
-              <div className="text-2xl font-bold text-slate-900 mt-1">
+            <div className="p-4 rounded-xl bg-blue-950/30 border border-blue-900/60">
+              <span className="text-xs font-semibold text-blue-400">Speaking</span>
+              <div className="text-2xl font-bold text-slate-100 mt-1">
                 {speakingAvg !== null ? `${speakingAvg}/90` : '—'}
               </div>
-              <span className="text-[10px] text-slate-500">Target: {studyPlan.targetScores.speaking}+</span>
+              <span className="text-[10px] text-slate-400">Target: {studyPlan.targetScores.speaking}+</span>
             </div>
 
-            <div className="p-4 rounded-xl bg-purple-50/60 border border-purple-200">
-              <span className="text-xs font-semibold text-purple-700">Writing</span>
-              <div className="text-2xl font-bold text-slate-900 mt-1">
+            <div className="p-4 rounded-xl bg-purple-950/30 border border-purple-900/60">
+              <span className="text-xs font-semibold text-purple-400">Writing</span>
+              <div className="text-2xl font-bold text-slate-100 mt-1">
                 {writingAvg !== null ? `${writingAvg}/90` : '—'}
               </div>
-              <span className="text-[10px] text-slate-500">Target: {studyPlan.targetScores.writing}+</span>
+              <span className="text-[10px] text-slate-400">Target: {studyPlan.targetScores.writing}+</span>
             </div>
 
-            <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200">
-              <span className="text-xs font-semibold text-emerald-700">Reading</span>
-              <div className="text-2xl font-bold text-slate-900 mt-1">
+            <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-900/60">
+              <span className="text-xs font-semibold text-emerald-400">Reading</span>
+              <div className="text-2xl font-bold text-slate-100 mt-1">
                 {readingAvg !== null ? `${readingAvg}/90` : '—'}
               </div>
-              <span className="text-[10px] text-slate-500">Target: {studyPlan.targetScores.reading}+</span>
+              <span className="text-[10px] text-slate-400">Target: {studyPlan.targetScores.reading}+</span>
             </div>
 
-            <div className="p-4 rounded-xl bg-amber-50/60 border border-amber-200">
-              <span className="text-xs font-semibold text-amber-700">Listening</span>
-              <div className="text-2xl font-bold text-slate-900 mt-1">
+            <div className="p-4 rounded-xl bg-amber-950/30 border border-amber-900/60">
+              <span className="text-xs font-semibold text-amber-400">Listening</span>
+              <div className="text-2xl font-bold text-slate-100 mt-1">
                 {listeningAvg !== null ? `${listeningAvg}/90` : '—'}
               </div>
-              <span className="text-[10px] text-slate-500">Target: {studyPlan.targetScores.listening}+</span>
+              <span className="text-[10px] text-slate-400">Target: {studyPlan.targetScores.listening}+</span>
             </div>
           </div>
         </div>
 
         {/* Mock Exam Score Progression & Net Improvement */}
-        <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-purple-600" />
+        <div className="p-5 rounded-2xl bg-[#0d131f] border border-slate-800 space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+            <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-purple-400" />
               Mock Simulation Trajectory & Net Gain
             </h3>
             {mockImprovement !== null && (
               <span className={`text-xs font-bold px-2.5 py-0.5 rounded ${
-                mockImprovement >= 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                mockImprovement >= 0 ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-red-950 text-red-300 border border-red-800'
               }`}>
                 {mockImprovement >= 0 ? `+${mockImprovement.toFixed(1)} Points Gain` : `${mockImprovement.toFixed(1)} Points`}
               </span>
@@ -274,22 +274,22 @@ export const FinalReportPage: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
             <div>
-              <span className="text-slate-500 block">First Mock Exam (Mock 1):</span>
-              <span className="text-base font-bold text-slate-900">
+              <span className="text-slate-400 block">First Mock Exam (Mock 1):</span>
+              <span className="text-base font-bold text-slate-100">
                 {firstMock !== null ? `${firstMock} / 90` : 'Not recorded yet'}
               </span>
             </div>
 
             <div>
-              <span className="text-slate-500 block">Latest Recorded Mock:</span>
-              <span className="text-base font-bold text-blue-600">
+              <span className="text-slate-400 block">Latest Recorded Mock:</span>
+              <span className="text-base font-bold text-blue-400">
                 {latestMock !== null ? `${latestMock} / 90` : 'Not recorded yet'}
               </span>
             </div>
 
             <div>
-              <span className="text-slate-500 block">Target Mock Benchmark:</span>
-              <span className="text-base font-bold text-emerald-600">
+              <span className="text-slate-400 block">Target Mock Benchmark:</span>
+              <span className="text-base font-bold text-emerald-400">
                 {studyPlan.targetScores.mockExam}+ / 90
               </span>
             </div>
@@ -298,58 +298,58 @@ export const FinalReportPage: React.FC = () => {
 
         {/* Best and Weakest Question Types */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-200 space-y-2">
-            <span className="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Best Performing Modules
+          <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-900/40 space-y-2">
+            <span className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Best Performing Modules
             </span>
             {bestTypes.length > 0 ? (
               <div className="space-y-1.5">
                 {bestTypes.map((t) => (
                   <div key={t.meta.id} className="flex justify-between text-xs">
-                    <span className="text-slate-800 font-medium">{t.meta.name}</span>
-                    <span className="font-bold text-emerald-700">{t.average?.toFixed(1)} / 90</span>
+                    <span className="text-slate-300 font-medium">{t.meta.name}</span>
+                    <span className="font-bold text-emerald-400">{t.average?.toFixed(1)} / 90</span>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-slate-400">Score practice questions to populate</p>
+              <p className="text-xs text-slate-500">Score practice questions to populate</p>
             )}
           </div>
 
-          <div className="p-4 rounded-xl bg-amber-50/50 border border-amber-200 space-y-2">
-            <span className="text-xs font-bold text-amber-800 flex items-center gap-1.5">
-              <AlertTriangle className="w-4 h-4 text-amber-600" /> Focus & Weak Modules
+          <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-900/40 space-y-2">
+            <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+              <AlertTriangle className="w-4 h-4 text-amber-400" /> Focus & Weak Modules
             </span>
             {weakestTypes.length > 0 ? (
               <div className="space-y-1.5">
                 {weakestTypes.map((t) => (
                   <div key={t.meta.id} className="flex justify-between text-xs">
-                    <span className="text-slate-800 font-medium">{t.meta.name}</span>
-                    <span className="font-bold text-amber-700">{t.average?.toFixed(1)} / 90</span>
+                    <span className="text-slate-300 font-medium">{t.meta.name}</span>
+                    <span className="font-bold text-amber-400">{t.average?.toFixed(1)} / 90</span>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-slate-400">Score practice questions to populate</p>
+              <p className="text-xs text-slate-500">Score practice questions to populate</p>
             )}
           </div>
         </div>
 
         {/* Personal Notes and Lessons Learned */}
         <div className="space-y-2">
-          <label className="block text-xs font-bold text-slate-900">
+          <label className="block text-xs font-bold text-slate-200">
             Personal Study Notes & Lessons Learned (Printed in PDF Report):
           </label>
           <textarea
             value={personalNotes}
             onChange={(e) => handleNotesChange(e.target.value)}
             placeholder="Document key takeaways, exam day strategies, microphone placement tips, and mindset notes..."
-            className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-900 focus:outline-none focus:border-blue-500 min-h-[100px]"
+            className="w-full bg-[#0d131f] border border-slate-700 rounded-2xl p-4 text-xs text-slate-100 focus:outline-none focus:border-blue-500 min-h-[100px]"
           />
         </div>
 
         {/* Footer verification note */}
-        <div className="pt-4 border-t border-slate-200 text-[11px] text-slate-500 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="pt-4 border-t border-slate-800 text-[11px] text-slate-500 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <span>PTE Academic {totalDays}-Day Preparation Progress Tracking Application</span>
           <span>Verified Firebase Realtime Database Records · Asian Southeast (Singapore)</span>
         </div>

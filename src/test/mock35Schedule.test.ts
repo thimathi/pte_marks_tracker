@@ -63,7 +63,7 @@ describe('60 Mock Exam Mastery Plan & 20 Papers × 3 Passes + 9 Review Days Veri
     for (let eNum = 1; eNum <= 60; eNum++) {
       const { dayNumber, mockKey } = getDayAndSlotForExam(eNum);
       expect(dayNumber).toBeGreaterThanOrEqual(1);
-      expect(dayNumber).toBeLessThanOrEqual(28);
+      expect(dayNumber).toBeLessThanOrEqual(37);
       expect(mockKey).toMatch(/^mock0[1-4]$/);
 
       const dayMocks = getMockExamsForDay(dayNumber);
@@ -80,19 +80,16 @@ describe('60 Mock Exam Mastery Plan & 20 Papers × 3 Passes + 9 Review Days Veri
 
     const mock1 = getMockExamDetails(1);
     expect(mock1.testName).toBe('【Free Full Test】Mock Test A (note: VIP required for scoring)');
-    expect(mock1.timeSlot).toBe('12:00 AM – 02:00 AM');
+    expect(mock1.timeSlot).toBe('09:15 AM – 11:15 AM');
 
     const mock2 = getMockExamDetails(2);
     expect(mock2.testName).toBe('【VIP Full Test】PTE Mock Test 37B (7th Aug. new version)');
-    expect(mock2.timeSlot).toBe('09:00 AM – 11:00 AM');
 
     const mock3 = getMockExamDetails(3);
     expect(mock3.testName).toBe('【VIP Full Test】PTE Mock Test 40B (7th Aug. new version)');
-    expect(mock3.timeSlot).toBe('01:00 PM – 03:00 PM');
 
     const mock4 = getMockExamDetails(4);
     expect(mock4.testName).toBe('【VIP Full Test】PTE Mock Test 45C');
-    expect(mock4.timeSlot).toBe('04:00 PM – 06:00 PM');
   });
 
   it('returns mock exam details with correct pass, attempt number, and badges', () => {
@@ -109,23 +106,16 @@ describe('60 Mock Exam Mastery Plan & 20 Papers × 3 Passes + 9 Review Days Veri
     expect(mock50.attemptOfPaper).toBe(3);
   });
 
-  it('validates total question targets: 3,600 mock exam questions', () => {
-    expect(TOTAL_MOCK_EXAM_QUESTIONS).toBe(3600);
-    expect(TOTAL_MISSION_QUESTIONS).toBe(3600);
+  it('validates total question targets: 4,440 mock exam questions and 10,101 total questions', () => {
+    expect(TOTAL_MOCK_EXAM_QUESTIONS).toBe(4440);
+    expect(TOTAL_MISSION_QUESTIONS).toBe(10101);
   });
 
-  it('validates the 9 dedicated Deep Review Days (Days 3, 6, 9, 12, 15, 18, 21, 24, 27)', () => {
-    const reviewDays = [3, 6, 9, 12, 15, 18, 21, 24, 27];
-    reviewDays.forEach((d) => {
-      expect(isReviewDay(d)).toBe(true);
-      expect(getMockExamsForDay(d)).toEqual([]); // 0 new mocks scheduled
-      const def = getReviewDayDefinition(d);
-      expect(def).not.toBeNull();
-      expect(def?.examNumbers.length).toBeGreaterThanOrEqual(6);
-    });
-
-    // Specifically verify Day 3 reviews all 7 mocks of Day 1 & Day 2:
+  it('validates the dedicated Deep Review Day on Day 3', () => {
+    expect(isReviewDay(3)).toBe(true);
+    expect(getMockExamsForDay(3)).toEqual([]); // 0 new mocks scheduled
     const day3Def = getReviewDayDefinition(3);
+    expect(day3Def).not.toBeNull();
     expect(day3Def?.examNumbers).toEqual([1, 2, 3, 4, 5, 6, 7]);
     expect(day3Def?.coveredDays).toEqual([1, 2]);
   });

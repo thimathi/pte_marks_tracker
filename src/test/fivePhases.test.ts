@@ -32,8 +32,8 @@ describe('6-Phase Daily Study Curriculum Verification', () => {
       totalQs += phase.questionCount;
     }
     expect(totalQs).toBe(120);
-    expect(DAILY_PRACTICE_TARGET).toBe(0);
-    expect(DAILY_MOCK_TARGET).toBe(3);
+    expect(DAILY_PRACTICE_TARGET).toBe(153);
+    expect(DAILY_MOCK_TARGET).toBe(2);
   });
 
   it('configures Phase 1: Mock Exam 1 (8-10 AM), 20 Qs (DI 12 + SGD 8), Tongue Twisters 2x', () => {

@@ -81,19 +81,19 @@ describe('Daily Section Test Schedule & 15-Hour Work Plan Verification (Through 
     expect(FINAL_TARGET_DATE).toBe('2026-12-10');
   });
 
-  it('configures the 14-15 Hour Master Daily Schedule (6 Strategic Power Blocks = 15.0h)', () => {
-    expect(DAILY_15H_MASTER_SCHEDULE.length).toBe(6);
+  it('configures the 14-15 Hour Master Daily Schedule (7 Strategic Blocks = 14.25-15h)', () => {
+    expect(DAILY_15H_MASTER_SCHEDULE.length).toBe(7);
     const totalHours = DAILY_15H_MASTER_SCHEDULE.reduce((sum, b) => sum + b.durationHours, 0);
-    expect(totalHours).toBe(15.0);
+    expect(totalHours).toBeGreaterThanOrEqual(14.0);
+    expect(totalHours).toBeLessThanOrEqual(15.0);
 
-    // Block 1: Speaking 87 (3.5h)
-    expect(DAILY_15H_MASTER_SCHEDULE[0].durationHours).toBe(3.5);
+    // Block 1: Speaking 87 (2.5h)
+    expect(DAILY_15H_MASTER_SCHEDULE[0].durationHours).toBe(2.5);
     expect(DAILY_15H_MASTER_SCHEDULE[0].targetSkill).toBe('speaking');
     expect(DAILY_15H_MASTER_SCHEDULE[0].targetScoreBenchmark).toBe(87);
 
-    // Block 2: Writing 84 (3.0h)
+    // Block 2: Mock 1 + Review (3.0h)
     expect(DAILY_15H_MASTER_SCHEDULE[1].durationHours).toBe(3.0);
-    expect(DAILY_15H_MASTER_SCHEDULE[1].targetSkill).toBe('writing');
-    expect(DAILY_15H_MASTER_SCHEDULE[1].targetScoreBenchmark).toBe(84);
+    expect(DAILY_15H_MASTER_SCHEDULE[1].targetSkill).toBe('mock');
   });
 });

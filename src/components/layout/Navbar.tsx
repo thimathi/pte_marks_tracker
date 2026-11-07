@@ -61,7 +61,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
   ];
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
+    <header className="sticky top-0 z-30 bg-[#151d2e]/95 backdrop-blur-md border-b border-slate-800 shadow-sm text-slate-200">
       {/* Main Top Bar */}
       <div className="px-3 sm:px-5 lg:px-6 py-2.5">
         <div className="flex items-center justify-between max-w-[1720px] mx-auto gap-4">
@@ -70,7 +70,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
             {onToggleSidebar && (
               <button
                 onClick={onToggleSidebar}
-                className="lg:hidden p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 transition-colors"
+                className="lg:hidden p-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition-colors"
                 aria-label="Toggle navigation menu"
               >
                 {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -83,22 +83,22 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm sm:text-base tracking-tight text-slate-900 whitespace-nowrap">
+                  <span className="font-bold text-sm sm:text-base tracking-tight text-slate-100 whitespace-nowrap">
                     PTE Marks Tracker
                   </span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold border border-blue-200 whitespace-nowrap">
-                    15h Master Protocol
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-950/60 text-blue-300 font-semibold border border-blue-800/60 whitespace-nowrap">
+                    2 Mocks + 153 Practice Qs · 273 Qs/Day
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-500 leading-tight truncate">
-                  Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-04')} · {totalDays} Days · Target S:{studyPlan?.targetScores?.speaking || 87} · W:{studyPlan?.targetScores?.writing || 84} · Overall {studyPlan?.targetScores?.overall || 78}+
+                <p className="text-[11px] text-slate-400 leading-tight truncate">
+                  Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-04')} · {totalDays} Days · S:{studyPlan?.targetScores?.speaking || 87} · W:{studyPlan?.targetScores?.writing || 84} · R:{studyPlan?.targetScores?.reading || 69} · L:{studyPlan?.targetScores?.listening || 68} · Overall {studyPlan?.targetScores?.overall || 78}+
                 </p>
               </div>
             </Link>
           </div>
 
           {/* Desktop Center: Primary Navigation Links */}
-          <nav className="hidden 2xl:flex items-center gap-1 bg-slate-100 border border-slate-200 rounded-xl p-1 shrink-0">
+          <nav className="hidden 2xl:flex items-center gap-1 bg-[#0d131f] border border-slate-800 rounded-xl p-1 shrink-0">
             {navLinks.map((item) => {
               const Icon = item.icon;
               return (
@@ -109,14 +109,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                     `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                       isActive
                         ? 'bg-blue-600 text-white shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
+                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                     }`
                   }
                 >
                   <Icon className="w-3.5 h-3.5" />
                   <span>{item.label}</span>
                   {item.badge && (
-                    <span className="text-[9px] px-1 rounded bg-white text-blue-700 border border-slate-200 font-medium">
+                    <span className="text-[9px] px-1 rounded bg-[#151d2e] text-blue-300 border border-slate-700 font-medium">
                       {item.badge}
                     </span>
                   )}
@@ -128,18 +128,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
           {/* Center-Right: Active View Day Switcher & Streak */}
           <div className="hidden md:flex items-center gap-2.5 shrink-0">
             {/* Today's Mock Exams Mini Status Indicator */}
-            <div className="flex items-center gap-1 bg-slate-100 border border-slate-200 rounded-xl px-2 py-1" title="Today's Mock Exams Status">
-              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mr-1">Mocks:</span>
+            <div className="flex items-center gap-1 bg-[#0d131f] border border-slate-800 rounded-xl px-2 py-1" title="Today's Mock Exams Status">
+              <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mr-1">Mocks:</span>
               {todayMockStatuses.map((m) => (
                 <Link
                   key={m.key}
                   to="/mock-exams"
                   className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold transition-transform hover:scale-105 ${
                     m.isFullyDone
-                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                      ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/60'
                       : m.isMockDone
-                      ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                      : 'bg-white text-slate-400 border border-slate-200'
+                      ? 'bg-amber-950/60 text-amber-300 border border-amber-800/60'
+                      : 'bg-[#151d2e] text-slate-500 border border-slate-800'
                   }`}
                   title={`Mock ${m.index}: ${m.isFullyDone ? 'Completed & Reviewed' : m.isMockDone ? 'Review Pending!' : 'Pending'}`}
                 >
@@ -149,12 +149,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
             </div>
 
             {/* Day Selector Pill */}
-            <div className="flex items-center gap-2 bg-slate-100 border border-slate-200 rounded-xl px-2.5 py-1">
-              <span className="text-xs text-slate-500">Day:</span>
+            <div className="flex items-center gap-2 bg-[#0d131f] border border-slate-800 rounded-xl px-2.5 py-1">
+              <span className="text-xs text-slate-400">Day:</span>
               <select
                 value={currentDay}
                 onChange={(e) => selectDay(Number(e.target.value))}
-                className="bg-white text-xs font-semibold text-blue-700 rounded-lg px-2 py-1 border border-slate-300 focus:outline-none focus:border-blue-500 cursor-pointer shadow-2xs"
+                className="bg-[#151d2e] text-xs font-semibold text-blue-400 rounded-lg px-2 py-1 border border-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer"
               >
                 {Array.from({ length: studyPlan.durationDays || TOTAL_STUDY_DAYS }, (_, i) => i + 1).map((d) => {
                   const dayStatus = days[d]?.status;
@@ -166,15 +166,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                   );
                 })}
               </select>
-              <span className="text-xs text-slate-500 flex items-center gap-1 border-l border-slate-200 pl-2">
-                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+              <span className="text-xs text-slate-400 flex items-center gap-1 border-l border-slate-800 pl-2">
+                <Calendar className="w-3.5 h-3.5 text-slate-500" />
                 {formatDateFriendly(currentDayData?.date || studyPlan.startDate)}
               </span>
             </div>
 
             {/* Streak Badge */}
-            <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold">
-              <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+            <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-950/50 border border-amber-800/60 text-amber-300 text-xs font-semibold">
+              <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-400" />
               <span>{streak}d</span>
             </div>
           </div>
@@ -186,13 +186,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
             {user ? (
               <div className="flex items-center gap-2">
                 <div className="hidden lg:block text-right">
-                  <p className="text-xs font-semibold text-slate-800 truncate max-w-[130px]">{user.email}</p>
-                  <p className="text-[10px] text-emerald-700 font-medium">Authenticated</p>
+                  <p className="text-xs font-semibold text-slate-300 truncate max-w-[130px]">{user.email}</p>
+                  <p className="text-[10px] text-emerald-400 font-medium">Authenticated</p>
                 </div>
                 <button
                   onClick={logout}
                   title="Sign out"
-                  className="p-2 rounded-xl bg-slate-100 border border-slate-200 text-slate-600 hover:text-red-600 hover:border-red-300 hover:bg-red-50 transition-colors"
+                  className="p-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-400 hover:text-red-400 hover:border-red-800 hover:bg-red-950/40 transition-colors"
                   aria-label="Sign out"
                 >
                   <LogOut className="w-4 h-4" />
@@ -211,7 +211,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
       </div>
 
       {/* Secondary Quick Navigation Bar for Mobile and Medium Screens */}
-      <div className="2xl:hidden border-t border-slate-200 bg-slate-50 px-3 py-1.5 overflow-x-auto scrollbar-none">
+      <div className="2xl:hidden border-t border-slate-800 bg-[#0d131f] px-3 py-1.5 overflow-x-auto scrollbar-none">
         <div className="flex items-center gap-1 min-w-max max-w-[1720px] mx-auto">
           {navLinks.map((item) => {
             const Icon = item.icon;
@@ -223,7 +223,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                   `flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                     isActive
                       ? 'bg-blue-600 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/70'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                   }`
                 }
               >

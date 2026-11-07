@@ -25,7 +25,7 @@ describe('Mandatory Rollover, Locking, and Gate Requirements', () => {
     expect(Object.keys(day1.mockReviews).length).toBe(4);
 
     const breakdown = calculateDayBreakdown(day1, DEFAULT_QUESTION_TARGETS);
-    expect(breakdown.totalDailyTarget).toBe(120);
+    expect(breakdown.totalDailyTarget).toBe(153);
     expect(breakdown.totalCompleted).toBe(0);
   });
 
@@ -35,9 +35,9 @@ describe('Mandatory Rollover, Locking, and Gate Requirements', () => {
     expect(Object.keys(day2.mockReviews).length).toBe(3);
 
     const breakdown = calculateDayBreakdown(day2, DEFAULT_QUESTION_TARGETS);
-    expect(breakdown.totalDailyTarget).toBe(120);
+    expect(breakdown.totalDailyTarget).toBe(153);
     expect(breakdown.totalCompleted).toBe(0);
-    expect(breakdown.totalCompleted < 120).toBe(true);
+    expect(breakdown.totalCompleted < 153).toBe(true);
   });
 
   it('requires both Mock Exam score and Mock Review to mark simulation complete', () => {

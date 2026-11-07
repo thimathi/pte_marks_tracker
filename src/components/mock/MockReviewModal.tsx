@@ -109,24 +109,24 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-2xl w-full my-8 space-y-5 shadow-2xl text-slate-900">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs overflow-y-auto">
+      <div className="bg-[#151d2e] border border-slate-800 rounded-2xl p-6 max-w-2xl w-full my-8 space-y-5 shadow-2xl text-slate-200">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
           <div>
             <div className="flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-blue-600" />
-              <h3 className="text-lg font-bold text-slate-900">
+              <BookOpen className="w-5 h-5 text-blue-400" />
+              <h3 className="text-lg font-bold text-slate-100">
                 Mock Exam {mockExam.examNumber} (Day {mockExam.studyDay}) Deep Review
               </h3>
             </div>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-slate-400 mt-1">
               Minimum 60-Minute Error Analysis, Vocabulary Log & Corrective Action Plan
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -135,8 +135,8 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-800 mb-1 flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-blue-600" />
+              <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-blue-400" />
                 Review Duration (Minutes)
               </label>
               <input
@@ -145,14 +145,14 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
                 max="300"
                 value={durationMinutes}
                 onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-500"
+                className="w-full bg-[#0d131f] border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-800 mb-1 flex items-center gap-1.5">
-                <AlertOctagon className="w-3.5 h-3.5 text-red-500" />
+              <label className="block text-xs font-semibold text-slate-300 mb-1 flex items-center gap-1.5">
+                <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />
                 Repeated Mistakes
               </label>
               <input
@@ -160,25 +160,25 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
                 placeholder="e.g. Pausing on commas in Read Aloud, spelling in WFD"
                 value={repeatedMistakes}
                 onChange={(e) => setRepeatedMistakes(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-500"
+                className="w-full bg-[#0d131f] border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-blue-500"
               />
             </div>
           </div>
 
           {/* Read Aloud (RA) Deep Question-by-Question Review Section */}
-          <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-200 space-y-3">
-            <div className="flex items-center justify-between border-b border-blue-200/60 pb-2">
+          <div className="p-4 rounded-xl bg-blue-950/30 border border-blue-900/60 space-y-3">
+            <div className="flex items-center justify-between border-b border-blue-900/40 pb-2">
               <div className="flex items-center gap-2">
-                <Mic className="w-4 h-4 text-blue-700" />
-                <h4 className="text-xs font-bold text-blue-900 uppercase tracking-wider">
+                <Mic className="w-4 h-4 text-blue-400" />
+                <h4 className="text-xs font-bold text-blue-300 uppercase tracking-wider">
                   Read Aloud (RA) Detailed Question Breakdown
                 </h4>
               </div>
               {raAverage !== null && (
                 <span className={`text-xs font-bold px-2 py-0.5 rounded border ${
                   raAverage >= 78
-                    ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                    : 'bg-amber-100 text-amber-800 border-amber-300'
+                    ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
+                    : 'bg-amber-950 text-amber-300 border-amber-800'
                 }`}>
                   RA Avg: {raAverage}/90
                 </span>
@@ -187,7 +187,7 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                <label className="block text-[11px] font-semibold text-slate-300 mb-1">
                   RA Questions Count:
                 </label>
                 <input
@@ -197,12 +197,12 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
                   value={raQuestionCount}
                   onChange={(e) => setRaQuestionCount(Number(e.target.value))}
                   placeholder="e.g. 6 or 7"
-                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500 font-bold"
+                  className="w-full bg-[#0d131f] border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 font-bold"
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                <label className="block text-[11px] font-semibold text-slate-300 mb-1">
                   Individual RA Question Scores (Separated by Commas):
                 </label>
                 <input
@@ -210,7 +210,7 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
                   value={raScores}
                   onChange={(e) => setRaScores(e.target.value)}
                   placeholder="e.g. 78, 82, 65, 88, 70, 75"
-                  className="w-full bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500 font-mono font-medium"
+                  className="w-full bg-[#0d131f] border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 font-mono font-medium"
                 />
               </div>
             </div>
@@ -218,16 +218,16 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
             {/* Live parsed score pills */}
             {parsedRaScores.length > 0 && (
               <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                <span className="text-[10px] text-slate-500 font-semibold mr-1">Parsed Scores:</span>
+                <span className="text-[10px] text-slate-400 font-semibold mr-1">Parsed Scores:</span>
                 {parsedRaScores.map((score, i) => (
                   <span
                     key={i}
                     className={`text-[11px] font-bold px-2 py-0.5 rounded border ${
                       score >= 78
-                        ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                        ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
                         : score >= 65
-                        ? 'bg-blue-100 text-blue-800 border-blue-300'
-                        : 'bg-rose-100 text-rose-800 border-rose-300'
+                        ? 'bg-blue-950 text-blue-300 border-blue-800'
+                        : 'bg-rose-950 text-rose-300 border-rose-800'
                     }`}
                   >
                     Q{i + 1}: {score}
@@ -239,10 +239,10 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
             {/* RA Deficiencies / Weaknesses & Adupadu */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-[11px] font-semibold text-slate-700">
+                <label className="block text-[11px] font-semibold text-slate-300">
                   RA Deficiencies, Errors & Weaknesses (අඩුපාඩු):
                 </label>
-                <span className="text-[10px] text-slate-500">Click tag to insert</span>
+                <span className="text-[10px] text-slate-400">Click tag to insert</span>
               </div>
 
               {/* Quick tags */}
@@ -259,7 +259,7 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
                     key={tag}
                     type="button"
                     onClick={() => addRaDeficiencyTag(tag)}
-                    className="text-[10px] px-2 py-0.5 rounded-md bg-white hover:bg-slate-100 text-blue-700 border border-slate-300 transition-colors shadow-2xs"
+                    className="text-[10px] px-2 py-0.5 rounded-md bg-[#0d131f] hover:bg-slate-800 text-blue-300 border border-slate-700 transition-colors shadow-2xs"
                   >
                     + {tag}
                   </button>
@@ -271,118 +271,118 @@ export const MockReviewModal: React.FC<MockReviewModalProps> = ({
                 placeholder="Describe specific weaknesses in RA questions (e.g. Q3 had long pause before commas, skipped ending 's' in 'demonstrates', flat intonation)"
                 value={raDeficiencies}
                 onChange={(e) => setRaDeficiencies(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-lg p-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500 resize-none"
+                className="w-full bg-[#0d131f] border border-slate-700 rounded-lg p-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 resize-none"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-800 mb-1">
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
                 Pronunciation & Fluency Issues (Speaking)
               </label>
               <textarea
                 placeholder="Document unnatural tone drops, word stress, hesitation"
                 value={pronunciationIssues}
                 onChange={(e) => setPronunciationIssues(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500 min-h-[60px]"
+                className="w-full bg-[#0d131f] border border-slate-700 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 min-h-[60px]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-800 mb-1">
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
                 Vocabulary & Collocation Gaps
               </label>
               <textarea
                 placeholder="List unfamiliar words from R/W FIB and Listening"
                 value={vocabIssues}
                 onChange={(e) => setVocabIssues(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500 min-h-[60px]"
+                className="w-full bg-[#0d131f] border border-slate-700 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 min-h-[60px]"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-800 mb-1">
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
                 Grammar & Structure Issues
               </label>
               <textarea
                 placeholder="Subject-verb agreement, SWT single sentence rule, prepositions"
                 value={grammarIssues}
                 onChange={(e) => setGrammarIssues(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500 min-h-[60px]"
+                className="w-full bg-[#0d131f] border border-slate-700 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 min-h-[60px]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-800 mb-1">
+              <label className="block text-xs font-semibold text-slate-300 mb-1">
                 Time Management & Pacing
               </label>
               <textarea
                 placeholder="Did you run out of time in Reading or Listening Section 2?"
                 value={timeIssues}
                 onChange={(e) => setTimeIssues(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500 min-h-[60px]"
+                className="w-full bg-[#0d131f] border border-slate-700 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 min-h-[60px]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-800 mb-1">
+            <label className="block text-xs font-semibold text-slate-300 mb-1">
               Corrective Actions & Questions to Repeat Immediately
             </label>
             <textarea
               placeholder="e.g. Re-attempt the 3 missed R/W FIB passages; drill 10 WFDs from prediction file"
               value={correctiveActions}
               onChange={(e) => setCorrectiveActions(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500 min-h-[65px]"
+              className="w-full bg-[#0d131f] border border-slate-700 rounded-xl p-2.5 text-xs text-slate-100 focus:outline-none focus:border-blue-500 min-h-[65px]"
             />
           </div>
 
           {/* Mandatory Review Validation Alert */}
           {validationError && (
-            <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 flex items-start gap-2.5">
-              <AlertOctagon className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-xl bg-red-950/40 border border-red-800/60 flex items-start gap-2.5">
+              <AlertOctagon className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
               <div>
-                <p className="text-xs font-bold text-red-800">Review Cannot Be Blank</p>
-                <p className="text-[11px] text-red-700 mt-0.5">{validationError}</p>
+                <p className="text-xs font-bold text-rose-300">Review Cannot Be Blank</p>
+                <p className="text-[11px] text-rose-200 mt-0.5">{validationError}</p>
               </div>
             </div>
           )}
 
           {/* Completion Toggle */}
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+          <div className="p-3.5 rounded-xl bg-[#0d131f] border border-slate-800 flex items-center justify-between">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
                 checked={isCompleted}
                 onChange={(e) => handleToggleComplete(e.target.checked)}
-                className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 accent-emerald-600 cursor-pointer"
+                className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 accent-emerald-500 cursor-pointer"
               />
               <div>
-                <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
                   Mark Review as 100% Completed
-                  <span className="text-[10px] text-amber-700 font-normal">(Cannot be blank)</span>
+                  <span className="text-[10px] text-amber-400 font-normal">(Cannot be blank)</span>
                 </span>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-[11px] text-slate-400">
                   Required to unlock the next mock exam. Detailed error analysis mandatory.
                 </p>
               </div>
             </label>
             <span className={`text-xs font-semibold px-2 py-0.5 rounded ${
-              isCompleted ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+              isCompleted ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-amber-950 text-amber-300 border border-amber-800'
             }`}>
               {isCompleted ? 'Completed ✓' : 'Incomplete'}
             </span>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200">
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-slate-100 text-xs font-semibold text-slate-700 hover:bg-slate-200 border border-slate-200 cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 hover:bg-slate-700 border border-slate-700 cursor-pointer"
             >
               Cancel
             </button>

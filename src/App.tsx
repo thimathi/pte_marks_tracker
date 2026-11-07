@@ -23,11 +23,11 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-900 space-y-4">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center animate-pulse shadow-sm">
+      <div className="min-h-screen bg-[#0b0f19] flex flex-col items-center justify-center text-slate-200 space-y-4">
+        <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center animate-pulse shadow-sm">
           <Target className="w-6 h-6 text-white" />
         </div>
-        <p className="text-sm font-semibold text-slate-600">Loading your PTE study records...</p>
+        <p className="text-sm font-semibold text-slate-400">Loading your PTE study records...</p>
       </div>
     );
   }

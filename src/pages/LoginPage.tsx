@@ -24,21 +24,21 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-7 lg:p-8 space-y-6 shadow-xl">
+    <div className="min-h-screen bg-[#0b0f19] text-slate-200 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-[#151d2e] border border-slate-800 rounded-3xl p-7 lg:p-8 space-y-6 shadow-xl">
         {/* Brand Header */}
         <div className="text-center space-y-2">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center mx-auto shadow-md">
             <Target className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">Welcome Back</h1>
-          <p className="text-xs text-slate-500">
+          <h1 className="text-2xl font-bold text-slate-100">Welcome Back</h1>
+          <p className="text-xs text-slate-400">
             Sign in to access your PTE Academic Progress Tracker
           </p>
         </div>
 
         {error && (
-          <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+          <div className="p-3.5 rounded-xl bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs flex items-center gap-2">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>{error}</span>
           </div>
@@ -46,8 +46,8 @@ export const LoginPage: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-blue-600" />
+            <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
+              <Mail className="w-3.5 h-3.5 text-blue-400" />
               Email Address
             </label>
             <input
@@ -59,17 +59,17 @@ export const LoginPage: React.FC = () => {
                 setEmail(e.target.value);
               }}
               placeholder="e.g. user@example.com"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white"
+              className="w-full bg-[#0d131f] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
             />
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                <Lock className="w-3.5 h-3.5 text-blue-600" />
+              <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5 text-blue-400" />
                 Password
               </label>
-              <Link to="/forgot-password" className="text-xs text-blue-600 hover:underline">
+              <Link to="/forgot-password" className="text-xs text-blue-400 hover:underline">
                 Forgot password?
               </Link>
             </div>
@@ -82,7 +82,7 @@ export const LoginPage: React.FC = () => {
                 setPassword(e.target.value);
               }}
               placeholder="••••••••"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white"
+              className="w-full bg-[#0d131f] border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
             />
           </div>
 
@@ -96,10 +96,10 @@ export const LoginPage: React.FC = () => {
           </button>
         </form>
 
-        <div className="pt-2 text-center border-t border-slate-100">
-          <p className="text-xs text-slate-500">
+        <div className="pt-2 text-center border-t border-slate-800">
+          <p className="text-xs text-slate-400">
             Don't have an account yet?{' '}
-            <Link to="/register" className="text-blue-600 font-semibold hover:underline">
+            <Link to="/register" className="text-blue-400 font-semibold hover:underline">
               Create an account
             </Link>
           </p>

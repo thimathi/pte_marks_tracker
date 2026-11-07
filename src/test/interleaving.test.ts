@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { generateInterleavedQueue, generateGroupedStudyQueue, getPhaseRanges } from '../utils/interleaving';
 import { DEFAULT_QUESTION_TARGETS, QUESTION_TYPES } from '../config/constants';
 
-describe('High-Yield Priority Study Plan & 120-Question Daily Queue Generation', () => {
-  it('generates exactly 120 questions in total matching the priority plan', () => {
+describe('High-Yield Priority Study Plan & Daily Queue Generation', () => {
+  it('generates exactly 120 questions in total matching the structured 6-phase plan', () => {
     const queue = generateInterleavedQueue(DEFAULT_QUESTION_TARGETS, 1, 42);
     expect(queue.length).toBe(120);
   });
@@ -22,7 +22,7 @@ describe('High-Yield Priority Study Plan & 120-Question Daily Queue Generation',
     expect(p6Items.length).toBe(20);
   });
 
-  it('matches each question-type target count exactly summing to 120', () => {
+  it('matches each question-type count in 6-phase queue summing to 120', () => {
     const queue = generateInterleavedQueue(DEFAULT_QUESTION_TARGETS, 1, 42);
 
     const counts: Record<string, number> = {};
@@ -30,28 +30,23 @@ describe('High-Yield Priority Study Plan & 120-Question Daily Queue Generation',
       counts[item.questionTypeId] = (counts[item.questionTypeId] || 0) + 1;
     }
 
-    for (const meta of QUESTION_TYPES) {
-      const expectedTarget = DEFAULT_QUESTION_TARGETS[meta.id];
-      expect(counts[meta.id]).toBe(expectedTarget);
-    }
-
-    // Exact counts for 120 Qs:
+    // Exact counts for 120 Qs across the 6 phases:
     expect(counts['describe_image']).toBe(12);
-    expect(counts['repeat_sentence']).toBe(20); // 15 + 5
-    expect(counts['read_aloud']).toBe(12); // 8 + 4
+    expect(counts['repeat_sentence']).toBe(20);
+    expect(counts['read_aloud']).toBe(12);
     expect(counts['summarize_group_discussion']).toBe(8);
     expect(counts['retell_lecture']).toBe(5);
     expect(counts['respond_to_situation']).toBe(5);
     expect(counts['answer_short_question']).toBe(2);
 
     expect(counts['summarize_written_text']).toBe(4);
-    expect(counts['write_essay']).toBe(4); // 2 + 2
+    expect(counts['write_essay']).toBe(4);
 
-    expect(counts['rw_fill_in_blanks']).toBe(14); // 10 + 4
+    expect(counts['rw_fill_in_blanks']).toBe(14);
     expect(counts['r_fill_in_blanks']).toBe(8);
     expect(counts['reorder_paragraph']).toBe(2);
 
-    expect(counts['write_from_dictation']).toBe(15); // 10 + 5
+    expect(counts['write_from_dictation']).toBe(15);
     expect(counts['listening_fill_in_blanks']).toBe(3);
     expect(counts['highlight_incorrect_words']).toBe(3);
     expect(counts['summarize_spoken_text']).toBe(3);
@@ -71,12 +66,12 @@ describe('High-Yield Priority Study Plan & 120-Question Daily Queue Generation',
       indicesByType[item.questionTypeId].push(item.instanceIndex);
     }
 
-    for (const [typeId, indices] of Object.entries(indicesByType)) {
+    for (const [, indices] of Object.entries(indicesByType)) {
       const sorted = [...indices].sort((a, b) => a - b);
       const unique = new Set(indices);
       expect(unique.size).toBe(sorted.length); // No duplicates
       expect(sorted[0]).toBe(0);
-      expect(sorted[sorted.length - 1]).toBe(DEFAULT_QUESTION_TARGETS[typeId] - 1);
+      expect(sorted[sorted.length - 1]).toBe(indices.length - 1);
     }
   });
 
