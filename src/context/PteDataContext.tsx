@@ -49,7 +49,7 @@ interface PteDataContextType {
   updateMockReview: (dayNumber: number, reviewId: string, data: Partial<MockReviewRecord>) => Promise<void>;
   updateMockReviewByNumber: (examNumber: number, data: Partial<MockReviewRecord>) => Promise<void>;
   updateSectionTest: (dayNumber: number, data: Partial<SectionTestRecord>) => Promise<void>;
-  updateExerciseCount: (dayNumber: number, exerciseId: string, count: number, notes?: string) => Promise<void>;
+  updateExerciseCount: (dayNumber: number, exerciseId: string, count: number, notes?: string, score?: number | null) => Promise<void>;
   updateGateItem: (dayNumber: number, key: string, val: boolean) => Promise<void>;
   completeCurrentDay: (dayNumber: number) => Promise<{ success: boolean; message: string }>;
   emergencyUnlock: (dayNumber: number, reason: string) => Promise<void>;
@@ -352,9 +352,9 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     [user]
   );
 
-  // Update Exercise Count
+  // Update Exercise Count & optional score/marks
   const updateExerciseCount = useCallback(
-    async (dayNumber: number, exerciseId: string, count: number, notes?: string) => {
+    async (dayNumber: number, exerciseId: string, count: number, notes?: string, score?: number | null) => {
       if (!user) return;
       setSyncStatus('syncing');
 
@@ -370,12 +370,18 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
           requirement: '',
           requiredCount: 2,
           completedCount: 0,
+          score: null,
           notes: ''
         };
 
         const updatedExercises = {
           ...curExercises,
-          [exerciseId]: { ...curEx, completedCount: count, notes: notes ?? curEx.notes }
+          [exerciseId]: {
+            ...curEx,
+            completedCount: count,
+            notes: notes !== undefined ? notes : curEx.notes,
+            score: score !== undefined ? score : (curEx.score ?? null)
+          }
         };
 
         isAllAdditionalDone = DEFAULT_ADDITIONAL_EXERCISES.every((ex) => {
@@ -398,7 +404,7 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
       });
 
       try {
-        await saveAdditionalExercise(user.uid, dayNumber, exerciseId, count, notes);
+        await saveAdditionalExercise(user.uid, dayNumber, exerciseId, count, notes, score);
 
         const dayKey = formatDayKey(dayNumber);
         await update(ref(db, `users/${user.uid}/days/${dayKey}/gateStatus`), {

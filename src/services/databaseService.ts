@@ -600,20 +600,22 @@ export async function saveSectionTestRecord(
 }
 
 /**
- * Saves additional exercises count
+ * Saves additional exercises count and optional score/marks
  */
 export async function saveAdditionalExercise(
   uid: string,
   dayNumber: number,
   exerciseId: string,
   count: number,
-  notes?: string
+  notes?: string,
+  score?: number | null
 ): Promise<void> {
   const dayKey = formatDayKey(dayNumber);
   const exRef = ref(db, `users/${uid}/days/${dayKey}/additionalExercises/${exerciseId}`);
   await update(exRef, deepCleanUndefined({
     completedCount: count,
     notes: notes || '',
+    score: score !== undefined ? score : null,
     updatedAt: new Date().toISOString()
   }));
 }

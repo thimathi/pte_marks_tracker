@@ -194,9 +194,37 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
     isP4Fulfilled &&
     isP5Fulfilled;
 
+  // Local state for drill and template scores/marks
+  const [drillScores, setDrillScores] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    setDrillScores({
+      tongue_twister: dayExercises['tongue_twister']?.score != null ? String(dayExercises['tongue_twister'].score) : '',
+      collocations_fwd: dayExercises['collocations_fwd']?.score != null ? String(dayExercises['collocations_fwd'].score) : '',
+      collocations_bwd: dayExercises['collocations_bwd']?.score != null ? String(dayExercises['collocations_bwd'].score) : '',
+      essay_template_p4: dayExercises['essay_template_p4']?.score != null ? String(dayExercises['essay_template_p4'].score) : '',
+      sgd_template_p4: dayExercises['sgd_template_p4']?.score != null ? String(dayExercises['sgd_template_p4'].score) : '',
+      essay_template_p5: dayExercises['essay_template_p5']?.score != null ? String(dayExercises['essay_template_p5'].score) : '',
+      sgd_template_p5: dayExercises['sgd_template_p5']?.score != null ? String(dayExercises['sgd_template_p5'].score) : '',
+    });
+  }, [dayExercises]);
+
+  const handleScoreChange = (exerciseId: string, val: string) => {
+    setDrillScores((prev) => ({ ...prev, [exerciseId]: val }));
+  };
+
+  const handleSaveScore = async (exerciseId: string) => {
+    const val = drillScores[exerciseId];
+    if (val === undefined) return;
+    const num = val.trim() === '' ? null : Math.min(100, Math.max(0, Number(val)));
+    const count = dayExercises[exerciseId]?.completedCount ?? 0;
+    await updateExerciseCount(dayNumber, exerciseId, count, dayExercises[exerciseId]?.notes, num);
+  };
+
   const handleSetCount = async (exerciseId: string, newCount: number) => {
     const safeCount = Math.max(0, newCount);
-    await updateExerciseCount(dayNumber, exerciseId, safeCount);
+    const currentScore = dayExercises[exerciseId]?.score ?? null;
+    await updateExerciseCount(dayNumber, exerciseId, safeCount, dayExercises[exerciseId]?.notes, currentScore);
 
     // Sync legacy keys for backward compatibility
     if (exerciseId === 'collocations_fwd') {
@@ -310,25 +338,59 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                 </p>
               </div>
 
+              {/* Completed or Not (Just Tick) */}
+              <button
+                type="button"
+                onClick={() => handleSetCount('tongue_twister', isTwistersFulfilled ? 0 : 2)}
+                className={`w-full py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
+                  isTwistersFulfilled
+                    ? 'bg-emerald-950/80 text-emerald-300 border-emerald-600/80 shadow-xs'
+                    : 'bg-[#0e1729] text-slate-300 border-slate-700 hover:border-blue-500'
+                }`}
+              >
+                {isTwistersFulfilled ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
+                <span>{isTwistersFulfilled ? '✓ Twisters Completed (Ticked)' : 'Completed or Not (Just Tick)'}</span>
+              </button>
+
               {/* Repeat Checkboxes */}
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-2 pt-0.5">
                 {[1, 2].map((num) => {
                   const isChecked = twisterCount >= num;
                   return (
                     <button
                       key={num}
                       onClick={() => handleSetCount('tongue_twister', isChecked ? num - 1 : num)}
-                      className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
+                      className={`flex-1 py-1 px-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1 border transition-all cursor-pointer ${
                         isChecked
-                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
+                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                           : 'bg-[#0e1729] text-[#a9b5d0] border-slate-800 hover:border-blue-400'
                       }`}
                     >
-                      {isChecked ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
+                      {isChecked ? <CheckCircle2 className="w-3 h-3 text-emerald-400" /> : <Circle className="w-3 h-3" />}
                       <span>Rep #{num}</span>
                     </button>
                   );
                 })}
+              </div>
+
+              {/* Marks Input */}
+              <div className="flex items-center justify-between bg-[#0e1729] rounded-xl px-2.5 py-1.5 border border-slate-800">
+                <label className="text-[11px] font-bold text-blue-300 flex items-center gap-1">
+                  <Award className="w-3 h-3 text-blue-400" /> Fluency Marks:
+                </label>
+                <div className="flex items-center gap-1">
+                  <input
+                    type="number"
+                    min="0"
+                    max="90"
+                    placeholder="—"
+                    value={drillScores['tongue_twister'] ?? ''}
+                    onChange={(e) => handleScoreChange('tongue_twister', e.target.value)}
+                    onBlur={() => handleSaveScore('tongue_twister')}
+                    className="w-14 bg-[#151d2e] border border-slate-700 rounded py-0.5 px-1.5 text-xs font-extrabold text-blue-300 text-center focus:outline-none"
+                  />
+                  <span className="text-[10px] text-slate-500 font-bold">/90</span>
+                </div>
               </div>
             </div>
 
@@ -374,8 +436,22 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                 </p>
               </div>
 
+              {/* Completed or Not (Just Tick) */}
+              <button
+                type="button"
+                onClick={() => handleSetCount('collocations_fwd', isCollocFwdFulfilled ? 0 : collocationsTarget)}
+                className={`w-full py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
+                  isCollocFwdFulfilled
+                    ? 'bg-emerald-950/80 text-emerald-300 border-emerald-600/80 shadow-xs'
+                    : 'bg-[#0e1729] text-slate-300 border-slate-700 hover:border-purple-500'
+                }`}
+              >
+                {isCollocFwdFulfilled ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
+                <span>{isCollocFwdFulfilled ? '✓ Collocations Fwd Completed (Ticked)' : 'Completed or Not (Just Tick)'}</span>
+              </button>
+
               {/* Progress bar */}
-              <div className="space-y-1 pt-1">
+              <div className="space-y-1 pt-0.5">
                 <div className="flex justify-between text-[11px]">
                   <span className="text-[#a9b5d0]">Progress</span>
                   <span className={`font-semibold ${isCollocFwdFulfilled ? 'text-emerald-400' : 'text-[#edf2ff]'}`}>
@@ -393,7 +469,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
               </div>
 
               {/* Quick Increment Buttons */}
-              <div className="flex items-center gap-1.5 pt-1">
+              <div className="flex items-center gap-1.5 pt-0.5">
                 <button
                   onClick={() => handleSetCount('collocations_fwd', collocFwdCount + 25)}
                   className="flex-1 py-1 rounded-lg bg-[#0e1729] hover:bg-purple-600/20 text-[11px] font-semibold text-[#a9b5d0] hover:text-purple-300 border border-slate-800"
@@ -416,6 +492,26 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                 >
                   {collocationsTarget} ✓
                 </button>
+              </div>
+
+              {/* Accuracy Marks */}
+              <div className="flex items-center justify-between bg-[#0e1729] rounded-xl px-2.5 py-1.5 border border-slate-800">
+                <label className="text-[11px] font-bold text-purple-300 flex items-center gap-1">
+                  <Award className="w-3 h-3 text-purple-400" /> Accuracy Marks:
+                </label>
+                <div className="flex items-center gap-1">
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    placeholder="—"
+                    value={drillScores['collocations_fwd'] ?? ''}
+                    onChange={(e) => handleScoreChange('collocations_fwd', e.target.value)}
+                    onBlur={() => handleSaveScore('collocations_fwd')}
+                    className="w-14 bg-[#151d2e] border border-slate-700 rounded py-0.5 px-1.5 text-xs font-extrabold text-purple-300 text-center focus:outline-none"
+                  />
+                  <span className="text-[10px] text-slate-500 font-bold">%</span>
+                </div>
               </div>
             </div>
 
@@ -460,8 +556,22 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                 </p>
               </div>
 
+              {/* Completed or Not (Just Tick) */}
+              <button
+                type="button"
+                onClick={() => handleSetCount('collocations_bwd', isCollocBwdFulfilled ? 0 : collocationsTarget)}
+                className={`w-full py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
+                  isCollocBwdFulfilled
+                    ? 'bg-emerald-950/80 text-emerald-300 border-emerald-600/80 shadow-xs'
+                    : 'bg-[#0e1729] text-slate-300 border-slate-700 hover:border-emerald-500'
+                }`}
+              >
+                {isCollocBwdFulfilled ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
+                <span>{isCollocBwdFulfilled ? '✓ Collocations Bwd Completed (Ticked)' : 'Completed or Not (Just Tick)'}</span>
+              </button>
+
               {/* Progress bar */}
-              <div className="space-y-1 pt-1">
+              <div className="space-y-1 pt-0.5">
                 <div className="flex justify-between text-[11px]">
                   <span className="text-[#a9b5d0]">Progress</span>
                   <span className={`font-semibold ${isCollocBwdFulfilled ? 'text-emerald-400' : 'text-[#edf2ff]'}`}>
@@ -479,7 +589,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
               </div>
 
               {/* Quick Increment Buttons */}
-              <div className="flex items-center gap-1.5 pt-1">
+              <div className="flex items-center gap-1.5 pt-0.5">
                 <button
                   onClick={() => handleSetCount('collocations_bwd', collocBwdCount + 25)}
                   className="flex-1 py-1 rounded-lg bg-[#0e1729] hover:bg-emerald-600/20 text-[11px] font-semibold text-[#a9b5d0] hover:text-emerald-300 border border-slate-800"
@@ -502,6 +612,26 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                 >
                   {collocationsTarget} ✓
                 </button>
+              </div>
+
+              {/* Accuracy Marks */}
+              <div className="flex items-center justify-between bg-[#0e1729] rounded-xl px-2.5 py-1.5 border border-slate-800">
+                <label className="text-[11px] font-bold text-emerald-300 flex items-center gap-1">
+                  <Award className="w-3 h-3 text-emerald-400" /> Accuracy Marks:
+                </label>
+                <div className="flex items-center gap-1">
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    placeholder="—"
+                    value={drillScores['collocations_bwd'] ?? ''}
+                    onChange={(e) => handleScoreChange('collocations_bwd', e.target.value)}
+                    onBlur={() => handleSaveScore('collocations_bwd')}
+                    className="w-14 bg-[#151d2e] border border-slate-700 rounded py-0.5 px-1.5 text-xs font-extrabold text-emerald-300 text-center focus:outline-none"
+                  />
+                  <span className="text-[10px] text-slate-500 font-bold">%</span>
+                </div>
               </div>
             </div>
 
@@ -546,31 +676,73 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                 </p>
               </div>
 
-              {/* Repeat Checkboxes */}
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <button
-                  onClick={() => handleSetCount('essay_template_p4', essayP4Count >= 1 ? 0 : 1)}
-                  className={`py-1.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
-                    essayP4Count >= 1
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
-                      : 'bg-[#0e1729] text-[#a9b5d0] border-slate-800 hover:border-amber-400'
-                  }`}
-                >
-                  {essayP4Count >= 1 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
-                  <span>Essay (1)</span>
-                </button>
+              {/* Repeat Checkboxes / Quick-Tick & Marks */}
+              <div className="space-y-2 pt-0.5">
+                {/* Essay Template 1 */}
+                <div className="bg-[#0e1729] p-2.5 rounded-xl border border-slate-800 space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => handleSetCount('essay_template_p4', essayP4Count >= 1 ? 0 : 1)}
+                    className={`w-full py-2 px-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
+                      essayP4Count >= 1
+                        ? 'bg-emerald-950/80 text-emerald-300 border-emerald-600/80 shadow-xs'
+                        : 'bg-slate-900 text-slate-300 border-slate-700 hover:border-amber-400'
+                    }`}
+                  >
+                    {essayP4Count >= 1 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
+                    <span>{essayP4Count >= 1 ? '✓ Essay Template Completed' : 'Essay Template (Just Tick)'}</span>
+                  </button>
 
-                <button
-                  onClick={() => handleSetCount('sgd_template_p4', sgdP4Count >= 1 ? 0 : 1)}
-                  className={`py-1.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
-                    sgdP4Count >= 1
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
-                      : 'bg-[#0e1729] text-[#a9b5d0] border-slate-800 hover:border-amber-400'
-                  }`}
-                >
-                  {sgdP4Count >= 1 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
-                  <span>SGD (1)</span>
-                </button>
+                  <div className="flex items-center justify-between px-1 text-xs">
+                    <span className="text-slate-400 font-medium">Essay Marks:</span>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        min="0"
+                        max="90"
+                        placeholder="—"
+                        value={drillScores['essay_template_p4'] ?? ''}
+                        onChange={(e) => handleScoreChange('essay_template_p4', e.target.value)}
+                        onBlur={() => handleSaveScore('essay_template_p4')}
+                        className="w-14 bg-[#151d2e] border border-slate-700 rounded py-0.5 px-1 text-xs font-extrabold text-amber-300 text-center focus:outline-none"
+                      />
+                      <span className="text-[10px] text-slate-500 font-bold">/90</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* SGD Template 1 */}
+                <div className="bg-[#0e1729] p-2.5 rounded-xl border border-slate-800 space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => handleSetCount('sgd_template_p4', sgdP4Count >= 1 ? 0 : 1)}
+                    className={`w-full py-2 px-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
+                      sgdP4Count >= 1
+                        ? 'bg-emerald-950/80 text-emerald-300 border-emerald-600/80 shadow-xs'
+                        : 'bg-slate-900 text-slate-300 border-slate-700 hover:border-indigo-400'
+                    }`}
+                  >
+                    {sgdP4Count >= 1 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
+                    <span>{sgdP4Count >= 1 ? '✓ SGD Template Completed' : 'SGD Template (Just Tick)'}</span>
+                  </button>
+
+                  <div className="flex items-center justify-between px-1 text-xs">
+                    <span className="text-slate-400 font-medium">SGD Marks:</span>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        min="0"
+                        max="90"
+                        placeholder="—"
+                        value={drillScores['sgd_template_p4'] ?? ''}
+                        onChange={(e) => handleScoreChange('sgd_template_p4', e.target.value)}
+                        onBlur={() => handleSaveScore('sgd_template_p4')}
+                        className="w-14 bg-[#151d2e] border border-slate-700 rounded py-0.5 px-1 text-xs font-extrabold text-indigo-300 text-center focus:outline-none"
+                      />
+                      <span className="text-[10px] text-slate-500 font-bold">/90</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -625,31 +797,73 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                 </p>
               </div>
 
-              {/* Repeat Checkboxes */}
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <button
-                  onClick={() => handleSetCount('essay_template_p5', essayP5Count >= 1 ? 0 : 1)}
-                  className={`py-1.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
-                    essayP5Count >= 1
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
-                      : 'bg-[#0e1729] text-[#a9b5d0] border-slate-800 hover:border-rose-400'
-                  }`}
-                >
-                  {essayP5Count >= 1 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
-                  <span>Essay (1)</span>
-                </button>
+              {/* Repeat Checkboxes / Quick-Tick & Marks */}
+              <div className="space-y-2 pt-0.5">
+                {/* Essay Template 2 */}
+                <div className="bg-[#0e1729] p-2.5 rounded-xl border border-slate-800 space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => handleSetCount('essay_template_p5', essayP5Count >= 1 ? 0 : 1)}
+                    className={`w-full py-2 px-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
+                      essayP5Count >= 1
+                        ? 'bg-emerald-950/80 text-emerald-300 border-emerald-600/80 shadow-xs'
+                        : 'bg-slate-900 text-slate-300 border-slate-700 hover:border-rose-400'
+                    }`}
+                  >
+                    {essayP5Count >= 1 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
+                    <span>{essayP5Count >= 1 ? '✓ Essay Template Completed' : 'Essay Template (Just Tick)'}</span>
+                  </button>
 
-                <button
-                  onClick={() => handleSetCount('sgd_template_p5', sgdP5Count >= 1 ? 0 : 1)}
-                  className={`py-1.5 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
-                    sgdP5Count >= 1
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
-                      : 'bg-[#0e1729] text-[#a9b5d0] border-slate-800 hover:border-rose-400'
-                  }`}
-                >
-                  {sgdP5Count >= 1 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
-                  <span>SGD (1)</span>
-                </button>
+                  <div className="flex items-center justify-between px-1 text-xs">
+                    <span className="text-slate-400 font-medium">Essay Marks:</span>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        min="0"
+                        max="90"
+                        placeholder="—"
+                        value={drillScores['essay_template_p5'] ?? ''}
+                        onChange={(e) => handleScoreChange('essay_template_p5', e.target.value)}
+                        onBlur={() => handleSaveScore('essay_template_p5')}
+                        className="w-14 bg-[#151d2e] border border-slate-700 rounded py-0.5 px-1 text-xs font-extrabold text-rose-300 text-center focus:outline-none"
+                      />
+                      <span className="text-[10px] text-slate-500 font-bold">/90</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* SGD Template 2 */}
+                <div className="bg-[#0e1729] p-2.5 rounded-xl border border-slate-800 space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => handleSetCount('sgd_template_p5', sgdP5Count >= 1 ? 0 : 1)}
+                    className={`w-full py-2 px-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
+                      sgdP5Count >= 1
+                        ? 'bg-emerald-950/80 text-emerald-300 border-emerald-600/80 shadow-xs'
+                        : 'bg-slate-900 text-slate-300 border-slate-700 hover:border-rose-400'
+                    }`}
+                  >
+                    {sgdP5Count >= 1 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Circle className="w-3.5 h-3.5" />}
+                    <span>{sgdP5Count >= 1 ? '✓ SGD Template Completed' : 'SGD Template (Just Tick)'}</span>
+                  </button>
+
+                  <div className="flex items-center justify-between px-1 text-xs">
+                    <span className="text-slate-400 font-medium">SGD Marks:</span>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        min="0"
+                        max="90"
+                        placeholder="—"
+                        value={drillScores['sgd_template_p5'] ?? ''}
+                        onChange={(e) => handleScoreChange('sgd_template_p5', e.target.value)}
+                        onBlur={() => handleSaveScore('sgd_template_p5')}
+                        className="w-14 bg-[#151d2e] border border-slate-700 rounded py-0.5 px-1 text-xs font-extrabold text-indigo-300 text-center focus:outline-none"
+                      />
+                      <span className="text-[10px] text-slate-500 font-bold">/90</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 

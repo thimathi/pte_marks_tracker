@@ -83,9 +83,10 @@ const FirstAttemptEntryCard: React.FC<FirstAttemptCardProps> = ({ test, entry, o
     return isNaN(n) ? null : Math.min(Math.max(0, n), 90);
   };
 
-  const handleSave = useCallback(async () => {
+  const handleSave = useCallback(async (overrideCompleted?: boolean) => {
     setSaveStatus('saving');
     const finalOverall = parseScore(overall);
+    const finalDone = overrideCompleted !== undefined ? overrideCompleted : (finalOverall !== null && finalOverall > 0) || !!entry?.isCompleted;
     const payload: Partial<FirstAttemptEntry> = {
       testId: test.id,
       testName: test.testName,
@@ -96,13 +97,13 @@ const FirstAttemptEntryCard: React.FC<FirstAttemptCardProps> = ({ test, entry, o
       readingScore: parseScore(reading),
       listeningScore: parseScore(listening),
       notes,
-      isCompleted: finalOverall !== null && finalOverall > 0,
-      completedAt: finalOverall !== null && finalOverall > 0 ? new Date().toISOString() : undefined
+      isCompleted: finalDone,
+      completedAt: finalDone ? (entry?.completedAt || new Date().toISOString()) : undefined
     };
     await onSave(test.id, payload);
     setSaveStatus('saved');
     setTimeout(() => setSaveStatus((p) => (p === 'saved' ? 'idle' : p)), 2500);
-  }, [test, overall, speaking, writing, reading, listening, notes, onSave]);
+  }, [test, overall, speaking, writing, reading, listening, notes, entry?.isCompleted, entry?.completedAt, onSave]);
 
   const isVip = test.testType === 'vip';
   const isCompleted = entry?.isCompleted;
@@ -136,25 +137,36 @@ const FirstAttemptEntryCard: React.FC<FirstAttemptCardProps> = ({ test, entry, o
             ⚠️ Free test — VIP subscription required to view official scores
           </div>
         )}
-        <span className={`inline-flex text-[10px] font-semibold px-2 py-0.5 rounded border ${
-          isCompleted
-            ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-            : 'bg-slate-800 text-slate-400 border-slate-700'
-        }`}>
-          {isCompleted ? '✓ Logged' : 'Pending'}
-        </span>
+
+        {/* Quick Tick Checkbox */}
+        <button
+          type="button"
+          onClick={() => handleSave(!isCompleted)}
+          className={`w-full py-1.5 px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
+            isCompleted
+              ? 'bg-emerald-950/70 text-emerald-300 border-emerald-600/70 shadow-xs'
+              : 'bg-slate-950 text-slate-400 border-slate-700 hover:border-blue-500 hover:text-white'
+          }`}
+        >
+          {isCompleted ? (
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+          ) : (
+            <div className="w-3.5 h-3.5 rounded border border-slate-500 shrink-0" />
+          )}
+          <span>{isCompleted ? '✓ Completed (Ticked)' : 'Completed or Not (Just Tick)'}</span>
+        </button>
       </div>
 
       {/* Overall Score */}
       <div className="bg-slate-950/80 rounded-lg p-2 border border-slate-800">
         <label className="block text-[10px] font-bold text-slate-300 mb-1 flex items-center gap-1">
-          <Award className="w-3 h-3 text-blue-400" /> Overall /90
+          <Award className="w-3 h-3 text-blue-400" /> Overall Marks /90
         </label>
         <input
           type="number" min="0" max="90" placeholder="0–90"
           value={overall}
           onChange={(e) => { setOverall(e.target.value); setSaveStatus('dirty'); }}
-          onBlur={handleSave}
+          onBlur={() => handleSave()}
           className="w-full bg-slate-900 border border-slate-700 focus:border-blue-500 rounded py-1.5 px-2 text-base font-bold text-white text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
         />
       </div>
@@ -176,7 +188,7 @@ const FirstAttemptEntryCard: React.FC<FirstAttemptCardProps> = ({ test, entry, o
               type="number" min="0" max="90" placeholder="—"
               value={val}
               onChange={(e) => { set(e.target.value); setSaveStatus('dirty'); }}
-              onBlur={handleSave}
+              onBlur={() => handleSave()}
               className="w-full bg-slate-900 border border-slate-700/80 rounded py-0.5 px-1.5 text-xs font-bold text-white text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
             />
           </div>
@@ -189,7 +201,7 @@ const FirstAttemptEntryCard: React.FC<FirstAttemptCardProps> = ({ test, entry, o
         placeholder="Observations, weak areas..."
         value={notes}
         onChange={(e) => { setNotes(e.target.value); setSaveStatus('dirty'); }}
-        onBlur={handleSave}
+        onBlur={() => handleSave()}
         className="w-full bg-slate-950 border border-slate-800 rounded p-1.5 text-[11px] text-slate-200 focus:outline-none focus:border-slate-600 placeholder-slate-600 resize-none"
       />
 
@@ -197,7 +209,7 @@ const FirstAttemptEntryCard: React.FC<FirstAttemptCardProps> = ({ test, entry, o
       <div className="flex items-center justify-between pt-1 border-t border-slate-800/60">
         <div className="text-[10px] text-slate-500">Auto-saves on blur</div>
         {saveStatus === 'dirty' ? (
-          <button onClick={handleSave} className="text-[10px] px-2 py-0.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold cursor-pointer">Save</button>
+          <button onClick={() => handleSave()} className="text-[10px] px-2 py-0.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-semibold cursor-pointer">Save</button>
         ) : saveStatus === 'saving' ? (
           <span className="text-[10px] text-amber-400">Saving...</span>
         ) : saveStatus === 'saved' ? (
@@ -442,6 +454,12 @@ const MockExamCard: React.FC<MockCardProps> = ({
       const finalMistakes =
         explicitOverrides?.mainMistakes !== undefined ? explicitOverrides.mainMistakes : mistakes;
 
+      // Explicit override takes precedence; otherwise auto-complete if score > 0 or previously completed
+      const finalCompleted =
+        explicitOverrides?.isCompleted !== undefined
+          ? explicitOverrides.isCompleted
+          : (finalOverall !== null && finalOverall > 0) || !!mock?.isCompleted;
+
       const payload: Partial<MockExamRecord> = {
         overallScore: finalOverall,
         speakingScore: finalSpeaking,
@@ -450,7 +468,8 @@ const MockExamCard: React.FC<MockCardProps> = ({
         listeningScore: finalListening,
         questionsAttempted: finalQuestions,
         mainMistakes: finalMistakes,
-        isCompleted: finalOverall !== null && finalOverall > 0,
+        isCompleted: finalCompleted,
+        completedAt: finalCompleted ? (mock?.completedAt || new Date().toISOString()) : undefined,
         ...explicitOverrides
       };
 
@@ -460,7 +479,7 @@ const MockExamCard: React.FC<MockCardProps> = ({
         setSaveStatus((prev) => (prev === 'saved' ? 'idle' : prev));
       }, 2500);
     },
-    [mockKey, overall, speaking, writing, reading, listening, questions, mistakes, onSaveMock]
+    [mockKey, overall, speaking, writing, reading, listening, questions, mistakes, mock?.isCompleted, mock?.completedAt, onSaveMock]
   );
 
   return (
@@ -558,12 +577,33 @@ const MockExamCard: React.FC<MockCardProps> = ({
         </div>
       </div>
 
-      {/* Primary Score Input: Overall Score / 90 */}
+      {/* Mock Exam Completed or Not (Just Tick) */}
+      <button
+        type="button"
+        onClick={() => {
+          const nextCompleted = !mock?.isCompleted;
+          saveScores({ isCompleted: nextCompleted });
+        }}
+        className={`w-full py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 border transition-all cursor-pointer shadow-sm ${
+          mock?.isCompleted
+            ? 'bg-emerald-950/80 text-emerald-300 border-emerald-600/80 hover:bg-emerald-900/60'
+            : 'bg-[#0d131f] text-slate-300 border-slate-700 hover:border-blue-500 hover:text-white hover:bg-slate-900'
+        }`}
+      >
+        {mock?.isCompleted ? (
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        ) : (
+          <div className="w-4 h-4 rounded-md border-2 border-slate-500 shrink-0" />
+        )}
+        <span>{mock?.isCompleted ? '✓ Mock Exam Completed (Ticked)' : 'Mock Exam Completed or Not (Just Tick)'}</span>
+      </button>
+
+      {/* Primary Score Input: Overall Marks / 90 */}
       <div className="bg-[#0d131f] rounded-xl p-2.5 border border-slate-800">
         <div className="flex items-center justify-between mb-1.5">
           <label className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
             <Award className="w-3.5 h-3.5 text-blue-400" />
-            Overall Score / 90:
+            Mock Marks (Overall / 90):
           </label>
           <span
             className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
@@ -1118,14 +1158,14 @@ export const MockExamsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleSaveSectionTest(!currentSectionTest?.isCompleted)}
-                className={`w-full py-2 px-3 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 ${
+                className={`w-full py-2 px-3 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-xs ${
                   currentSectionTest?.isCompleted
                     ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
                     : 'bg-blue-600 hover:bg-blue-500 text-white'
                 }`}
               >
                 <CheckCircle2 className="w-4 h-4" />
-                <span>{currentSectionTest?.isCompleted ? 'Mark Pending' : 'Mark Completed'}</span>
+                <span>{currentSectionTest?.isCompleted ? '✓ Section Test Completed (Ticked)' : 'Section Test Completed (Just Tick)'}</span>
               </button>
             </div>
 

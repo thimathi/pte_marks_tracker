@@ -92,6 +92,7 @@ export interface AdditionalExerciseRecord {
   requirement: string;
   requiredCount: number;
   completedCount: number;
+  score?: number | null; // marks / score out of 90 or accuracy %
   notes?: string;
 }
 
