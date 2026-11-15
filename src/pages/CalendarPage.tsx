@@ -165,7 +165,7 @@ export const CalendarPage: React.FC = () => {
                 Practice: <b className="text-slate-200">
                   {selectedDayNum === 1
                     ? 'Rescheduled across Days 2–17 (+19 Qs/day)'
-                    : `${selectedBreakdown.totalCompleted} / ${selectedBreakdown.totalDailyTarget || 153} Questions`}
+                    : `${selectedBreakdown.totalCompleted} / ${selectedBreakdown.totalDailyTarget || 117} Questions`}
                 </b>
               </p>
               {selectedDayNum !== 1 && (

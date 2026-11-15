@@ -178,22 +178,25 @@ export const DashboardPage: React.FC = () => {
                 Target: S:{studyPlan.targetScores?.speaking || DEFAULT_TARGET_SCORES.speaking} · W:{studyPlan.targetScores?.writing || DEFAULT_TARGET_SCORES.writing}
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-950/60 text-emerald-300 border border-emerald-800/60">
-                {totalDays}-Day Protocol (Nov 04 – Dec 10)
+                {totalDays}-Day Protocol (Nov 16 – Dec 16)
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-950/60 text-amber-300 border border-amber-800/60">
+                Nov 18: Colombo Meeting Leave
               </span>
               <span className="text-xs text-slate-400 font-medium">
-                Exam Day: {formatDateFriendly(FINAL_TARGET_DATE)}
+                Exam Day: {formatDateFriendly(FINAL_TARGET_DATE)} (12:00 PM)
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100 tracking-tight flex items-center gap-2">
               <span>PTE Master Command Center ({totalDays} Days · Overall {studyPlan.targetScores?.overall || DEFAULT_TARGET_SCORES.overall}+)</span>
               {isRevDay && (
                 <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-950/60 text-purple-300 border border-purple-800/60">
-                  🔍 Deep Review Day
+                  🔍 Milestone Review Day
                 </span>
               )}
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
-              2 Mocks (120 Qs) + 2h Deep Review + 1 Daily Section Test + 153 Targeted Practice Questions = <b>273 Questions Daily</b> in 14.5 Hours.
+              2 Mocks (120 Qs) + 2h Deep Review + 1 Daily Section Test + 117 Targeted Practice Questions = <b>237 Questions Daily</b> in 14.5 Hours.
             </p>
           </div>
 

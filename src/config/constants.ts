@@ -1,21 +1,22 @@
 import { QuestionPriority, QuestionTypeMeta, SkillType, StudyGroupDefinition, TargetScores } from '../types/pte';
 
-export const DEFAULT_START_DATE = '2026-11-15'; // Start: Nov 15, 2026 (Post-fever fresh start · Dec 17 Exam)
-export const FINAL_TARGET_DATE = '2026-12-17'; // Exam Day: Dec 17, 2026 (32 Days Total · 12:00 PM IST)
-export const APP_TITLE = 'PTE - 78+ Superior Plan (2 Mocks · 109 Practice Qs · 229 Qs/Day · S:87 W:84 R:69 L:68 · Dec 17)';
+export const DEFAULT_START_DATE = '2026-11-16'; // Start: Monday, Nov 16, 2026 (Tomorrow)
+export const FINAL_TARGET_DATE = '2026-12-17'; // Exam Day: Dec 17, 2026 (12:00 PM IST · 30 Study Days)
+export const BLOCKED_STUDY_DATES = ['2026-11-18']; // Colombo urgent meeting (Full day leave)
+export const APP_TITLE = 'PTE - 78+ Superior Plan (30 Days · 2 Mocks · 117 Practice Qs · 237 Qs/Day · S:87 W:84 R:69 L:68)';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
-export const TOTAL_STUDY_DAYS = 32; // Nov 15 to Dec 16, 2026 (32 Study Days · Exam on Dec 17)
-export const DAILY_PRACTICE_TARGET = 109; // 3,488 Total Practice Questions ÷ 32 Days ≈ 109/day
-export const TOTAL_PRACTICE_TARGET = 3488; // 32 days × 109 questions = 3,488 Total Practice Questions
-export const DAILY_MOCK_TARGET = 2; // 2 Mock Exams Daily (60 Qs × 2 = 120 Questions/day)
+export const TOTAL_STUDY_DAYS = 30; // 30 Active Study Days (Nov 16 to Dec 16 · Nov 18 Colombo Leave)
+export const DAILY_PRACTICE_TARGET = 117; // 3,510 Total Practice Questions ÷ 30 Days = 117/day
+export const TOTAL_PRACTICE_TARGET = 3510; // 30 days × 117 questions = 3,510 Total Practice Questions
+export const DAILY_MOCK_TARGET = 2; // Exactly 2 Mock Exams Daily (60 Qs × 2 = 120 Questions/day)
 export const TOTAL_MOCK_TARGET = 60; // 60 Planned Benchmark Mocks (20 unique VIP papers × 3 passes)
 export const TOTAL_UNIQUE_PAPERS = 20; // 20 unique VIP papers
-export const REPETITIONS_PER_PAPER = 3; // Repeated in passes
-export const TOTAL_SECTION_TESTS = 29; // 29 Section Tests (1 test every day from Day 4 through Day 32)
+export const REPETITIONS_PER_PAPER = 3; // Repeated in 3 passes
+export const TOTAL_SECTION_TESTS = 27; // 27 Section Tests (1 test every day from Day 4 through Day 30)
 export const MOCK_EXAM_QUESTIONS = 60;
 export const TOTAL_MOCK_EXAM_QUESTIONS = 3600; // 60 mocks × 60 questions = 3,600
-export const DAILY_TOTAL_QUESTIONS = 229; // 109 Practice Qs + 120 Mock Qs = 229 Questions Daily
-export const TOTAL_MISSION_QUESTIONS = 7088; // 3,488 Practice + 3,600 Mock = 7,088 Total Questions
+export const DAILY_TOTAL_QUESTIONS = 237; // 117 Practice Qs + 120 Mock Qs = 237 Questions Daily
+export const TOTAL_MISSION_QUESTIONS = 7110; // 3,510 Practice + 3,600 Mock = 7,110 Total Questions
 
 export interface MockScheduleSlot {
   mockIndex: number;
@@ -262,22 +263,22 @@ export const SECTION_TEST_SCHEDULE: Record<number, SectionTestDef> = {
   },
   26: {
     dayNumber: 26,
-    testId: 'sec_speaking_06',
-    title: 'VIP Speaking Section Test 6 (Score 87 Fluency Drill)',
-    skill: 'speaking',
-    targetQuestions: 35,
-    estMinutes: '35 min',
-    description: 'APEUni VIP Speaking Test 6: Zero hesitation, steady pitch, continuous acoustic rhythm across RA & RS.',
+    testId: 'sec_reading_08',
+    title: 'VIP Reading Section Test 8 (Dropdown Precision)',
+    skill: 'reading',
+    targetQuestions: 20,
+    estMinutes: '32 min',
+    description: 'APEUni VIP Reading Test 8: Contextual collocations and dropdown blanks under speed pressure.',
     recommendedSlot: '07:15 PM – 07:50 PM'
   },
   27: {
     dayNumber: 27,
-    testId: 'sec_reading_08',
-    title: 'VIP Reading Section Test 8 (Final Readiness)',
-    skill: 'reading',
-    targetQuestions: 20,
-    estMinutes: '32 min',
-    description: 'APEUni VIP Reading Test 8: Final summit trial — target 85%+ accuracy on Reading & Writing FIB.',
+    testId: 'sec_writing_04',
+    title: 'VIP Writing Section Test 4 (Score 84 Essay Sprint)',
+    skill: 'writing',
+    targetQuestions: 3,
+    estMinutes: '35 min',
+    description: 'APEUni VIP Writing Test 4: Strict 20-min Essay with advanced vocabulary & 10-min SWT compound sentence.',
     recommendedSlot: '07:15 PM – 07:50 PM'
   },
   28: {
@@ -293,7 +294,7 @@ export const SECTION_TEST_SCHEDULE: Record<number, SectionTestDef> = {
   29: {
     dayNumber: 29,
     testId: 'sec_reading_09',
-    title: 'VIP Reading Section Test 9 (Dropdown Precision)',
+    title: 'VIP Reading Section Test 9 (Final Summit Readiness)',
     skill: 'reading',
     targetQuestions: 18,
     estMinutes: '30 min',
@@ -302,33 +303,13 @@ export const SECTION_TEST_SCHEDULE: Record<number, SectionTestDef> = {
   },
   30: {
     dayNumber: 30,
-    testId: 'sec_writing_04',
-    title: 'VIP Writing Section Test 4 (Score 84 Essay Sprint)',
-    skill: 'writing',
-    targetQuestions: 3,
+    testId: 'sec_speaking_06',
+    title: 'VIP Speaking Section Test 6 (Score 87 Peak Fluency)',
+    skill: 'speaking',
+    targetQuestions: 35,
     estMinutes: '35 min',
-    description: 'APEUni VIP Writing Test 4: Strict 20-min Essay with advanced vocabulary & 10-min SWT compound sentence.',
+    description: 'APEUni VIP Speaking Test 6: Zero hesitation, steady pitch, continuous acoustic rhythm across RA & RS before summit.',
     recommendedSlot: '07:15 PM – 07:50 PM'
-  },
-  31: {
-    dayNumber: 31,
-    testId: 'sec_listening_09',
-    title: 'VIP Listening Section Test 9 (WFD 100% Match)',
-    skill: 'listening',
-    targetQuestions: 22,
-    estMinutes: '35 min',
-    description: 'APEUni VIP Listening Test 9: Write From Dictation plural/tense drill + SST template cohesion.',
-    recommendedSlot: '07:15 PM – 07:50 PM'
-  },
-  32: {
-    dayNumber: 32,
-    testId: 'sec_reading_10',
-    title: 'VIP Reading Section Test 10 (Exam Day Readiness)',
-    skill: 'reading',
-    targetQuestions: 20,
-    estMinutes: '30 min',
-    description: 'APEUni VIP Reading Test 10: Final sharp focus on academic collocations and R/W blanks before summit.',
-    recommendedSlot: '07:15 PM – 07:45 PM'
   }
 };
 
@@ -345,13 +326,13 @@ export const DEFAULT_TARGET_SCORES: TargetScores = {
   mockExam: 78,
 };
 
-// Target progression curve across 32 study days (Nov 15 to Dec 16) targeting Overall 78+ (S:87, W:84, R:69, L:68)
+// Target progression curve across 30 study days (Nov 16 to Dec 16) targeting Overall 78+ (S:87, W:84, R:69, L:68)
 export const DAY_TARGET_SCORES: number[] = [
-  60, 61, 62, 63, 64, 65, 66, // Week 1 (Days 1–7): Nov 15–21 (Baseline Reset & Speaking Fluency Reset)
-  67, 68, 69, 70, 71, 72, 73, // Week 2 (Days 8–14): Nov 22–28 (Writing Templates & Dictation Lockdown)
-  73, 74, 74, 75, 75, 76, 76, // Week 3 (Days 15–21): Nov 29–Dec 05 (Reading Blanks & Collocations Acceleration)
-  77, 77, 77, 78, 78, 78, 78, // Week 4 (Days 22–28): Dec 06–12 (Timed Stress Conditioning & Speed)
-  78, 78, 78, 78              // Final Summit (Days 29–32): Dec 13–16 (Peak Confidence & Pre-Exam Mastery)
+  60, 61, 62, 63, 64, 65, 66, // Week 1 (Days 1–7): Nov 16–23 (Baseline Reset & Speaking Fluency Reset)
+  67, 68, 69, 70, 71, 72, 73, // Week 2 (Days 8–14): Nov 24–30 (Writing Templates & Dictation Lockdown)
+  73, 74, 74, 75, 75, 76, 76, // Week 3 (Days 15–21): Dec 01–07 (Reading Blanks & Collocations Acceleration)
+  77, 77, 77, 78, 78, 78, 78, // Week 4 (Days 22–28): Dec 08–14 (Timed Stress Conditioning & Speed)
+  78, 78                      // Final Summit (Days 29–30): Dec 15–16 (Peak Confidence & Pre-Exam Mastery)
 ];
 
 export interface DailyMasterBlock {
@@ -372,16 +353,16 @@ export const DAILY_15H_MASTER_SCHEDULE: DailyMasterBlock[] = [
     blockNumber: 1,
     timeSlot: '06:30 AM – 09:00 AM',
     durationHours: 2.5,
-    title: 'Block 1: Speaking 87 Fluency & Acoustic Drills (48 Qs)',
+    title: 'Block 1: Speaking 87 Fluency & Acoustic Drills (51 Qs)',
     targetSkill: 'speaking',
     targetScoreBenchmark: 87,
-    badge: 'Speaking Target: 87 · 48 Qs',
+    badge: 'Speaking Target: 87 · 51 Qs',
     badgeColor: 'bg-red-950/60 text-red-300 border border-red-800/60',
     coreTasks: [
       'Tongue Twisters & Vocal Cord Warmup (10 min articulation & pitch stabilization)',
-      'Read Aloud (RA): 9 passages (300 target · uninterrupted fluency, steady volume)',
-      'Repeat Sentence (RS): 19 audios (600 target · 3-4 word phrase chunking + acoustic shadow)',
-      'Describe Image (DI): 6 images (200 target · Fixed 25s template delivery)',
+      'Read Aloud (RA): 10 passages (300 target · uninterrupted fluency, steady volume)',
+      'Repeat Sentence (RS): 20 audios (600 target · 3-4 word phrase chunking + acoustic shadow)',
+      'Describe Image (DI): 7 images (200 target · Fixed 25s template delivery)',
       'Retell Lecture (RL): 3 audios (100 target · Key phrases note-taking + oral template fluency)',
       'Respond to Situation (RTS): 3 drills (100 target) & Answer Short Questions (ASQ): 4 drills (120 target)',
       'Summarize Group Discussion (SGD): 4 drills (120 target · 3-speaker template)'
@@ -409,15 +390,15 @@ export const DAILY_15H_MASTER_SCHEDULE: DailyMasterBlock[] = [
     blockNumber: 3,
     timeSlot: '01:15 PM – 03:30 PM',
     durationHours: 2.25,
-    title: 'Block 3: Reading 69 & Writing 84 Precision Drills (37 Qs)',
+    title: 'Block 3: Reading 69 & Writing 84 Precision Drills (40 Qs)',
     targetSkill: 'reading',
     targetScoreBenchmark: 69,
-    badge: 'Reading 69 & Writing 84 · 37 Qs',
+    badge: 'Reading 69 & Writing 84 · 40 Qs',
     badgeColor: 'bg-amber-950/60 text-amber-300 border border-amber-800/60',
     coreTasks: [
-      'Reading & Writing FIB (Dropdown): 14 passages (450 target · academic collocations & context clues)',
-      'Reading FIB (Drag & Drop): 14 passages (450 target · Grammatical category deduction: Noun/Verb/Adj)',
-      'Re-order Paragraphs (RO): 6 exercises (200 target · Independent topic sentences & pronoun referents)',
+      'Reading & Writing FIB (Dropdown): 15 passages (450 target · academic collocations & context clues)',
+      'Reading FIB (Drag & Drop): 15 passages (450 target · Grammatical category deduction: Noun/Verb/Adj)',
+      'Re-order Paragraphs (RO): 7 exercises (200 target · Independent topic sentences & pronoun referents)',
       'Summarize Written Text (SWT): 2 passages (50 target · Strict 1-sentence compound grammar, 35–45 words)',
       'Write Essay (WE): 1 full essay typed in 20 min under exam conditions (30 target · Zero spelling errors)'
     ],
@@ -460,14 +441,14 @@ export const DAILY_15H_MASTER_SCHEDULE: DailyMasterBlock[] = [
     blockNumber: 6,
     timeSlot: '08:30 PM – 10:30 PM',
     durationHours: 2.0,
-    title: 'Block 6: Listening 68 & Dictation Lockdown (24 Qs)',
+    title: 'Block 6: Listening 68 & Dictation Lockdown (26 Qs)',
     targetSkill: 'listening',
     targetScoreBenchmark: 68,
-    badge: 'Listening 68 · 24 Qs',
+    badge: 'Listening 68 · 26 Qs',
     badgeColor: 'bg-cyan-950/60 text-cyan-300 border border-cyan-800/60',
     coreTasks: [
-      'Write From Dictation (WFD): 14 sentences (450 target · Spelling audit: plurals -s, past tense -ed)',
-      'Listening Fill in the Blanks: 9 audios (300 target · Immediate shorthand on notepad, rapid type-in)',
+      'Write From Dictation (WFD): 15 sentences (450 target · Spelling audit: plurals -s, past tense -ed)',
+      'Listening Fill in the Blanks: 10 audios (300 target · Immediate shorthand on notepad, rapid type-in)',
       'Highlight Incorrect Words: 1 audio (30 target · Trained at 1.2x playback speed for reflex sharpening)'
     ],
     efficiencyRule: 'Never take negative-marking risks on MC Multiple Answers unless 100% confident.'
@@ -512,88 +493,55 @@ export interface ReviewDayDefinition {
 }
 
 export const REVIEW_DAYS: Record<number, ReviewDayDefinition> = {
-  3: {
-    dayNumber: 3,
+  10: {
+    dayNumber: 10,
     startExam: 1,
-    endExam: 6,
-    examNumbers: [1, 2, 3, 4, 5, 6],
-    coveredDays: [1, 2],
-    title: 'Deep Review: Exams 1–6 (Day 1 & Day 2 Papers)'
+    endExam: 20,
+    examNumbers: Array.from({ length: 20 }, (_, i) => i + 1),
+    coveredDays: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    title: 'Pass 1 Diagnostic Milestone Review (Exams 1–20)'
   },
-  31: {
-    dayNumber: 31,
-    startExam: 55,
+  20: {
+    dayNumber: 20,
+    startExam: 21,
+    endExam: 40,
+    examNumbers: Array.from({ length: 20 }, (_, i) => i + 21),
+    coveredDays: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+    title: 'Pass 2 Error Rectification Milestone Review (Exams 21–40)'
+  },
+  30: {
+    dayNumber: 30,
+    startExam: 41,
     endExam: 60,
-    examNumbers: [55, 56, 57, 58, 59, 60],
-    coveredDays: [28, 29, 30],
-    title: 'Grand Final Review: Exams 55–60 (Pass 3 Mastery + Final Summit Readiness)'
+    examNumbers: Array.from({ length: 20 }, (_, i) => i + 41),
+    coveredDays: [21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+    title: 'Pass 3 Grand Final Summit Review (Exams 41–60)'
   }
 };
 
 export function isReviewDay(dayNumber: number): boolean {
-  return dayNumber === 3 || dayNumber === 31;
+  return dayNumber === 10 || dayNumber === 20 || dayNumber === 30;
 }
 
 export function getReviewDayDefinition(dayNumber: number): ReviewDayDefinition | null {
   return REVIEW_DAYS[dayNumber] || null;
 }
 
-export function getDailyMockTarget(dayNumber: number): number {
-  if (dayNumber === 1) return 4;
-  if (dayNumber === 2) return 2;
-  if (dayNumber === 3 || dayNumber >= 31) return 0;
+export function getDailyMockTarget(_dayNumber: number): number {
   return 2;
 }
 
 export function getDailyPracticeTarget(_dayNumber: number): number {
-  return 109;
+  return 117;
 }
 
-export function getMockExamsForDay(dayNumber: number): string[] {
-  if (dayNumber === 1) {
-    return ['mock01', 'mock02', 'mock03', 'mock04'];
-  }
-  if (dayNumber === 2) {
-    return ['mock01', 'mock02'];
-  }
-  if (dayNumber === 3 || dayNumber >= 31) {
-    return [];
-  }
-  // From Day 4 through Day 30: Exactly 2 Mock Exams per day!
+export function getMockExamsForDay(_dayNumber: number): string[] {
   return ['mock01', 'mock02'];
 }
 
-export const DAY_START_EXAM_NUMBER: Record<number, number> = {
-  1: 1,   // Exams 1..4 (Day 1: 4 Mocks Diagnostic Baseline)
-  2: 5,   // Exams 5..6 (Day 2: 2 Mocks)
-  4: 7,   // Exams 7..8
-  5: 9,   // Exams 9..10
-  6: 11,  // Exams 11..12
-  7: 13,  // Exams 13..14
-  8: 15,  // Exams 15..16
-  9: 17,  // Exams 17..18
-  10: 19, // Exams 19..20 (Pass 1 Complete!)
-  11: 21, // Exams 21..22 (Pass 2 Starts)
-  12: 23,
-  13: 25,
-  14: 27,
-  15: 29,
-  16: 31,
-  17: 33,
-  18: 35,
-  19: 37,
-  20: 39, // Exams 39..40 (Pass 2 Complete!)
-  21: 41, // Exams 41..42 (Pass 3 Starts)
-  22: 43,
-  23: 45,
-  24: 47,
-  25: 49,
-  26: 51,
-  27: 53,
-  28: 55,
-  29: 57,
-  30: 59  // Exams 59..60 (Pass 3 Complete! All 60 Mocks Done!)
-};
+export const DAY_START_EXAM_NUMBER: Record<number, number> = Object.fromEntries(
+  Array.from({ length: 30 }, (_, i) => [i + 1, i * 2 + 1])
+);
 
 export function getExamNumberForMock(dayNumber: number, mockIndex: number): number {
   const start = DAY_START_EXAM_NUMBER[dayNumber];
@@ -836,14 +784,14 @@ export const BASELINE_MOCK_45C_SCORES = {
 };
 
 export const QUESTION_TYPES: QuestionTypeMeta[] = [
-  // SPEAKING (Total: 48 targeted daily questions from 3,500 total plan)
+  // SPEAKING (Total: 51 targeted daily questions from 3,510 total plan)
   {
     id: 'read_aloud',
     name: 'Read Aloud',
     shortName: 'RA',
     skill: 'speaking',
     secondarySkill: 'reading',
-    defaultTarget: 9,
+    defaultTarget: 10,
     estMinutes: '15 min',
     isPrediction: true,
     scoreWeight: 4,
@@ -856,7 +804,7 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'RS',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 19,
+    defaultTarget: 20,
     estMinutes: '18 min',
     isPrediction: true,
     scoreWeight: 7,
@@ -868,7 +816,7 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Describe Image',
     shortName: 'DI',
     skill: 'speaking',
-    defaultTarget: 6,
+    defaultTarget: 7,
     estMinutes: '8 min',
     isPrediction: true,
     scoreWeight: 15,
@@ -927,7 +875,7 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     description: 'Quick factual 1-word answers. (120 Total Target)'
   },
 
-  // WRITING (Total: 3 targeted daily questions from 3,500 total plan)
+  // WRITING (Total: 3 targeted daily questions from 3,510 total plan)
   {
     id: 'summarize_written_text',
     name: 'Summarize Written Text',
@@ -954,14 +902,14 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     description: '200–300 word argumentative essay written in 20 min using proper structure. (30 Total Target)'
   },
 
-  // READING (Total: 34 targeted daily questions from 3,500 total plan)
+  // READING (Total: 37 targeted daily questions from 3,510 total plan)
   {
     id: 'rw_fill_in_blanks',
     name: 'Reading & Writing: Fill in the Blanks',
     shortName: 'R&W FIB',
     skill: 'reading',
     secondarySkill: 'writing',
-    defaultTarget: 14,
+    defaultTarget: 15,
     estMinutes: '20 min',
     isPrediction: true,
     scoreWeight: 7,
@@ -973,7 +921,7 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Reading: Fill in the Blanks',
     shortName: 'R FIB',
     skill: 'reading',
-    defaultTarget: 14,
+    defaultTarget: 15,
     estMinutes: '18 min',
     isPrediction: false,
     scoreWeight: 6,
@@ -985,7 +933,7 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Reorder Paragraph',
     shortName: 'RO',
     skill: 'reading',
-    defaultTarget: 6,
+    defaultTarget: 7,
     estMinutes: '10 min',
     isPrediction: false,
     scoreWeight: 3,
@@ -993,14 +941,14 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     description: 'Logical sequencing of independent topic sentences and referents. (200 Total Target)'
   },
 
-  // LISTENING (Total: 24 targeted daily questions from 3,500 total plan)
+  // LISTENING (Total: 26 targeted daily questions from 3,510 total plan)
   {
     id: 'write_from_dictation',
     name: 'Write From Dictation',
     shortName: 'WFD',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 14,
+    defaultTarget: 15,
     estMinutes: '15 min',
     isPrediction: true,
     scoreWeight: 5,
@@ -1013,7 +961,7 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'L FIB',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 9,
+    defaultTarget: 10,
     estMinutes: '10 min',
     isPrediction: false,
     scoreWeight: 3,

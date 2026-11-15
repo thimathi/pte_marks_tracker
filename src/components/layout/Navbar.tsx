@@ -87,11 +87,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                     PTE Marks Tracker
                   </span>
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-950/60 text-blue-300 font-semibold border border-blue-800/60 whitespace-nowrap">
-                    2 Mocks + 153 Practice Qs · 273 Qs/Day
+                    2 Mocks (120 Qs) + 117 Practice Qs · 237 Qs/Day
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 leading-tight truncate">
-                  Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-04')} · {totalDays} Days · S:{studyPlan?.targetScores?.speaking || 87} · W:{studyPlan?.targetScores?.writing || 84} · R:{studyPlan?.targetScores?.reading || 69} · L:{studyPlan?.targetScores?.listening || 68} · Overall {studyPlan?.targetScores?.overall || 78}+
+                  Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-16')} · {totalDays} Study Days · Colombo Leave: Nov 18 · Dec 17 Exam (12 PM) · S:{studyPlan?.targetScores?.speaking || 87} · W:{studyPlan?.targetScores?.writing || 84} · Overall {studyPlan?.targetScores?.overall || 78}+
                 </p>
               </div>
             </Link>

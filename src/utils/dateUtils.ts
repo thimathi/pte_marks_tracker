@@ -1,4 +1,4 @@
-import { TOTAL_STUDY_DAYS } from '../config/constants';
+import { TOTAL_STUDY_DAYS, BLOCKED_STUDY_DATES } from '../config/constants';
 
 /**
  * Utilities for calculating and formatting study dates
@@ -6,16 +6,23 @@ import { TOTAL_STUDY_DAYS } from '../config/constants';
 
 /**
  * Calculates ISO date strings (YYYY-MM-DD) for Day 1 through Day N based on startDate.
+ * Automatically skips blocked/leave dates (e.g. Nov 18 Colombo meeting).
  */
-export function calculate21StudyDates(startDateStr: string, totalDays: number = TOTAL_STUDY_DAYS): string[] {
+export function calculate21StudyDates(
+  startDateStr: string,
+  totalDays: number = TOTAL_STUDY_DAYS,
+  blockedDates: string[] = BLOCKED_STUDY_DATES
+): string[] {
   const dates: string[] = [];
   const parts = startDateStr.split('-').map(Number);
-  const start = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
+  const cur = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
 
-  for (let i = 0; i < totalDays; i++) {
-    const cur = new Date(start);
-    cur.setUTCDate(start.getUTCDate() + i);
-    dates.push(cur.toISOString().split('T')[0]);
+  while (dates.length < totalDays) {
+    const iso = cur.toISOString().split('T')[0];
+    if (!blockedDates.includes(iso)) {
+      dates.push(iso);
+    }
+    cur.setUTCDate(cur.getUTCDate() + 1);
   }
   return dates;
 }
@@ -73,15 +80,17 @@ export function getCalendarDayNumber(
   totalDays: number = TOTAL_STUDY_DAYS
 ): number {
   if (!startDateStr) return 1;
-  const parts = startDateStr.split('-').map(Number);
-  const start = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
-  const tParts = todayIso.split('-').map(Number);
-  const today = new Date(Date.UTC(tParts[0], tParts[1] - 1, tParts[2]));
-
-  const diffMs = today.getTime() - start.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  const dayNum = diffDays + 1;
-  return Math.min(Math.max(1, dayNum), totalDays);
+  const dates = calculate21StudyDates(startDateStr, totalDays);
+  const foundIdx = dates.indexOf(todayIso);
+  if (foundIdx !== -1) {
+    return foundIdx + 1;
+  }
+  if (todayIso < dates[0]) return 1;
+  if (todayIso > dates[dates.length - 1]) return totalDays;
+  for (let i = 0; i < dates.length; i++) {
+    if (dates[i] >= todayIso) return i + 1;
+  }
+  return totalDays;
 }
 
 /**

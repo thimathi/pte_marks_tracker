@@ -9,15 +9,15 @@ import {
   DAILY_15H_MASTER_SCHEDULE
 } from '../config/constants';
 
-describe('Daily Section Test Schedule & 15-Hour Work Plan Verification (Through Dec 16 · Dec 17 Exam)', () => {
+describe('Daily Section Test Schedule & 15-Hour Work Plan Verification (30 Days · Dec 17 Exam)', () => {
   it('does not assign section tests to Days 1, 2, and 3', () => {
     expect(getSectionTestForDay(1)).toBeNull();
     expect(getSectionTestForDay(2)).toBeNull();
     expect(getSectionTestForDay(3)).toBeNull();
   });
 
-  it('assigns exactly 1 section test to every day starting from Day 4 through Day 32', () => {
-    expect(TOTAL_SECTION_TESTS).toBe(29);
+  it('assigns exactly 1 section test to every day starting from Day 4 through Day 30', () => {
+    expect(TOTAL_SECTION_TESTS).toBe(27);
     for (let day = 4; day <= TOTAL_STUDY_DAYS; day++) {
       const secDef = getSectionTestForDay(day);
       expect(secDef).not.toBeNull();
@@ -46,9 +46,9 @@ describe('Daily Section Test Schedule & 15-Hour Work Plan Verification (Through 
       }
     }
 
-    // Verify individual counts for 29 tests across 32 days
-    expect(counts.reading).toBe(10);
-    expect(counts.listening).toBe(9);
+    // Verify individual counts for 27 tests across 30 days
+    expect(counts.reading).toBe(9);
+    expect(counts.listening).toBe(8);
     expect(counts.speaking).toBe(6);
     expect(counts.writing).toBe(4);
 

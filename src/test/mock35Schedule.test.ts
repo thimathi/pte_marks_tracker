@@ -25,8 +25,8 @@ describe('60 Mock Exam Mastery Plan & 20 Papers × 3 Passes + 9 Review Days Veri
     expect(APEUNI_VIP_MOCKS[1]).toBe('【VIP Full Test】PTE Mock Test 44C');
   });
 
-  it('configures 32 study days and 60 total mocks (20 unique papers × 3 passes)', () => {
-    expect(TOTAL_STUDY_DAYS).toBe(32);
+  it('configures 30 study days and 60 total mocks (20 unique papers × 3 passes)', () => {
+    expect(TOTAL_STUDY_DAYS).toBe(30);
     expect(TOTAL_MOCK_TARGET).toBe(60);
     expect(TOTAL_UNIQUE_PAPERS).toBe(20);
     expect(REPETITIONS_PER_PAPER).toBe(3);
@@ -63,8 +63,8 @@ describe('60 Mock Exam Mastery Plan & 20 Papers × 3 Passes + 9 Review Days Veri
     for (let eNum = 1; eNum <= 60; eNum++) {
       const { dayNumber, mockKey } = getDayAndSlotForExam(eNum);
       expect(dayNumber).toBeGreaterThanOrEqual(1);
-      expect(dayNumber).toBeLessThanOrEqual(32);
-      expect(mockKey).toMatch(/^mock0[1-4]$/);
+      expect(dayNumber).toBeLessThanOrEqual(30);
+      expect(mockKey).toMatch(/^mock0[1-2]$/);
 
       const dayMocks = getMockExamsForDay(dayNumber);
       const slotIndex = dayMocks.indexOf(mockKey);
@@ -74,9 +74,9 @@ describe('60 Mock Exam Mastery Plan & 20 Papers × 3 Passes + 9 Review Days Veri
     }
   });
 
-  it('correctly maps Day 1 to the 4 specific tests in user-requested order', () => {
+  it('correctly maps Day 1 to the first 2 specific tests in user-requested order', () => {
     const day1Mocks = getMockExamsForDay(1);
-    expect(day1Mocks).toEqual(['mock01', 'mock02', 'mock03', 'mock04']);
+    expect(day1Mocks).toEqual(['mock01', 'mock02']);
 
     const mock1 = getMockExamDetails(1);
     expect(mock1.testName).toBe('【Free Full Test】Mock Test A (note: VIP required for scoring)');
@@ -84,12 +84,6 @@ describe('60 Mock Exam Mastery Plan & 20 Papers × 3 Passes + 9 Review Days Veri
 
     const mock2 = getMockExamDetails(2);
     expect(mock2.testName).toBe('【VIP Full Test】PTE Mock Test 37B (7th Aug. new version)');
-
-    const mock3 = getMockExamDetails(3);
-    expect(mock3.testName).toBe('【VIP Full Test】PTE Mock Test 40B (7th Aug. new version)');
-
-    const mock4 = getMockExamDetails(4);
-    expect(mock4.testName).toBe('【VIP Full Test】PTE Mock Test 45C');
   });
 
   it('returns mock exam details with correct pass, attempt number, and badges', () => {
@@ -106,17 +100,17 @@ describe('60 Mock Exam Mastery Plan & 20 Papers × 3 Passes + 9 Review Days Veri
     expect(mock50.attemptOfPaper).toBe(3);
   });
 
-  it('validates total question targets: 3,600 mock exam questions and 7,088 total questions', () => {
+  it('validates total question targets: 3,600 mock exam questions and 7,110 total questions', () => {
     expect(TOTAL_MOCK_EXAM_QUESTIONS).toBe(3600);
-    expect(TOTAL_MISSION_QUESTIONS).toBe(7088);
+    expect(TOTAL_MISSION_QUESTIONS).toBe(7110);
   });
 
-  it('validates the dedicated Deep Review Day on Day 3', () => {
-    expect(isReviewDay(3)).toBe(true);
-    expect(getMockExamsForDay(3)).toEqual([]); // 0 new mocks scheduled
-    const day3Def = getReviewDayDefinition(3);
-    expect(day3Def).not.toBeNull();
-    expect(day3Def?.examNumbers).toEqual([1, 2, 3, 4, 5, 6]);
-    expect(day3Def?.coveredDays).toEqual([1, 2]);
+  it('validates Milestone Review Days on Day 10, 20, 30', () => {
+    expect(isReviewDay(10)).toBe(true);
+    expect(isReviewDay(20)).toBe(true);
+    expect(isReviewDay(30)).toBe(true);
+    const day10Def = getReviewDayDefinition(10);
+    expect(day10Def).not.toBeNull();
+    expect(day10Def?.examNumbers.length).toBe(20);
   });
 });

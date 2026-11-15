@@ -99,23 +99,23 @@ export const RoadmapPage: React.FC = () => {
             <div className="flex items-center gap-2 mb-2 flex-wrap">
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-950/60 text-blue-300 border border-blue-800/60 flex items-center gap-1.5">
                 <GraduationCap className="w-3.5 h-3.5 text-blue-400" />
-                PTE Academic 37-Day Roadmap
+                PTE Academic 30-Day Roadmap
               </span>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-950/60 text-purple-300 border border-purple-800/60">
-                2 Mocks / Day + 153 Practice Qs
+                2 Mocks / Day + 117 Practice Qs
               </span>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-950/60 text-emerald-300 border border-emerald-800/60">
-                273 Questions Daily
+                237 Questions Daily
               </span>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-cyan-950/60 text-cyan-300 border border-cyan-800/60">
-                {totalDays} Days · Nov 04 – Dec 10, 2026
+                {totalDays} Days · Nov 16 – Dec 16, 2026 · Colombo Leave: Nov 18
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100 tracking-tight">
-              PTE {totalDays}-Day Protocol Roadmap (Dec 10 Exam)
+              PTE {totalDays}-Day Protocol Roadmap (Dec 17 Exam · 12:00 PM)
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-3xl leading-relaxed">
-              14–15 Hours high-efficiency daily curriculum · Tailored for <b className="text-slate-200">Speaking {studyPlan.targetScores?.speaking || 87}</b>, <b className="text-slate-200">Writing {studyPlan.targetScores?.writing || 84}</b>, <b className="text-slate-200">Reading {studyPlan.targetScores?.reading || 69}</b>, <b className="text-slate-200">Listening {studyPlan.targetScores?.listening || 68}</b>, and <b className="text-emerald-400">Overall {studyPlan.targetScores?.overall || 78}+</b> summit readiness on December 10.
+              14–15 Hours high-efficiency daily curriculum · Tailored for <b className="text-slate-200">Speaking {studyPlan.targetScores?.speaking || 87}</b>, <b className="text-slate-200">Writing {studyPlan.targetScores?.writing || 84}</b>, <b className="text-slate-200">Reading {studyPlan.targetScores?.reading || 69}</b>, <b className="text-slate-200">Listening {studyPlan.targetScores?.listening || 68}</b>, and <b className="text-emerald-400">Overall {studyPlan.targetScores?.overall || 78}+</b> summit readiness on December 17.
             </p>
           </div>
 
@@ -123,14 +123,14 @@ export const RoadmapPage: React.FC = () => {
             <div className="bg-[#0d131f] border border-slate-800 rounded-2xl px-4 py-2.5 text-center shadow-2xs">
               <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Mocks Completed</span>
               <span className="text-lg font-extrabold text-blue-400 font-mono">
-                {totalMocksDoneAllDays} <span className="text-xs text-slate-500">/ 74</span>
+                {totalMocksDoneAllDays} <span className="text-xs text-slate-500">/ 60</span>
               </span>
             </div>
 
             <div className="bg-[#0d131f] border border-slate-800 rounded-2xl px-4 py-2.5 text-center shadow-2xs">
               <span className="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Questions Done</span>
               <span className="text-lg font-extrabold text-emerald-400 font-mono">
-                {totalQuestionsDone.toLocaleString()} <span className="text-xs text-slate-500">/ 10,101</span>
+                {totalQuestionsDone.toLocaleString()} <span className="text-xs text-slate-500">/ 7,110</span>
               </span>
             </div>
 
@@ -218,7 +218,7 @@ export const RoadmapPage: React.FC = () => {
             </div>
             <h4 className="text-xs font-bold text-slate-200">Summit Ready (Exams 41–60)</h4>
             <p className="text-[11px] text-slate-400 mt-0.5">
-              Days 19–37 · Peak 78+ Mastery (Dec 10 Summit)
+              Days 21–30 · Peak 78+ Mastery (Dec 17 Summit)
             </p>
             <div className="w-full bg-slate-800 rounded-full h-1.5 mt-2 overflow-hidden">
               <div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: `${pass3.percent}%` }} />
@@ -235,10 +235,10 @@ export const RoadmapPage: React.FC = () => {
             Filter by Pass:
           </span>
           {[
-            { id: 'all', label: `All ${totalDays} Days (Dec 10 Summit)` },
-            { id: '1', label: 'Pass 1 · Baseline (D1–D8)' },
-            { id: '2', label: 'Pass 2 · Rectify (D10–D17)' },
-            { id: '3', label: 'Pass 3 · Summit (D19–D37)' }
+            { id: 'all', label: `All ${totalDays} Days (Dec 17 Summit)` },
+            { id: '1', label: 'Pass 1 · Baseline (D1–D10)' },
+            { id: '2', label: 'Pass 2 · Rectify (D11–D20)' },
+            { id: '3', label: 'Pass 3 · Summit (D21–D30)' }
           ].map((f) => (
             <button
               key={f.id}
