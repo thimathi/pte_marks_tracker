@@ -25,8 +25,8 @@ describe('60 Mock Exam Mastery Plan & 20 Papers × 3 Passes + 9 Review Days Veri
     expect(APEUNI_VIP_MOCKS[1]).toBe('【VIP Full Test】PTE Mock Test 44C');
   });
 
-  it('configures 37 study days and 60 total mocks (20 unique papers × 3 passes)', () => {
-    expect(TOTAL_STUDY_DAYS).toBe(37);
+  it('configures 32 study days and 60 total mocks (20 unique papers × 3 passes)', () => {
+    expect(TOTAL_STUDY_DAYS).toBe(32);
     expect(TOTAL_MOCK_TARGET).toBe(60);
     expect(TOTAL_UNIQUE_PAPERS).toBe(20);
     expect(REPETITIONS_PER_PAPER).toBe(3);
@@ -63,7 +63,7 @@ describe('60 Mock Exam Mastery Plan & 20 Papers × 3 Passes + 9 Review Days Veri
     for (let eNum = 1; eNum <= 60; eNum++) {
       const { dayNumber, mockKey } = getDayAndSlotForExam(eNum);
       expect(dayNumber).toBeGreaterThanOrEqual(1);
-      expect(dayNumber).toBeLessThanOrEqual(37);
+      expect(dayNumber).toBeLessThanOrEqual(32);
       expect(mockKey).toMatch(/^mock0[1-4]$/);
 
       const dayMocks = getMockExamsForDay(dayNumber);
@@ -106,9 +106,9 @@ describe('60 Mock Exam Mastery Plan & 20 Papers × 3 Passes + 9 Review Days Veri
     expect(mock50.attemptOfPaper).toBe(3);
   });
 
-  it('validates total question targets: 4,440 mock exam questions and 10,101 total questions', () => {
-    expect(TOTAL_MOCK_EXAM_QUESTIONS).toBe(4440);
-    expect(TOTAL_MISSION_QUESTIONS).toBe(10101);
+  it('validates total question targets: 3,600 mock exam questions and 7,088 total questions', () => {
+    expect(TOTAL_MOCK_EXAM_QUESTIONS).toBe(3600);
+    expect(TOTAL_MISSION_QUESTIONS).toBe(7088);
   });
 
   it('validates the dedicated Deep Review Day on Day 3', () => {
@@ -116,7 +116,7 @@ describe('60 Mock Exam Mastery Plan & 20 Papers × 3 Passes + 9 Review Days Veri
     expect(getMockExamsForDay(3)).toEqual([]); // 0 new mocks scheduled
     const day3Def = getReviewDayDefinition(3);
     expect(day3Def).not.toBeNull();
-    expect(day3Def?.examNumbers).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(day3Def?.examNumbers).toEqual([1, 2, 3, 4, 5, 6]);
     expect(day3Def?.coveredDays).toEqual([1, 2]);
   });
 });

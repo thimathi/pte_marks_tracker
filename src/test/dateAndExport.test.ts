@@ -6,9 +6,9 @@ describe('Date Calculations & Formatting', () => {
   it('calculates consecutive ISO dates for the intensive protocol', () => {
     const dates = calculate21StudyDates(DEFAULT_START_DATE, TOTAL_STUDY_DAYS);
     expect(dates.length).toBe(TOTAL_STUDY_DAYS);
-    expect(dates[0]).toBe('2026-11-04'); // Day 1
-    expect(dates[1]).toBe('2026-11-05'); // Day 2
-    expect(dates[26]).toBe('2026-11-30'); // Day 27 (Exam Day)
+    expect(dates[0]).toBe('2026-11-15'); // Day 1
+    expect(dates[1]).toBe('2026-11-16'); // Day 2
+    expect(dates[31]).toBe('2026-12-16'); // Day 32 (Final Study Day before Dec 17 Exam)
   });
 
   it('supports custom duration when requested (e.g. 15 days)', () => {

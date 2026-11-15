@@ -1,21 +1,21 @@
 import { QuestionPriority, QuestionTypeMeta, SkillType, StudyGroupDefinition, TargetScores } from '../types/pte';
 
-export const DEFAULT_START_DATE = '2026-11-04'; // Start: Nov 4, 2026 (Day 4 = Nov 7, 2026)
-export const FINAL_TARGET_DATE = '2026-12-10'; // Postponed Exam Day: Dec 10, 2026 (37 Days Total)
-export const APP_TITLE = 'PTE - 78+ Superior Plan (2 Mocks · 153 Practice Qs · 273 Qs/Day · S:87 W:84 R:69 L:68)';
+export const DEFAULT_START_DATE = '2026-11-15'; // Start: Nov 15, 2026 (Post-fever fresh start · Dec 17 Exam)
+export const FINAL_TARGET_DATE = '2026-12-17'; // Exam Day: Dec 17, 2026 (32 Days Total · 12:00 PM IST)
+export const APP_TITLE = 'PTE - 78+ Superior Plan (2 Mocks · 109 Practice Qs · 229 Qs/Day · S:87 W:84 R:69 L:68 · Dec 17)';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
-export const TOTAL_STUDY_DAYS = 37; // Nov 4 to Dec 10, 2026 (37 Days Total)
-export const DAILY_PRACTICE_TARGET = 153; // Exactly 153 Daily Targeted Practice Questions (PTE Bridge 273 - 120 Mocks)
-export const TOTAL_PRACTICE_TARGET = 5661; // 37 * 153 = 5,661 Total Practice Questions
-export const DAILY_MOCK_TARGET = 2; // Exactly 2 Mock Exams Daily (60 Qs * 2 = 120 Questions)
+export const TOTAL_STUDY_DAYS = 32; // Nov 15 to Dec 16, 2026 (32 Study Days · Exam on Dec 17)
+export const DAILY_PRACTICE_TARGET = 109; // 3,488 Total Practice Questions ÷ 32 Days ≈ 109/day
+export const TOTAL_PRACTICE_TARGET = 3488; // 32 days × 109 questions = 3,488 Total Practice Questions
+export const DAILY_MOCK_TARGET = 2; // 2 Mock Exams Daily (60 Qs × 2 = 120 Questions/day)
 export const TOTAL_MOCK_TARGET = 60; // 60 Planned Benchmark Mocks (20 unique VIP papers × 3 passes)
 export const TOTAL_UNIQUE_PAPERS = 20; // 20 unique VIP papers
 export const REPETITIONS_PER_PAPER = 3; // Repeated in passes
-export const TOTAL_SECTION_TESTS = 34; // 34 Section Tests (1 test every day from Day 4 through Day 37) 
+export const TOTAL_SECTION_TESTS = 29; // 29 Section Tests (1 test every day from Day 4 through Day 32)
 export const MOCK_EXAM_QUESTIONS = 60;
-export const TOTAL_MOCK_EXAM_QUESTIONS = 4440; // 74 mocks * 60 questions = 4,440
-export const DAILY_TOTAL_QUESTIONS = 273; // 153 Practice Qs + 120 Mock Qs = 273 Questions Daily
-export const TOTAL_MISSION_QUESTIONS = 10101; // 37 days * 273 questions = 10,101 Total Questions
+export const TOTAL_MOCK_EXAM_QUESTIONS = 3600; // 60 mocks × 60 questions = 3,600
+export const DAILY_TOTAL_QUESTIONS = 229; // 109 Practice Qs + 120 Mock Qs = 229 Questions Daily
+export const TOTAL_MISSION_QUESTIONS = 7088; // 3,488 Practice + 3,600 Mock = 7,088 Total Questions
 
 export interface MockScheduleSlot {
   mockIndex: number;
@@ -262,12 +262,12 @@ export const SECTION_TEST_SCHEDULE: Record<number, SectionTestDef> = {
   },
   26: {
     dayNumber: 26,
-    testId: 'sec_writing_04',
-    title: 'VIP Writing Section Test 4',
-    skill: 'writing',
-    targetQuestions: 3,
+    testId: 'sec_speaking_06',
+    title: 'VIP Speaking Section Test 6 (Score 87 Fluency Drill)',
+    skill: 'speaking',
+    targetQuestions: 35,
     estMinutes: '35 min',
-    description: 'APEUni VIP Writing Test 4: High-scoring essay template speed run + SWT punctuation mastery.',
+    description: 'APEUni VIP Speaking Test 6: Zero hesitation, steady pitch, continuous acoustic rhythm across RA & RS.',
     recommendedSlot: '07:15 PM – 07:50 PM'
   },
   27: {
@@ -302,12 +302,12 @@ export const SECTION_TEST_SCHEDULE: Record<number, SectionTestDef> = {
   },
   30: {
     dayNumber: 30,
-    testId: 'sec_writing_05',
-    title: 'VIP Writing Section Test 5 (Score 84 Essay Sprint)',
+    testId: 'sec_writing_04',
+    title: 'VIP Writing Section Test 4 (Score 84 Essay Sprint)',
     skill: 'writing',
     targetQuestions: 3,
     estMinutes: '35 min',
-    description: 'APEUni VIP Writing Test 5: Strict 20-min Essay with advanced vocabulary & 10-min SWT compound sentence.',
+    description: 'APEUni VIP Writing Test 4: Strict 20-min Essay with advanced vocabulary & 10-min SWT compound sentence.',
     recommendedSlot: '07:15 PM – 07:50 PM'
   },
   31: {
@@ -322,62 +322,12 @@ export const SECTION_TEST_SCHEDULE: Record<number, SectionTestDef> = {
   },
   32: {
     dayNumber: 32,
-    testId: 'sec_speaking_06',
-    title: 'VIP Speaking Section Test 6 (Score 87 Fluency Drill)',
-    skill: 'speaking',
-    targetQuestions: 35,
-    estMinutes: '35 min',
-    description: 'APEUni VIP Speaking Test 6: Zero hesitation, steady pitch, continuous acoustic rhythm across RA & RS.',
-    recommendedSlot: '07:15 PM – 07:50 PM'
-  },
-  33: {
-    dayNumber: 33,
     testId: 'sec_reading_10',
-    title: 'VIP Reading Section Test 10 (Re-order & Blanks)',
-    skill: 'reading',
-    targetQuestions: 19,
-    estMinutes: '32 min',
-    description: 'APEUni VIP Reading Test 10: Topic sentence tracking, pronoun reference links & drag-and-drop FIB.',
-    recommendedSlot: '07:15 PM – 07:50 PM'
-  },
-  34: {
-    dayNumber: 34,
-    testId: 'sec_listening_10',
-    title: 'VIP Listening Section Test 10 (High-Speed Reflex)',
-    skill: 'listening',
-    targetQuestions: 20,
-    estMinutes: '35 min',
-    description: 'APEUni VIP Listening Test 10: HIW at 1.2x playback speed and Listening FIB instant spelling.',
-    recommendedSlot: '07:15 PM – 07:50 PM'
-  },
-  35: {
-    dayNumber: 35,
-    testId: 'sec_writing_06',
-    title: 'VIP Writing Section Test 6 (Error-Free Grammar Audit)',
-    skill: 'writing',
-    targetQuestions: 4,
-    estMinutes: '40 min',
-    description: 'APEUni VIP Writing Test 6: 2 essays typed back-to-back with zero spelling errors & full paragraph structure.',
-    recommendedSlot: '07:15 PM – 07:55 PM'
-  },
-  36: {
-    dayNumber: 36,
-    testId: 'sec_speaking_07',
-    title: 'VIP Speaking Section Test 7 (Summit Confidence)',
-    skill: 'speaking',
-    targetQuestions: 35,
-    estMinutes: '35 min',
-    description: 'APEUni VIP Speaking Test 7: Pearson exam simulation — 87+ target fluency, projection, and no hesitation.',
-    recommendedSlot: '07:15 PM – 07:50 PM'
-  },
-  37: {
-    dayNumber: 37,
-    testId: 'sec_reading_11',
-    title: 'VIP Reading Section Test 11 (Exam Day Readiness)',
+    title: 'VIP Reading Section Test 10 (Exam Day Readiness)',
     skill: 'reading',
     targetQuestions: 20,
     estMinutes: '30 min',
-    description: 'APEUni VIP Reading Test 11: Final sharp focus on academic collocations and R/W blanks before summit.',
+    description: 'APEUni VIP Reading Test 10: Final sharp focus on academic collocations and R/W blanks before summit.',
     recommendedSlot: '07:15 PM – 07:45 PM'
   }
 };
@@ -395,14 +345,13 @@ export const DEFAULT_TARGET_SCORES: TargetScores = {
   mockExam: 78,
 };
 
-// Target progression curve across 37 study days (Nov 04 to Dec 10) targeting Overall 78+ (S:87, W:84, R:69, L:68)
+// Target progression curve across 32 study days (Nov 15 to Dec 16) targeting Overall 78+ (S:87, W:84, R:69, L:68)
 export const DAY_TARGET_SCORES: number[] = [
-  60, 61, 62, 63, 64, 65, 66, // Week 1 (Days 1–7): Nov 04–10 (Baseline Stabilization & Speaking Fluency Reset)
-  67, 68, 69, 70, 71, 71, 72, // Week 2 (Days 8–14): Nov 11–17 (Writing Templates & Dictation Lockdown)
-  72, 73, 73, 74, 74, 75, 75, // Week 3 (Days 15–21): Nov 18–24 (Reading Blanks & Collocations Acceleration)
-  75, 76, 76, 77, 77, 77, 78, // Week 4 (Days 22–28): Nov 25–Dec 01 (Speed & Timed Stress Conditioning)
-  78, 78, 78, 78, 78, 78, 78, // Week 5 (Days 29–35): Dec 02–08 (Summit 87 Speaking & 84 Writing Precision)
-  78, 78                      // Final Summit (Days 36–37): Dec 09–10 (Peak Confidence & Pearson Exam Day)
+  60, 61, 62, 63, 64, 65, 66, // Week 1 (Days 1–7): Nov 15–21 (Baseline Reset & Speaking Fluency Reset)
+  67, 68, 69, 70, 71, 72, 73, // Week 2 (Days 8–14): Nov 22–28 (Writing Templates & Dictation Lockdown)
+  73, 74, 74, 75, 75, 76, 76, // Week 3 (Days 15–21): Nov 29–Dec 05 (Reading Blanks & Collocations Acceleration)
+  77, 77, 77, 78, 78, 78, 78, // Week 4 (Days 22–28): Dec 06–12 (Timed Stress Conditioning & Speed)
+  78, 78, 78, 78              // Final Summit (Days 29–32): Dec 13–16 (Peak Confidence & Pre-Exam Mastery)
 ];
 
 export interface DailyMasterBlock {
@@ -423,18 +372,19 @@ export const DAILY_15H_MASTER_SCHEDULE: DailyMasterBlock[] = [
     blockNumber: 1,
     timeSlot: '06:30 AM – 09:00 AM',
     durationHours: 2.5,
-    title: 'Block 1: Speaking 87 Fluency & Acoustic Drills (PTE Bridge 82 Qs)',
+    title: 'Block 1: Speaking 87 Fluency & Acoustic Drills (48 Qs)',
     targetSkill: 'speaking',
     targetScoreBenchmark: 87,
-    badge: 'Speaking Target: 87 · 82 Qs',
+    badge: 'Speaking Target: 87 · 48 Qs',
     badgeColor: 'bg-red-950/60 text-red-300 border border-red-800/60',
     coreTasks: [
       'Tongue Twisters & Vocal Cord Warmup (10 min articulation & pitch stabilization)',
-      'Read Aloud (RA): 20 passages (PTE Bridge daily target: uninterrupted fluency, steady volume)',
-      'Repeat Sentence (RS): 30 audios (3-4 word phrase chunking + acoustic shadow delivery)',
-      'Describe Image (DI): 8 images (Fixed 25s template delivery: title, high/low, conclusion)',
-      'Retell Lecture (RL): 5 audios (Key phrases note-taking + oral template fluency)',
-      'Respond to Situation (RTS): 5 drills & Answer Short Questions (ASQ): 8 drills'
+      'Read Aloud (RA): 9 passages (300 target · uninterrupted fluency, steady volume)',
+      'Repeat Sentence (RS): 19 audios (600 target · 3-4 word phrase chunking + acoustic shadow)',
+      'Describe Image (DI): 6 images (200 target · Fixed 25s template delivery)',
+      'Retell Lecture (RL): 3 audios (100 target · Key phrases note-taking + oral template fluency)',
+      'Respond to Situation (RTS): 3 drills (100 target) & Answer Short Questions (ASQ): 4 drills (120 target)',
+      'Summarize Group Discussion (SGD): 4 drills (120 target · 3-speaker template)'
     ],
     efficiencyRule: 'Never restart or pause during recording. Pearson AI penalizes hesitations harder than minor pronunciation slips.'
   },
@@ -459,17 +409,17 @@ export const DAILY_15H_MASTER_SCHEDULE: DailyMasterBlock[] = [
     blockNumber: 3,
     timeSlot: '01:15 PM – 03:30 PM',
     durationHours: 2.25,
-    title: 'Block 3: Reading 69 & Writing 84 Precision Drills (PTE Bridge 39 Qs)',
+    title: 'Block 3: Reading 69 & Writing 84 Precision Drills (37 Qs)',
     targetSkill: 'reading',
     targetScoreBenchmark: 69,
-    badge: 'Reading 69 & Writing 84 · 39 Qs',
+    badge: 'Reading 69 & Writing 84 · 37 Qs',
     badgeColor: 'bg-amber-950/60 text-amber-300 border border-amber-800/60',
     coreTasks: [
-      'Reading & Writing FIB (Dropdown): 18 passages (PTE Bridge: context clues & collocation pairs)',
-      'Reading FIB (Drag & Drop): 14 passages (Grammatical category deduction: Noun/Verb/Adj)',
-      'Re-order Paragraphs (RO): 4 exercises (Independent topic sentences & pronoun referents)',
-      'Summarize Written Text (SWT): 2 passages (Strict 1-sentence compound grammar, 35–45 words)',
-      'Write Essay (WE): 1 full essay typed in 20 min under exam conditions (Zero spelling errors)'
+      'Reading & Writing FIB (Dropdown): 14 passages (450 target · academic collocations & context clues)',
+      'Reading FIB (Drag & Drop): 14 passages (450 target · Grammatical category deduction: Noun/Verb/Adj)',
+      'Re-order Paragraphs (RO): 6 exercises (200 target · Independent topic sentences & pronoun referents)',
+      'Summarize Written Text (SWT): 2 passages (50 target · Strict 1-sentence compound grammar, 35–45 words)',
+      'Write Essay (WE): 1 full essay typed in 20 min under exam conditions (30 target · Zero spelling errors)'
     ],
     efficiencyRule: 'Never spend more than 2 minutes on a single reading passage; mark best educated guess and proceed.'
   },
@@ -510,16 +460,15 @@ export const DAILY_15H_MASTER_SCHEDULE: DailyMasterBlock[] = [
     blockNumber: 6,
     timeSlot: '08:30 PM – 10:30 PM',
     durationHours: 2.0,
-    title: 'Block 6: Listening 68 & Dictation Lockdown (PTE Bridge 32 Qs)',
+    title: 'Block 6: Listening 68 & Dictation Lockdown (24 Qs)',
     targetSkill: 'listening',
     targetScoreBenchmark: 68,
-    badge: 'Listening 68 · 32 Qs',
+    badge: 'Listening 68 · 24 Qs',
     badgeColor: 'bg-cyan-950/60 text-cyan-300 border border-cyan-800/60',
     coreTasks: [
-      'Write From Dictation (WFD): 20 sentences (Spelling audit: plurals -s, past tense -ed, capital letters)',
-      'Summarize Spoken Text (SST): 2 audios (55–65 words strict template, noun-phrase accuracy)',
-      'Listening Fill in the Blanks: 6 audios (Immediate shorthand on notepad, rapid type-in)',
-      'Highlight Incorrect Words: 4 audios (Trained at 1.2x playback speed for reflex sharpening)'
+      'Write From Dictation (WFD): 14 sentences (450 target · Spelling audit: plurals -s, past tense -ed)',
+      'Listening Fill in the Blanks: 9 audios (300 target · Immediate shorthand on notepad, rapid type-in)',
+      'Highlight Incorrect Words: 1 audio (30 target · Trained at 1.2x playback speed for reflex sharpening)'
     ],
     efficiencyRule: 'Never take negative-marking risks on MC Multiple Answers unless 100% confident.'
   },
@@ -566,79 +515,23 @@ export const REVIEW_DAYS: Record<number, ReviewDayDefinition> = {
   3: {
     dayNumber: 3,
     startExam: 1,
-    endExam: 7,
-    examNumbers: [1, 2, 3, 4, 5, 6, 7],
+    endExam: 6,
+    examNumbers: [1, 2, 3, 4, 5, 6],
     coveredDays: [1, 2],
-    title: 'Deep Review: Exams 1–7 (Day 1 & Day 2 Papers)'
+    title: 'Deep Review: Exams 1–6 (Day 1 & Day 2 Papers)'
   },
-  6: {
-    dayNumber: 6,
-    startExam: 8,
-    endExam: 14,
-    examNumbers: [8, 9, 10, 11, 12, 13, 14],
-    coveredDays: [4, 5],
-    title: 'Deep Review: Exams 8–14 (Day 4 & Day 5 Papers)'
-  },
-  9: {
-    dayNumber: 9,
-    startExam: 15,
-    endExam: 21,
-    examNumbers: [15, 16, 17, 18, 19, 20, 21],
-    coveredDays: [7, 8],
-    title: 'Deep Review: Exams 15–21 (Day 7 & Day 8 Papers)'
-  },
-  12: {
-    dayNumber: 12,
-    startExam: 22,
-    endExam: 28,
-    examNumbers: [22, 23, 24, 25, 26, 27, 28],
-    coveredDays: [10, 11],
-    title: 'Deep Review: Exams 22–28 (Day 10 & Day 11 Papers)'
-  },
-  15: {
-    dayNumber: 15,
-    startExam: 29,
-    endExam: 35,
-    examNumbers: [29, 30, 31, 32, 33, 34, 35],
-    coveredDays: [13, 14],
-    title: 'Deep Review: Exams 29–35 (Day 13 & Day 14 Papers)'
-  },
-  18: {
-    dayNumber: 18,
-    startExam: 36,
-    endExam: 42,
-    examNumbers: [36, 37, 38, 39, 40, 41, 42],
-    coveredDays: [16, 17],
-    title: 'Deep Review: Exams 36–42 (Day 16 & Day 17 Papers)'
-  },
-  21: {
-    dayNumber: 21,
-    startExam: 43,
-    endExam: 48,
-    examNumbers: [43, 44, 45, 46, 47, 48],
-    coveredDays: [19, 20],
-    title: 'Deep Review: Exams 43–48 (Day 19 & Day 20 Papers)'
-  },
-  24: {
-    dayNumber: 24,
-    startExam: 49,
-    endExam: 54,
-    examNumbers: [49, 50, 51, 52, 53, 54],
-    coveredDays: [22, 23],
-    title: 'Deep Review: Exams 49–54 (Day 22 & Day 23 Papers)'
-  },
-  27: {
-    dayNumber: 27,
+  31: {
+    dayNumber: 31,
     startExam: 55,
     endExam: 60,
     examNumbers: [55, 56, 57, 58, 59, 60],
-    coveredDays: [25, 26],
-    title: 'Grand Final Review: Exams 55–60 (Day 25 & Day 26 Papers + Final Summit Readiness)'
+    coveredDays: [28, 29, 30],
+    title: 'Grand Final Review: Exams 55–60 (Pass 3 Mastery + Final Summit Readiness)'
   }
 };
 
 export function isReviewDay(dayNumber: number): boolean {
-  return dayNumber === 3;
+  return dayNumber === 3 || dayNumber === 31;
 }
 
 export function getReviewDayDefinition(dayNumber: number): ReviewDayDefinition | null {
@@ -647,13 +540,13 @@ export function getReviewDayDefinition(dayNumber: number): ReviewDayDefinition |
 
 export function getDailyMockTarget(dayNumber: number): number {
   if (dayNumber === 1) return 4;
-  if (dayNumber === 2) return 3;
-  if (dayNumber === 3) return 0;
+  if (dayNumber === 2) return 2;
+  if (dayNumber === 3 || dayNumber >= 31) return 0;
   return 2;
 }
 
 export function getDailyPracticeTarget(_dayNumber: number): number {
-  return 153;
+  return 109;
 }
 
 export function getMockExamsForDay(dayNumber: number): string[] {
@@ -661,52 +554,45 @@ export function getMockExamsForDay(dayNumber: number): string[] {
     return ['mock01', 'mock02', 'mock03', 'mock04'];
   }
   if (dayNumber === 2) {
-    return ['mock01', 'mock02', 'mock03'];
+    return ['mock01', 'mock02'];
   }
-  if (dayNumber === 3) {
+  if (dayNumber === 3 || dayNumber >= 31) {
     return [];
   }
-  // From Day 4 through Day 37: Exactly 2 Mock Exams per day!
+  // From Day 4 through Day 30: Exactly 2 Mock Exams per day!
   return ['mock01', 'mock02'];
 }
 
 export const DAY_START_EXAM_NUMBER: Record<number, number> = {
-  1: 1,
-  2: 5,
-  4: 8,
-  5: 10,
-  6: 12,
-  7: 14,
-  8: 16,
-  9: 18,
-  10: 20,
-  11: 22,
-  12: 24,
-  13: 26,
-  14: 28,
-  15: 30,
-  16: 32,
-  17: 34,
-  18: 36,
-  19: 38,
-  20: 40,
-  21: 42,
-  22: 44,
-  23: 46,
-  24: 48,
-  25: 50,
-  26: 52,
-  27: 54,
-  28: 56,
-  29: 58,
-  30: 60,
-  31: 62,
-  32: 64,
-  33: 66,
-  34: 68,
-  35: 70,
-  36: 72,
-  37: 74
+  1: 1,   // Exams 1..4 (Day 1: 4 Mocks Diagnostic Baseline)
+  2: 5,   // Exams 5..6 (Day 2: 2 Mocks)
+  4: 7,   // Exams 7..8
+  5: 9,   // Exams 9..10
+  6: 11,  // Exams 11..12
+  7: 13,  // Exams 13..14
+  8: 15,  // Exams 15..16
+  9: 17,  // Exams 17..18
+  10: 19, // Exams 19..20 (Pass 1 Complete!)
+  11: 21, // Exams 21..22 (Pass 2 Starts)
+  12: 23,
+  13: 25,
+  14: 27,
+  15: 29,
+  16: 31,
+  17: 33,
+  18: 35,
+  19: 37,
+  20: 39, // Exams 39..40 (Pass 2 Complete!)
+  21: 41, // Exams 41..42 (Pass 3 Starts)
+  22: 43,
+  23: 45,
+  24: 47,
+  25: 49,
+  26: 51,
+  27: 53,
+  28: 55,
+  29: 57,
+  30: 59  // Exams 59..60 (Pass 3 Complete! All 60 Mocks Done!)
 };
 
 export function getExamNumberForMock(dayNumber: number, mockIndex: number): number {
@@ -950,19 +836,19 @@ export const BASELINE_MOCK_45C_SCORES = {
 };
 
 export const QUESTION_TYPES: QuestionTypeMeta[] = [
-  // SPEAKING (Total: 82 targeted daily questions from PTE Bridge)
+  // SPEAKING (Total: 48 targeted daily questions from 3,500 total plan)
   {
     id: 'read_aloud',
     name: 'Read Aloud',
     shortName: 'RA',
     skill: 'speaking',
     secondarySkill: 'reading',
-    defaultTarget: 20,
-    estMinutes: '20 min',
+    defaultTarget: 9,
+    estMinutes: '15 min',
     isPrediction: true,
     scoreWeight: 4,
     maxScore: 90,
-    description: 'Read the text aloud naturally with steady rhythm and acoustic projection. (PTE Bridge daily focus)'
+    description: 'Read the text aloud naturally with steady rhythm and acoustic projection. (300 Total Target)'
   },
   {
     id: 'repeat_sentence',
@@ -970,24 +856,24 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'RS',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 30,
-    estMinutes: '20 min',
+    defaultTarget: 19,
+    estMinutes: '18 min',
     isPrediction: true,
     scoreWeight: 7,
     maxScore: 90,
-    description: 'Listen to a short recording and repeat the sentence accurately word-for-word. (PTE Bridge daily focus)'
+    description: 'Listen to a short recording and repeat the sentence accurately word-for-word. (600 Total Target)'
   },
   {
     id: 'describe_image',
     name: 'Describe Image',
     shortName: 'DI',
     skill: 'speaking',
-    defaultTarget: 8,
-    estMinutes: '10 min',
+    defaultTarget: 6,
+    estMinutes: '8 min',
     isPrediction: true,
     scoreWeight: 15,
     maxScore: 90,
-    description: 'Describe the key points and conclusions of the image using a clean 25s template flow.'
+    description: 'Describe the key points and conclusions of the image using a clean 25s template flow. (200 Total Target)'
   },
   {
     id: 'retell_lecture',
@@ -995,24 +881,24 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'RL',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 5,
-    estMinutes: '8 min',
+    defaultTarget: 3,
+    estMinutes: '6 min',
     isPrediction: false,
     scoreWeight: 6,
     maxScore: 90,
-    description: 'Listen to a lecture and retell the key points in your own words with zero hesitation.'
+    description: 'Listen to a lecture and retell the key points in your own words with zero hesitation. (100 Total Target)'
   },
   {
     id: 'respond_to_situation',
     name: 'Respond to a Situation',
     shortName: 'RTS',
     skill: 'speaking',
-    defaultTarget: 5,
-    estMinutes: '6 min',
+    defaultTarget: 3,
+    estMinutes: '5 min',
     isPrediction: false,
     scoreWeight: 6,
     maxScore: 90,
-    description: 'Spoken situational response with natural intonation.'
+    description: 'Spoken situational response with natural intonation. (100 Total Target)'
   },
   {
     id: 'summarize_group_discussion',
@@ -1020,12 +906,12 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'SGD',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 6,
-    estMinutes: '8 min',
+    defaultTarget: 4,
+    estMinutes: '7 min',
     isPrediction: true,
     scoreWeight: 9,
     maxScore: 90,
-    description: 'Summarize group viewpoints with oral fluency.'
+    description: 'Summarize group viewpoints with oral fluency. (120 Total Target)'
   },
   {
     id: 'answer_short_question',
@@ -1033,15 +919,15 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'ASQ',
     skill: 'speaking',
     secondarySkill: 'listening',
-    defaultTarget: 8,
-    estMinutes: '5 min',
+    defaultTarget: 4,
+    estMinutes: '4 min',
     isPrediction: false,
     scoreWeight: 2,
     maxScore: 90,
-    description: 'Quick factual 1-word answers.'
+    description: 'Quick factual 1-word answers. (120 Total Target)'
   },
 
-  // WRITING (Total: 3 targeted daily questions from PTE Bridge)
+  // WRITING (Total: 3 targeted daily questions from 3,500 total plan)
   {
     id: 'summarize_written_text',
     name: 'Summarize Written Text',
@@ -1053,7 +939,7 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     isPrediction: false,
     scoreWeight: 7,
     maxScore: 90,
-    description: 'Single complex/compound sentence between 35–45 words with flawless punctuation.'
+    description: 'Single complex/compound sentence between 35–45 words with flawless punctuation. (50 Total Target)'
   },
   {
     id: 'write_essay',
@@ -1065,22 +951,22 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     isPrediction: false,
     scoreWeight: 7,
     maxScore: 90,
-    description: '200–300 word argumentative essay written in 20 min using proper structure.'
+    description: '200–300 word argumentative essay written in 20 min using proper structure. (30 Total Target)'
   },
 
-  // READING (Total: 36 targeted daily questions from PTE Bridge)
+  // READING (Total: 34 targeted daily questions from 3,500 total plan)
   {
     id: 'rw_fill_in_blanks',
     name: 'Reading & Writing: Fill in the Blanks',
     shortName: 'R&W FIB',
     skill: 'reading',
     secondarySkill: 'writing',
-    defaultTarget: 18,
-    estMinutes: '25 min',
+    defaultTarget: 14,
+    estMinutes: '20 min',
     isPrediction: true,
     scoreWeight: 7,
     maxScore: 90,
-    description: 'Dropdown blanks focus: academic collocations and grammar context clues.'
+    description: 'Dropdown blanks focus: academic collocations and grammar context clues. (450 Total Target)'
   },
   {
     id: 'r_fill_in_blanks',
@@ -1092,34 +978,34 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     isPrediction: false,
     scoreWeight: 6,
     maxScore: 90,
-    description: 'Drag and drop missing words using parts of speech deduction.'
+    description: 'Drag and drop missing words using parts of speech deduction. (450 Total Target)'
   },
   {
     id: 'reorder_paragraph',
     name: 'Reorder Paragraph',
     shortName: 'RO',
     skill: 'reading',
-    defaultTarget: 4,
-    estMinutes: '8 min',
+    defaultTarget: 6,
+    estMinutes: '10 min',
     isPrediction: false,
     scoreWeight: 3,
     maxScore: 90,
-    description: 'Logical sequencing of independent topic sentences and referents.'
+    description: 'Logical sequencing of independent topic sentences and referents. (200 Total Target)'
   },
 
-  // LISTENING (Total: 32 targeted daily questions from PTE Bridge)
+  // LISTENING (Total: 24 targeted daily questions from 3,500 total plan)
   {
     id: 'write_from_dictation',
     name: 'Write From Dictation',
     shortName: 'WFD',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 20,
-    estMinutes: '20 min',
+    defaultTarget: 14,
+    estMinutes: '15 min',
     isPrediction: true,
     scoreWeight: 5,
     maxScore: 90,
-    description: 'Listen and type out sentence with 100% spelling precision (-s, -ed, plurals).'
+    description: 'Listen and type out sentence with 100% spelling precision (-s, -ed, plurals). (450 Total Target)'
   },
   {
     id: 'listening_fill_in_blanks',
@@ -1127,12 +1013,12 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'L FIB',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 6,
-    estMinutes: '8 min',
+    defaultTarget: 9,
+    estMinutes: '10 min',
     isPrediction: false,
     scoreWeight: 3,
     maxScore: 90,
-    description: 'Type in missing words while following along with the audio passage.'
+    description: 'Type in missing words while following along with the audio passage. (300 Total Target)'
   },
   {
     id: 'highlight_incorrect_words',
@@ -1140,12 +1026,12 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'HIW',
     skill: 'listening',
     secondarySkill: 'reading',
-    defaultTarget: 4,
-    estMinutes: '6 min',
+    defaultTarget: 1,
+    estMinutes: '4 min',
     isPrediction: false,
     scoreWeight: 4,
     maxScore: 90,
-    description: 'Click transcript words that differ from the speaker (tested at 1.2x speed).'
+    description: 'Click transcript words that differ from the speaker (tested at 1.2x speed). (30 Total Target)'
   },
   {
     id: 'summarize_spoken_text',
@@ -1153,12 +1039,12 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     shortName: 'SST',
     skill: 'listening',
     secondarySkill: 'writing',
-    defaultTarget: 2,
-    estMinutes: '15 min',
+    defaultTarget: 0,
+    estMinutes: '0 min',
     isPrediction: false,
     scoreWeight: 4,
     maxScore: 90,
-    description: '50–70 word audio summary capturing key points with grammatical correctness.'
+    description: 'Integrated within mock exams.'
   }
 ];
 

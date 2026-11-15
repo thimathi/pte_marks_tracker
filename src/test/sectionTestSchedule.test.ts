@@ -9,15 +9,15 @@ import {
   DAILY_15H_MASTER_SCHEDULE
 } from '../config/constants';
 
-describe('Daily Section Test Schedule & 15-Hour Work Plan Verification (Through Dec 10)', () => {
+describe('Daily Section Test Schedule & 15-Hour Work Plan Verification (Through Dec 16 · Dec 17 Exam)', () => {
   it('does not assign section tests to Days 1, 2, and 3', () => {
     expect(getSectionTestForDay(1)).toBeNull();
     expect(getSectionTestForDay(2)).toBeNull();
     expect(getSectionTestForDay(3)).toBeNull();
   });
 
-  it('assigns exactly 1 section test to every day starting from Day 4 through Day 37', () => {
-    expect(TOTAL_SECTION_TESTS).toBe(34);
+  it('assigns exactly 1 section test to every day starting from Day 4 through Day 32', () => {
+    expect(TOTAL_SECTION_TESTS).toBe(29);
     for (let day = 4; day <= TOTAL_STUDY_DAYS; day++) {
       const secDef = getSectionTestForDay(day);
       expect(secDef).not.toBeNull();
@@ -46,11 +46,11 @@ describe('Daily Section Test Schedule & 15-Hour Work Plan Verification (Through 
       }
     }
 
-    // Verify individual counts for 34 tests across 37 days
-    expect(counts.reading).toBe(11);
-    expect(counts.listening).toBe(10);
-    expect(counts.speaking).toBe(7);
-    expect(counts.writing).toBe(6);
+    // Verify individual counts for 29 tests across 32 days
+    expect(counts.reading).toBe(10);
+    expect(counts.listening).toBe(9);
+    expect(counts.speaking).toBe(6);
+    expect(counts.writing).toBe(4);
 
     // Verify priority: Reading > Listening > Speaking > Writing
     expect(counts.reading).toBeGreaterThan(counts.listening);
@@ -72,13 +72,13 @@ describe('Daily Section Test Schedule & 15-Hour Work Plan Verification (Through 
     }
   });
 
-  it('configures new target scores: S:87, W:84, R:69, L:68, Overall:78 and Dec 10 exam', () => {
+  it('configures new target scores: S:87, W:84, R:69, L:68, Overall:78 and Dec 17 exam', () => {
     expect(DEFAULT_TARGET_SCORES.speaking).toBe(87);
     expect(DEFAULT_TARGET_SCORES.writing).toBe(84);
     expect(DEFAULT_TARGET_SCORES.reading).toBe(69);
     expect(DEFAULT_TARGET_SCORES.listening).toBe(68);
     expect(DEFAULT_TARGET_SCORES.overall).toBe(78);
-    expect(FINAL_TARGET_DATE).toBe('2026-12-10');
+    expect(FINAL_TARGET_DATE).toBe('2026-12-17');
   });
 
   it('configures the 14-15 Hour Master Daily Schedule (7 Strategic Blocks = 14.25-15h)', () => {
