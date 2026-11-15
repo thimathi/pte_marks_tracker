@@ -72,12 +72,12 @@ describe('Daily Section Test Schedule & 15-Hour Work Plan Verification (30 Days 
     }
   });
 
-  it('configures new target scores: S:87, W:84, R:69, L:68, Overall:78 and Dec 17 exam', () => {
-    expect(DEFAULT_TARGET_SCORES.speaking).toBe(87);
-    expect(DEFAULT_TARGET_SCORES.writing).toBe(84);
-    expect(DEFAULT_TARGET_SCORES.reading).toBe(69);
-    expect(DEFAULT_TARGET_SCORES.listening).toBe(68);
-    expect(DEFAULT_TARGET_SCORES.overall).toBe(78);
+  it('configures new target scores: S:89, R:86, L:79, W:79, Overall:88 and Dec 17 exam', () => {
+    expect(DEFAULT_TARGET_SCORES.speaking).toBe(89);
+    expect(DEFAULT_TARGET_SCORES.writing).toBe(79);
+    expect(DEFAULT_TARGET_SCORES.reading).toBe(86);
+    expect(DEFAULT_TARGET_SCORES.listening).toBe(79);
+    expect(DEFAULT_TARGET_SCORES.overall).toBe(88);
     expect(FINAL_TARGET_DATE).toBe('2026-12-17');
   });
 
@@ -87,10 +87,10 @@ describe('Daily Section Test Schedule & 15-Hour Work Plan Verification (30 Days 
     expect(totalHours).toBeGreaterThanOrEqual(14.0);
     expect(totalHours).toBeLessThanOrEqual(15.0);
 
-    // Block 1: Speaking 87 (2.5h)
+    // Block 1: Speaking 89 (2.5h)
     expect(DAILY_15H_MASTER_SCHEDULE[0].durationHours).toBe(2.5);
     expect(DAILY_15H_MASTER_SCHEDULE[0].targetSkill).toBe('speaking');
-    expect(DAILY_15H_MASTER_SCHEDULE[0].targetScoreBenchmark).toBe(87);
+    expect(DAILY_15H_MASTER_SCHEDULE[0].targetScoreBenchmark).toBe(89);
 
     // Block 2: Mock 1 + Review (3.0h)
     expect(DAILY_15H_MASTER_SCHEDULE[1].durationHours).toBe(3.0);

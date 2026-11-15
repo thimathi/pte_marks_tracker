@@ -607,17 +607,21 @@ const MockExamCard: React.FC<MockCardProps> = ({
           </label>
           <span
             className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
-              Number(overall) >= 78
+              Number(overall) >= 88
                 ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
-                : Number(overall) >= 65
+                : Number(overall) >= 79
                 ? 'bg-blue-950 text-blue-300 border-blue-800'
+                : Number(overall) >= 65
+                ? 'bg-indigo-950 text-indigo-300 border-indigo-800'
                 : Number(overall) > 0
                 ? 'bg-amber-950 text-amber-300 border-amber-800'
                 : 'text-slate-500 border-transparent'
             }`}
           >
-            {Number(overall) >= 78
-              ? 'Target Met (78+)'
+            {Number(overall) >= 88
+              ? 'Target Met (88+)'
+              : Number(overall) >= 79
+              ? 'Superior (79+)'
               : Number(overall) >= 65
               ? 'Proficient (65+)'
               : Number(overall) > 0
@@ -640,17 +644,18 @@ const MockExamCard: React.FC<MockCardProps> = ({
         />
       </div>
 
-      {/* 4 Communicative Skills (2x2 Grid) */}
+      {/* 4 Communicative Skills (2x2 Grid) with User Elevated Targets */}
       <div className="space-y-1">
-        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-          Section Scores (/90)
-        </span>
+        <div className="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+          <span>Section Scores (/90)</span>
+          <span className="text-amber-400/90 font-mono">Targets: S:89 · R:86 · L:79 · W:79</span>
+        </div>
         <div className="grid grid-cols-2 gap-2">
           {/* Speaking */}
           <div className="bg-[#0d131f] rounded-lg p-2 border border-slate-800">
             <div className="flex items-center justify-between mb-1">
               <label className="text-[11px] font-bold text-blue-400">Speaking</label>
-              <span className="text-[9px] text-slate-500">/90</span>
+              <span className="text-[9px] text-amber-400/90 font-bold font-mono">Target: 89</span>
             </div>
             <input
               type="number"
@@ -667,32 +672,11 @@ const MockExamCard: React.FC<MockCardProps> = ({
             />
           </div>
 
-          {/* Writing */}
-          <div className="bg-[#0d131f] rounded-lg p-2 border border-slate-800">
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-[11px] font-bold text-purple-400">Writing</label>
-              <span className="text-[9px] text-slate-500">/90</span>
-            </div>
-            <input
-              type="number"
-              min="0"
-              max="90"
-              placeholder="—"
-              value={writing}
-              onChange={(e) => {
-                setWriting(e.target.value);
-                setSaveStatus('dirty');
-              }}
-              onBlur={() => saveScores()}
-              className="w-full bg-[#151d2e] border border-slate-700 focus:border-purple-500 rounded py-1 px-2 text-xs font-bold text-slate-100 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
-            />
-          </div>
-
           {/* Reading */}
           <div className="bg-[#0d131f] rounded-lg p-2 border border-slate-800">
             <div className="flex items-center justify-between mb-1">
               <label className="text-[11px] font-bold text-emerald-400">Reading</label>
-              <span className="text-[9px] text-slate-500">/90</span>
+              <span className="text-[9px] text-amber-400/90 font-bold font-mono">Target: 86</span>
             </div>
             <input
               type="number"
@@ -713,7 +697,7 @@ const MockExamCard: React.FC<MockCardProps> = ({
           <div className="bg-[#0d131f] rounded-lg p-2 border border-slate-800">
             <div className="flex items-center justify-between mb-1">
               <label className="text-[11px] font-bold text-amber-400">Listening</label>
-              <span className="text-[9px] text-slate-500">/90</span>
+              <span className="text-[9px] text-amber-400/90 font-bold font-mono">Target: 79</span>
             </div>
             <input
               type="number"
@@ -727,6 +711,27 @@ const MockExamCard: React.FC<MockCardProps> = ({
               }}
               onBlur={() => saveScores()}
               className="w-full bg-[#151d2e] border border-slate-700 focus:border-amber-500 rounded py-1 px-2 text-xs font-bold text-slate-100 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
+            />
+          </div>
+
+          {/* Writing */}
+          <div className="bg-[#0d131f] rounded-lg p-2 border border-slate-800">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-[11px] font-bold text-purple-400">Writing</label>
+              <span className="text-[9px] text-amber-400/90 font-bold font-mono">Target: 79</span>
+            </div>
+            <input
+              type="number"
+              min="0"
+              max="90"
+              placeholder="—"
+              value={writing}
+              onChange={(e) => {
+                setWriting(e.target.value);
+                setSaveStatus('dirty');
+              }}
+              onBlur={() => saveScores()}
+              className="w-full bg-[#151d2e] border border-slate-700 focus:border-purple-500 rounded py-1 px-2 text-xs font-bold text-slate-100 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none focus:outline-none"
             />
           </div>
         </div>

@@ -22,13 +22,19 @@ import {
   ArrowRight,
   ArrowLeft,
   Users,
-  FileText
+  FileText,
+  Target,
+  CheckCheck,
+  ListChecks
 } from 'lucide-react';
 import { usePteData } from '../../context/PteDataContext';
 import {
   DEFAULT_ADDITIONAL_EXERCISES,
   getAcademicCollocationsTarget,
-  PHASE_DEFINITIONS
+  PHASE_DEFINITIONS,
+  QUESTION_TYPES,
+  DAILY_PRACTICE_TARGET,
+  TOTAL_STUDY_DAYS
 } from '../../config/constants';
 import {
   TONGUE_TWISTERS_COLLECTION,
@@ -48,9 +54,21 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
   dayNumber,
   initialPhaseFilter = 'all'
 }) => {
-  const { currentDayData, updateExerciseCount, studyPlan, days } = usePteData();
+  const {
+    currentDayData,
+    updateExerciseCount,
+    studyPlan,
+    days,
+    toggleQuestionType,
+    setQuestionTypeScore,
+    completeAllQuestionsForDay
+  } = usePteData();
   const targetDay = days[dayNumber] || currentDayData;
   const dayExercises = targetDay?.additionalExercises || {};
+  const qp = targetDay?.questionProgress || {};
+
+  // Main View Tab: 'all' | 'questions' | 'drills'
+  const [activeMainTab, setActiveMainTab] = useState<'all' | 'questions' | 'drills'>('all');
 
   // Active Phase Filter
   const [activePhaseFilter, setActivePhaseFilter] = useState<number | 'all'>(initialPhaseFilter);
@@ -221,6 +239,74 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
     await updateExerciseCount(dayNumber, exerciseId, count, dayExercises[exerciseId]?.notes, num);
   };
 
+  // 117 Daily Practice Questions Statistics & Target Score Mappings
+  const questionStats = React.useMemo(() => {
+    let totalDone = 0;
+    const byType: Record<
+      string,
+      { doneCount: number; isCompleted: boolean; avgScore: number | null; targetScore: number }
+    > = {};
+
+    QUESTION_TYPES.forEach((q) => {
+      const attempts = qp[q.id]?.attempts || {};
+      const completedAttempts = Object.values(attempts).filter(
+        (a: any) => a.score !== null && a.score !== undefined && a.score > 0
+      );
+      const count = completedAttempts.length;
+      const isCompleted = count >= q.defaultTarget;
+      const avg =
+        count > 0
+          ? Math.round(
+              completedAttempts.reduce((sum: number, a: any) => sum + (Number(a.score) || 0), 0) /
+                count
+            )
+          : null;
+
+      const targetScore =
+        q.skill === 'speaking'
+          ? 89
+          : q.skill === 'reading'
+          ? 86
+          : 79; // writing and listening: 79
+
+      byType[q.id] = {
+        doneCount: count,
+        isCompleted,
+        avgScore: avg,
+        targetScore
+      };
+      totalDone += Math.min(count, q.defaultTarget);
+    });
+
+    const isAllQuestionsFulfilled = totalDone >= DAILY_PRACTICE_TARGET;
+    const questionPercent = Math.min(100, Math.round((totalDone / DAILY_PRACTICE_TARGET) * 100));
+
+    return { totalDone, isAllQuestionsFulfilled, questionPercent, byType };
+  }, [qp]);
+
+  // Local state for question scores/marks inputs
+  const [questionScores, setQuestionScores] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const scores: Record<string, string> = {};
+    QUESTION_TYPES.forEach((q) => {
+      const stat = questionStats.byType[q.id];
+      scores[q.id] = stat?.avgScore != null ? String(stat.avgScore) : '';
+    });
+    setQuestionScores(scores);
+  }, [questionStats.byType]);
+
+  const handleQuestionScoreChange = (typeId: string, val: string) => {
+    setQuestionScores((prev) => ({ ...prev, [typeId]: val }));
+  };
+
+  const handleSaveQuestionScore = async (typeId: string, targetCount: number) => {
+    const val = questionScores[typeId];
+    if (val === undefined) return;
+    const num = val.trim() === '' ? null : Math.min(90, Math.max(0, Number(val)));
+    await setQuestionTypeScore(dayNumber, typeId, targetCount, num);
+  };
+
   const handleSetCount = async (exerciseId: string, newCount: number) => {
     const safeCount = Math.max(0, newCount);
     const currentScore = dayExercises[exerciseId]?.score ?? null;
@@ -259,56 +345,505 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
 
   return (
     <div id="daily-drills" className="rounded-2xl bg-[#151d2e] border border-slate-800 p-5 lg:p-6 space-y-6 text-slate-200 shadow-sm">
-      {/* Header */}
+      {/* Top Main Navigation Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Sparkles className="w-5 h-5 text-amber-400" />
+            <span className="p-1.5 rounded-lg bg-blue-950/80 text-blue-400 border border-blue-800">
+              <ListChecks className="w-4 h-4" />
+            </span>
             <h2 className="text-lg font-extrabold text-slate-100">
-              6-Phase Daily Mandatory Drills
+              Daily Practice & Tasks Center
             </h2>
-            {isAllTasksFulfilled ? (
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-800">
-                All 6 Phases Completed ✓
-              </span>
-            ) : (
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-950/60 text-blue-300 border border-blue-800">
-                Day {dayNumber} · Collocations Target: {collocationsTarget}
-              </span>
-            )}
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-950/60 text-blue-300 border border-blue-800">
+              Day {dayNumber} of {TOTAL_STUDY_DAYS}
+            </span>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-800">
+              Target: 88+ Summit
+            </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Exact drills structured across the 6 daily phases: Tongue Twisters 2x, Collocations Fwd & Bwd, and Essay & SGD templates.
+            Complete your <b>117 Practice Questions</b> (Just Tick) and <b>6-Phase Mandatory Drills</b>. Combined with 2 Mocks (120 Qs) = <b>237 Qs/Day Total</b>.
           </p>
         </div>
 
-        {/* Phase Filter Tabs */}
+        {/* View Mode Switcher */}
         <div className="flex items-center gap-1 bg-[#0d131f] p-1 rounded-xl border border-slate-800 self-start sm:self-center overflow-x-auto max-w-full">
           <button
-            onClick={() => setActivePhaseFilter('all')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
-              activePhaseFilter === 'all'
+            type="button"
+            onClick={() => setActiveMainTab('all')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+              activeMainTab === 'all'
                 ? 'bg-blue-600 text-white shadow-xs'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
             }`}
           >
-            All Phases
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>All Daily Tasks</span>
           </button>
-          {[1, 2, 3, 4, 5, 6].map((pNum) => (
-            <button
-              key={pNum}
-              onClick={() => setActivePhaseFilter(pNum)}
-              className={`px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
-                activePhaseFilter === pNum
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-              }`}
-            >
-              Phase {pNum}
-            </button>
-          ))}
+          <button
+            type="button"
+            onClick={() => setActiveMainTab('questions')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+              activeMainTab === 'questions'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+            }`}
+          >
+            <Target className="w-3.5 h-3.5 text-amber-400" />
+            <span>117 Questions ({questionStats.totalDone}/117)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveMainTab('drills')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+              activeMainTab === 'drills'
+                ? 'bg-blue-600 text-white shadow-xs'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+            }`}
+          >
+            <Flame className="w-3.5 h-3.5 text-orange-400" />
+            <span>Core Drills & Templates</span>
+          </button>
         </div>
       </div>
+
+      {/* ================= 117 DAILY PRACTICE QUESTIONS CHECKLIST ================= */}
+      {(activeMainTab === 'all' || activeMainTab === 'questions') && (
+        <div className="space-y-5">
+          {/* Section Banner with Master Tick Button & Progress */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#0d131f] border border-slate-800 space-y-3">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="p-1.5 rounded-lg bg-emerald-950/80 text-emerald-400 border border-emerald-800">
+                    <Target className="w-4 h-4" />
+                  </span>
+                  <h3 className="text-base font-bold text-slate-100">
+                    117 Daily Practice Questions (Just Tick & Record Marks)
+                  </h3>
+                  <span
+                    className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${
+                      questionStats.isAllQuestionsFulfilled
+                        ? 'bg-emerald-950/70 text-emerald-300 border-emerald-800'
+                        : 'bg-amber-950/70 text-amber-300 border-amber-800'
+                    }`}
+                  >
+                    {questionStats.totalDone} / 117 Completed ({questionStats.questionPercent}%)
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-1">
+                  15 high-weight question types · Combined with 2 Mocks (120 Qs) = <b>237 Qs/Day Total</b>.
+                </p>
+              </div>
+
+              {/* Master 1-Click Complete All 117 Questions */}
+              <button
+                type="button"
+                onClick={() => completeAllQuestionsForDay(dayNumber)}
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 border transition-all cursor-pointer shrink-0 shadow-xs ${
+                  questionStats.isAllQuestionsFulfilled
+                    ? 'bg-emerald-950/80 text-emerald-300 border-emerald-600 hover:bg-emerald-900/80'
+                    : 'bg-blue-600 hover:bg-blue-500 text-white border-blue-500 shadow-sm'
+                }`}
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>
+                  {questionStats.isAllQuestionsFulfilled
+                    ? '✓ All 117 Questions Ticked (Click to Clear)'
+                    : '✓ Mark All 117 Questions Completed (Just Tick)'}
+                </span>
+              </button>
+            </div>
+
+            {/* Target Over-Prep Score Strip */}
+            <div className="flex items-center gap-2 flex-wrap pt-2 border-t border-slate-800/80 text-xs">
+              <span className="text-slate-400 font-semibold">Elevated Targets (+10 Marks):</span>
+              <span className="px-2 py-0.5 rounded bg-blue-950/60 text-blue-300 border border-blue-800/60 font-mono font-bold">
+                Speaking: 89
+              </span>
+              <span className="px-2 py-0.5 rounded bg-purple-950/60 text-purple-300 border border-purple-800/60 font-mono font-bold">
+                Reading: 86
+              </span>
+              <span className="px-2 py-0.5 rounded bg-teal-950/60 text-teal-300 border border-teal-800/60 font-mono font-bold">
+                Listening: 79
+              </span>
+              <span className="px-2 py-0.5 rounded bg-amber-950/60 text-amber-300 border border-amber-800/60 font-mono font-bold">
+                Writing: 79
+              </span>
+              <span className="px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800/60 font-mono font-bold">
+                Overall: 88+
+              </span>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="w-full bg-[#151d2e] h-2 rounded-full overflow-hidden border border-slate-800">
+              <div
+                className="bg-gradient-to-r from-blue-500 to-emerald-500 h-full transition-all duration-300"
+                style={{ width: `${questionStats.questionPercent}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Group 1: SPEAKING QUESTIONS (51 Qs · Target: 89) */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="flex items-center gap-2">
+                <span className="p-1 rounded bg-blue-950/70 text-blue-400 border border-blue-800">
+                  <Mic className="w-4 h-4" />
+                </span>
+                <h4 className="text-sm font-extrabold text-blue-200">
+                  Speaking Practice (51 Questions · Target: 89)
+                </h4>
+              </div>
+              <span className="text-xs font-mono font-bold text-blue-300">
+                {QUESTION_TYPES.filter((q) => q.skill === 'speaking').reduce(
+                  (acc, q) => acc + (questionStats.byType[q.id]?.doneCount || 0),
+                  0
+                )}{' '}
+                / 51 Qs Done
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {QUESTION_TYPES.filter((q) => q.skill === 'speaking').map((q) => {
+                const stat = questionStats.byType[q.id];
+                return (
+                  <div
+                    key={q.id}
+                    className={`p-3.5 rounded-xl border flex flex-col justify-between space-y-3 transition-all ${
+                      stat?.isCompleted
+                        ? 'bg-[#10192c] border-emerald-500/40 shadow-2xs'
+                        : 'bg-[#12192b] border-slate-800 hover:border-blue-500/30'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-blue-950/80 text-blue-300 border border-blue-800">
+                            {q.shortName}
+                          </span>
+                          <h5 className="text-xs font-bold text-slate-100">{q.name}</h5>
+                        </div>
+                        <span
+                          className={`text-[11px] font-mono font-bold ${
+                            stat?.isCompleted ? 'text-emerald-400' : 'text-slate-400'
+                          }`}
+                        >
+                          {stat?.doneCount ?? 0} / {q.defaultTarget} Qs
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-1 line-clamp-1">
+                        {q.description}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          toggleQuestionType(
+                            dayNumber,
+                            q.id,
+                            q.defaultTarget,
+                            stat?.targetScore ?? 89
+                          )
+                        }
+                        className={`flex-1 py-1.5 px-2.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
+                          stat?.isCompleted
+                            ? 'bg-emerald-950/80 text-emerald-300 border-emerald-600/80 shadow-2xs'
+                            : 'bg-[#0e1729] text-slate-300 border-slate-700 hover:border-blue-500'
+                        }`}
+                      >
+                        {stat?.isCompleted ? (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        ) : (
+                          <Circle className="w-3.5 h-3.5" />
+                        )}
+                        <span>
+                          {stat?.isCompleted ? '✓ Completed (Ticked)' : 'Completed (Just Tick)'}
+                        </span>
+                      </button>
+
+                      <div className="flex items-center gap-1 bg-[#0e1729] rounded-lg px-2 py-1 border border-slate-800 shrink-0">
+                        <label className="text-[10px] font-bold text-slate-400">Marks:</label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="90"
+                          placeholder={String(stat?.targetScore ?? 89)}
+                          value={questionScores[q.id] ?? ''}
+                          onChange={(e) => handleQuestionScoreChange(q.id, e.target.value)}
+                          onBlur={() => handleSaveQuestionScore(q.id, q.defaultTarget)}
+                          className="w-11 bg-[#151d2e] border border-slate-700 rounded py-0.5 px-1 text-xs font-bold text-blue-300 text-center focus:outline-none"
+                        />
+                        <span className="text-[10px] text-slate-500 font-bold">/90</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Group 2: READING & WRITING QUESTIONS (40 Qs · Targets: Reading 86, Writing 79) */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="flex items-center gap-2">
+                <span className="p-1 rounded bg-purple-950/70 text-purple-400 border border-purple-800">
+                  <BookOpen className="w-4 h-4" />
+                </span>
+                <h4 className="text-sm font-extrabold text-purple-200">
+                  Reading & Writing Practice (40 Questions · Targets: R:86 · W:79)
+                </h4>
+              </div>
+              <span className="text-xs font-mono font-bold text-purple-300">
+                {QUESTION_TYPES.filter(
+                  (q) => q.skill === 'reading' || q.skill === 'writing'
+                ).reduce((acc, q) => acc + (questionStats.byType[q.id]?.doneCount || 0), 0)}{' '}
+                / 40 Qs Done
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {QUESTION_TYPES.filter(
+                (q) => q.skill === 'reading' || q.skill === 'writing'
+              ).map((q) => {
+                const stat = questionStats.byType[q.id];
+                return (
+                  <div
+                    key={q.id}
+                    className={`p-3.5 rounded-xl border flex flex-col justify-between space-y-3 transition-all ${
+                      stat?.isCompleted
+                        ? 'bg-[#10192c] border-emerald-500/40 shadow-2xs'
+                        : 'bg-[#12192b] border-slate-800 hover:border-purple-500/30'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-purple-950/80 text-purple-300 border border-purple-800">
+                            {q.shortName}
+                          </span>
+                          <h5 className="text-xs font-bold text-slate-100">{q.name}</h5>
+                        </div>
+                        <span
+                          className={`text-[11px] font-mono font-bold ${
+                            stat?.isCompleted ? 'text-emerald-400' : 'text-slate-400'
+                          }`}
+                        >
+                          {stat?.doneCount ?? 0} / {q.defaultTarget} Qs
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-1 line-clamp-1">
+                        {q.description}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          toggleQuestionType(
+                            dayNumber,
+                            q.id,
+                            q.defaultTarget,
+                            stat?.targetScore ?? 86
+                          )
+                        }
+                        className={`flex-1 py-1.5 px-2.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
+                          stat?.isCompleted
+                            ? 'bg-emerald-950/80 text-emerald-300 border-emerald-600/80 shadow-2xs'
+                            : 'bg-[#0e1729] text-slate-300 border-slate-700 hover:border-purple-500'
+                        }`}
+                      >
+                        {stat?.isCompleted ? (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        ) : (
+                          <Circle className="w-3.5 h-3.5" />
+                        )}
+                        <span>
+                          {stat?.isCompleted ? '✓ Completed (Ticked)' : 'Completed (Just Tick)'}
+                        </span>
+                      </button>
+
+                      <div className="flex items-center gap-1 bg-[#0e1729] rounded-lg px-2 py-1 border border-slate-800 shrink-0">
+                        <label className="text-[10px] font-bold text-slate-400">Marks:</label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="90"
+                          placeholder={String(stat?.targetScore ?? 86)}
+                          value={questionScores[q.id] ?? ''}
+                          onChange={(e) => handleQuestionScoreChange(q.id, e.target.value)}
+                          onBlur={() => handleSaveQuestionScore(q.id, q.defaultTarget)}
+                          className="w-11 bg-[#151d2e] border border-slate-700 rounded py-0.5 px-1 text-xs font-bold text-purple-300 text-center focus:outline-none"
+                        />
+                        <span className="text-[10px] text-slate-500 font-bold">/90</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Group 3: LISTENING QUESTIONS (26 Qs · Target: 79) */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <div className="flex items-center gap-2">
+                <span className="p-1 rounded bg-teal-950/70 text-teal-400 border border-teal-800">
+                  <Volume2 className="w-4 h-4" />
+                </span>
+                <h4 className="text-sm font-extrabold text-teal-200">
+                  Listening Practice (26 Questions · Target: 79)
+                </h4>
+              </div>
+              <span className="text-xs font-mono font-bold text-teal-300">
+                {QUESTION_TYPES.filter((q) => q.skill === 'listening').reduce(
+                  (acc, q) => acc + (questionStats.byType[q.id]?.doneCount || 0),
+                  0
+                )}{' '}
+                / 26 Qs Done
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {QUESTION_TYPES.filter((q) => q.skill === 'listening').map((q) => {
+                const stat = questionStats.byType[q.id];
+                return (
+                  <div
+                    key={q.id}
+                    className={`p-3.5 rounded-xl border flex flex-col justify-between space-y-3 transition-all ${
+                      stat?.isCompleted
+                        ? 'bg-[#10192c] border-emerald-500/40 shadow-2xs'
+                        : 'bg-[#12192b] border-slate-800 hover:border-teal-500/30'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-teal-950/80 text-teal-300 border border-teal-800">
+                            {q.shortName}
+                          </span>
+                          <h5 className="text-xs font-bold text-slate-100">{q.name}</h5>
+                        </div>
+                        <span
+                          className={`text-[11px] font-mono font-bold ${
+                            stat?.isCompleted ? 'text-emerald-400' : 'text-slate-400'
+                          }`}
+                        >
+                          {stat?.doneCount ?? 0} / {q.defaultTarget} Qs
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-1 line-clamp-1">
+                        {q.description}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          toggleQuestionType(
+                            dayNumber,
+                            q.id,
+                            q.defaultTarget,
+                            stat?.targetScore ?? 79
+                          )
+                        }
+                        className={`flex-1 py-1.5 px-2.5 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 border transition-all cursor-pointer ${
+                          stat?.isCompleted
+                            ? 'bg-emerald-950/80 text-emerald-300 border-emerald-600/80 shadow-2xs'
+                            : 'bg-[#0e1729] text-slate-300 border-slate-700 hover:border-teal-500'
+                        }`}
+                      >
+                        {stat?.isCompleted ? (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        ) : (
+                          <Circle className="w-3.5 h-3.5" />
+                        )}
+                        <span>
+                          {stat?.isCompleted ? '✓ Completed (Ticked)' : 'Completed (Just Tick)'}
+                        </span>
+                      </button>
+
+                      <div className="flex items-center gap-1 bg-[#0e1729] rounded-lg px-2 py-1 border border-slate-800 shrink-0">
+                        <label className="text-[10px] font-bold text-slate-400">Marks:</label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="90"
+                          placeholder={String(stat?.targetScore ?? 79)}
+                          value={questionScores[q.id] ?? ''}
+                          onChange={(e) => handleQuestionScoreChange(q.id, e.target.value)}
+                          onBlur={() => handleSaveQuestionScore(q.id, q.defaultTarget)}
+                          className="w-11 bg-[#151d2e] border border-slate-700 rounded py-0.5 px-1 text-xs font-bold text-teal-300 text-center focus:outline-none"
+                        />
+                        <span className="text-[10px] text-slate-500 font-bold">/90</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= 6-PHASE CORE MANDATORY DRILLS & TEMPLATES ================= */}
+      {(activeMainTab === 'all' || activeMainTab === 'drills') && (
+        <div className="space-y-6 pt-4 border-t border-slate-800">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <Sparkles className="w-5 h-5 text-amber-400" />
+                <h3 className="text-base font-extrabold text-slate-100">
+                  6-Phase Daily Mandatory Drills
+                </h3>
+                {isAllTasksFulfilled ? (
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-950/60 text-emerald-300 border border-emerald-800">
+                    All 6 Phases Completed ✓
+                  </span>
+                ) : (
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-950/60 text-blue-300 border border-blue-800">
+                    Day {dayNumber} · Collocations Target: {collocationsTarget}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-400 mt-1">
+                Exact drills structured across the 6 daily phases: Tongue Twisters 2x, Collocations Fwd & Bwd, and Essay & SGD templates.
+              </p>
+            </div>
+
+            {/* Phase Filter Tabs */}
+            <div className="flex items-center gap-1 bg-[#0d131f] p-1 rounded-xl border border-slate-800 self-start sm:self-center overflow-x-auto max-w-full">
+              <button
+                onClick={() => setActivePhaseFilter('all')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                  activePhaseFilter === 'all'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                }`}
+              >
+                All Phases
+              </button>
+              {[1, 2, 3, 4, 5, 6].map((pNum) => (
+                <button
+                  key={pNum}
+                  onClick={() => setActivePhaseFilter(pNum)}
+                  className={`px-2 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                    activePhaseFilter === pNum
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                  }`}
+                >
+                  Phase {pNum}
+                </button>
+              ))}
+            </div>
+          </div>
 
       {/* Grid of Drills categorized by Phase */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -892,6 +1427,8 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
           </div>
         )}
       </div>
+        </div>
+      )}
 
       {/* ================= MODAL 1: TONGUE TWISTERS (50 TWISTERS) ================= */}
       {activeModal === 'tongue_twister' && (

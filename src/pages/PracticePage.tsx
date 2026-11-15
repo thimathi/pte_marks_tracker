@@ -59,7 +59,7 @@ export const PracticePage: React.FC = () => {
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-blue-400 shrink-0" />
             <span>
-              <b>14–15 Hours Daily Protocol:</b> Targeted preparation across {totalDays} days leading to December 10 Exam Day (Speaking 87 · Writing 84 · Reading 69 · Listening 68 · Overall 78+).
+              <b>14–15 Hours Daily Protocol:</b> Targeted over-preparation (+10 marks) across {totalDays} days leading to December 17 Exam Day (Speaking 89 · Reading 86 · Listening 79 · Writing 79 · Overall 88+).
             </span>
           </div>
           <span className="text-blue-300 font-mono text-[11px] font-bold">

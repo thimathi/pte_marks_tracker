@@ -125,30 +125,30 @@ export const DailyMaster15HourPlanCard: React.FC<DailyMaster15HourPlanCardProps>
         </div>
       </div>
 
-      {/* Target Breakdown Strip */}
+      {/* Target Breakdown Strip (+10 Over-Preparation) */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
         <div className="p-2.5 rounded-xl bg-[#0d131f] border border-slate-800 text-center">
           <span className="text-[10px] text-red-400 font-bold uppercase block">Speaking Summit</span>
-          <span className="text-xl font-extrabold text-slate-100">87</span>
+          <span className="text-xl font-extrabold text-slate-100">89</span>
           <span className="text-[10px] text-slate-400 block mt-0.5 font-medium">Fluency &amp; Acoustic Projection</span>
         </div>
 
         <div className="p-2.5 rounded-xl bg-[#0d131f] border border-slate-800 text-center">
-          <span className="text-[10px] text-emerald-400 font-bold uppercase block">Writing Elite</span>
-          <span className="text-xl font-extrabold text-slate-100">84</span>
-          <span className="text-[10px] text-slate-400 block mt-0.5 font-medium">Zero Typos + WFD Dictation</span>
+          <span className="text-[10px] text-emerald-400 font-bold uppercase block">Reading Precision</span>
+          <span className="text-xl font-extrabold text-slate-100">86</span>
+          <span className="text-[10px] text-slate-400 block mt-0.5 font-medium">Dropdowns &amp; Collocations</span>
         </div>
 
         <div className="p-2.5 rounded-xl bg-[#0d131f] border border-slate-800 text-center">
-          <span className="text-[10px] text-amber-400 font-bold uppercase block">Reading Focus</span>
-          <span className="text-xl font-extrabold text-slate-100">69</span>
-          <span className="text-[10px] text-slate-400 block mt-0.5 font-medium">R/W Dropdowns &amp; Collocations</span>
+          <span className="text-[10px] text-amber-400 font-bold uppercase block">Listening Lockdown</span>
+          <span className="text-xl font-extrabold text-slate-100">79</span>
+          <span className="text-[10px] text-slate-400 block mt-0.5 font-medium">WFD Dictation &amp; HIW Reflex</span>
         </div>
 
         <div className="p-2.5 rounded-xl bg-[#0d131f] border border-slate-800 text-center">
-          <span className="text-[10px] text-cyan-400 font-bold uppercase block">Listening Focus</span>
-          <span className="text-xl font-extrabold text-slate-100">68</span>
-          <span className="text-[10px] text-slate-400 block mt-0.5 font-medium">SST Templates &amp; HIW Reflexes</span>
+          <span className="text-[10px] text-purple-400 font-bold uppercase block">Writing Mastery</span>
+          <span className="text-xl font-extrabold text-slate-100">79</span>
+          <span className="text-[10px] text-slate-400 block mt-0.5 font-medium">Zero Typos + Essay Templates</span>
         </div>
 
         <div className="p-2.5 rounded-xl bg-[#0d131f] border border-slate-800 text-center">

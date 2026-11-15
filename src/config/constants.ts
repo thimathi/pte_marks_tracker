@@ -3,7 +3,7 @@ import { QuestionPriority, QuestionTypeMeta, SkillType, StudyGroupDefinition, Ta
 export const DEFAULT_START_DATE = '2026-11-16'; // Start: Monday, Nov 16, 2026 (Tomorrow)
 export const FINAL_TARGET_DATE = '2026-12-17'; // Exam Day: Dec 17, 2026 (12:00 PM IST · 30 Study Days)
 export const BLOCKED_STUDY_DATES = ['2026-11-18']; // Colombo urgent meeting (Full day leave)
-export const APP_TITLE = 'PTE - 78+ Superior Plan (30 Days · 2 Mocks · 117 Practice Qs · 237 Qs/Day · S:87 W:84 R:69 L:68)';
+export const APP_TITLE = 'PTE - 88+ Summit Plan (30 Days · +10 Target Over-Prep · S:89 R:86 L:79 W:79 · 2 Mocks · 117 Practice Qs · 237 Qs/Day)';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
 export const TOTAL_STUDY_DAYS = 30; // 30 Active Study Days (Nov 16 to Dec 16 · Nov 18 Colombo Leave)
 export const DAILY_PRACTICE_TARGET = 117; // 3,510 Total Practice Questions ÷ 30 Days = 117/day
@@ -318,21 +318,21 @@ export function getSectionTestForDay(dayNumber: number): SectionTestDef | null {
 }
 
 export const DEFAULT_TARGET_SCORES: TargetScores = {
-  overall: 78,
-  speaking: 87,
-  writing: 84,
-  reading: 69,
-  listening: 68,
-  mockExam: 78,
+  overall: 88,
+  speaking: 89,
+  reading: 86,
+  writing: 79,
+  listening: 79,
+  mockExam: 88,
 };
 
-// Target progression curve across 30 study days (Nov 16 to Dec 16) targeting Overall 78+ (S:87, W:84, R:69, L:68)
+// Target progression curve across 30 study days (Nov 16 to Dec 16) targeting Overall 88+ (S:89, R:86, L:79, W:79 · Target +10 Over-Prep)
 export const DAY_TARGET_SCORES: number[] = [
-  60, 61, 62, 63, 64, 65, 66, // Week 1 (Days 1–7): Nov 16–23 (Baseline Reset & Speaking Fluency Reset)
-  67, 68, 69, 70, 71, 72, 73, // Week 2 (Days 8–14): Nov 24–30 (Writing Templates & Dictation Lockdown)
-  73, 74, 74, 75, 75, 76, 76, // Week 3 (Days 15–21): Dec 01–07 (Reading Blanks & Collocations Acceleration)
-  77, 77, 77, 78, 78, 78, 78, // Week 4 (Days 22–28): Dec 08–14 (Timed Stress Conditioning & Speed)
-  78, 78                      // Final Summit (Days 29–30): Dec 15–16 (Peak Confidence & Pre-Exam Mastery)
+  70, 71, 72, 73, 74, 75, 76, // Week 1 (Days 1–7): Nov 16–23 (Foundational Reset & Speaking 89 Fluency Anchor)
+  77, 78, 79, 80, 81, 82, 83, // Week 2 (Days 8–14): Nov 24–30 (Superior Breakthrough & Dictation Lockdown)
+  83, 84, 84, 85, 85, 86, 86, // Week 3 (Days 15–21): Dec 01–07 (Reading 86 Precision & Collocations Summit)
+  87, 87, 87, 88, 88, 88, 88, // Week 4 (Days 22–28): Dec 08–14 (Exam Pressure Conditioning & Speed)
+  88, 89                      // Final Summit (Days 29–30): Dec 15–16 (Peak +10 Mastery & Final Confidence)
 ];
 
 export interface DailyMasterBlock {
@@ -353,10 +353,10 @@ export const DAILY_15H_MASTER_SCHEDULE: DailyMasterBlock[] = [
     blockNumber: 1,
     timeSlot: '06:30 AM – 09:00 AM',
     durationHours: 2.5,
-    title: 'Block 1: Speaking 87 Fluency & Acoustic Drills (51 Qs)',
+    title: 'Block 1: Speaking 89 Fluency & Acoustic Drills (51 Qs)',
     targetSkill: 'speaking',
-    targetScoreBenchmark: 87,
-    badge: 'Speaking Target: 87 · 51 Qs',
+    targetScoreBenchmark: 89,
+    badge: 'Speaking Target: 89 · 51 Qs',
     badgeColor: 'bg-red-950/60 text-red-300 border border-red-800/60',
     coreTasks: [
       'Tongue Twisters & Vocal Cord Warmup (10 min articulation & pitch stabilization)',
@@ -375,8 +375,8 @@ export const DAILY_15H_MASTER_SCHEDULE: DailyMasterBlock[] = [
     durationHours: 3.0,
     title: 'Block 2: MOCK EXAM 1 (60 Qs) + DEEP ERROR AUDIT & RA REVIEW (1h)',
     targetSkill: 'mock',
-    targetScoreBenchmark: 78,
-    badge: 'Mock 1: 60 Qs + 1h Review',
+    targetScoreBenchmark: 88,
+    badge: 'Mock 1: 60 Qs · Target: 88+',
     badgeColor: 'bg-blue-950/60 text-blue-300 border border-blue-800/60',
     coreTasks: [
       'Full Timed Mock Exam 1 (2 Hours · 60 Questions under Pearson Exam Conditions)',
@@ -390,10 +390,10 @@ export const DAILY_15H_MASTER_SCHEDULE: DailyMasterBlock[] = [
     blockNumber: 3,
     timeSlot: '01:15 PM – 03:30 PM',
     durationHours: 2.25,
-    title: 'Block 3: Reading 69 & Writing 84 Precision Drills (40 Qs)',
+    title: 'Block 3: Reading 86 & Writing 79 Precision Drills (40 Qs)',
     targetSkill: 'reading',
-    targetScoreBenchmark: 69,
-    badge: 'Reading 69 & Writing 84 · 40 Qs',
+    targetScoreBenchmark: 86,
+    badge: 'Reading 86 & Writing 79 · 40 Qs',
     badgeColor: 'bg-amber-950/60 text-amber-300 border border-amber-800/60',
     coreTasks: [
       'Reading & Writing FIB (Dropdown): 15 passages (450 target · academic collocations & context clues)',
@@ -410,7 +410,7 @@ export const DAILY_15H_MASTER_SCHEDULE: DailyMasterBlock[] = [
     durationHours: 1.0,
     title: 'Block 4: DAILY VIP SECTION TEST (APEUni Section Speed Run)',
     targetSkill: 'reading',
-    targetScoreBenchmark: 75,
+    targetScoreBenchmark: 88,
     badge: 'VIP Section Test · 1.0h',
     badgeColor: 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/60',
     coreTasks: [
@@ -426,12 +426,12 @@ export const DAILY_15H_MASTER_SCHEDULE: DailyMasterBlock[] = [
     durationHours: 3.0,
     title: 'Block 5: MOCK EXAM 2 (60 Qs) + DEEP ERROR AUDIT & RA REVIEW (1h)',
     targetSkill: 'mock',
-    targetScoreBenchmark: 78,
-    badge: 'Mock 2: 60 Qs + 1h Review',
+    targetScoreBenchmark: 88,
+    badge: 'Mock 2: 60 Qs · Target: 88+',
     badgeColor: 'bg-purple-950/60 text-purple-300 border border-purple-800/60',
     coreTasks: [
       'Full Timed Mock Exam 2 (2 Hours · 60 Questions under Pearson Exam Conditions)',
-      'Instant Diagnostic Score Verification and target comparison against 78+ benchmark',
+      'Instant Diagnostic Score Verification and target comparison against 88+ benchmark',
       'Deep 1-Hour Question-by-Question Review: Transcription analysis and scoring audit',
       'Update deficiency tags (අඩුපාඩු) and identify repetitive mistakes'
     ],
@@ -441,10 +441,10 @@ export const DAILY_15H_MASTER_SCHEDULE: DailyMasterBlock[] = [
     blockNumber: 6,
     timeSlot: '08:30 PM – 10:30 PM',
     durationHours: 2.0,
-    title: 'Block 6: Listening 68 & Dictation Lockdown (26 Qs)',
+    title: 'Block 6: Listening 79 & Dictation Lockdown (26 Qs)',
     targetSkill: 'listening',
-    targetScoreBenchmark: 68,
-    badge: 'Listening 68 · 26 Qs',
+    targetScoreBenchmark: 79,
+    badge: 'Listening Target: 79 · 26 Qs',
     badgeColor: 'bg-cyan-950/60 text-cyan-300 border border-cyan-800/60',
     coreTasks: [
       'Write From Dictation (WFD): 15 sentences (450 target · Spelling audit: plurals -s, past tense -ed)',
@@ -459,7 +459,7 @@ export const DAILY_15H_MASTER_SCHEDULE: DailyMasterBlock[] = [
     durationHours: 0.5,
     title: 'Block 7: Night Mistake Log Rectification & Academic Collocations',
     targetSkill: 'review',
-    targetScoreBenchmark: 78,
+    targetScoreBenchmark: 88,
     badge: 'Mistake Log: 0.5h',
     badgeColor: 'bg-slate-900 text-slate-300 border border-slate-700',
     coreTasks: [

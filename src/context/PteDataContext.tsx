@@ -56,6 +56,8 @@ interface PteDataContextType {
   updatePlan: (newPlan: StudyPlan) => Promise<void>;
   importLegacyData: (migratedDays: DayData[]) => Promise<void>;
   completeAllQuestionsForDay: (dayNumber: number, defaultScore?: number) => Promise<void>;
+  toggleQuestionType: (dayNumber: number, typeId: string, targetCount: number, defaultScore?: number) => Promise<void>;
+  setQuestionTypeScore: (dayNumber: number, typeId: string, targetCount: number, score: number | null) => Promise<void>;
   completeAllMocksForDay: (dayNumber: number, defaultScore?: number) => Promise<void>;
   updateFirstAttempt: (testId: string, data: Partial<FirstAttemptEntry>) => Promise<void>;
 }
@@ -527,20 +529,42 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     [user]
   );
 
-  // Batch complete all 300 practice questions for the day
+  // Batch complete or toggle all daily practice questions for the day
   const completeAllQuestionsForDay = useCallback(
-    async (dayNumber: number, defaultScore: number = 79) => {
+    async (dayNumber: number, defaultScore?: number) => {
       if (!user) return;
       setSyncStatus('syncing');
 
+      let allDone = true;
+      const currentDay = days[dayNumber];
+      if (currentDay?.questionProgress) {
+        for (const meta of QUESTION_TYPES) {
+          const attempts = currentDay.questionProgress[meta.id]?.attempts || {};
+          const done = Object.values(attempts).filter(
+            (a) => a.score !== null && a.score !== undefined && a.score > 0
+          ).length;
+          if (done < meta.defaultTarget) {
+            allDone = false;
+            break;
+          }
+        }
+      } else {
+        allDone = false;
+      }
+
+      const willComplete = !allDone;
       const fullAttempts: Record<string, Record<number, QuestionAttempt>> = {};
       for (const meta of QUESTION_TYPES) {
         fullAttempts[meta.id] = {};
+        const skillTarget = meta.skill === 'speaking' ? 89 : meta.skill === 'reading' ? 86 : 79;
+        const targetScore = willComplete
+          ? (defaultScore !== undefined ? defaultScore : skillTarget)
+          : null;
         for (let i = 0; i < meta.defaultTarget; i++) {
           fullAttempts[meta.id][i] = {
             qIndex: i,
-            score: defaultScore,
-            notes: 'High-Yield Drill Completed',
+            score: targetScore,
+            notes: willComplete ? 'Target Completed' : '',
             isFlaggedForReview: false,
             updatedAt: new Date().toISOString()
           };
@@ -574,6 +598,120 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setLastSavedAt(new Date().toLocaleTimeString());
       } catch (err) {
         console.error('Error batch completing questions:', err);
+        setSyncStatus('error');
+      }
+    },
+    [user, days]
+  );
+
+  // Toggle a single question type completed/pending with 1 click
+  const toggleQuestionType = useCallback(
+    async (dayNumber: number, typeId: string, targetCount: number, defaultScore?: number) => {
+      if (!user) return;
+      setSyncStatus('syncing');
+
+      let isDone = false;
+      const newAttempts: Record<number, QuestionAttempt> = {};
+
+      setDays((prev) => {
+        const curDay = prev[dayNumber] || createDefaultDayData(dayNumber, '', false);
+        const curQP = curDay.questionProgress || {};
+        const existingAttempts = curQP[typeId]?.attempts || {};
+        const existingDoneCount = Object.values(existingAttempts).filter(
+          (a) => a.score !== null && a.score !== undefined && a.score > 0
+        ).length;
+        isDone = existingDoneCount >= targetCount;
+
+        const meta = QUESTION_TYPES.find((q) => q.id === typeId);
+        const targetVal = defaultScore !== undefined ? defaultScore : (
+          meta?.skill === 'speaking' ? 89 :
+          meta?.skill === 'reading' ? 86 : 79
+        );
+
+        for (let i = 0; i < targetCount; i++) {
+          newAttempts[i] = {
+            qIndex: i,
+            score: isDone ? null : targetVal,
+            notes: isDone ? '' : 'Target Completed',
+            isFlaggedForReview: false,
+            updatedAt: new Date().toISOString()
+          };
+        }
+
+        return {
+          ...prev,
+          [dayNumber]: {
+            ...curDay,
+            questionProgress: {
+              ...curQP,
+              [typeId]: {
+                attempts: {
+                  ...existingAttempts,
+                  ...newAttempts
+                }
+              }
+            }
+          }
+        };
+      });
+
+      try {
+        await batchSaveScores(user.uid, dayNumber, { [typeId]: newAttempts });
+        setSyncStatus('saved');
+        setLastSavedAt(new Date().toLocaleTimeString());
+      } catch (err) {
+        console.error('Error toggling question type:', err);
+        setSyncStatus('error');
+      }
+    },
+    [user]
+  );
+
+  // Set marks/score for a question type
+  const setQuestionTypeScore = useCallback(
+    async (dayNumber: number, typeId: string, targetCount: number, score: number | null) => {
+      if (!user) return;
+      setSyncStatus('syncing');
+
+      const newAttempts: Record<number, QuestionAttempt> = {};
+      for (let i = 0; i < targetCount; i++) {
+        newAttempts[i] = {
+          qIndex: i,
+          score: score,
+          notes: score ? 'Scored Drill' : '',
+          isFlaggedForReview: false,
+          updatedAt: new Date().toISOString()
+        };
+      }
+
+      setDays((prev) => {
+        const curDay = prev[dayNumber] || createDefaultDayData(dayNumber, '', false);
+        const curQP = curDay.questionProgress || {};
+        const existingAttempts = curQP[typeId]?.attempts || {};
+
+        return {
+          ...prev,
+          [dayNumber]: {
+            ...curDay,
+            questionProgress: {
+              ...curQP,
+              [typeId]: {
+                attempts: {
+                  ...existingAttempts,
+                  ...newAttempts
+                }
+              }
+            }
+          }
+        };
+      });
+
+      try {
+        await batchSaveScores(user.uid, dayNumber, { [typeId]: newAttempts });
+        setSyncStatus('saved');
+        setLastSavedAt(new Date().toLocaleTimeString());
+      } catch (err) {
+        console.error('Error updating question type score:', err);
         setSyncStatus('error');
       }
     },
@@ -707,6 +845,8 @@ export const PteDataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updatePlan,
         importLegacyData,
         completeAllQuestionsForDay,
+        toggleQuestionType,
+        setQuestionTypeScore,
         completeAllMocksForDay,
         updateFirstAttempt
       }}
