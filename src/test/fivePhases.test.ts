@@ -32,7 +32,7 @@ describe('6-Phase Daily Study Curriculum Verification', () => {
       totalQs += phase.questionCount;
     }
     expect(totalQs).toBe(120);
-    expect(DAILY_PRACTICE_TARGET).toBe(117);
+    expect(DAILY_PRACTICE_TARGET).toBe(130);
     expect(DAILY_MOCK_TARGET).toBe(2);
   });
 

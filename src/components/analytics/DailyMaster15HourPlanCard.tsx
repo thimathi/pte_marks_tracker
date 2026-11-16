@@ -103,7 +103,7 @@ export const DailyMaster15HourPlanCard: React.FC<DailyMaster15HourPlanCardProps>
             </span>
           </h2>
           <p className="text-xs text-slate-400 mt-1 max-w-3xl leading-relaxed">
-            Balanced Protocol: <b>2 Mock Exams (120 Qs) + 2h Deep Review</b> + <b>1 Daily Section Test</b> + <b>117 Practice Questions</b> (PTE Bridge). Total: <b>237 Questions Daily</b> in 14.5 Hours.
+            Balanced Protocol: <b>2 Mock Exams (120 Qs) + 2h Deep Review</b> + <b>1 Daily Section Test</b> + <b>130 Practice Questions</b> (PTE Bridge · 20 Describe Image). Total: <b>250 Questions Daily</b> in 14.5 Hours.
           </p>
         </div>
 
@@ -153,8 +153,8 @@ export const DailyMaster15HourPlanCard: React.FC<DailyMaster15HourPlanCardProps>
 
         <div className="p-2.5 rounded-xl bg-[#0d131f] border border-slate-800 text-center">
           <span className="text-[10px] text-blue-400 font-bold uppercase block">Daily Questions</span>
-          <span className="text-xl font-extrabold text-blue-400">237 Qs</span>
-          <span className="text-[10px] text-slate-400 block mt-0.5 font-medium">120 Mocks + 117 Practice</span>
+          <span className="text-xl font-extrabold text-blue-400">250 Qs</span>
+          <span className="text-[10px] text-slate-400 block mt-0.5 font-medium">120 Mocks + 130 Practice</span>
         </div>
       </div>
 
@@ -163,7 +163,7 @@ export const DailyMaster15HourPlanCard: React.FC<DailyMaster15HourPlanCardProps>
         <div className="flex items-center justify-between">
           <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
             <Zap className="w-3.5 h-3.5 text-amber-400" />
-            14.5-Hour Daily Master Blocks (Fixed 2 Mocks + Section Test + 117 Practice Qs)
+            14.5-Hour Daily Master Blocks (Fixed 2 Mocks + Section Test + 130 Practice Qs)
           </h3>
           <span className="text-[11px] text-slate-400">
             Total: 7 Blocks · 14.5 Study Hours · 2h 15m Strategic Breaks

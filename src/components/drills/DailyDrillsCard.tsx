@@ -239,7 +239,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
     await updateExerciseCount(dayNumber, exerciseId, count, dayExercises[exerciseId]?.notes, num);
   };
 
-  // 117 Daily Practice Questions Statistics & Target Score Mappings
+  // 130 Daily Practice Questions Statistics & Target Score Mappings
   const questionStats = React.useMemo(() => {
     let totalDone = 0;
     const byType: Record<
@@ -363,7 +363,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Complete your <b>117 Practice Questions</b> (Just Tick) and <b>6-Phase Mandatory Drills</b>. Combined with 2 Mocks (120 Qs) = <b>237 Qs/Day Total</b>.
+            Complete your <b>{DAILY_PRACTICE_TARGET} Practice Questions</b> (Just Tick) and <b>6-Phase Mandatory Drills</b>. Combined with 2 Mocks (120 Qs) = <b>250 Qs/Day Total</b>.
           </p>
         </div>
 
@@ -391,7 +391,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
             }`}
           >
             <Target className="w-3.5 h-3.5 text-amber-400" />
-            <span>117 Questions ({questionStats.totalDone}/117)</span>
+            <span>{DAILY_PRACTICE_TARGET} Questions ({questionStats.totalDone}/{DAILY_PRACTICE_TARGET})</span>
           </button>
           <button
             type="button"
@@ -408,7 +408,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
         </div>
       </div>
 
-      {/* ================= 117 DAILY PRACTICE QUESTIONS CHECKLIST ================= */}
+      {/* ================= 130 DAILY PRACTICE QUESTIONS CHECKLIST ================= */}
       {(activeMainTab === 'all' || activeMainTab === 'questions') && (
         <div className="space-y-5">
           {/* Section Banner with Master Tick Button & Progress */}
@@ -420,7 +420,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                     <Target className="w-4 h-4" />
                   </span>
                   <h3 className="text-base font-bold text-slate-100">
-                    117 Daily Practice Questions (Just Tick & Record Marks)
+                    {DAILY_PRACTICE_TARGET} Daily Practice Questions (Just Tick & Record Marks)
                   </h3>
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${
@@ -429,15 +429,15 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                         : 'bg-amber-950/70 text-amber-300 border-amber-800'
                     }`}
                   >
-                    {questionStats.totalDone} / 117 Completed ({questionStats.questionPercent}%)
+                    {questionStats.totalDone} / {DAILY_PRACTICE_TARGET} Completed ({questionStats.questionPercent}%)
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 mt-1">
-                  15 high-weight question types · Combined with 2 Mocks (120 Qs) = <b>237 Qs/Day Total</b>.
+                  15 high-weight question types (including 20 Describe Image @ 15% weight) · Combined with 2 Mocks (120 Qs) = <b>250 Qs/Day Total</b>.
                 </p>
               </div>
 
-              {/* Master 1-Click Complete All 117 Questions */}
+              {/* Master 1-Click Complete All 130 Questions */}
               <button
                 type="button"
                 onClick={() => completeAllQuestionsForDay(dayNumber)}
@@ -450,8 +450,8 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                 <CheckCircle2 className="w-4 h-4" />
                 <span>
                   {questionStats.isAllQuestionsFulfilled
-                    ? '✓ All 117 Questions Ticked (Click to Clear)'
-                    : '✓ Mark All 117 Questions Completed (Just Tick)'}
+                    ? `✓ All ${DAILY_PRACTICE_TARGET} Questions Ticked (Click to Clear)`
+                    : `✓ Mark All ${DAILY_PRACTICE_TARGET} Questions Completed (Just Tick)`}
                 </span>
               </button>
             </div>
@@ -485,7 +485,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
             </div>
           </div>
 
-          {/* Group 1: SPEAKING QUESTIONS (51 Qs · Target: 89) */}
+          {/* Group 1: SPEAKING QUESTIONS (64 Qs · Target: 89) */}
           <div className="space-y-3">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
               <div className="flex items-center gap-2">
@@ -493,7 +493,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                   <Mic className="w-4 h-4" />
                 </span>
                 <h4 className="text-sm font-extrabold text-blue-200">
-                  Speaking Practice (51 Questions · Target: 89)
+                  Speaking Practice ({QUESTION_TYPES.filter((q) => q.skill === 'speaking').reduce((acc, q) => acc + q.defaultTarget, 0)} Questions · Target: 89)
                 </h4>
               </div>
               <span className="text-xs font-mono font-bold text-blue-300">
@@ -501,7 +501,7 @@ export const DailyDrillsCard: React.FC<DailyDrillsCardProps> = ({
                   (acc, q) => acc + (questionStats.byType[q.id]?.doneCount || 0),
                   0
                 )}{' '}
-                / 51 Qs Done
+                / {QUESTION_TYPES.filter((q) => q.skill === 'speaking').reduce((acc, q) => acc + q.defaultTarget, 0)} Qs Done
               </span>
             </div>
 

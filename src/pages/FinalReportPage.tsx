@@ -167,7 +167,7 @@ export const FinalReportPage: React.FC = () => {
               PTE - Daily Study Plan – Superior English
             </h2>
             <p className="text-xs text-slate-400">
-              Started: <b className="text-slate-200">{formatDateFriendly(studyPlan.startDate)}</b> · 15h Daily Protocol (237 Qs / Day) · Target: S:{studyPlan.targetScores.speaking || 87} · W:{studyPlan.targetScores.writing || 84} · Overall {studyPlan.targetScores.overall}+
+              Started: <b className="text-slate-200">{formatDateFriendly(studyPlan.startDate)}</b> · 15h Daily Protocol (250 Qs / Day) · Target: S:{studyPlan.targetScores.speaking || 87} · W:{studyPlan.targetScores.writing || 84} · Overall {studyPlan.targetScores.overall}+
             </p>
           </div>
 
@@ -193,7 +193,7 @@ export const FinalReportPage: React.FC = () => {
             <span className="text-[11px] text-slate-400 block">Practice Questions</span>
             <div className="text-2xl font-bold text-slate-100">{totalPracticeQuestionsScored} / {totalPracticeTarget.toLocaleString()}</div>
             <span className="text-[10px] text-blue-400 font-semibold">
-              Target: 117 Practice Qs / Day
+              Target: 130 Practice Qs / Day
             </span>
           </div>
 

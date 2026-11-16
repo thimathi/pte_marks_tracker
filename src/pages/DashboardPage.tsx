@@ -196,7 +196,7 @@ export const DashboardPage: React.FC = () => {
               )}
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
-              2 Mocks (120 Qs) + 2h Deep Review + 1 Daily Section Test + 117 Targeted Practice Questions = <b>237 Questions Daily</b> in 14.5 Hours.
+              2 Mocks (120 Qs) + 2h Deep Review + 1 Daily Section Test + 130 Targeted Practice Questions = <b>250 Questions Daily</b> in 14.5 Hours.
             </p>
           </div>
 

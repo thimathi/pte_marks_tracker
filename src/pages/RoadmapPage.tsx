@@ -102,10 +102,10 @@ export const RoadmapPage: React.FC = () => {
                 PTE Academic 30-Day Roadmap
               </span>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-950/60 text-purple-300 border border-purple-800/60">
-                2 Mocks / Day + 117 Practice Qs
+                2 Mocks / Day + 130 Practice Qs
               </span>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-950/60 text-emerald-300 border border-emerald-800/60">
-                237 Questions Daily
+                250 Questions Daily
               </span>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-cyan-950/60 text-cyan-300 border border-cyan-800/60">
                 {totalDays} Days · Nov 16 – Dec 16, 2026 · Colombo Leave: Nov 18

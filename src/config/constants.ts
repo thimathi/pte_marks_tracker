@@ -3,11 +3,11 @@ import { QuestionPriority, QuestionTypeMeta, SkillType, StudyGroupDefinition, Ta
 export const DEFAULT_START_DATE = '2026-11-16'; // Start: Monday, Nov 16, 2026 (Tomorrow)
 export const FINAL_TARGET_DATE = '2026-12-17'; // Exam Day: Dec 17, 2026 (12:00 PM IST · 30 Study Days)
 export const BLOCKED_STUDY_DATES = ['2026-11-18']; // Colombo urgent meeting (Full day leave)
-export const APP_TITLE = 'PTE - 88+ Summit Plan (30 Days · +10 Target Over-Prep · S:89 R:86 L:79 W:79 · 2 Mocks · 117 Practice Qs · 237 Qs/Day)';
+export const APP_TITLE = 'PTE - 88+ Summit Plan (30 Days · +10 Target Over-Prep · S:89 R:86 L:79 W:79 · 2 Mocks · 130 Practice Qs · 250 Qs/Day)';
 export const APP_ORGANIZATION = 'PTE Bridge - Your Trusted Mentor';
 export const TOTAL_STUDY_DAYS = 30; // 30 Active Study Days (Nov 16 to Dec 16 · Nov 18 Colombo Leave)
-export const DAILY_PRACTICE_TARGET = 117; // 3,510 Total Practice Questions ÷ 30 Days = 117/day
-export const TOTAL_PRACTICE_TARGET = 3510; // 30 days × 117 questions = 3,510 Total Practice Questions
+export const DAILY_PRACTICE_TARGET = 130; // 3,900 Total Practice Questions ÷ 30 Days = 130/day
+export const TOTAL_PRACTICE_TARGET = 3900; // 30 days × 130 questions = 3,900 Total Practice Questions
 export const DAILY_MOCK_TARGET = 2; // Exactly 2 Mock Exams Daily (60 Qs × 2 = 120 Questions/day)
 export const TOTAL_MOCK_TARGET = 60; // 60 Planned Benchmark Mocks (20 unique VIP papers × 3 passes)
 export const TOTAL_UNIQUE_PAPERS = 20; // 20 unique VIP papers
@@ -15,8 +15,8 @@ export const REPETITIONS_PER_PAPER = 3; // Repeated in 3 passes
 export const TOTAL_SECTION_TESTS = 27; // 27 Section Tests (1 test every day from Day 4 through Day 30)
 export const MOCK_EXAM_QUESTIONS = 60;
 export const TOTAL_MOCK_EXAM_QUESTIONS = 3600; // 60 mocks × 60 questions = 3,600
-export const DAILY_TOTAL_QUESTIONS = 237; // 117 Practice Qs + 120 Mock Qs = 237 Questions Daily
-export const TOTAL_MISSION_QUESTIONS = 7110; // 3,510 Practice + 3,600 Mock = 7,110 Total Questions
+export const DAILY_TOTAL_QUESTIONS = 250; // 130 Practice Qs + 120 Mock Qs = 250 Questions Daily
+export const TOTAL_MISSION_QUESTIONS = 7500; // 3,900 Practice + 3,600 Mock = 7,500 Total Questions
 
 export interface MockScheduleSlot {
   mockIndex: number;
@@ -532,7 +532,7 @@ export function getDailyMockTarget(_dayNumber: number): number {
 }
 
 export function getDailyPracticeTarget(_dayNumber: number): number {
-  return 117;
+  return 130;
 }
 
 export function getMockExamsForDay(_dayNumber: number): string[] {
@@ -784,7 +784,7 @@ export const BASELINE_MOCK_45C_SCORES = {
 };
 
 export const QUESTION_TYPES: QuestionTypeMeta[] = [
-  // SPEAKING (Total: 51 targeted daily questions from 3,510 total plan)
+  // SPEAKING (Total: 64 targeted daily questions from 3,900 total plan)
   {
     id: 'read_aloud',
     name: 'Read Aloud',
@@ -816,12 +816,12 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     name: 'Describe Image',
     shortName: 'DI',
     skill: 'speaking',
-    defaultTarget: 7,
-    estMinutes: '8 min',
+    defaultTarget: 20,
+    estMinutes: '20 min',
     isPrediction: true,
     scoreWeight: 15,
     maxScore: 90,
-    description: 'Describe the key points and conclusions of the image using a clean 25s template flow. (200 Total Target)'
+    description: 'Describe key points and conclusions using a clean template flow. Highest PTE weight (15%)! (600 Total Target · 20/Day)'
   },
   {
     id: 'retell_lecture',
@@ -875,7 +875,7 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     description: 'Quick factual 1-word answers. (120 Total Target)'
   },
 
-  // WRITING (Total: 3 targeted daily questions from 3,510 total plan)
+  // WRITING (Total: 3 targeted daily questions from 3,900 total plan)
   {
     id: 'summarize_written_text',
     name: 'Summarize Written Text',
@@ -902,7 +902,7 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     description: '200–300 word argumentative essay written in 20 min using proper structure. (30 Total Target)'
   },
 
-  // READING (Total: 37 targeted daily questions from 3,510 total plan)
+  // READING (Total: 37 targeted daily questions from 3,900 total plan)
   {
     id: 'rw_fill_in_blanks',
     name: 'Reading & Writing: Fill in the Blanks',
@@ -941,7 +941,7 @@ export const QUESTION_TYPES: QuestionTypeMeta[] = [
     description: 'Logical sequencing of independent topic sentences and referents. (200 Total Target)'
   },
 
-  // LISTENING (Total: 26 targeted daily questions from 3,510 total plan)
+  // LISTENING (Total: 26 targeted daily questions from 3,900 total plan)
   {
     id: 'write_from_dictation',
     name: 'Write From Dictation',

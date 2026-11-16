@@ -100,9 +100,9 @@ describe('60 Mock Exam Mastery Plan & 20 Papers × 3 Passes + 9 Review Days Veri
     expect(mock50.attemptOfPaper).toBe(3);
   });
 
-  it('validates total question targets: 3,600 mock exam questions and 7,110 total questions', () => {
+  it('validates total question targets: 3,600 mock exam questions and 7,500 total questions', () => {
     expect(TOTAL_MOCK_EXAM_QUESTIONS).toBe(3600);
-    expect(TOTAL_MISSION_QUESTIONS).toBe(7110);
+    expect(TOTAL_MISSION_QUESTIONS).toBe(7500);
   });
 
   it('validates Milestone Review Days on Day 10, 20, 30', () => {

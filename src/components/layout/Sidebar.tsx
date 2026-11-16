@@ -83,7 +83,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <div className="min-w-0">
                 <p className="text-sm font-bold text-slate-100 leading-tight">Study Day {currentDay} of {totalDays}</p>
                 <p className="text-xs text-slate-400 truncate">
-                  {isRevDay ? '🔍 Milestone Review Day' : `${mockKeys.length} Mocks/Day · 117 Practice Qs`}
+                  {isRevDay ? '🔍 Milestone Review Day' : `${mockKeys.length} Mocks/Day · 130 Practice Qs`}
                 </p>
               </div>
             </div>
@@ -176,7 +176,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <span className="text-xs font-bold text-slate-200">{totalDays}-Day Intensive Protocol</span>
             </div>
             <p className="text-[10px] text-slate-400">
-              Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-16')} · 2 Mocks + 117 Practice · Nov 18 Colombo Leave · Dec 17 Exam
+              Start: {formatDateFriendly(studyPlan?.startDate || '2026-11-16')} · 2 Mocks + 130 Practice · Nov 18 Colombo Leave · Dec 17 Exam
             </p>
           </div>
         </div>

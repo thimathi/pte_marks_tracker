@@ -87,7 +87,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar, isSidebarOpen }
                     PTE Marks Tracker
                   </span>
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-950/60 text-blue-300 font-semibold border border-blue-800/60 whitespace-nowrap">
-                    2 Mocks (120 Qs) + 117 Practice Qs · 237 Qs/Day
+                    2 Mocks (120 Qs) + 130 Practice Qs · 250 Qs/Day
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 leading-tight truncate">
